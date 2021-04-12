@@ -1,0 +1,29 @@
+{
+  "name": "yottabot",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "node -r dotenv/config index.js dotenv_config_path=.env"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HordLawk/yottabot.git"
+  },
+  "author": "LordHawk#0572",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HordLawk/yottabot/issues"
+  },
+  "homepage": "https://github.com/HordLawk/yottabot#readme",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.3"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0"
+  }
+}

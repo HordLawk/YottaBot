@@ -10,7 +10,7 @@ client.cooldowns = new Discord.Collection();
 client.options.ws.properties.$browser = 'Discord Android';
 fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js')).map(e => require(`./events/${e}`)).forEach(e => client.on(e.name, (...args) => e.execute(...args, client)));
 (async () => {
-	const guilds = await guild.find({});
-	client.guildData = new Discord.Collection(guilds.map(e => [e._id, e]));
-	client.login(process.env.TOKEN);
+    const guilds = await guild.find({});
+    client.guildData = new Discord.Collection(guilds.map(e => [e._id, e]));
+    client.login(process.env.TOKEN);
 })();

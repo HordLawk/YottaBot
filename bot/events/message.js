@@ -1,15 +1,18 @@
 const guild = require('../../schemas/guild.js');
+const role = require('../../schemas/role.js');
+const channel = require('../../schemas/channel.js');
 const {Collection} = require('discord.js');
+
 module.exports = {
     name: 'message',
-    execute: message => {
+    execute: async message => {
         if(message.author.bot || ((message.channel.type != 'dm') && !message.guild.me.permissionsIn(message.channel).has('SEND_MESSAGES'))) return;
         let prefix = message.client.configs.defaultPrefix;
         if(message.channel.type != 'dm'){
             if(!message.client.guildData.has(message.guild.id)){
                 let guildData = new guild({
                     _id: message.guild.id,
-                    language: (message.guild.region == 'brazil') ? 'pt' : 'en'
+                    language: (message.guild.region === 'brazil') ? 'pt' : 'en'
                 });
                 guildData.save();
                 message.client.guildData.set(guildData._id, guildData);
@@ -26,8 +29,20 @@ module.exports = {
         const command = message.client.commands.get(commandName) || message.client.commands.find(cmd => (cmd.aliases && cmd.aliases.includes(commandName)));
         if(!command || (command.dev && (message.author.id != message.client.configs.devid))) return;
         if(message.client.configs.maintenance && (message.author.id != message.client.configs.devid)) return message.channel.send(message.client.langs[channelLanguage].get('maintenance')).catch(() => null);
-        if(command.guildOnly && (message.channel.type == 'dm')) return message.channel.send(message.client.langs[channelLanguage].get('guildOnly'));
-        if(command.args && !args.length) return message.channel.send(message.client.langs[channelLanguage].get('noArgs', [message.author, prefix, command.name, command.usage]));
+        if(command.guildOnly && (message.channel.type === 'dm')) return message.channel.send(message.client.langs[channelLanguage].get('guildOnly'));
+        if(message.channel.type != 'dm'){
+            if(!message.member.permissions.has('ADMINISTRATOR')){
+                const roles = await role.find({
+                    guild: message.guild.id,
+                    roleID: {$in: message.member.roles.cache.map(e => e.id)},
+                    'commandPermissions._id': command.name,
+                });
+                if((!roles.length && command.perm && !message.member.permissions.has(command.perm)) || (roles.length && roles.some(e => !e.commandPermissions.id(command.name).allow) && !roles.some(e => e.commandPermissions.id(command.name).allow))) return message.channel.send(message.client.langs[channelLanguage].get('forbidden'));
+                const savedChannel = await channel.findById(message.channel.id);
+                if(savedChannel && savedChannel.ignoreCommands.includes(command.name)) return message.channel.send(message.client.langs[channelLanguage].get('disabled'));
+            }
+        }
+        if(command.args && !args.length) return message.channel.send(message.client.langs[channelLanguage].get('noArgs', [message.author, prefix, command.name, command.usage(message.client.langs[channelLanguage])]));
         if(!message.client.cooldowns.has(command.name)) message.client.cooldowns.set(command.name, new Collection());
         const now = Date.now();
         const timestamps = message.client.cooldowns.get(command.name);

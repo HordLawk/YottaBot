@@ -7,8 +7,8 @@ module.exports = {
     cooldown: 5,
     categoryID: 0,
     execute: async (message) => {
-        const channelLanguage = (message.channel.type != 'dm') ? message.client.guildData.get(message.guild.id).language : 'en';
-        if((message.channel.type != 'dm') && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
+        const channelLanguage = message.guild ? message.client.guildData.get(message.guild.id).language : 'en';
+        if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
         const hex = (latency) => {
             if(latency <= 100) return '00ff00';
             if(latency >= 1000) return 'ff0000';

@@ -14,10 +14,10 @@ module.exports = {
     perm: 'ADMINISTRATOR',
     guildOnly: true,
     execute: async function(message, args){
-        const channelLanguage = (message.channel.type != 'dm') ? message.client.guildData.get(message.guild.id).language : 'en';
+        const channelLanguage = message.guild ? message.client.guildData.get(message.guild.id).language : 'en';
         if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
         if(args.length < 2) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-        const discordChannel = message.client.channels.cache.get((args[0].match(/<#(\d{17,19})>/) || [])[1]) || message.client.channels.cache.get(args[0]);
+        const discordChannel = message.guild.channels.cache.get((args[0].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[0]);
         if(!discordChannel) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
         var channelDoc;
         switch(args[1]){
@@ -47,7 +47,7 @@ module.exports = {
                 channelDoc = await channel.findById(discordChannel.id);
                 if(!channelDoc || !channelDoc.ignoreCommands.length) return message.channel.send(message.client.langs[channelLanguage].get('noDisabledCmds'));
                 const embed = new MessageEmbed()
-                    .setColor((message.channel.type != 'dm') ? (message.guild.me.displayColor || 'RANDOM') : 'RANDOM')
+                    .setColor(message.guild.me.displayColor || 'RANDOM')
                     .setAuthor(message.client.langs[channelLanguage].get('disabledEmbedAuthor'), message.guild.iconURL({
                         format: 'png',
                         size: 4096,

@@ -14,8 +14,8 @@ module.exports = {
             case 'botEmbed': return 'Eu preciso de permissão para enviar links nesse canal';
             case 'botManageMessages': return 'Eu preciso de permissão para gerenciar mensagens nesse canal';
             case 'helpEmbedTitle': return 'Ajuda de comandos';
-            case 'helpEmbedDescription': return `Use \`${vars[0]}help (comando)\` para mais informações sobre um comando específico`;
-            case 'helpEmbedFooter': return `${vars[0]} comandos`;
+            case 'helpEmbedDescription': return `Use \`${vars[0]}help (comando)\` para mais informações sobre um comando específico\n\n__Note que:__\n- \`(canal)\` = \`<(menção de canal)/(ID de canal)>\`\n- \`(usuário)\` = \`<(menção de usuário)/(ID de usuário)>\`\n- \`(cargo)\` = \`<(menção de cargo)/(ID de cargo)/(nome de cargo)>\``;
+            case 'helpEmbedFooter': return `${vars[0]} comandos | [] = Opcional - () = Variável - </> = Qualquer`;
             case 'category0': return 'Comandos';
             case 'invalidCommand': return 'Esse não é um comando válido';
             case 'helpCommandEmbedTitle': return `Ajuda para o comando ${vars[0]}`;
@@ -48,15 +48,17 @@ module.exports = {
             case 'permsAllowed': return 'Comandos permitidos';
             case 'permsDenied': return 'Comandos proibidos';
             case 'disableDescription': return 'Bloqueia comandos em canais específicos';
-            case 'disableUsage0': return '<(menção de canal)/(ID de canal)> <on/off> <(lista de comandos)/all>';
-            case 'disableUsage1': return '<(menção de canal)/(ID de canal)> view';
+            case 'disableUsage0': return '(canal) <on/off> <(lista de comandos)/all>';
+            case 'disableUsage1': return '(canal) view';
             case 'disableAll': return `Todos os comandos foram ${(vars[0] === 'on') ? 'bloqueados' : 'desbloqueados'} em ${vars[1]}`;
-            case 'disableSome': return `Esses os comandos foram ${(vars[0] === 'on') ? 'bloqueados' : 'desbloqueados'} em ${vars[1]}`;
+            case 'disableSome': return `Esses comandos foram ${(vars[0] === 'on') ? 'bloqueados' : 'desbloqueados'} em ${vars[1]}`;
             case 'permsEmbedDesc': return `Cargo: ${vars[0]}`;
             case 'noDisabledCmds': return 'Não há comandos bloqueados nesse canal';
             case 'disabledEmbedAuthor': return 'Comandos de canais específicos';
             case 'disabledEmbedDesc': return `Canal: ${vars[0]}`;
             case 'disabledField': return 'Bloqueado';
+            case 'achieveGuild': return `Parabéns ${vars[0]}! Você conquistou o cargo **${vars[1]}**`;
+            case 'achieveDM': return `Parabéns! Você conquistou o cargo **${vars[0]}** no servidor **${vars[1]}**`;
         }
     },
 };

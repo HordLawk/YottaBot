@@ -9,6 +9,7 @@ const channelSchema = new Schema({
     },
     ignoreActions: [String],
     ignoreCommands: [String],
+    ignoreXp: Boolean,
 });
 
 module.exports = model('channel', channelSchema);

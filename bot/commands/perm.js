@@ -35,10 +35,11 @@ module.exports = {
                 args.slice(2).forEach(e => {
                     const command = message.client.commands.get(e) || message.client.commands.find(cmd => (cmd.aliases && cmd.aliases.includes(e)));
                     if(!command) return;
-                    roleDoc.commandPermissions.push({
+                    if(!roleDoc.commandPermissions.id(command.name)) return roleDoc.commandPermissions.push({
                         _id: command.name,
                         allow: (args[0] === 'allow'),
                     });
+                    roleDoc.commandPermissions.id(command.name).allow = (args[0] === 'allow');
                 });
                 await roleDoc.save();
                 message.channel.send(message.client.langs[channelLanguage].get('permSuccess', [discordRole.name, args[0]]));
@@ -69,7 +70,7 @@ module.exports = {
                 });
                 if(!roleDoc) return message.channel.send(message.client.langs[channelLanguage].get('noSpecialPerms'));
                 const embed = new MessageEmbed()
-				    .setColor((message.channel.type != 'dm') ? (message.guild.me.displayColor || 'RANDOM') : 'RANDOM')
+                    .setColor(message.guild.me.displayColor || 'RANDOM')
                     .setAuthor(message.client.langs[channelLanguage].get('permsEmbedAuthor'), message.guild.iconURL({
                         format: 'png',
                         size: 4096,

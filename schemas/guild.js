@@ -55,6 +55,11 @@ const guildSchema = new Schema({
         type: Number,
         default: 0,
     },
+    dontStack: Boolean,
+    xpChannel: {
+        type: String,
+        default: 'current',
+    },
 });
 
 module.exports = model("guild", guildSchema);

@@ -14,8 +14,8 @@ module.exports = {
             case 'botEmbed': return 'I need permission to embed links in this channel';
             case 'botManageMessages': return 'I need permission to manage messages in this channel';
             case 'helpEmbedTitle': return 'Commands help';
-            case 'helpEmbedDescription': return `Use \`${vars[0]}help (command)\` for more info about a specific command`;
-            case 'helpEmbedFooter': return `${vars[0]} commands`;
+            case 'helpEmbedDescription': return `Use \`${vars[0]}help (command)\` for more info about a specific command\n\n__Note that:__\n- \`(channel)\` = \`<(channel mention)/(channel ID)>\`\n- \`(user)\` = \`<(user mention)/(user ID)>\`\n- \`(role)\` = \`<(role mention)/(role ID)/(role name)>\``;
+            case 'helpEmbedFooter': return `${vars[0]} commands | [] = Optional - () = Variable - </> = Either`;
             case 'category0': return 'Commands';
             case 'invalidCommand': return 'This is not a valid command';
             case 'helpCommandEmbedTitle': return `Help for the ${vars[0]} command`;
@@ -33,7 +33,7 @@ module.exports = {
             case 'current': return 'Current';
             case 'invalidValue': return `Invalid value. ${vars[0]}`;
             case 'maintenance': return 'Currently in maintenance, try again later';
-            case 'guildOnly': return 'This command is guild only';
+            case 'guildOnly': return 'This command is server only';
             case 'forbidden': return 'You do not have permission to use this command';
             case 'disabled': return 'This command is disabled in this channel';
             case 'permDescription': return 'Allow or deny specific roles from using a command';
@@ -48,8 +48,8 @@ module.exports = {
             case 'permsAllowed': return 'Allowed commands';
             case 'permsDenied': return 'Denied commands';
             case 'disableDescription': return 'Disables commands from being used in a specific channel';
-            case 'disableUsage0': return '<(channel mention)/(channel ID)> <on/off> <(list of commands)/all>';
-            case 'disableUsage1': return '<(channel mention)/(channel ID)> view';
+            case 'disableUsage0': return '(channel) <on/off> <(list of commands)/all>';
+            case 'disableUsage1': return '(channel) view';
             case 'disableAll': return `All commands are now ${(vars[0] === 'on') ? 'disabled' : 'enabled'} on ${vars[1]}`;
             case 'disableSome': return `These commands are now ${(vars[0] === 'on') ? 'disabled' : 'enabled'} on ${vars[1]}`;
             case 'permsEmbedDesc': return `Role: ${vars[0]}`;
@@ -57,6 +57,8 @@ module.exports = {
             case 'disabledEmbedAuthor': return 'Channel specific commands';
             case 'disabledEmbedDesc': return `Channel: ${vars[0]}`;
             case 'disabledField': return 'Disabled';
+            case 'achieveGuild': return `Congratulations ${vars[0]}! You just achieved the role **${vars[1]}**`;
+            case 'achieveDM': return `Congratulations! You just achieved the role **${vars[0]}** in the server **${vars[1]}**`;
         }
     },
 };

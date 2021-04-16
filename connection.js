@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const app = mongoose.connection;
 
-const connect = () => mongoose.connect(`mongodb+srv://admin:${process.env.MONGO}@cluster0.omqvo.mongodb.net/${(process.env.NODE_ENV === 'development') ? 'alpha' : 'yotta'}?retryWrites=true&w=majority`, {
+const connect = () => mongoose.connect(`mongodb+srv://admin:${process.env.MONGO}@cluster0.omqvo.mongodb.net/${(process.env.NODE_ENV === 'production') ? 'yotta' : 'alpha'}?retryWrites=true&w=majority`, {
     useNewUrlParser: true,
     useFindAndModify: false,
     useUnifiedTopology: true,

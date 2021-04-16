@@ -12,7 +12,10 @@ const memberSchema = new Schema({
     },
     relevantBan: Boolean,
     blacklisted: Boolean,
-    xp: Number,
+    xp: {
+        type: Number,
+        default: 0,
+    },
     ghostRole: Boolean,
 });
 

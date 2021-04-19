@@ -14,14 +14,11 @@ const menuSchema = new Schema({
         type: String,
         required: true,
     },
-    messageID: {
-        type: String,
-        required: true,
-    },
-    exclusive: Boolean,
-    roles: [new Schema({
+    messageID: String,
+    toggle: Boolean,
+    emojis: [new Schema({
         _id: String,
-        emojiID: {
+        roleID: {
             type: String,
             required: true,
         },

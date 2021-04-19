@@ -14,7 +14,7 @@ module.exports = {
             case 'botEmbed': return 'Eu preciso de permissão para enviar links nesse canal';
             case 'botManageMessages': return 'Eu preciso de permissão para gerenciar mensagens nesse canal';
             case 'helpEmbedTitle': return 'Ajuda de comandos';
-            case 'helpEmbedDescription': return `Use \`${vars[0]}help (comando)\` para mais informações sobre um comando específico\n\n__Note que:__\n- \`(canal)\` = \`<(menção de canal)/(ID de canal)>\`\n- \`(usuário)\` = \`<(menção de usuário)/(ID de usuário)>\`\n- \`(cargo)\` = \`<(menção de cargo)/(ID de cargo)/(nome de cargo)>\``;
+            case 'helpEmbedDescription': return `Use \`${vars[0]}help (comando)\` para mais informações sobre um comando específico\n\n__Note que:__\n- \`(canal)\` = \`<(menção de canal)/(ID de canal)>\`\n- \`(usuário)\` = \`<(menção de usuário)/(ID de usuário)>\`\n- \`(cargo)\` = \`<(menção de cargo)/(ID de cargo)/(nome de cargo)>\`\n- \`(emoji)\` = \`<(emoji)/(nome de emoji personalizado)/(ID de emoji personalizado)>\``;
             case 'helpEmbedFooter': return `${vars[0]} comandos | [] = Opcional - () = Variável - </> = Qualquer`;
             case 'category0': return 'Comandos';
             case 'invalidCommand': return 'Esse não é um comando válido';
@@ -40,6 +40,7 @@ module.exports = {
             case 'permUsage0': return '<allow/deny/default> <(menção de cargo)/(ID de cargo)/"(nome de cargo)"> (lista de comandos)';
             case 'permUsage1': return 'view <(menção de cargo)/(ID de cargo)/"(nome de cargo)">';
             case 'ADMINISTRATOR': return 'Administrador';
+            case 'MANAGE_ROLES': return 'Gerenciar Cargos';
             case 'invArgs': return `Argumentos inválidos!\nO uso correto seria:\n${vars[2].map(e => `\`${vars[0]}${vars[1]} ${e}\``).join('\n')}`;
             case 'permSuccess': return `**${vars[0]}** foi ${(vars[1] === 'allow') ? 'permitido a' : 'proibido de'} usar esses comandos`;
             case 'noSpecialPerms': return 'Não há nenhuma permissão especial definida para esse cargo';
@@ -59,6 +60,43 @@ module.exports = {
             case 'disabledField': return 'Bloqueado';
             case 'achieveGuild': return `Parabéns ${vars[0]}! Você conquistou o cargo **${vars[1]}**`;
             case 'achieveDM': return `Parabéns! Você conquistou o cargo **${vars[0]}** no servidor **${vars[1]}**`;
+            case 'msgexpDescription': return 'Gerencia o sistema de xp desse servidor';
+            case 'msgexpUsage0': return '<enable/stack> <on/off>';
+            case 'msgexpUsage1': return 'roles set (cargo) (xp)';
+            case 'msgexpUsage2': return 'roles remove <(cargo)/all>';
+            case 'msgexpUsage3': return 'user <add/remove/set> (usuário) (xp)';
+            case 'msgexpUsage4': return 'ignore role <add/remove> (cargo)';
+            case 'msgexpUsage5': return 'ignore channel <add/remove> (canal)';
+            case 'msgexpUsage6': return 'notify <default/none/dm/(canal)>';
+            case 'msgexpUsage7': return '<view/reset>';
+            case 'xpEnable': return `Sistema de xp do servidor ${(vars[0] === 'on') ? 'ativado': 'desativado'}`
+            case 'xpStack': return `Acumulo de cargos de xp ${(vars[0] === 'on') ? 'ativado': 'desativao'}`
+            case 'manageRole': return 'Eu preciso de permissão para gerenciar esse cargo';
+            case 'sameXp': return 'Já existe outro cargo definido para essa quantidade de xp';
+            case 'maxXpRoles': return 'O número máximo de cargos de xp é 20';
+            case 'setXpRole': return `**${vars[0]}** definido como recompensa para **${vars[1]}** xp\nesteja ciente que membros apenas receberão esse cargo ao enviar novas mensagens`;
+            case 'resetXpRoles': return `Todos os cargos de xp foram removidos\nesteja ciente que esses cargos não serão removidos automaticamente dos membros, se você quiser isso, é recomendado deletar os cargos do servidor para que nenhum membro continue com eles`;
+            case 'removeXpRole': return `**${vars[0]}** foi removido das recompensas de xp\nesteja ciente que esse cargo não será removido automaticamente dos membros, se você quiser isso, é recomendado deletar o cargo do servidor para que nenhum membro continue com ele`;
+            case 'setUserXp': return `<@${vars[0]}> agora tem **${vars[1]}** xp`;
+            case 'xpIgnoreRole': return `O cargo **${vars[0]}** ${(vars[1] === 'add') ? 'não vai' : 'vai'} receber xp`;
+            case 'xpIgnoreChannel': return `Usuários ${(vars[0] === 'add') ? 'não vão' : 'vão'} receber xp em ${vars[1]}`;
+            case 'notifyDefault': return `Notificações de novos cargos de xp serão enviadas ${(vars[0] === 'dm') ? 'nas MDs' : 'no canal onde o cargo foi alcançado'}`;
+            case 'notifyNone': return 'Nenhuma notificação de novos cargos de xp será enviada';
+            case 'notifyChannel': return `Notificações de novos cargos serão enviadas em ${vars[0]}`;
+            case 'notifyDefaultView': return '\`Mesmo canal\`';
+            case 'notifyDMView': return '\`MDs\`';
+            case 'notifyNoneView': return '\`Nenhum\`';
+            case 'xpViewEmbedAuthor': return 'Configurações do sistema de xp do servidor';
+            case 'xpViewEmbedDesc': return `Ativado: \`${vars[0] ? 'sim': 'não'}\`\nAcumulo: \`${vars[1] ? 'não': 'sim'}\`\nNotificações: ${vars[2]}`;
+            case 'xpViewRoles': return 'Cargos conquistáveis';
+            case 'xpViewIgnoredRoles': return 'Cargos ignorados';
+            case 'xpViewIgnoredChannels': return 'Canais ignorados';
+            case 'resetXpConfirm': return 'Isso **__REDEFINIRÁ O XP DE TODOS OS USUÁRIOS__** para 0, você tem certeza que deseja prosseguir?';
+            case 'timedOut': return 'Limite de tempo da operação atingido';
+            case 'cancelled': return 'Operação cancelada';
+            case 'resetXp': return 'O xp do servidor foi redefinido com sucesso';
+            case 'memberManageRole': return 'Você não tem permissão para gerenciar esse cargo';
+            case 'sendMessages': return 'Eu preciso de permissão para enviar mensagens nesse canal';
         }
     },
 };

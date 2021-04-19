@@ -70,7 +70,7 @@ module.exports = {
                 });
                 if(!roleDoc) return message.channel.send(message.client.langs[channelLanguage].get('noSpecialPerms'));
                 const embed = new MessageEmbed()
-                    .setColor(message.guild.me.displayColor || 'RANDOM')
+                    .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor(message.client.langs[channelLanguage].get('permsEmbedAuthor'), message.guild.iconURL({
                         format: 'png',
                         size: 4096,

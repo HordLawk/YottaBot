@@ -5,7 +5,7 @@ module.exports = {
     name: 'ready',
     execute: async client => {
         console.log(`Logged in as ${client.user.tag}!`);
-        client.user.setActivity("against pingers", {type:'COMPETING'});
+        client.user.setActivity("pinging territory", {type:'COMPETING'});
         await channel.deleteMany({
             _id: {$nin: client.channels.cache.map(e => e.id)},
             guild: {$in: client.guilds.cache.map(e => e.id)},

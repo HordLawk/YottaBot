@@ -16,7 +16,7 @@ module.exports = {
         let embed;
         if(!args.length){
             embed = new MessageEmbed()
-                .setColor(message.guild ? (message.guild.me.displayColor || 'RANDOM') : 'RANDOM')
+                .setColor(message.guild ? (message.guild.me.displayColor || 0x8000ff) : 0x8000ff)
                 .setAuthor(message.client.langs[channelLanguage].get('helpEmbedTitle'), message.client.user.avatarURL({format: 'png', size: 4096}))
                 .setDescription(message.client.langs[channelLanguage].get('helpEmbedDescription', [prefix]))
                 .addField(message.client.langs[channelLanguage].get('category0'), message.client.commands.filter(command => (!command.dev && (command.categoryID == 0))).map(command => `\`${command.name}\``).join(' '))
@@ -28,7 +28,7 @@ module.exports = {
         const command = message.client.commands.get(name) || message.client.commands.find(c => (c.aliases && c.aliases.includes(name)));
         if(!command || command.dev) return message.channel.send(message.client.langs[channelLanguage].get('invalidCommand'));
         embed = new MessageEmbed()
-            .setColor(message.guild ? (message.guild.me.displayColor || 'RANDOM') : 'RANDOM')
+            .setColor(message.guild ? (message.guild.me.displayColor || 0x8000ff) : 0x8000ff)
             .setAuthor(message.client.langs[channelLanguage].get('helpCommandEmbedTitle', [command.name]), message.client.user.avatarURL({format: 'png', size: 4096}))
             .setDescription(command.description(message.client.langs[channelLanguage]))
             .setFooter(message.client.langs[channelLanguage].get('helpCommandEmbedFooter'))

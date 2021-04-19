@@ -14,7 +14,7 @@ module.exports = {
             case 'botEmbed': return 'I need permission to embed links in this channel';
             case 'botManageMessages': return 'I need permission to manage messages in this channel';
             case 'helpEmbedTitle': return 'Commands help';
-            case 'helpEmbedDescription': return `Use \`${vars[0]}help (command)\` for more info about a specific command\n\n__Note that:__\n- \`(channel)\` = \`<(channel mention)/(channel ID)>\`\n- \`(user)\` = \`<(user mention)/(user ID)>\`\n- \`(role)\` = \`<(role mention)/(role ID)/(role name)>\``;
+            case 'helpEmbedDescription': return `Use \`${vars[0]}help (command)\` for more info about a specific command\n\n__Note that:__\n- \`(channel)\` = \`<(channel mention)/(channel ID)>\`\n- \`(user)\` = \`<(user mention)/(user ID)>\`\n- \`(role)\` = \`<(role mention)/(role ID)/(role name)>\`\n- \`(emoji)\` = \`<(emoji)/(custom emoji name)/(custom emoji ID)>\``;
             case 'helpEmbedFooter': return `${vars[0]} commands | [] = Optional - () = Variable - </> = Either`;
             case 'category0': return 'Commands';
             case 'invalidCommand': return 'This is not a valid command';
@@ -40,6 +40,7 @@ module.exports = {
             case 'permUsage0': return '<allow/deny/default> <(role mention)/(role ID)/"(role name)"> (list of commands)';
             case 'permUsage1': return 'view <(role mention)/(role ID)/"(role name)">';
             case 'ADMINISTRATOR': return 'Administrator';
+            case 'MANAGE_ROLES': return 'Manage Roles';
             case 'invArgs': return `Invalid arguments!\nThe proper usage would be:\n${vars[2].map(e => `\`${vars[0]}${vars[1]} ${e}\``).join('\n')}`;
             case 'permSuccess': return `**${vars[0]}** was ${(vars[1] === 'allow') ? 'allowed to use' : 'denied from using'} these commands`;
             case 'noSpecialPerms': return 'There are no special permissions set to this role';
@@ -59,6 +60,43 @@ module.exports = {
             case 'disabledField': return 'Disabled';
             case 'achieveGuild': return `Congratulations ${vars[0]}! You just achieved the role **${vars[1]}**`;
             case 'achieveDM': return `Congratulations! You just achieved the role **${vars[0]}** in the server **${vars[1]}**`;
+            case 'msgexpDescription': return 'Manages this server\'s xp system';
+            case 'msgexpUsage0': return '<enable/stack> <on/off>';
+            case 'msgexpUsage1': return 'roles set (role) (xp)';
+            case 'msgexpUsage2': return 'roles remove <(role)/all>';
+            case 'msgexpUsage3': return 'user <add/remove/set> (user) (xp)';
+            case 'msgexpUsage4': return 'ignore role <add/remove> (role)';
+            case 'msgexpUsage5': return 'ignore channel <add/remove> (channel)';
+            case 'msgexpUsage6': return 'notify <default/none/dm/(channel)>';
+            case 'msgexpUsage7': return '<view/reset>';
+            case 'xpEnable': return `Server xp system successfully ${(vars[0] === 'on') ? 'enabled': 'disabled'}`
+            case 'xpStack': return `Role stacking successfully ${(vars[0] === 'on') ? 'enabled': 'disabled'}`
+            case 'manageRole': return 'I need permissions to manage this role';
+            case 'sameXp': return 'There is another role being rewarded at this amount of xp';
+            case 'maxXpRoles': return 'Maximum amount of xp roles is 20';
+            case 'setXpRole': return `**${vars[0]}** is now achieveable at **${vars[1]}** xp\nbe aware that members will only get this role when they send new messages`;
+            case 'resetXpRoles': return `All xp roles were removed\nbe aware that these roles won't be automatically removed from members, if you want this, it's recommended that you delete the roles from the server so no member can have it`;
+            case 'removeXpRole': return `**${vars[0]}** was removed from the xp rewards\nbe aware that this role won't be automatically removed from members, if you want this, it's recommended that you delete the role from the server so no member can have it`;
+            case 'setUserXp': return `<@${vars[0]}> now has **${vars[1]}** xp`;
+            case 'xpIgnoreRole': return `The role **${vars[0]}** ${(vars[1] === 'add') ? 'will' : 'won\'t'} be ignored from earning xp`;
+            case 'xpIgnoreChannel': return `Users ${(vars[0] === 'add') ? 'won\'t' : 'will'} be able to earn xp in ${vars[1]}`;
+            case 'notifyDefault': return `New role notifications will be sent ${(vars[0] === 'dm') ? 'on DMs' : 'in the channel where the achievement happened'}`;
+            case 'notifyNone': return 'No new role notifications will be sent';
+            case 'notifyChannel': return `New role notifications will be sent in ${vars[0]}`;
+            case 'notifyDefaultView': return '\`Same channel\`';
+            case 'notifyDMView': return '\`DMs\`';
+            case 'notifyNoneView': return '\`None\`';
+            case 'xpViewEmbedAuthor': return 'Server xp system settings';
+            case 'xpViewEmbedDesc': return `Enabled: \`${vars[0] ? 'on': 'off'}\`\nStacking: \`${vars[1] ? 'off': 'on'}\`\nNotifications: ${vars[2]}`;
+            case 'xpViewRoles': return 'Achieveable roles';
+            case 'xpViewIgnoredRoles': return 'Ignored roles';
+            case 'xpViewIgnoredChannels': return 'Ignored channels';
+            case 'resetXpConfirm': return 'This will **__RESET ALL USERS XP__** to 0, are you sure you want to proceed?';
+            case 'timedOut': return 'Operation timed out';
+            case 'cancelled': return 'Operation cancelled';
+            case 'resetXp': return 'Server xp successfully reset';
+            case 'memberManageRole': return 'You don\'t have permission to manage this role';
+            case 'sendMessages': return 'I need permission to send messages in this channel';
         }
     },
 };

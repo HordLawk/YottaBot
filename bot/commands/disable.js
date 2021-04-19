@@ -47,7 +47,7 @@ module.exports = {
                 channelDoc = await channel.findById(discordChannel.id);
                 if(!channelDoc || !channelDoc.ignoreCommands.length) return message.channel.send(message.client.langs[channelLanguage].get('noDisabledCmds'));
                 const embed = new MessageEmbed()
-                    .setColor(message.guild.me.displayColor || 'RANDOM')
+                    .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor(message.client.langs[channelLanguage].get('disabledEmbedAuthor'), message.guild.iconURL({
                         format: 'png',
                         size: 4096,

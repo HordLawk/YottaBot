@@ -80,7 +80,7 @@ module.exports = {
         if(message.guild && !message.member.permissions.has('ADMINISTRATOR')){
             const roles = roleDocs.filter(e => (e.commandPermissions.id(command.name) && message.member.roles.cache.has(e.roleID)));
             if((!roles.length && command.perm && !message.member.permissions.has(command.perm)) || (roles.length && roles.some(e => !e.commandPermissions.id(command.name).allow) && !roles.some(e => e.commandPermissions.id(command.name).allow))) return message.channel.send(message.client.langs[channelLanguage].get('forbidden'));
-            if(savedChannel && savedChannel.ignoreCommands.includes(command.name)) return message.channel.send(message.client.langs[channelLanguage].get('disabled'));
+            if(savedChannel && savedChannel.ignoreCommands.includes(command.name) && message.guild.me.permissionsIn(message.channel).has('ADD_REACTIONS')) return await message.react('🚫');
         }
         if(command.args && !args.length) return message.channel.send(message.client.langs[channelLanguage].get('noArgs', [message.author, prefix, command.name, command.usage(message.client.langs[channelLanguage])]));
         if(!message.client.cooldowns.has(command.name)) message.client.cooldowns.set(command.name, new Collection());

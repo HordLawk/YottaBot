@@ -18,7 +18,7 @@ module.exports = {
         if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
         if(args.length < 2) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
         const discordChannel = message.guild.channels.cache.get((args[0].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[0]);
-        if(!discordChannel) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+        if(!discordChannel || !discordChannel.isText()) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
         var channelDoc;
         switch(args[1]){
             case 'on':
@@ -49,8 +49,8 @@ module.exports = {
                 const embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor(message.client.langs[channelLanguage].get('disabledEmbedAuthor'), message.guild.iconURL({
-                        format: 'png',
                         size: 4096,
+                        dynamic: true,
                     }))
                     .setDescription(message.client.langs[channelLanguage].get('disabledEmbedDesc', [discordChannel]))
                     .setTimestamp()

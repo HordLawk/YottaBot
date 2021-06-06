@@ -5,6 +5,4 @@ const userSchema = new Schema({
     blacklisted: Boolean,
 });
 
-const user = model('user', userSchema);
-
-module.exports = user;
+module.exports = model('user', userSchema);

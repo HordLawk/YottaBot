@@ -14,7 +14,7 @@ module.exports = {
             case 'botEmbed': return 'I need permission to embed links in this channel';
             case 'botManageMessages': return 'I need permission to manage messages in this channel';
             case 'helpEmbedTitle': return 'Commands help';
-            case 'helpEmbedDescription': return `Use \`${vars[0]}help (command)\` for more info about a specific command\n\n__Note that:__\n- \`(channel)\` = \`<(channel mention)/(channel ID)>\`\n- \`(user)\` = \`<(user mention)/(user ID)>\`\n- \`(role)\` = \`<(role mention)/(role ID)/(role name)>\`\n- \`(emoji)\` = \`<(emoji)/(custom emoji name)/(custom emoji ID)>\``;
+            case 'helpEmbedDescription': return `[**Support server**](https://discord.gg/${vars[0]})\n[**Invite me**](${vars[1]})\nUse \`${vars[2]}help (command)\` for more info about a specific command\n\n__Note that:__\n- \`(channel)\` = \`<(channel mention)/(channel ID)>\`\n- \`(user)\` = \`<(user mention)/(user ID)>\`\n- \`(role)\` = \`<(role mention)/(role ID)/(role name)>\`\n- \`(emoji)\` = \`<(emoji)/(custom emoji name)/(custom emoji ID)>\``;
             case 'helpEmbedFooter': return `${vars[0]} commands | [] = Optional - () = Variable - </> = Either`;
             case 'category0': return 'Commands';
             case 'invalidCommand': return 'This is not a valid command';
@@ -64,7 +64,7 @@ module.exports = {
             case 'msgexpUsage0': return '<enable/stack> <on/off>';
             case 'msgexpUsage1': return 'roles set (role) (xp)';
             case 'msgexpUsage2': return 'roles remove <(role)/all>';
-            case 'msgexpUsage3': return 'user <add/remove/set> (user) (xp)';
+            case 'msgexpUsage3': return 'user <add/remove/set> (xp) (list of users)';
             case 'msgexpUsage4': return 'ignore role <add/remove> (role)';
             case 'msgexpUsage5': return 'ignore channel <add/remove> (channel)';
             case 'msgexpUsage6': return 'notify <default/none/dm/(channel)>';
@@ -77,7 +77,7 @@ module.exports = {
             case 'setXpRole': return `**${vars[0]}** is now achieveable at **${vars[1]}** xp\nbe aware that members will only get this role when they send new messages`;
             case 'resetXpRoles': return `All xp roles were removed\nbe aware that these roles won't be automatically removed from members, if you want this, it's recommended that you delete the roles from the server so no member can have it`;
             case 'removeXpRole': return `**${vars[0]}** was removed from the xp rewards\nbe aware that this role won't be automatically removed from members, if you want this, it's recommended that you delete the role from the server so no member can have it`;
-            case 'setUserXp': return `<@${vars[0]}> now has **${vars[1]}** xp`;
+            case 'setUserXp': return 'Xp values defined';
             case 'xpIgnoreRole': return `The role **${vars[0]}** ${(vars[1] === 'add') ? 'will' : 'won\'t'} be ignored from earning xp`;
             case 'xpIgnoreChannel': return `Users ${(vars[0] === 'add') ? 'won\'t' : 'will'} be able to earn xp in ${vars[1]}`;
             case 'notifyDefault': return `New role notifications will be sent ${(vars[0] === 'dm') ? 'on DMs' : 'in the channel where the achievement happened'}`;
@@ -97,6 +97,31 @@ module.exports = {
             case 'resetXp': return 'Server xp successfully reset';
             case 'memberManageRole': return 'You don\'t have permission to manage this role';
             case 'sendMessages': return 'I need permission to send messages in this channel';
+            case 'rolemenuDescription': return 'Creates a message where users can react to claim one or more roles';
+            case 'rolemenuUsage0': return 'create (channel) <(role mention)/(role ID)/"(role name)"> (emoji) [(list of roles and emojis)] [toggle]';
+            case 'rolemenuUsage1': return 'edit (menu ID) <(role mention)/(role ID)/"(role name)"> (emoji) [(list of roles and emojis)] [toggle]';
+            case 'maxRolesMenu': return 'The maximum amount of roles per menu is 40';
+            case 'botReactions': return 'I need permission to add reactions in this channel';
+            case 'maxRolemenus': return 'The maximum amount of menus per server is 20';
+            case 'uniqueEmoji': return 'Each emoji can only be used once per menu';
+            case 'loading': return 'Loading...';
+            case 'rolemenuEmbedAuthor': return 'React to claim a role';
+            case 'rolemenuCreated': return 'Rolemenu successfully created';
+            case 'menu404': return 'Menu not found';
+            case 'rolemenuEdited': return 'Rolemenu successfully edited';
+            case 'configsDescription': return 'General server settings';
+            case 'configsUsage0': return 'prefix (new prefix)';
+            case 'configsUsage1': return 'language <en/pt>';
+            case 'configsUsage2': return 'view';
+            case 'longPrefix': return 'A prefix can\'t have more than 10 characters';
+            case 'newPrefix': return 'Server prefix updated';
+            case 'lang404': return 'Language not supported';
+            case 'newLang': return 'Server language updated';
+            case 'configsEmbedAuthor': return 'Server settings';
+            case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\nLanguage: \`${vars[1]}\`\nLog attachments: \`${vars[2] ? 'on' : 'off'}\``;
+            case 'betaCommand': return 'This command is currently only available for servers that enabled open beta features in the bot settings';
+            case 'premiumCommand': return `This command is a premium feature, use \`${vars[0]}premium\` for more information on becoming premium`;
+            case 'botWebhooks': return 'I need permission to manage webhooks in this channel';
         }
     },
 };

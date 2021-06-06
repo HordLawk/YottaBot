@@ -10,7 +10,7 @@ module.exports = {
     description: lang => lang.get('msgexpDescription'),
     aliases: ['lvlup', 'msgexp', 'messagexp', 'messageexp'],
     usage: lang => [lang.get('msgexpUsage0'), lang.get('msgexpUsage1'), lang.get('msgexpUsage2'), lang.get('msgexpUsage3'), lang.get('msgexpUsage4'), lang.get('msgexpUsage5'), lang.get('msgexpUsage6'), lang.get('msgexpUsage7')],
-    example: ['enable on', 'roles add @Active 1440', 'roles remove @Active', 'user add @LordHawk#0572 100', 'ignore role @Mods', 'ignore channel #spam', 'notify #levelup'],
+    example: ['enable on', 'roles add @Active 1440', 'roles remove @Active', 'user add 100 @LordHawk#0572', 'ignore role remove @Mods', 'ignore channel add #spam', 'notify #levelup'],
     cooldown: 5,
     categoryID: 0,
     args: true,
@@ -87,42 +87,50 @@ module.exports = {
                 }
                 break;
             case 'user':
-                if(!['add', 'remove', 'set'].includes(args[1]) || isNaN(parseInt(args[3])) || !isFinite(parseInt(args[3])) || (parseInt(args[3]) < 0)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                let mention = args[2].match(/^(?:<@)?!?(\d{17,19})>?$/);
-                if(!mention) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                let memberDoc = await member.findOne({
+                if(!['add', 'remove', 'set'].includes(args[1]) || isNaN(parseInt(args[2])) || !isFinite(parseInt(args[2])) || (parseInt(args[2]) < 0)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                let mentions = args.slice(3, 13).join(' ').match(/\b\d{17,19}\b/g);
+                if(!mentions) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                let memberDocs = await member.find({
                     guild: message.guild.id,
-                    userID: mention[1],
+                    userID: {$in: mentions},
                 });
-                let discordMember = message.guild.members.cache.get(mention[1]) || await message.guild.members.fetch(mention[1]).catch(() => null);
-                if(!memberDoc){
-                    if(!discordMember) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                    memberDoc = new member({
-                        guild: message.guild.id,
-                        userID: discordMember.id,
-                    });
-                }
+                let members = await message.guild.members.fetch({user: mentions});
+                let query;
                 switch(args[1]){
                     case 'add':
-                        memberDoc.xp += parseInt(args[3]);
+                        query = {$inc: {xp: parseInt(args[2])}};
                         break;
                     case 'remove':
-                        memberDoc.xp -= (parseInt(args[3]) > memberDoc.xp) ? memberDoc.xp : parseInt(args[3]);
+                        query = {$inc: {xp: -(parseInt(args[2]))}};
                         break;
                     case 'set':
-                        memberDoc.xp = parseInt(args[3]);
+                        query = {$set: {xp: parseInt(args[2])}};
                         break;
                 }
-                await memberDoc.save();
-                if(discordMember){
-                    let roleDocs = await role.find({
+                await member.updateMany({
+                    guild: message.guild.id,
+                    userID: {$in: memberDocs.filter(e => !members.some(ee => (e.userID === ee.id))).map(e => e.userID).concat(members.map(e => e.id))},
+                }, query, {
+                    upsert: true,
+                    setDefaultsOnInsert: true,
+                });
+                if(args[1] === 'remove') await member.updateMany({
+                    guild: message.guild.id,
+                    xp: {$lt: 0},
+                }, {$set: {xp: 0}});
+                let roleDocs = await role.find({
+                    guild: message.guild.id,
+                    roleID: {$in: message.guild.roles.cache.filter(e => e.editable).map(e => e.id)},
+                    xp: {$ne: null},
+                }).sort({xp: -1});
+                if(roleDocs.length){
+                    let discordMemberDocs = await member.find({
                         guild: message.guild.id,
-                        roleID: {$in: message.guild.roles.cache.filter(e => e.editable).map(e => e.id)},
-                        xp: {$ne: null},
-                    }).sort({xp: -1});
-                    if(roleDocs.length) await discordMember.roles.set(discordMember.roles.cache.filter(e => !roleDocs.some(ee => (e.id === ee.roleID))).map(e => e.id).concat(roleDocs.filter(e => (e.xp <= memberDoc.xp)).slice(0, message.client.guildData.get(message.guild.id).dontStack ? 1 : undefined).map(e => e.roleID)));
+                        userID: {$in: members.map(e => e.id)},
+                    })
+                    for(let discordMemberDoc of discordMemberDocs) await members.get(discordMemberDoc.userID).roles.set(members.get(discordMemberDoc.userID).roles.cache.filter(e => !roleDocs.some(ee => (e.id === ee.roleID))).map(e => e.id).concat(roleDocs.filter(e => (e.xp <= discordMemberDoc.xp)).slice(0, message.client.guildData.get(message.guild.id).dontStack ? 1 : undefined).map(e => e.roleID)));
                 }
-                message.channel.send(message.client.langs[channelLanguage].get('setUserXp', [memberDoc.userID, memberDoc.xp]));
+                message.channel.send(message.client.langs[channelLanguage].get('setUserXp'));
                 break;
             case 'ignore':
                 if(!['role', 'channel'].includes(args[1]) || !['add', 'remove'].includes(args[2])) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
@@ -140,7 +148,7 @@ module.exports = {
                 }
                 else{
                     let discordChannel = message.guild.channels.cache.get((args[3].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[3]);
-                    if(!discordChannel) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                    if(!discordChannel || !['text', 'news', 'voice'].includes(discordChannel.type)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                     await channel.findByIdAndUpdate(discordChannel.id, {$set: {ignoreXp: (args[2] === 'add')}}, {
                         upsert: true,
                         setDefaultsOnInsert: true,
@@ -164,7 +172,7 @@ module.exports = {
                         break;
                     default:
                         let discordChannel = message.guild.channels.cache.get((args[1].match(/<#(\d{17,19})>/) || [])[1]) || message.client.channels.cache.get(args[1]);
-                        if(!discordChannel) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                        if(!discordChannel || !discordChannel.isText()) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                         if(!message.guild.me.permissionsIn(discordChannel).has('SEND_MESSAGES')) return message.channel.send(message.client.langs[channelLanguage].get('sendMessages'));
                         await guild.findByIdAndUpdate(message.guild.id, {$set: {xpChannel: discordChannel.id}});
                         message.client.guildData.get(message.guild.id).xpChannel = discordChannel.id;
@@ -189,8 +197,8 @@ module.exports = {
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor(message.client.langs[channelLanguage].get('xpViewEmbedAuthor'), message.guild.iconURL({
-                        format: 'png',
                         size: 4096,
+                        dynamic: true,
                     }))
                     .setDescription(message.client.langs[channelLanguage].get('xpViewEmbedDesc', [message.client.guildData.get(message.guild.id).gainExp, message.client.guildData.get(message.guild.id).dontStack, notifs]))
                     .setTimestamp();

@@ -5,9 +5,9 @@ const {MessageEmbed} = require('discord.js');
 module.exports = {
     active: true,
     name: 'rolemenu',
-    description: lang => 'Creates a message where users can react to claim one or more roles',
+    description: lang => lang.get('rolemenuDescription'),
     aliases: ['rolesmenu'],
-    usage: lang => ['create (channel) <(role mention)/(role ID)/"(role name)"> (emoji) [(list of roles and emojis)] [toggle]', 'edit (menu ID) <(role mention)/(role ID)/"(role name)"> (emoji) [(list of roles and emojis)] [toggle]'],
+    usage: lang => [lang.get('rolemenuUsage0'), lang.get('rolemenuUsage1')],
     example: ['create #colors @Red 🔴 @Green 🟢 @Blue 🔵 toggle', 'edit 7 @Red 🔴 @Green 🟢 @Blue 🔵 @Yellow 🟡 toggle'],
     cooldown: 10,
     categoryID: 0,
@@ -21,27 +21,27 @@ module.exports = {
         var toggle;
         if(toggle = (args[args.length - 1] === 'toggle')) args.splice(-1, 1);
         if((args.length % 2) != 0) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-        if(args.length > 42) return message.channel.send('The maximum amount of roles per menu is 40');
+        if(args.length > 42) return message.channel.send(message.client.langs[channelLanguage].get('maxRolesMenu'));
         if(args[0] === 'create'){
             let discordChannel = message.guild.channels.cache.get((args[1].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
-            if(!discordChannel) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+            if(!discordChannel || !discordChannel.isText()) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
             if(!message.guild.me.permissionsIn(discordChannel).has('SEND_MESSAGES')) return message.channel.send(message.client.langs[chanenlLanguage].get('sendMessages'));
-            if(!message.guild.me.permissionsIn(discordChannel).has('ADD_REACTIONS')) return message.channel.send('I need permission to add reactions in this channel');
+            if(!message.guild.me.permissionsIn(discordChannel).has('ADD_REACTIONS')) return message.channel.send(message.client.langs[channelLanguage].get('botReactions'));
             if(!message.guild.me.permissionsIn(discordChannel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
             let menus = await menu.find({
                 guild: message.guild.id,
                 channelID: {$in: message.client.channels.cache.map(e => e.id)},
             });
             for(let menuDoc of menus) await message.client.channels.cache.get(menuDoc.channelID).messages.fetch(menuDoc.messageID).catch(() => null);
-            if(menus.filter(e => message.client.channels.cache.get(e.channelID).messages.cache.has(e.messageID)) >= 20) return message.channel.send('The maximum amount of menus per server is 20');
+            if(menus.filter(e => message.client.channels.cache.get(e.channelID).messages.cache.has(e.messageID)) >= 20) return message.channel.send(message.client.langs[channelLanguage].get('maxRolemenus'));
             let roles = args.slice(2).filter((e, i) => ((i % 2) === 0)).map(e => (message.guild.roles.cache.get((e.match(/^(?:<@&)?(\d{17,19})>?$/) || [])[1]) || message.guild.roles.cache.find(ee => (ee.name === e.replace(/"/g, ''))) || message.guild.roles.cache.find(ee => (ee.name.startsWith(e.replace(/"/g, ''))))));
             if(roles.some(e => (!e || (e.id === message.guild.id)))) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
             if(roles.some(e => (!e.editable || e.managed))) return message.channel.send(message.client.langs[channelLanguage].get('manageRole'));
-            if(roles.some(e => (e.position >= message.member.roles.highest.position))) return message.channel.send(sage.client.langs[channelLanguage].get('memberManageRole'));
+            if(roles.some(e => (e.position >= message.member.roles.highest.position))) return message.channel.send(message.client.langs[channelLanguage].get('memberManageRole'));
             let emojis = args.slice(2).filter((e, i) => ((i % 2) != 0)).map(e => (message.guild.emojis.cache.get((e.match(/^(?:<:\w+:)?(\d{17,19})>?$/) || [])[1]) || message.guild.emojis.cache.find(ee => ((ee.name === e) || ee.name.startsWith(e))) || (e.match(/\p{Extended_Pictographic}/ug) || [])[0]));
             if(emojis.some(e => (!e || (e.id && (!e.available || e.managed))))) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-            if(emojis.some(e => (emojis.filter(ee => ((ee.id || ee) === (e.id || e))).length > 1))) return message.channel.send('Each emoji can only be used once per menu');
-            let loadmsg = await message.channel.send('Loading...');
+            if(emojis.some(e => (emojis.filter(ee => ((ee.id || ee) === (e.id || e))).length > 1))) return message.channel.send(message.client.langs[channelLanguage].get('uniqueEmoji'));
+            let loadmsg = await message.channel.send(message.client.langs[channelLanguage].get('loading'));
             await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterMenus: 1}});
             let newMenu = new menu({
                 id: ++message.client.guildData.get(message.guild.id).counterMenus,
@@ -55,9 +55,9 @@ module.exports = {
             });
             let embed = new MessageEmbed()
                 .setColor(message.guild.me.displayColor || 0x8000ff)
-                .setAuthor('React to claim a role', message.guild.iconURL({
-                    format: 'png',
+                .setAuthor(message.client.langs[channelLanguage].get('rolemenuEmbedAuthor'), message.guild.iconURL({
                     size: 4096,
+                    dynamic: true,
                 }))
                 .setDescription(roles.map((e, i) => `${emojis[i]} - ${e}`))
                 .setFooter(`ID: ${newMenu.id}`)
@@ -66,7 +66,7 @@ module.exports = {
             newMenu.messageID = msg.id;
             await newMenu.save();
             for(let emoji of emojis) await msg.react(emoji);
-            loadmsg.edit('Rolemenu successfully created');
+            loadmsg.edit(message.client.langs[channelLanguage].get('rolemenuCreated'));
         }
         else{
             let menuDoc = await menu.findOne({
@@ -74,12 +74,12 @@ module.exports = {
                 guild: message.guild.id,
                 channelID: {$in: message.client.channels.cache.map(e => e.id)},
             });
-            if(!menuDoc) return message.channel.send('Menu not found');
+            if(!menuDoc) return message.channel.send(message.client.langs[channelLanguage].get('menu404'));
             let msg = await message.client.channels.cache.get(menuDoc.channelID).messages.fetch(menuDoc.messageID).catch(() => null);
-            if(!msg) return message.channel.send('Menu not found');
+            if(!msg) return message.channel.send(message.client.langs[channelLanguage].get('menu404'));
             let discordChannel = message.client.channels.cache.get(menuDoc.channelID);
             if(!message.guild.me.permissionsIn(discordChannel).has('SEND_MESSAGES')) return message.channel.send(message.client.langs[chanenlLanguage].get('sendMessages'));
-            if(!message.guild.me.permissionsIn(discordChannel).has('ADD_REACTIONS')) return message.channel.send('I need permission to add reactions in this channel');
+            if(!message.guild.me.permissionsIn(discordChannel).has('ADD_REACTIONS')) return message.channel.send(message.client.langs[channelLanguage].get('botReactions'));
             if(!message.guild.me.permissionsIn(discordChannel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
             if(!message.guild.me.permissionsIn(discordChannel).has('MANAGE_MESSAGES')) return message.channel.send(message.client.langs[channelLanguage].get('botManageMessages'));
             let roles = args.slice(2).filter((e, i) => ((i % 2) === 0)).map(e => (message.guild.roles.cache.get((e.match(/^(?:<@&)?(\d{17,19})>?$/) || [])[1]) || message.guild.roles.cache.find(ee => (ee.name === e.replace(/"/g, ''))) || message.guild.roles.cache.find(ee => (ee.name.startsWith(e.replace(/"/g, ''))))));
@@ -88,8 +88,8 @@ module.exports = {
             if(roles.some(e => (e.position >= message.member.roles.highest.position))) return message.channel.send(sage.client.langs[channelLanguage].get('memberManageRole'));
             let emojis = args.slice(2).filter((e, i) => ((i % 2) != 0)).map(e => (message.guild.emojis.cache.get((e.match(/^(?:<:\w+:)?(\d{17,19})>?$/) || [])[1]) || message.guild.emojis.cache.find(ee => ((ee.name === e) || ee.name.startsWith(e))) || (e.match(/\p{Extended_Pictographic}/ug) || [])[0]));
             if(emojis.some(e => (!e || (e.id && (!e.available || e.managed))))) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-            if(emojis.some(e => (emojis.filter(ee => ((ee.id || ee) === (e.id || e))).length > 1))) return message.channel.send('Each emoji can only be used once per menu');
-            let loadmsg = await message.channel.send('Loading...');
+            if(emojis.some(e => (emojis.filter(ee => ((ee.id || ee) === (e.id || e))).length > 1))) return message.channel.send(message.client.langs[channelLanguage].get('uniqueEmoji'));
+            let loadmsg = await message.channel.send(message.client.langs[channelLanguage].get('loading'));
             menuDoc.toggle = toggle;
             menuDoc.emojis = emojis.map((e, i) => ({
                 _id: (e.identifier || encodeURIComponent(e)),
@@ -97,9 +97,9 @@ module.exports = {
             }));
             let embed = new MessageEmbed()
                 .setColor(message.guild.me.displayColor || 0x8000ff)
-                .setAuthor('React to claim a role', message.guild.iconURL({
-                    format: 'png',
+                .setAuthor(message.client.langs[channelLanguage].get('rolemenuEmbedAuthor'), message.guild.iconURL({
                     size: 4096,
+                    dynamic: true,
                 }))
                 .setDescription(roles.map((e, i) => `${emojis[i]} - ${e}`))
                 .setFooter(`ID: ${menuDoc.id}`)
@@ -108,7 +108,7 @@ module.exports = {
             await msg.edit(embed);
             for(let emoji of emojis) await msg.react(emoji);
             await menuDoc.save();
-            loadmsg.edit('Rolemenu successfully edited');
+            loadmsg.edit(message.client.langs[channelLanguage].get('rolemenuEdited'));
         }
     },
 };

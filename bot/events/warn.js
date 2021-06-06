@@ -1,4 +1,4 @@
 module.exports = {
     name: 'warn',
-    execute: e => console.warn(e),
+    execute: async e => console.warn(e),
 };

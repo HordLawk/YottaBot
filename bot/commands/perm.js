@@ -72,8 +72,8 @@ module.exports = {
                 const embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor(message.client.langs[channelLanguage].get('permsEmbedAuthor'), message.guild.iconURL({
-                        format: 'png',
                         size: 4096,
+                        dynamic: true,
                     }))
                     .setDescription(message.client.langs[channelLanguage].get('permsEmbedDesc', [discordRole]))
                     .setTimestamp();

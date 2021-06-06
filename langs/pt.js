@@ -14,7 +14,7 @@ module.exports = {
             case 'botEmbed': return 'Eu preciso de permissão para enviar links nesse canal';
             case 'botManageMessages': return 'Eu preciso de permissão para gerenciar mensagens nesse canal';
             case 'helpEmbedTitle': return 'Ajuda de comandos';
-            case 'helpEmbedDescription': return `Use \`${vars[0]}help (comando)\` para mais informações sobre um comando específico\n\n__Note que:__\n- \`(canal)\` = \`<(menção de canal)/(ID de canal)>\`\n- \`(usuário)\` = \`<(menção de usuário)/(ID de usuário)>\`\n- \`(cargo)\` = \`<(menção de cargo)/(ID de cargo)/(nome de cargo)>\`\n- \`(emoji)\` = \`<(emoji)/(nome de emoji personalizado)/(ID de emoji personalizado)>\``;
+            case 'helpEmbedDescription': return `[**Servidor de suporte**](https://discord.gg/${vars[0]})\n[**Me convide**](${vars[1]})\nUse \`${vars[2]}help (comando)\` para mais informações sobre um comando específico\n\n__Note que:__\n- \`(canal)\` = \`<(menção de canal)/(ID de canal)>\`\n- \`(usuário)\` = \`<(menção de usuário)/(ID de usuário)>\`\n- \`(cargo)\` = \`<(menção de cargo)/(ID de cargo)/(nome de cargo)>\`\n- \`(emoji)\` = \`<(emoji)/(nome de emoji personalizado)/(ID de emoji personalizado)>\``;
             case 'helpEmbedFooter': return `${vars[0]} comandos | [] = Opcional - () = Variável - </> = Qualquer`;
             case 'category0': return 'Comandos';
             case 'invalidCommand': return 'Esse não é um comando válido';
@@ -64,7 +64,7 @@ module.exports = {
             case 'msgexpUsage0': return '<enable/stack> <on/off>';
             case 'msgexpUsage1': return 'roles set (cargo) (xp)';
             case 'msgexpUsage2': return 'roles remove <(cargo)/all>';
-            case 'msgexpUsage3': return 'user <add/remove/set> (usuário) (xp)';
+            case 'msgexpUsage3': return 'user <add/remove/set> (xp) (lista de usuários)';
             case 'msgexpUsage4': return 'ignore role <add/remove> (cargo)';
             case 'msgexpUsage5': return 'ignore channel <add/remove> (canal)';
             case 'msgexpUsage6': return 'notify <default/none/dm/(canal)>';
@@ -77,7 +77,7 @@ module.exports = {
             case 'setXpRole': return `**${vars[0]}** definido como recompensa para **${vars[1]}** xp\nesteja ciente que membros apenas receberão esse cargo ao enviar novas mensagens`;
             case 'resetXpRoles': return `Todos os cargos de xp foram removidos\nesteja ciente que esses cargos não serão removidos automaticamente dos membros, se você quiser isso, é recomendado deletar os cargos do servidor para que nenhum membro continue com eles`;
             case 'removeXpRole': return `**${vars[0]}** foi removido das recompensas de xp\nesteja ciente que esse cargo não será removido automaticamente dos membros, se você quiser isso, é recomendado deletar o cargo do servidor para que nenhum membro continue com ele`;
-            case 'setUserXp': return `<@${vars[0]}> agora tem **${vars[1]}** xp`;
+            case 'setUserXp': return 'Novas quantias de xp definidas';
             case 'xpIgnoreRole': return `O cargo **${vars[0]}** ${(vars[1] === 'add') ? 'não vai' : 'vai'} receber xp`;
             case 'xpIgnoreChannel': return `Usuários ${(vars[0] === 'add') ? 'não vão' : 'vão'} receber xp em ${vars[1]}`;
             case 'notifyDefault': return `Notificações de novos cargos de xp serão enviadas ${(vars[0] === 'dm') ? 'nas MDs' : 'no canal onde o cargo foi alcançado'}`;
@@ -97,6 +97,31 @@ module.exports = {
             case 'resetXp': return 'O xp do servidor foi redefinido com sucesso';
             case 'memberManageRole': return 'Você não tem permissão para gerenciar esse cargo';
             case 'sendMessages': return 'Eu preciso de permissão para enviar mensagens nesse canal';
+            case 'rolemenuDescription': return 'Cria uma mensagem onde usuários podem reagir para reivindicar um ou mais cargos';
+            case 'rolemenuUsage0': return 'create (canal) <(menção de cargo)/(ID de cargo)/"(nome de cargo)"> (emoji) [(lista de cargos e emojis)] [toggle]';
+            case 'rolemenuUsage1': return 'edit (ID de menu) <(menção de cargo)/(ID de cargo)/"(nome de cargo)"> (emoji) [(lista de cargos e emojis)] [toggle]';
+            case 'maxRolesMenu': return 'O número máximo de cargos por menu é 40';
+            case 'botReactions': return 'Eu preciso de permissão para adicionar reações nesse canal';
+            case 'maxRolemenus': return 'O número máximo de menus por servidor é 20';
+            case 'uniqueEmoji': return 'Cada emoji só pode ser usado uma vez por menu';
+            case 'loading': return 'Carregando...';
+            case 'rolemenuEmbedAuthor': return 'Reaja para reivindicar um cargo';
+            case 'rolemenuCreated': return 'Rolemenu criada com sucesso';
+            case 'menu404': return 'Menu não encotrado';
+            case 'rolemenuEdited': return 'Rolemenu editado com sucesso';
+            case 'configsDescription': return 'Configurações gerais do servidor';
+            case 'configsUsage0': return 'prefix (novo prefixo)';
+            case 'configsUsage1': return 'language <en/pt>';
+            case 'configsUsage2': return 'view';
+            case 'longPrefix': return 'O prefixo não pode conter mais de 10 caracteres';
+            case 'newPrefix': return 'Prefixo do servidor atualizado';
+            case 'lang404': return 'Idioma não suportado';
+            case 'newLang': return 'Idioma do servidor atualizado';
+            case 'configsEmbedAuthor': return 'Configurações do servidor';
+            case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\nIdioma: \`${vars[1]}\`\nRegistrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\``;
+            case 'betaCommand': return 'Esse comando atualmente está disponível apenas para servidor que ativaram funcionalidade beta nas configurações do bot';
+            case 'premiumCommand': return `Esse comando é uma funcionalidade premium, use \`${vars[0]}premium\` para mais informações sobre se tornar premium`;
+            case 'botWebhooks': return 'Eu preciso de permissão para gerenciar webhooks nesse canal';
         }
     },
 };

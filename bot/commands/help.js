@@ -1,4 +1,4 @@
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -9,16 +9,20 @@ module.exports = {
     example: ['ping'],
     cooldown: 5,
     categoryID: 0,
-    execute: (message, args) => {
+    execute: async (message, args) => {
         const channelLanguage = message.guild ? message.client.guildData.get(message.guild.id).language : 'en';
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
         const prefix = message.guild ? message.client.guildData.get(message.guild.id).prefix : message.client.configs.defaultPrefix;
         let embed;
         if(!args.length){
+            let perms = await message.client.generateInvite({permissions: Permissions.ALL});
             embed = new MessageEmbed()
                 .setColor(message.guild ? (message.guild.me.displayColor || 0x8000ff) : 0x8000ff)
-                .setAuthor(message.client.langs[channelLanguage].get('helpEmbedTitle'), message.client.user.avatarURL({format: 'png', size: 4096}))
-                .setDescription(message.client.langs[channelLanguage].get('helpEmbedDescription', [prefix]))
+                .setAuthor(message.client.langs[channelLanguage].get('helpEmbedTitle'), message.client.user.avatarURL({
+                    size: 4096,
+                    dynamic: true,
+                }))
+                .setDescription(message.client.langs[channelLanguage].get('helpEmbedDescription', [message.client.configs.support, perms, prefix]))
                 .addField(message.client.langs[channelLanguage].get('category0'), message.client.commands.filter(command => (!command.dev && (command.categoryID == 0))).map(command => `\`${command.name}\``).join(' '))
                 .setFooter(message.client.langs[channelLanguage].get('helpEmbedFooter', [message.client.commands.filter(command => !command.dev).size]))
                 .setTimestamp();
@@ -29,7 +33,10 @@ module.exports = {
         if(!command || command.dev) return message.channel.send(message.client.langs[channelLanguage].get('invalidCommand'));
         embed = new MessageEmbed()
             .setColor(message.guild ? (message.guild.me.displayColor || 0x8000ff) : 0x8000ff)
-            .setAuthor(message.client.langs[channelLanguage].get('helpCommandEmbedTitle', [command.name]), message.client.user.avatarURL({format: 'png', size: 4096}))
+            .setAuthor(message.client.langs[channelLanguage].get('helpCommandEmbedTitle', [command.name]), message.client.user.avatarURL({
+                size: 4096,
+                dynamic: true,
+            }))
             .setDescription(command.description(message.client.langs[channelLanguage]))
             .setFooter(message.client.langs[channelLanguage].get('helpCommandEmbedFooter'))
             .setTimestamp();

@@ -3,19 +3,13 @@ const {defaultPrefix} = require('../bot/configs.js');
 
 const guildSchema = new Schema({
     _id: String,
-    actionlogs: {
-        type: new Schema({
-            newchannel: String,
-            editchannel: String,
-            delchannel: String,
-            editmsg: String,
-            delmsg: String,
-            newemoji: String,
-            editemoji: String,
-            delemoji: String,
-        }),
-        default: () => ({}),
-    },
+    actionlogs: [new Schema({
+        _id: String,
+        hookID: String,
+        hookToken: String,
+    })],
+    defaultLogsHookID: String,
+    defaultLogsHookToken: String,
     modlogs: {
         type: new Schema({
             warn: String,
@@ -35,7 +29,6 @@ const guildSchema = new Schema({
         default: true,
     },
     globalBan: Boolean,
-    dmInfo: Boolean,
     pruneBan: Boolean,
     maxMute: {
         type: Number,
@@ -60,6 +53,10 @@ const guildSchema = new Schema({
         type: String,
         default: 'current',
     },
+    alpha: Boolean,
+    premium: Boolean,
+    partner: Boolean,
+    logAttachments: Boolean,
 });
 
 module.exports = model("guild", guildSchema);

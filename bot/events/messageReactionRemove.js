@@ -4,7 +4,7 @@ module.exports = {
     name: 'messageReactionRemove',
     execute: async (messageReaction, user) => {
         if(messageReaction.partial) await messageReaction.fetch();
-        if(!messageReaction.message.guild || !messageReaction.message.guild.available || user.bot) return;
+        if(!messageReaction.message.guild || !messageReaction.message.guild.available || user.bot || !messageReaction.message.client.guildData.has(messageReaction.message.guild.id)) return;
         const menuDoc = await menu.findOne({
             guild: messageReaction.message.guild.id,
             channelID: messageReaction.message.channel.id,

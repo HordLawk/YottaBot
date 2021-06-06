@@ -4,5 +4,5 @@ module.exports = {
     dev: true,
     args: true,
     usage: () => '(code)',
-    execute: message => eval(message.content.replace(/^\S+\s+/, '')),
+    execute: async message => eval(message.content.replace(/^\S+\s+/, '')),
 };

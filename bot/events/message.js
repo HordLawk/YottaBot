@@ -74,8 +74,8 @@ module.exports = {
         if(userDoc && userDoc.blacklisted) return;
         const [commandName, ...args] = message.content.slice(prefix.length).toLowerCase().split(/\s+/g);
         const command = message.client.commands.get(commandName) || message.client.commands.find(cmd => (cmd.aliases && cmd.aliases.includes(commandName)));
-        if(!command || (command.dev && (message.author.id != message.client.configs.devid)) || (command.alpha && !message.client.guildData.get(message.guild.id).alpha)) return;
-        if(message.client.configs.maintenance && (message.author.id != message.client.configs.devid)) return message.channel.send(message.client.langs[channelLanguage].get('maintenance')).catch(() => null);
+        if(!command || (command.dev && (message.author.id != message.client.configs.owner.id)) || (command.alpha && !message.client.guildData.get(message.guild.id).alpha)) return;
+        if(message.client.configs.maintenance && (message.author.id != message.client.configs.owner.id)) return message.channel.send(message.client.langs[channelLanguage].get('maintenance')).catch(() => null);
         if(command.guildOnly && !message.guild) return message.channel.send(message.client.langs[channelLanguage].get('guildOnly'));
         if(command.beta && !message.client.guildData.get(message.guild.id).beta) return message.channel.send(message.client.langs[channelLanguage].get('betaCommand')).catch(() => null);
         if(command.premium && !message.client.guildData.get(message.guild.id).premium && !message.client.guildData.get(message.guild.id).partner) return message.channel.send(message.client.langs[channelLanguage].get('premiumCommand', [prefix])).catch(() => null);
@@ -89,7 +89,7 @@ module.exports = {
         const now = Date.now();
         const timestamps = message.client.cooldowns.get(command.name);
         const cooldownAmount = command.cooldown * 1000;
-        if(timestamps.has(message.author.id) && (message.author.id != message.client.configs.devid)){
+        if(timestamps.has(message.author.id) && (message.author.id != message.client.configs.owner.id)){
             const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
             if(now < expirationTime){
                 const timeLeft = (expirationTime - now) / 1000;

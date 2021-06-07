@@ -30,19 +30,19 @@ module.exports = {
                 message.channel.send(message.client.langs[channelLanguage].get('newLang'));
                 break;
             case 'logattachments':
-                if(!['on', 'off'].includes(args[1])) return message.channel.send('Choose to turn this setting `on` or `off`');
+                if(!['on', 'off'].includes(args[1])) return message.channel.send(message.client.langs[channelLanguage].get('logattachmentsBadArgs'));
                 if(args[1] === 'on'){
                     let hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookID || message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookToken || message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
-                    if(!hook) return message.channel.send('Choose a channel to log deleted messages first');
-                    if(!message.guild.channels.cache.get(hook.channelID).nsfw) return message.channel.send('To use this settings your deleted messages log channel needs to be set to NSFW');
+                    if(!hook) return message.channel.send(message.client.langs[channelLanguage].get('logattachmentsNoHook'));
+                    if(!message.guild.channels.cache.get(hook.channelID).nsfw) return message.channel.send(message.client.langs[channelLanguage].get('logattachmentsNoNSFW'));
                     await guild.findByIdAndUpdate(message.guild.id, {$set: {logAttachments: true}});
                     message.client.guildData.get(message.guild.id).logAttachments = true;
-                    message.channel.send('Attachments will be logged');
+                    message.channel.send(message.client.langs[channelLanguage].get('logattachmentsOnSuccess'));
                 }
                 else{
                     await guild.findByIdAndUpdate(message.guild.id, {$set: {logAttachments: false}});
                     message.client.guildData.get(message.guild.id).logAttachments = false;
-                    message.channel.send('Attachments will not be logged');
+                    message.channel.send(message.client.langs[channelLanguage].get('logattachmentsOffSuccess'));
                 }
                 break;
             case 'view':

@@ -6,9 +6,9 @@ const guild = require('../../schemas/guild.js');
 module.exports = {
     active: true,
     name: 'actionlogs',
-    description: lang => 'Manages action logs for the server',
+    description: lang => lang.get('actionlogsDescription'),
     aliases: ['logs'],
-    usage: lang => ['defaultchannel (channel)', 'set delmsg <(channel)/default>', 'remove delmsg', 'ignore channel <add/remove> (channel) <delmsg/all>', 'ignore channel view (channel)', 'ignore role <add/remove> (role) <delmsg/all/view>', 'ignore role view (role)', 'view'],
+    usage: lang => [lang.get('actionlogsUsage0'), lang.get('actionlogsUsage1'), 'remove delmsg', lang.get('actionlogsUsage2'), lang.get('actionlogsUsage3'), lang.get('actionlogsUsage4'), lang.get('actionlogsUsage5'), 'view'],
     example: ['defaultchannel #logs', 'set delmsg #deleted-messages', 'remove delmsg', 'ignore channel add #staff delmsg', 'ignore channel view #staff', 'ignore role remove @Mods all', 'ignore role view @Mods'],
     cooldown: 5,
     categoryID: 0,
@@ -26,25 +26,25 @@ module.exports = {
                 if(!message.guild.me.permissionsIn(discordChannel).has('MANAGE_WEBHOOKS')) return message.channel.send(message.client.langs[channelLanguage].get('botWebhooks'));
                 hook = await discordChannel.createWebhook(message.client.user.username, {
                     avatar: message.client.user.avatarURL({size: 4096}),
-                    reason: 'Default log channel webhook',
+                    reason: message.client.langs[channelLanguage].get('newDefaultHookReason'),
                 });
                 oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
-                if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelID)).has('MANAGE_WEBHOOKS')) await oldHook.delete('Old default log channel webhook');
+                if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelID)).has('MANAGE_WEBHOOKS')) await oldHook.delete(message.client.langs[channelLanguage].get('oldDefaultHookReason'));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {
                     defaultLogsHookID: hook.id,
                     defaultLogsHookToken: hook.token,
                 }});
                 message.client.guildData.get(message.guild.id).defaultLogsHookID = hook.id;
                 message.client.guildData.get(message.guild.id).defaultLogsHookToken = hook.token;
-                message.channel.send(`Default log channel set to ${discordChannel}`);
+                message.channel.send(message.client.langs[channelLanguage].get('newDefaultLog', [discordChannel]));
                 break;
             case 'set':
                 if((args.length < 3) || !message.client.configs.actions.includes(args[1])) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 if(args[2] === 'default'){
                     hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
-                    if(!hook) return message.channel.send('Default log channel not defined');
+                    if(!hook) return message.channel.send(message.client.langs[channelLanguage].get('noDefaultLog'));
                     oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
-                    if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelID)).has('MANAGE_WEBHOOKS')) await oldHook.delete(`Old ${args[1]} log channel webhook`);
+                    if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelID)).has('MANAGE_WEBHOOKS')) await oldHook.delete(message.client.langs[channelLanguage].get('oldHookReason', [message.client.langs[channelLanguage].get(`action${args[1]}`)]));
                     let guildDoc = await guild.findById(message.guild.id);
                     if(!guildDoc.actionlogs.id(args[1])){
                         guildDoc.actionlogs.push({_id: args[1]});
@@ -55,7 +55,7 @@ module.exports = {
                     }
                     await guildDoc.save();
                     message.client.guildData.get(message.guild.id).actionlogs = guildDoc.actionlogs;
-                    message.channel.send('This action was set to log in the default log channel');
+                    message.channel.send(message.client.langs[channelLanguage].get('newDefaultLogSuccess'));
                 }
                 else{
                     let discordChannel = message.guild.channels.cache.get((args[2].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
@@ -63,10 +63,10 @@ module.exports = {
                     if(!message.guild.me.permissionsIn(discordChannel).has('MANAGE_WEBHOOKS')) return message.channel.send(message.client.langs[channelLanguage].get('botWebhooks'));
                     hook = await discordChannel.createWebhook(message.client.user.username, {
                         avatar: message.client.user.avatarURL({size: 4096}),
-                        reason: `${args[1]} log channel webhook`,
+                        reason: message.client.langs[channelLanguage].get('newHookReason', [message.client.langs[channelLanguage].get(`action${args[1]}`)]),
                     });
                     oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
-                    if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelID)).has('MANAGE_WEBHOOKS')) await oldHook.delete(`Old ${args[1]} log channel webhook`);
+                    if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelID)).has('MANAGE_WEBHOOKS')) await oldHook.delete(message.client.langs[channelLanguage].get('oldHookReason', [args[1]]));
                     let guildDoc = await guild.findById(message.guild.id);
                     if(!guildDoc.actionlogs.id(args[1])){
                         guildDoc.actionlogs.push({
@@ -81,20 +81,20 @@ module.exports = {
                     }
                     await guildDoc.save();
                     message.client.guildData.get(message.guild.id).actionlogs = guildDoc.actionlogs;
-                    message.channel.send(`This action was set to log in ${discordChannel}`);
+                    message.channel.send(message.client.langs[channelLanguage].get('newLogSuccess', [discordChannel]));
                 }
                 break;
             case 'remove':
                 if(!args[1] || !message.client.configs.actions.includes(args[1]) || !message.client.configs.actions.includes(args[1])) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
-                if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelID)).has('MANAGE_WEBHOOKS')) await oldHook.delete(`Old ${args[1]} log channel webhook`);
+                if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelID)).has('MANAGE_WEBHOOKS')) await oldHook.delete(message.client.langs[channelLanguage].get('oldHookReason', [args[1]]));
                 let guildDoc = await guild.findById(message.guild.id);
                 if(guildDoc.actionlogs.id(args[1])){
                     guildDoc.actionlogs.id(args[1]).remove();
                     await guildDoc.save();
                     message.client.guildData.get(message.guild.id).actionlogs = guildDoc.actionlogs;
                 }
-                message.channel.send('This action won\'t be logged');
+                message.channel.send(message.client.langs[channelLanguage].get('removeLogSuccess'));
                 break;
             case 'ignore':
                 if(!['channel', 'role'].includes(args[1]) || (args.length < 4)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
@@ -105,17 +105,17 @@ module.exports = {
                             let discordChannel = message.guild.channels.cache.get((args[3].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
                             if(!discordChannel) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                             let channelDoc = await channel.findById(discordChannel.id);
-                            if(!channelDoc || !channelDoc.ignoreActions.length) return message.channel.send('No action is being ignored in this channel');
+                            if(!channelDoc || !channelDoc.ignoreActions.length) return message.channel.send(message.client.langs[channelLanguage].get('noIgnoredActionsChannel'));
                             let embed = new MessageEmbed()
                                 .setColor(message.guild.me.displayColor || 0x8000ff)
-                                .setAuthor('Ignored channel', message.guil.iconURL({
+                                .setAuthor(message.client.langs[channelLanguage].get('ignoredActionsChannelEmbedAuthor'), message.guil.iconURL({
                                     size: 4096,
                                     dynamic: true,
                                 }))
-                                .setDescription(`Channel: ${discordChannel}`)
+                                .setDescription(message.client.langs[channelLanguage].get('ignoredActionsChannelEmbedDesc', [discordChannel]))
                                 .setTimestamp()
-                                .setFooter(`${channelDoc.ignoreActions.length} ignored actions`)
-                                .addField('Actions', channelDoc.ignoreActions.map(e => `**${e._id}**`).join(', '));
+                                .setFooter(message.client.langs[channelLanguage].get('ignoredActionsEmbedFooter', [channelDoc.ignoreActions.length]))
+                                .addField(message.client.langs[channelLanguage].get('ignoredActionsEmbedActionsTitle'), channelDoc.ignoreActions.map(e => message.client.langs[channelLanguage].get(`action${e._id}`)).join(', '));
                             message.channel.send(embed);
                         }
                         else{
@@ -126,17 +126,17 @@ module.exports = {
                                 roleID: discordRole.id,
                                 ignoreActions: {$ne: []},
                             });
-                            if(!roleDoc) return message.channel.send('No actions are being ignored for this role');
+                            if(!roleDoc) return message.channel.send(message.client.langs[channelLanguage].get('noIgnoredActionsRole'));
                             let embed = new MessageEmbed()
                                 .setColor(message.guild.me.displayColor || 0x8000ff)
-                                .setAuthor('Ignored role', message.guil.iconURL({
+                                .setAuthor(message.client.langs[channelLanguage].get('ignoredActionsRoleEmbedAuthor'), message.guil.iconURL({
                                     size: 4096,
                                     dynamic: true,
                                 }))
-                                .setDescription(`Role: ${discordRole}`)
+                                .setDescription(message.client.langs[channelLanguage].get('ignoredActionsRoleEmbedDesc', [discordRole]))
                                 .setTimestamp()
-                                .setFooter(`${roleDoc.ignoreActions.length} ignored actions`)
-                                .addField('Actions', roleDoc.ignoreActions.map(e => `**${e._id}**`).join(', '));
+                                .setFooter(message.client.langs[channelLanguage].get('ignoredActionsEmbedFooter', [roleDoc.ignoreActions.length]))
+                                .addField(message.client.langs[channelLanguage].get('ignoredActionsEmbedActionsTitle'), roleDoc.ignoreActions.map(e => message.client.langs[channelLanguage].get(`action${e._id}`)).join(', '));
                             message.channel.send(embed);
                         }
                         break;
@@ -155,11 +155,11 @@ module.exports = {
                                         upsert: true,
                                         setDefaultsOnInsert: true,
                                     });
-                                    message.channel.send(`All actions will be ignored in ${discordChannel}`);
+                                    message.channel.send(message.client.langs[channelLanguage].get('allActionsIgnoredChannelSuccess', [discordChannel]));
                                 }
                                 else{
                                     await channel.findByIdAndUpadte(discordChannel.id, {$set: {ignoreActions: []}});
-                                    message.channel.send(`No actions will be ignored in ${discordChannel}`);
+                                    message.channel.send(message.client.langs[channelLanguage].get('noActionsIgnoredChannelSuccess', [discordChannel]));
                                 }
                             }
                             else{
@@ -173,14 +173,14 @@ module.exports = {
                                         upsert: true,
                                         setDefaultsOnInsert: true,
                                     });
-                                    message.channel.send(`All actions will be ignored for **${discordRole.name}**`);
+                                    message.channel.send(message.client.langs[channelLanguage].get('allActionsIgnoredRoleSuccess', [discordRole.name]));
                                 }
                                 else{
                                     await role.findOneAndUpdate({
                                         roleID: discordRole.id,
                                         guild: message.guild.id,
                                     }, {$set: {ignoreActions: []}});
-                                    message.channel.send(`No actions will be ignored for **${discordRole.name}**`);
+                                    message.channel.send(message.client.langs[channelLanguage].get('noActionsIgnoredRoleSuccess', [discordRole.name]));
                                 }
                             }
                         }
@@ -197,11 +197,11 @@ module.exports = {
                                         upsert: true,
                                         setDefaultsOnInsert: true,
                                     });
-                                    message.channel.send(`${args[4]} will be ignored in ${discordChannel}`);
+                                    message.channel.send(message.client.langs[channelLanguage].get('actionIgnoredChannelSuccess', [message.client.langs[channelLanguage].get(`action${args[4]}`), discordChannel]));
                                 }
                                 else{
                                     await channel.findByIdAndUpdate(discordChannel.id, {$pull: {ignoreActions: {$eq: args[4]}}});
-                                    message.channel.send(`${args[4]} won't be ignored in ${discordChannel}`);
+                                    message.channel.send(message.client.langs[channelLanguage].get('actionNotIgnoredChannelSuccess', [message.client.langs[channelLanguage].get(`action${args[4]}`), discordChannel]));
                                 }
                             }
                             else{
@@ -215,14 +215,14 @@ module.exports = {
                                         upsert: true,
                                         setDefaultsOnInsert: true,
                                     });
-                                    message.channel.send(`${args[4]} will be ignored for **${discordRole.name}**`);
+                                    message.channel.send(message.client.langs[channelLanguage].get('actionIgnoredRoleSuccess', [message.client.langs[channelLanguage].get(`action${args[4]}`), discordRole.name]));
                                 }
                                 else{
                                     await role.findOneAndUpdate({
                                         roleID: discordRole.id,
                                         guild: message.guild.id,
                                     }, {$pull: {ignoreActions: {$eq: args[4]}}});
-                                    message.channel.send(`${args[4]} won't be ignored for **${discordRole.name}**`);
+                                    message.channel.send(message.client.langs[channelLanguage].get('actionNotIgnoredRoleSuccess', [message.client.langs[channelLanguage].get(`action${args[4]}`), discordRole.name]));
                                 }
                             }
                         }
@@ -237,11 +237,11 @@ module.exports = {
                 hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
-                    .setAuthor('Action logs info', message.guild.iconURL({
+                    .setAuthor(message.client.langs[channelLanguage].get('logsViewEmbedAuthor'), message.guild.iconURL({
                         size: 4096,
                         dynamic: true,
                     }))
-                    .setDescription(`Default channel: ${hook ? `<#${hook.channelID}>` : '\`none\`'}`)
+                    .setDescription(message.client.langs[channelLanguage].get('logsViewEmbedDesc', [hook]))
                     .setTimestamp();
                 let activeLogs = [];
                 for(actionlog of message.client.guildData.get(message.guild.id).actionlogs){
@@ -256,20 +256,20 @@ module.exports = {
                     });
                 }
                 if(activeLogs.length){
-                    embed.addField('Logged actions', activeLogs.map(e => `**${e.id}** - ${e.channelID ? `<#${e.channelID}>` : '`Default`'}`).join('\n'));
+                    embed.addField(message.client.langs[channelLanguage].get('logsViewEmbedActionsTitle'), activeLogs.map(e => message.client.langs[channelLanguage].get('logsViewEmbedActions', [message.client.langs[channelLanguage].get(`action${e.id}`), e.channelID])).join('\n'));
                 }
                 let channels = await channel.find({
                     _id: {$in: message.client.channels.cache.map(e => e.id)},
                     guild: message.guild.id,
                     ignoreActions: {$ne: []},
                 });
-                if(channels.length) embed.addField('Ignored channels', channels.map(e => `<#${e._id}> - \`${(e.ignoreActions.length === message.client.configs.actions.length) ? 'All' : 'Some'}\``).join('\n'));
+                if(channels.length) embed.addField(message.client.langs[channelLanguage].get('logsViewEmbedIgnoredChannelsTitle'), channels.map(e => `<#${e._id}> - \`${(e.ignoreActions.length === message.client.configs.actions.length) ? message.client.langs[channelLanguage].get('logsViewEmbedIgnoredAll') : message.client.langs[channelLanguage].get('logsViewEmbedIgnoredSome')}\``).join('\n'));
                 let roles = await role.find({
                     guild: message.guild.id,
                     roleID: {$in: message.guild.roles.cache.map(e => e.id)},
                     ignoreActions: {$ne: []},
                 });
-                if(roles.length) embed.addField('Ignored roles', roles.map(e => `<@&${e.roleID}> = \`${(e.ignoreActions.length === message.client.configs.actions.length) ? 'All' : 'Some'}\``).join('\n'));
+                if(roles.length) embed.addField(message.client.langs[channelLanguage].get('logsViewEmbedIgnoredRolesTitle'), roles.map(e => `<@&${e.roleID}> = \`${(e.ignoreActions.length === message.client.configs.actions.length) ? message.client.langs[channelLanguage].get('logsViewEmbedIgnoredAll') : message.client.langs[channelLanguage].get('logsViewEmbedIgnoredSome')}\``).join('\n'));
                 message.channel.send(embed);
                 break;
             default:

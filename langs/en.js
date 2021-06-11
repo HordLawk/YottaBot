@@ -41,6 +41,7 @@ module.exports = {
             case 'permUsage1': return 'view <(role mention)/(role ID)/"(role name)">';
             case 'ADMINISTRATOR': return 'Administrator';
             case 'MANAGE_ROLES': return 'Manage Roles';
+            case 'BAN_MEMBERS': return 'Ban Members';
             case 'invArgs': return `Invalid arguments!\nThe proper usage would be:\n${vars[2].map(e => `\`${vars[0]}${vars[1]} ${e}\``).join('\n')}`;
             case 'permSuccess': return `**${vars[0]}** was ${(vars[1] === 'allow') ? 'allowed to use' : 'denied from using'} these commands`;
             case 'noSpecialPerms': return 'There are no special permissions set to this role';
@@ -118,7 +119,7 @@ module.exports = {
             case 'lang404': return 'Language not supported';
             case 'newLang': return 'Server language updated';
             case 'configsEmbedAuthor': return 'Server settings';
-            case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\nLanguage: \`${vars[1]}\`\nLog attachments: \`${vars[2] ? 'on' : 'off'}\``;
+            case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\nLanguage: \`${vars[1]}\`\nLog attachments: \`${vars[2] ? 'on' : 'off'}\`\nWarn log channel: ${vars[3].warn ? `<#${vars[3].warn}>` : '`none`'}\nMute log channel: ${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\nKick log channel: ${vars[3].kick ? `<#${vars[3].kick}>` : '`none`'}\nBan log channel: ${vars[3].ban ? `<#${vars[3].ban}>` : '`none`'}`;
             case 'betaCommand': return 'This command is currently only available for servers that enabled open beta features in the bot settings';
             case 'premiumCommand': return `This command is a premium feature, use \`${vars[0]}premium\` for more information on becoming premium`;
             case 'botWebhooks': return 'I need permission to manage webhooks in this channel';

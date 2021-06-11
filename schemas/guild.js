@@ -29,7 +29,10 @@ const guildSchema = new Schema({
         default: true,
     },
     globalBan: Boolean,
-    pruneBan: Boolean,
+    pruneBan: {
+        type: Number,
+        default: 0,
+    },
     maxMute: {
         type: Number,
         default: 10080,
@@ -42,7 +45,7 @@ const guildSchema = new Schema({
     beta: Boolean,
     counterLogs: {
         type: Number,
-        default: 0,
+        default: 1,
     },
     counterMenus: {
         type: Number,

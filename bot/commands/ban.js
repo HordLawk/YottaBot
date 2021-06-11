@@ -4,11 +4,11 @@ const {MessageEmbed} = require('discord.js');
 
 module.exports = {
     active: true,
-    name: 'warn',
-    description: lang => 'Warns a member',
-    aliases: ['adv', 'advert'],
-    usage: lang => ['(member) (reason)'],
-    example: ['@LordHawk#0572 stop spamming'],
+    name: 'ban',
+    description: lang => 'Bans an user',
+    aliases: ['b'],
+    usage: lang => ['(user) (reason)'],
+    example: ['@LordHawk#0572 spammer'],
     cooldown: 3,
     categoryID: 0,
     args: true,
@@ -18,18 +18,31 @@ module.exports = {
         const channelLanguage = (message.channel.type != 'dm') ? message.client.guildData.get(message.guild.id).language : 'en';
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
         if(!message.member) return;
-        let member = message.guild.members.cache.get(args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1]) || await message.guild.members.fetch(args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1]).catch(() => null);
-        if(!member) return message.channel.send('Member not found');
+        const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
+        if(!id) return message.channel.send('Invalid user');
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
-        if(member.user.bot) return message.channel.send('I can\'t warn a bot');
-        if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return message.channel.send('You are not allowed to warn this member');
+        const member = await message.guild.members.fetch(id).catch(() => null);
+        if(member){
+            if(!member.bannable) return message.channel.send('I can\'t ban this member');
+            if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return message.channel.send('You can\'t ban this member');
+            await member.send(`You were banned in **${message.guild.name}**${reason ? `\n__Reason:__ *${reason}*` : ''}`).catch(() => null);
+        }
+        else{
+            const ban = await message.guild.fetchBan(id).catch(() => null);
+            if(ban) return message.channel.send('This user is already banned');
+        }
+        const user = await message.guild.members.ban(id, {
+            reason: `Executor: ${message.author.tag}${reason ? ` | Reason: ${reason}` : ''}`,
+            days: message.client.guildData.get(message.guild.id).pruneBan,
+        }).catch(() => null);
+        if(!user) return message.channel.send('User not found');
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
         const current = new log({
             id: guildDoc.counterLogs,
             guild: message.guild.id,
-            type: 'warn',
-            target: member.id,
+            type: 'ban',
+            target: user.id,
             executor: message.author.id,
             timeStamp: Date.now(),
             actionMessage: message.url,
@@ -37,16 +50,15 @@ module.exports = {
             image: message.attachments.first()?.height ? message.attachments.first().url : null,
         });
         await current.save();
-        await member.user.send(`You were warned in **${message.guild.name}**${reason ? `\n__Reason:__ *${reason}*` : ''}`).catch(() => message.channel.send('The warn couldn\'t be DMed to the user. This usually happens when a user disables DMs for this server'));
-        await message.channel.send('Member warned');
-        const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.warn);
+        await message.channel.send('Member banned');
+        const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.ban);
         if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('SEND_MESSAGES') || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) return;
         const embed = new MessageEmbed()
             .setTimestamp()
-            .setColor(0xffff00)
-            .setAuthor(`${message.author.tag} warned ${member.user.tag}`, member.user.displayAvatarURL({dynamic: true}))
+            .setColor(0xff0000)
+            .setAuthor(`${message.author.tag} banned ${user.tag}`, user.displayAvatarURL({dynamic: true}))
             .setDescription(`[Action message](${message.url})`)
-            .addField('Target', `${member}\n${member.id}`, true)
+            .addField('Target', `${user}\n${user.id}`, true)
             .addField('Executor', message.author, true)
             .setFooter(`Case ${current.id}`, message.guild.iconURL({dynamic: true}));
         if(reason) embed.addField('Reason', reason);

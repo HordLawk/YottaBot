@@ -6,7 +6,7 @@ module.exports = {
     name: 'configs',
     description: lang => lang.get('configsDescription'),
     aliases: ['config', 'settings', 'setting'],
-    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', 'mod logs (channel) <warn/mute/kick/ban> [(other types)]'],
+    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', 'mod logs (channel) <warn/mute/kick/ban> [(other types)]', 'mod clearonban (days)'],
     example: ['prefix !', 'language pt', 'logattachments on', 'mod logs #warn-and-mute-logs warn mute'],
     cooldown: 5,
     categoryID: 0,
@@ -47,17 +47,25 @@ module.exports = {
                 break;
             case 'mod':
                 switch(args[1]){
-                    case 'logs':
-                        if(!args[3] || args.slice(3, 7).some(e => !['warn', 'mute', 'kick', 'ban'].includes(e))) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                        let discordChannel = message.guild.channels.cache.get(args[2].match(/^(?:<#)?(\d{17,19})>?$/)?.[1]);
-                        if(!discordChannel || !discordChannel.isText()) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                        if(!message.guild.me.permissionsIn(discordChannel).has('SEND_MESSAGES')) return message.channel.send(message.client.langs[chanenlLanguage].get('sendMessages'));
-                        if(!message.guild.me.permissionsIn(discordChannel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
-                        let guildDoc = await guild.findById(message.guild.id);
-                        args.slice(3, 7).forEach(e => (guildDoc.modlogs[e] = discordChannel.id));
-                        await guildDoc.save();
-                        message.client.guildData.get(message.guild.id).modlogs = guildDoc.modlogs;
-                        message.channel.send(`Log channel for ${args.slice(3, 7).map(e => `\`${e}\``).join(' ')} set to ${discordChannel}`);
+                    case 'logs': {
+                            if(!args[3] || args.slice(3, 7).some(e => !['warn', 'mute', 'kick', 'ban'].includes(e))) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                            let discordChannel = message.guild.channels.cache.get(args[2].match(/^(?:<#)?(\d{17,19})>?$/)?.[1]);
+                            if(!discordChannel || !discordChannel.isText()) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                            if(!message.guild.me.permissionsIn(discordChannel).has('SEND_MESSAGES')) return message.channel.send(message.client.langs[chanenlLanguage].get('sendMessages'));
+                            if(!message.guild.me.permissionsIn(discordChannel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
+                            let guildDoc = await guild.findById(message.guild.id);
+                            args.slice(3, 7).forEach(e => (guildDoc.modlogs[e] = discordChannel.id));
+                            await guildDoc.save();
+                            message.client.guildData.get(message.guild.id).modlogs = guildDoc.modlogs;
+                            message.channel.send(`Log channel for ${args.slice(3, 7).map(e => `\`${e}\``).join(' ')} set to ${discordChannel}`);
+                        }
+                        break;
+                    case 'clearonban': {
+                            if(isNaN(parseInt(args[2])) || !isFinite(parseInt(args[2])) || (parseInt(args[2]) < 0) || (parseInt(args[2]) > 7)) return message.channel.send('Number of days must be between 0 and 7');
+                            await guild.findByIdAndUpdate(message.guild.id, {$set: {pruneBan: parseInt(args[2])}});
+                            message.client.guildData.get(message.guild.id).pruneBan = parseInt(args[2]);
+                            message.channel.send(`Number of days of messages to delete set to **${message.client.guildData.get(message.guild.id).pruneBan}**`);
+                        }
                         break;
                     default: message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 }

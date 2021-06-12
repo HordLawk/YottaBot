@@ -61,9 +61,9 @@ module.exports = {
                         }
                         break;
                     case 'clearonban': {
-                            if(isNaN(parseInt(args[2])) || !isFinite(parseInt(args[2])) || (parseInt(args[2]) < 0) || (parseInt(args[2]) > 7)) return message.channel.send('Number of days must be between 0 and 7');
-                            await guild.findByIdAndUpdate(message.guild.id, {$set: {pruneBan: parseInt(args[2])}});
-                            message.client.guildData.get(message.guild.id).pruneBan = parseInt(args[2]);
+                            if(isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[2], 10) < 0) || (parseInt(args[2], 10) > 7)) return message.channel.send('Number of days must be between 0 and 7');
+                            await guild.findByIdAndUpdate(message.guild.id, {$set: {pruneBan: parseInt(args[2], 10)}});
+                            message.client.guildData.get(message.guild.id).pruneBan = parseInt(args[2], 10);
                             message.channel.send(`Number of days of messages to delete set to **${message.client.guildData.get(message.guild.id).pruneBan}**`);
                         }
                         break;

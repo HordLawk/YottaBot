@@ -35,7 +35,7 @@ module.exports = {
                 if(!args[2]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 switch(args[1]){
                     case 'set':
-                        if(isNaN(parseInt(args[3])) || !isFinite(parseInt(args[3])) || (parseInt(args[3]) < 1)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                        if(isNaN(parseInt(args[3], 10)) || !isFinite(parseInt(args[3], 10)) || (parseInt(args[3], 10) < 1)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                         let discordRole = message.guild.roles.cache.get((args[2].match(/^(?:<@&)?(\d{17,19})>?$/) || [])[1]) || message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){3}/, '').replace(/\s+\S+\s+$/, ''))) || message.guild.roles.cache.find(e => (e.name.startsWith(message.content.replace(/^(?:\S+\s+){3}/, '').replace(/\s+\S+\s+$/, ''))));
                         if(!discordRole || (discordRole.id === message.guild.id)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                         if(!discordRole.editable || discordRole.managed) return message.channel.send(message.client.langs[channelLanguage].get('manageRole'));
@@ -45,10 +45,10 @@ module.exports = {
                             roleID: {$in: message.guild.roles.cache.map(e => e.id)},
                             xp: {$ne: null},
                         });
-                        if(roleDocs.some(e => (e.xp === parseInt(args[3])))) return message.channel.send(message.client.langs[channelLanguage].get('sameXp'));
+                        if(roleDocs.some(e => (e.xp === parseInt(args[3], 10)))) return message.channel.send(message.client.langs[channelLanguage].get('sameXp'));
                         let oldRole = roleDocs.find(e => (e.roleID === discordRole.id));
                         if(oldRole){
-                            oldRole.xp = parseInt(args[3]);
+                            oldRole.xp = parseInt(args[3], 10);
                             await oldRole.save();
                         }
                         else{
@@ -56,11 +56,11 @@ module.exports = {
                             let newRole = new role({
                                 guild: message.guild.id,
                                 roleID: discordRole.id,
-                                xp: parseInt(args[3]),
+                                xp: parseInt(args[3], 10),
                             });
                             await newRole.save();
                         }
-                        message.channel.send(message.client.langs[channelLanguage].get('setXpRole', [discordRole.name, parseInt(args[3])]));
+                        message.channel.send(message.client.langs[channelLanguage].get('setXpRole', [discordRole.name, parseInt(args[3], 10)]));
                         break;
                     case 'remove':
                         if(args[2] === 'all'){
@@ -87,7 +87,7 @@ module.exports = {
                 }
                 break;
             case 'user':
-                if(!['add', 'remove', 'set'].includes(args[1]) || isNaN(parseInt(args[2])) || !isFinite(parseInt(args[2])) || (parseInt(args[2]) < 0)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                if(!['add', 'remove', 'set'].includes(args[1]) || isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[2], 10) < 0)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 let mentions = args.slice(3, 13).join(' ').match(/\b\d{17,19}\b/g);
                 if(!mentions) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 let memberDocs = await member.find({
@@ -98,13 +98,13 @@ module.exports = {
                 let query;
                 switch(args[1]){
                     case 'add':
-                        query = {$inc: {xp: parseInt(args[2])}};
+                        query = {$inc: {xp: parseInt(args[2], 10)}};
                         break;
                     case 'remove':
-                        query = {$inc: {xp: -(parseInt(args[2]))}};
+                        query = {$inc: {xp: -(parseInt(args[2], 10))}};
                         break;
                     case 'set':
-                        query = {$set: {xp: parseInt(args[2])}};
+                        query = {$set: {xp: parseInt(args[2], 10)}};
                         break;
                 }
                 await member.updateMany({

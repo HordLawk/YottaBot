@@ -5,7 +5,7 @@ const {MessageEmbed} = require('discord.js');
 module.exports = {
     active: true,
     name: 'ban',
-    description: lang => 'Bans an user',
+    description: lang => 'Bans an user\nAlso accepts a media attachment',
     aliases: ['b'],
     usage: lang => ['(user) (reason)'],
     example: ['@LordHawk#0572 spammer'],

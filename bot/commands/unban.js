@@ -5,7 +5,7 @@ const {MessageEmbed} = require('discord.js');
 module.exports = {
     active: true,
     name: 'unban',
-    description: lang => 'Unbans an user',
+    description: lang => 'Unbans an user\nAlso accepts a media attachment',
     usage: lang => ['(user) (reason)'],
     example: ['@LordHawk apologised'],
     cooldown: 5,
@@ -27,13 +27,14 @@ module.exports = {
         const current = new log({
             id: guildDoc.counterLogs,
             guild: message.guild.id,
-            type: 'unban',
+            type: 'ban',
             target: ban.user.id,
             executor: message.author.id,
             timeStamp: Date.now(),
             actionMessage: message.url,
             reason: reason || null,
             image: message.attachments.first()?.height ? message.attachments.first().url : null,
+            removal: true,
         });
         await current.save();
         await message.guild.members.unban(ban.user.id, `Executor: ${message.author.tag}${reason ? ` | Reason: ${reason}` : ''}`);

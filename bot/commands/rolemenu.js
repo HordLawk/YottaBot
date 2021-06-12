@@ -70,7 +70,7 @@ module.exports = {
         }
         else{
             let menuDoc = await menu.findOne({
-                id: parseInt(args[1]),
+                id: parseInt(args[1], 10),
                 guild: message.guild.id,
                 channelID: {$in: message.client.channels.cache.map(e => e.id)},
             });

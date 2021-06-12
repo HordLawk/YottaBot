@@ -5,9 +5,9 @@ const {MessageEmbed} = require('discord.js');
 module.exports = {
     active: true,
     name: 'warn',
-    description: lang => 'Warns a member',
+    description: lang => 'Warns a member\nAlso accepts a media attachment',
     aliases: ['adv', 'advert'],
-    usage: lang => ['(member) (reason)'],
+    usage: lang => ['(user) (reason)'],
     example: ['@LordHawk#0572 stop spamming'],
     cooldown: 3,
     categoryID: 0,

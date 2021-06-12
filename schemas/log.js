@@ -32,6 +32,7 @@ const logSchema = new Schema({
     logMessage: String,
     ongoing: Boolean,
     image: String,
+    removal: Boolean,
 });
 
 module.exports = model('log', logSchema);

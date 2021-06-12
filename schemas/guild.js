@@ -45,7 +45,7 @@ const guildSchema = new Schema({
     beta: Boolean,
     counterLogs: {
         type: Number,
-        default: 1,
+        default: 0,
     },
     counterMenus: {
         type: Number,

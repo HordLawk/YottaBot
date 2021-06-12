@@ -24,7 +24,7 @@ module.exports = {
             target: id,
             type: (args[1] === 'all') ? {$ne: args[1]} : {$eq: args[1]},
             timeStamp: {$gte: filter},
-        });
+        }).sort({timeStamp: -1});
         if(!logDocs.length) return message.channel.send('No logs meeting these conditions were found');
         const discordMember = await message.guild.members.fetch(id).catch(() => null);
         const formatDuration = (ms) => {

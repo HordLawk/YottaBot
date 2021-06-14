@@ -5,7 +5,7 @@ const {MessageEmbed} = require('discord.js')
 module.exports = {
     active: true,
     name: 'mute',
-    description: lang => 'Mutes a member',
+    description: lang => 'Mutes a member\nAlso accepts a media attachment',
     aliases: ['m'],
     usage: lang => ['(member) (duration) [(reason)]'],
     example: ['@LordHawk#0572 1h30m spammer'],

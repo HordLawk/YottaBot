@@ -5,7 +5,7 @@ const {MessageEmbed} = require('discord.js');
 module.exports = {
     active: true,
     name: 'unmute',
-    description: lang => 'Unmutes an user',
+    description: lang => 'Unmutes an user\nAlso accepts a media attachment',
     usage: lang => ['(user) (reason)'],
     example: ['@LordHawk#0572 bribed me'],
     cooldown: 5,

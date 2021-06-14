@@ -6,8 +6,8 @@ module.exports = {
     name: 'configs',
     description: lang => lang.get('configsDescription'),
     aliases: ['config', 'settings', 'setting'],
-    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', 'mod logs (channel) <warn/mute/kick/ban> [(other types)]', 'mod clearonban (days)', 'mod muterole (role)'],
-    example: ['prefix !', 'language pt', 'logattachments on', 'mod logs #warn-and-mute-logs warn mute', 'mod muterole @Muted'],
+    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', 'mod logs (channel) <warn/mute/kick/ban> [(other types)]', 'mod clearonban (days)', 'mod mute role (role)', 'mod mute autosetup <on/off>'],
+    example: ['prefix !', 'language pt', 'logattachments on', 'mod logs #warn-and-mute-logs warn mute', 'mod mute role @Muted', 'mod mute autosetup off'],
     cooldown: 5,
     categoryID: 0,
     args: true,
@@ -70,13 +70,26 @@ module.exports = {
                         message.channel.send(`Number of days of messages to delete set to **${message.client.guildData.get(message.guild.id).pruneBan}**`);
                     }
                     break;
-                    case 'muterole': {
-                        let discordRole = message.guild.roles.cache.get(args[2]);
-                        if(!discordRole) return message.channel.send('Role not found');
-                        if(!discordRole.editable) return message.channel.send('I can\'t manage this role');
-                        await guild.findByIdAndUpdate(message.guild.id, {$set: {muteRoleID: discordRole.id}});
-                        message.client.guildData.get(message.guild.id).muteRoleID = discordRole.id;
-                        message.channel.send(`Mute role set to **${discordRole.name}**`);
+                    case 'mute': {
+                        switch(args[2]){
+                            case 'role': {
+                                let discordRole = message.guild.roles.cache.get(args[3]);
+                                if(!discordRole) return message.channel.send('Role not found');
+                                if(!discordRole.editable) return message.channel.send('I can\'t manage this role');
+                                await guild.findByIdAndUpdate(message.guild.id, {$set: {muteRoleID: discordRole.id}});
+                                message.client.guildData.get(message.guild.id).muteRoleID = discordRole.id;
+                                message.channel.send(`Mute role set to **${discordRole.name}**`);
+                            }
+                            break;
+                            case 'autosetup': {
+                                if(!['on', 'off'].includes(args[3])) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                                await guild.findByIdAndUpdate(message.guild.id, {$set: {autoSetupMute: (args[3] === 'on')}});
+                                message.guild.guildData.get(message.guild.id).autoSetupMute = (args[3] === 'on');
+                                message.channel.send(`Auto setup mute mode turned **${args[3]}**`);
+                            }
+                            break;
+                            default: message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                        }
                     }
                     break;
                     default: message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
@@ -91,7 +104,7 @@ module.exports = {
                         size: 4096,
                         dynamic: true,
                     }))
-                    .setDescription(message.client.langs[channelLanguage].get('configsEmbedDesc', [message.client.guildData.get(message.guild.id).prefix, message.client.guildData.get(message.guild.id).language, message.client.guildData.get(message.guild.id).logAttachments, message.client.guildData.get(message.guild.id).modlogs, message.client.guildData.get(message.guild.id).pruneBan, message.client.guildData.get(message.guild.id).muteRoleID]))
+                    .setDescription(message.client.langs[channelLanguage].get('configsEmbedDesc', [message.client.guildData.get(message.guild.id).prefix, message.client.guildData.get(message.guild.id).language, message.client.guildData.get(message.guild.id).logAttachments, message.client.guildData.get(message.guild.id).modlogs, message.client.guildData.get(message.guild.id).pruneBan, message.client.guildData.get(message.guild.id).muteRoleID, message.client.guildData.get(message.guild.id).autoSetupMute]))
                     .setTimestamp();
                 message.channel.send(embed);
             }

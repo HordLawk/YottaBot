@@ -38,6 +38,8 @@ module.exports = {
                             .setAuthor(discordMember ? `${discordMember.user.tag} was unmuted` : 'Unmute', discordMember?.user.displayAvatarURL({dynamic: true}))
                             .addField('Target', `<@${unmuteDoc.target}>\n${unmuteDoc.target}`, true)
                             .addField('Reason', 'End of mute');
+                        let msg = await discordChannel.messages.fetch(unmuteDoc.logMessage).catch(() => null);
+                        if(msg) embed.setDescription(`[Referred mute](${msg.url})`);
                         await discordChannel.send(embed);
                     };
                     if(!guild.me.permissions.has('MANAGE_ROLES') || !client.guildData.get(guild.id).muteRoleID) continue;

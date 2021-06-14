@@ -33,10 +33,6 @@ const guildSchema = new Schema({
         type: Number,
         default: 0,
     },
-    maxMute: {
-        type: Number,
-        default: 10080,
-    },
     gainExp: Boolean,
     language: {
         type: String,

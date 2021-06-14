@@ -34,16 +34,15 @@ module.exports = {
         if(discordRole && !discordRole.editable) return message.channel.send('I can\'t give the mute role to users');
         const guildDoc = await guild.findById(message.guild.id);
         if(!discordRole){
+            if(!message.client.guildData.get(message.guild.id).autoSetupMute) return message.channel.send('No mute role was defined and the auto setup mute mode is disabled');
             discordRole = await message.guild.roles.create({data: {name: 'Muted'}});
             guildDoc.muteRoleID = discordRole.id;
             message.client.guildData.get(message.guild.id).muteRoleID = discordRole.id;
         }
-        guildDoc.counterLogs++;
-        await guildDoc.save();
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
         const timeStamp = Date.now();
         const current = new log({
-            id: guildDoc.counterLogs,
+            id: guildDoc.counterLogs++,
             guild: message.guild.id,
             type: 'mute',
             target: member.id,
@@ -55,15 +54,18 @@ module.exports = {
             duration: new Date(timeStamp + duration),
             ongoing: true,
         });
+        await guildDoc.save();
         await current.save();
         await member.roles.add(discordRole);
-        await message.channel.send('Member muted');
-        for(let channel of message.guild.channels.cache.filter(e => (e.manageable && (e.type != 'store') && e.permissionsFor(message.guild.me).has('MANAGE_ROLES') && !e.permissionOverwrites.has(discordRole.id))).array()){
-            await message.guild.channels.cache.get(channel.id).createOverwrite(discordRole, {
-                SEND_MESSAGES: false,
-                ADD_REACTIONS: false,
-                CONNECT: false,
-            }, 'Mute role permissions setup');
+        await message.channel.send(`Member muted\nCase ID: \`${current.id}\``);
+        if(message.client.guildData.get(message.guild.id).autoSetupMute){
+            for(let channel of message.guild.channels.cache.filter(e => (e.manageable && (e.type != 'store') && e.permissionsFor(message.guild.me).has('MANAGE_ROLES') && !e.permissionOverwrites.has(discordRole.id))).array()){
+                await message.guild.channels.cache.get(channel.id).createOverwrite(discordRole, {
+                    SEND_MESSAGES: false,
+                    ADD_REACTIONS: false,
+                    CONNECT: false,
+                }, 'Mute role permissions setup');
+            }
         }
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.mute);
         if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('SEND_MESSAGES') || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) return;

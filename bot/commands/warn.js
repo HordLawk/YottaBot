@@ -38,7 +38,7 @@ module.exports = {
         });
         await current.save();
         await member.user.send(`You were warned in **${message.guild.name}**${reason ? `\n__Reason:__ *${reason}*` : ''}`).catch(() => message.channel.send('The warn couldn\'t be DMed to the user. This usually happens when a user disables DMs for this server'));
-        await message.channel.send('Member warned');
+        await message.channel.send(`Member warned\nCase ID: \`${current.id}\``);
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.warn);
         if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('SEND_MESSAGES') || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) return;
         const embed = new MessageEmbed()

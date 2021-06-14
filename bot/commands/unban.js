@@ -38,7 +38,7 @@ module.exports = {
         });
         await current.save();
         await message.guild.members.unban(ban.user.id, `Executor: ${message.author.tag}${reason ? ` | Reason: ${reason}` : ''}`);
-        await message.channel.send('User unbanned');
+        await message.channel.send(`User unbanned\nCase ID: \`${current.id}\``);
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.ban);
         if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('SEND_MESSAGES') || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) return;
         const embed = new MessageEmbed()

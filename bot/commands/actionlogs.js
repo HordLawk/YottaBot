@@ -19,7 +19,7 @@ module.exports = {
         const channelLanguage = (message.channel.type != 'dm') ? message.client.guildData.get(message.guild.id).language : 'en';
         let oldHook, hook;
         switch(args[0]){
-            case 'defaultchannel':
+            case 'defaultchannel': {
                 if(!args[1]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 let discordChannel = message.guild.channels.cache.get((args[1].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
                 if(!discordChannel || !discordChannel.isText()) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
@@ -37,8 +37,9 @@ module.exports = {
                 message.client.guildData.get(message.guild.id).defaultLogsHookID = hook.id;
                 message.client.guildData.get(message.guild.id).defaultLogsHookToken = hook.token;
                 message.channel.send(message.client.langs[channelLanguage].get('newDefaultLog', [discordChannel]));
-                break;
-            case 'set':
+            }
+            break;
+            case 'set': {
                 if((args.length < 3) || !message.client.configs.actions.includes(args[1])) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 if(args[2] === 'default'){
                     hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
@@ -83,8 +84,9 @@ module.exports = {
                     message.client.guildData.get(message.guild.id).actionlogs = guildDoc.actionlogs;
                     message.channel.send(message.client.langs[channelLanguage].get('newLogSuccess', [discordChannel]));
                 }
-                break;
-            case 'remove':
+            }
+            break;
+            case 'remove': {
                 if(!args[1] || !message.client.configs.actions.includes(args[1]) || !message.client.configs.actions.includes(args[1])) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
                 if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelID)).has('MANAGE_WEBHOOKS')) await oldHook.delete(message.client.langs[channelLanguage].get('oldHookReason', [args[1]]));
@@ -95,11 +97,12 @@ module.exports = {
                     message.client.guildData.get(message.guild.id).actionlogs = guildDoc.actionlogs;
                 }
                 message.channel.send(message.client.langs[channelLanguage].get('removeLogSuccess'));
-                break;
-            case 'ignore':
+            }
+            break;
+            case 'ignore': {
                 if(!['channel', 'role'].includes(args[1]) || (args.length < 4)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 switch(args[2]){
-                    case 'view':
+                    case 'view': {
                         if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
                         if(args[1] === 'channel'){
                             let discordChannel = message.guild.channels.cache.get((args[3].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
@@ -139,9 +142,10 @@ module.exports = {
                                 .addField(message.client.langs[channelLanguage].get('ignoredActionsEmbedActionsTitle'), roleDoc.ignoreActions.map(e => message.client.langs[channelLanguage].get(`action${e._id}`)).join(', '));
                             message.channel.send(embed);
                         }
-                        break;
+                    }
+                    break;
                     case 'add':
-                    case 'remove':
+                    case 'remove': {
                         if(!args[4]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                         if(args[4] === 'all'){
                             if(args[1] === 'channel'){
@@ -226,13 +230,13 @@ module.exports = {
                                 }
                             }
                         }
-                        break;
-                    default:
-                        message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                        break;
+                    }
+                    break;
+                    default: message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 }
-                break;
-            case 'view':
+            }
+            break;
+            case 'view': {
                 if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
                 hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
                 let embed = new MessageEmbed()
@@ -271,10 +275,9 @@ module.exports = {
                 });
                 if(roles.length) embed.addField(message.client.langs[channelLanguage].get('logsViewEmbedIgnoredRolesTitle'), roles.map(e => `<@&${e.roleID}> = \`${(e.ignoreActions.length === message.client.configs.actions.length) ? message.client.langs[channelLanguage].get('logsViewEmbedIgnoredAll') : message.client.langs[channelLanguage].get('logsViewEmbedIgnoredSome')}\``).join('\n'));
                 message.channel.send(embed);
-                break;
-            default:
-                message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                break;
+            }
+            break;
+            default: message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
         }
     },
 };

@@ -52,16 +52,14 @@ module.exports = {
                 await message.member.roles.set(message.member.roles.cache.map(e => e.id).filter(e => !lowerRoles.some(ee => (e === ee.roleID))).concat(lowerRoles.map(e => e.roleID).slice(0, message.client.guildData.get(message.guild.id).dontStack ? 1 : undefined)));
                 if(!message.client.guildData.get(message.guild.id).xpChannel || (doc.xp != lowerRoles[0].xp)) return;
                 switch(message.client.guildData.get(message.guild.id).xpChannel){
-                    case 'default':
-                        message.channel.send(message.client.langs[channelLanguage].get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]));
-                        break;
-                    case 'dm':
-                        message.author.send(message.client.langs[channelLanguage].get('achieveDM', [message.guild.roles.cache.get(lowerRoles[0].roleID).name, message.guild.name])).catch(() => null);
-                        break;
-                    default:
+                    case 'default': message.channel.send(message.client.langs[channelLanguage].get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]));
+                    break;
+                    case 'dm': message.author.send(message.client.langs[channelLanguage].get('achieveDM', [message.guild.roles.cache.get(lowerRoles[0].roleID).name, message.guild.name])).catch(() => null);
+                    break;
+                    default: {
                         const notifChannel = message.client.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel);
                         if(notifChannel) notifChannel.send(message.client.langs[channelLanguage].get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]));
-                        break;
+                    }
                 }
             });
         }

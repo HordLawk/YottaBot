@@ -19,22 +19,24 @@ module.exports = {
     execute: async function(message, args){
         const channelLanguage = message.guild ? message.client.guildData.get(message.guild.id).language : 'en';
         switch(args[0]){
-            case 'enable':
+            case 'enable': {
                 if(!['on', 'off'].includes(args[1])) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {gainExp: (args[1] === 'on')}});
                 message.client.guildData.get(message.guild.id).gainExp = (args[1] === 'on');
                 message.channel.send(message.client.langs[channelLanguage].get('xpEnable', [args[1]]));
-                break;
-            case 'stack':
+            }
+            break;
+            case 'stack': {
                 if(!['on', 'off'].includes(args[1])) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {dontStack: (args[1] === 'off')}});
                 message.client.guildData.get(message.guild.id).dontStack = (args[1] === 'off');
                 message.channel.send(message.client.langs[channelLanguage].get('xpStack', [args[1]]));
-                break;
-            case 'roles':
+            }
+            break;
+            case 'roles': {
                 if(!args[2]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 switch(args[1]){
-                    case 'set':
+                    case 'set': {
                         if(isNaN(parseInt(args[3], 10)) || !isFinite(parseInt(args[3], 10)) || (parseInt(args[3], 10) < 1)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                         let discordRole = message.guild.roles.cache.get((args[2].match(/^(?:<@&)?(\d{17,19})>?$/) || [])[1]) || message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){3}/, '').replace(/\s+\S+\s+$/, ''))) || message.guild.roles.cache.find(e => (e.name.startsWith(message.content.replace(/^(?:\S+\s+){3}/, '').replace(/\s+\S+\s+$/, ''))));
                         if(!discordRole || (discordRole.id === message.guild.id)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
@@ -61,8 +63,9 @@ module.exports = {
                             await newRole.save();
                         }
                         message.channel.send(message.client.langs[channelLanguage].get('setXpRole', [discordRole.name, parseInt(args[3], 10)]));
-                        break;
-                    case 'remove':
+                    }
+                    break;
+                    case 'remove': {
                         if(args[2] === 'all'){
                             await role.updateMany({
                                 guild: message.guild.id,
@@ -80,13 +83,13 @@ module.exports = {
                             }, {$set: {xp: null}});
                             message.channel.send(message.client.langs[channelLanguage].get('removeXpRole', [discordRole.name]));
                         }
-                        break;
-                    default:
-                        message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                        break;
+                    }
+                    break;
+                    default: message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 }
-                break;
-            case 'user':
+            }
+            break;
+            case 'user': {
                 if(!['add', 'remove', 'set'].includes(args[1]) || isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[2], 10) < 0)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 let mentions = args.slice(3, 13).join(' ').match(/\b\d{17,19}\b/g);
                 if(!mentions) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
@@ -97,15 +100,12 @@ module.exports = {
                 let members = await message.guild.members.fetch({user: mentions});
                 let query;
                 switch(args[1]){
-                    case 'add':
-                        query = {$inc: {xp: parseInt(args[2], 10)}};
-                        break;
-                    case 'remove':
-                        query = {$inc: {xp: -(parseInt(args[2], 10))}};
-                        break;
-                    case 'set':
-                        query = {$set: {xp: parseInt(args[2], 10)}};
-                        break;
+                    case 'add': query = {$inc: {xp: parseInt(args[2], 10)}};
+                    break;
+                    case 'remove': query = {$inc: {xp: -(parseInt(args[2], 10))}};
+                    break;
+                    case 'set': query = {$set: {xp: parseInt(args[2], 10)}};
+                    break;
                 }
                 await member.updateMany({
                     guild: message.guild.id,
@@ -131,8 +131,9 @@ module.exports = {
                     for(let discordMemberDoc of discordMemberDocs) await members.get(discordMemberDoc.userID).roles.set(members.get(discordMemberDoc.userID).roles.cache.filter(e => !roleDocs.some(ee => (e.id === ee.roleID))).map(e => e.id).concat(roleDocs.filter(e => (e.xp <= discordMemberDoc.xp)).slice(0, message.client.guildData.get(message.guild.id).dontStack ? 1 : undefined).map(e => e.roleID)));
                 }
                 message.channel.send(message.client.langs[channelLanguage].get('setUserXp'));
-                break;
-            case 'ignore':
+            }
+            break;
+            case 'ignore': {
                 if(!['role', 'channel'].includes(args[1]) || !['add', 'remove'].includes(args[2])) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 if(args[1] === 'role'){
                     let discordRole = message.guild.roles.cache.get((args[3].match(/^(?:<@&)?(\d{17,19})>?$/) || [])[1]) || message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){4}/, ''))) || message.guild.roles.cache.find(e => (e.name.startsWith(message.content.replace(/^(?:\S+\s+){4}/, ''))));
@@ -155,44 +156,44 @@ module.exports = {
                     });
                     message.channel.send(message.client.langs[channelLanguage].get('xpIgnoreChannel', [args[2], discordChannel]));
                 }
-                break;
-            case 'notify':
+            }
+            break;
+            case 'notify': {
                 if(!args[1]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 switch(args[1]){
                     case 'dm':
-                    case 'default':
+                    case 'default': {
                         await guild.findByIdAndUpdate(message.guild.id, {$set: {xpChannel: args[1]}});
                         message.client.guildData.get(message.guild.id).xpChannel = args[1];
                         message.channel.send(message.client.langs[channelLanguage].get('notifyDefault', [args[1]]));
-                        break;
-                    case 'none':
+                    }
+                    break;
+                    case 'none': {
                         await guild.findByIdAndUpdate(message.guild.id, {$set: {xpChannel: null}});
                         message.client.guildData.get(message.guild.id).xpChannel = null;
                         message.channel.send(message.client.langs[channelLanguage].get('notifyNone'));
-                        break;
-                    default:
+                    }
+                    break;
+                    default: {
                         let discordChannel = message.guild.channels.cache.get((args[1].match(/<#(\d{17,19})>/) || [])[1]) || message.client.channels.cache.get(args[1]);
                         if(!discordChannel || !discordChannel.isText()) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                         if(!message.guild.me.permissionsIn(discordChannel).has('SEND_MESSAGES')) return message.channel.send(message.client.langs[channelLanguage].get('sendMessages'));
                         await guild.findByIdAndUpdate(message.guild.id, {$set: {xpChannel: discordChannel.id}});
                         message.client.guildData.get(message.guild.id).xpChannel = discordChannel.id;
                         message.channel.send(message.client.langs[channelLanguage].get('notifyChannel', [discordChannel]));
-                        break;
+                    }
                 }
-                break;
-            case 'view':
+            }
+            break;
+            case 'view': {
                 if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
                 let notifs;
                 switch(message.client.guildData.get(message.guild.id).xpChannel){
-                    case 'default':
-                        notifs = message.client.langs[channelLanguage].get('notifyDefaultView');
-                        break;
-                    case 'dm':
-                        notifs = message.client.langs[channelLanguage].get('notifyDMView');
-                        break;
-                    default:
-                        notifs = message.client.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel) || message.client.langs[channelLanguage].get('notifyNoneView');
-                        break;
+                    case 'default': notifs = message.client.langs[channelLanguage].get('notifyDefaultView');
+                    break;
+                    case 'dm': notifs = message.client.langs[channelLanguage].get('notifyDMView');
+                    break;
+                    default: notifs = message.client.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel) || message.client.langs[channelLanguage].get('notifyNoneView');
                 }
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
@@ -215,8 +216,9 @@ module.exports = {
                 });
                 if(channels.length) embed.addField(message.client.langs[channelLanguage].get('xpViewIgnoredChannels'), channels.map(e => `<#${e._id}>`).join(' '));
                 message.channel.send(embed);
-                break;
-            case 'reset':
+            }
+            break;
+            case 'reset': {
                 let msg = message.channel.send(message.client.langs[channelLanguage].get('resetXpConfirm'));
                 await msg.react('✅');
                 await msg.react('❌');
@@ -234,10 +236,9 @@ module.exports = {
                     }, {xp: 0});
                     msg.edit(message.client.langs[channelLanguage].get('resetXp'));
                 });
-                break;
-            default:
-                message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                break;
+            }
+            break;
+            default: message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
         }
     },
 };

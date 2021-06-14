@@ -23,7 +23,7 @@ module.exports = {
         var roleDoc;
         switch(args[0]){
             case 'allow':
-            case 'deny':
+            case 'deny': {
                 if(!args[2]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 roleDoc = await role.findOne({
                     guild: message.guild.id,
@@ -43,8 +43,9 @@ module.exports = {
                 });
                 await roleDoc.save();
                 message.channel.send(message.client.langs[channelLanguage].get('permSuccess', [discordRole.name, args[0]]));
-                break;
-            case 'default':
+            }
+            break;
+            case 'default': {
                 if(!args[2]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 roleDoc = await role.findOne({
                     guild: message.guild.id,
@@ -61,8 +62,9 @@ module.exports = {
                 });
                 await roleDoc.save();
                 message.channel.send(message.client.langs[channelLanguage].get('defaultPermsSuccess', [discordRole.name]));
-                break;
-            case 'view':
+            }
+            break;
+            case 'view': {
                 roleDoc = await role.findOne({
                     guild: message.guild.id,
                     roleID: discordRole.id,
@@ -82,8 +84,9 @@ module.exports = {
                 const denied = roleDoc.commandPermissions.filter(e => !e.allow);
                 if(denied.length) embed.addField(message.client.langs[channelLanguage].get('permsDenied'), denied.map(e => `\`${e._id}\``).join(' '));
                 message.channel.send(embed);
-                break;
-            default: return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+            }
+            break;
+            default: message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
         }
     },
 };

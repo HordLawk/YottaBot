@@ -119,7 +119,7 @@ module.exports = {
             case 'lang404': return 'Idioma não suportado';
             case 'newLang': return 'Idioma do servidor atualizado';
             case 'configsEmbedAuthor': return 'Configurações do servidor';
-            case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\nIdioma: \`${vars[1]}\`\nRegistrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\`\nCanal de registro de warn: ${vars[3].warn ? `<#${vars[3].warn}>` : '`nenhum`'}\nCanal de registro de mute: ${vars[3].mute ? `<#${vars[3].mute}>` : '`nenhum`'}\nCanal de registro de kick: ${vars[3].kick ? `<#${vars[3].kick}>` : '`nenhum`'}\nCanal de registro de ban: ${vars[3].ban ? `<#${vars[3].ban}>` : '`nenhum`'}`;
+            case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\nIdioma: \`${vars[1]}\`\nRegistrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\`\nCanal de registro de warn: ${vars[3].warn ? `<#${vars[3].warn}>` : '`nenhum`'}\nCanal de registro de mute: ${vars[3].mute ? `<#${vars[3].mute}>` : '`nenhum`'}\nCanal de registro de kick: ${vars[3].kick ? `<#${vars[3].kick}>` : '`nenhum`'}\nCanal de registro de ban: ${vars[3].ban ? `<#${vars[3].ban}>` : '`nenhum`'}\nNúmero de dias de mensagens deletadas em bans: \`${vars[4]}\`\nCargo de mute: ${vars[5] ? `<@&${vars[5]}>` : '`nenhum`'}`;
             case 'betaCommand': return 'Esse comando atualmente está disponível apenas para servidor que ativaram funcionalidade beta nas configurações do bot';
             case 'premiumCommand': return `Esse comando é uma funcionalidade premium, use \`${vars[0]}premium\` para mais informações sobre se tornar premium`;
             case 'botWebhooks': return 'Eu preciso de permissão para gerenciar webhooks nesse canal';

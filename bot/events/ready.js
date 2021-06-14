@@ -1,6 +1,8 @@
 const channel = require('../../schemas/channel.js');
 const role = require('../../schemas/role.js');
 const menu = require('../../schemas/menu.js');
+const log = require('../../schemas/log.js');
+const {MessageEmbed} = require('discord.js');
 
 module.exports = {
     name: 'ready',
@@ -16,5 +18,37 @@ module.exports = {
         const roleDocs = await role.find({guild: {$in: client.guilds.cache.map(e => e.id)}});
         await role.deleteMany({_id: {$in: roleDocs.filter(e => !client.guilds.cache.get(e.guild).roles.cache.has(e.roleID)).map(e => e._id)}});
         await menu.deleteMany({channelID: {$nin: client.channels.cache.map(e => e.id)}});
+        const muteTimeout = () => {
+            setTimeout(async () => {
+                const unmutes = await log.find({
+                    type: 'mute',
+                    duration: {$lte: Date.now()},
+                    ongoing: true,
+                });
+                if(!unmutes.length) return muteTimeout();
+                await log.updateMany({_id: {$in: unmutes.map(e => e._id)}}, {$set: {ongoing: false}});
+                for(let unmuteDoc of unmutes){
+                    let guild = client.guilds.cache.get(unmuteDoc.guild);
+                    if(!guild) continue;
+                    let discordMember = await guild.members.fetch(unmuteDoc.target).catch(() => null);
+                    let discordChannel = guild.channels.cache.get(client.guildData.get(guild.id).modlogs.mute);
+                    if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(guild.me).has('SEND_MESSAGES') && discordChannel.permissionsFor(guild.me).has('EMBED_LINKS')){
+                        let embed = new MessageEmbed()
+                            .setColor(0x0000ff)
+                            .setAuthor(discordMember ? `${discordMember.user.tag} was unmuted` : 'Unmute', discordMember?.user.displayAvatarURL({dynamic: true}))
+                            .addField('Target', `<@${unmuteDoc.target}>\n${unmuteDoc.target}`, true)
+                            .addField('Reason', 'End of mute');
+                        await discordChannel.send(embed);
+                    };
+                    if(!guild.me.permissions.has('MANAGE_ROLES') || !client.guildData.get(guild.id).muteRoleID) continue;
+                    if(!discordMember) continue;
+                    let discordRole = guild.roles.cache.get(client.guildData.get(guild.id).muteRoleID);
+                    if(!discordRole || !discordRole.editable || !discordMember.roles.cache.has(discordRole.id)) continue;
+                    await discordMember.roles.remove(discordRole);
+                }
+                muteTimeout();
+            }, 10000);
+        }
+        muteTimeout();
     },
 };

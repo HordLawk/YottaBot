@@ -22,7 +22,7 @@ module.exports = {
         var channelDoc;
         switch(args[1]){
             case 'on':
-            case 'off':
+            case 'off': {
                 if(!args[2]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 channelDoc = await channel.findById(discordChannel.id) || new channel({
                     _id: discordChannel.id,
@@ -42,8 +42,9 @@ module.exports = {
                     message.channel.send(message.client.langs[channelLanguage].get('disableSome', [args[1], discordChannel]));
                 }
                 channelDoc.save();
-                break;
-            case 'view':
+            }
+            break;
+            case 'view':{
                 channelDoc = await channel.findById(discordChannel.id);
                 if(!channelDoc || !channelDoc.ignoreCommands.length) return message.channel.send(message.client.langs[channelLanguage].get('noDisabledCmds'));
                 const embed = new MessageEmbed()
@@ -56,8 +57,9 @@ module.exports = {
                     .setTimestamp()
                     .addField(message.client.langs[channelLanguage].get('disabledField'), channelDoc.ignoreCommands.map(e => `\`${e}\``).join(' '));
                 message.channel.send(embed);
-                break;
-            default: return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+            }
+            break;
+            default: message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
         }
     },
 };

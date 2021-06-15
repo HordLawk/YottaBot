@@ -50,7 +50,7 @@ const guildSchema = new Schema({
     dontStack: Boolean,
     xpChannel: {
         type: String,
-        default: 'current',
+        default: 'default',
     },
     alpha: Boolean,
     premium: Boolean,

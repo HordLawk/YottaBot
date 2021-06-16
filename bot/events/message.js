@@ -99,7 +99,16 @@ module.exports = {
         command.execute(message, args).catch(error => {
             console.error(error);
             message.channel.send(message.client.langs[channelLanguage].get('error', [command.name])).catch(() => null);
-            if(process.env.NODE_ENV === 'production') message.client.channels.cache.get(message.client.configs.errorlog).send(`Error: *${error.message}*\nMessage Author: ${message.author}\nMessage Content: *${message.content.replace(/\u002A/g, '\\*').slice(0, Math.floor(2000 - (60 + error.message.length + message.url.length + message.author.toString().length)))}*\nMessage URL: ${message.url}`).catch(console.error);
+            if(process.env.NODE_ENV === 'production') message.client.channels.cache.get(message.client.configs.errorlog).send(`Error: *${error.message}*\nMessage Author: ${message.author}\nMessage URL: ${message.url}`, {files: [
+                {
+                    name: 'content.txt',
+                    attachment: Buffer.from(message.content),
+                },
+                {
+                    name: 'stack.log',
+                    attachment: Buffer.from(error.stack),
+                },
+            ]}).catch(console.error);
         });
     },
 };

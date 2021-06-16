@@ -14,7 +14,16 @@ fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js
     console.error(error);
     console.log(e.name);
     console.log(args);
-    if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send(`Error: *${error.message}*\nEvent: ${e.name}\nArgs:\n${args.map(arg => arg.toString()).join('\n')}`).catch(console.error);
+    if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send(`Error: *${error.message}*\nEvent: ${e.name}`, {files: [
+        {
+            name: 'args.json',
+            attachment: Buffer.from(JSON.stringify(args)),
+        },
+        {
+            name: 'stack.log',
+            attachment: Buffer.from(error.stack),
+        },
+    ]}).catch(console.error);
 })));
 client.ws.on('INTERACTION_CREATE', console.log);
 (async () => {

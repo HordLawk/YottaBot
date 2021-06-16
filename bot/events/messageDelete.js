@@ -11,15 +11,11 @@ module.exports = {
         if(message.guild.me.permissions.has('VIEW_AUDIT_LOG')){
             let audits = await message.guild.fetchAuditLogs({type: 'MESSAGE_DELETE', limit: 1});
             if(audits.entries.first()){
-                if(!message.client.lastdelmsg.has(message.guild.id)){
-                    message.client.lastdelmsg.set(message.guild.id, {
-                        count: audits.entries.first().extra.count,
-                        id: audits.entries.first().id,
-                    });
-                }
-                else{
-                    if((audits.entries.first().extra.count != message.client.lastdelmsg.get(message.guild.id).count) || (audits.entries.first().id != message.client.lastdelmsg.get(message.guild.id).id)) executor = message.client.langs[channelLanguage].get('executor', [audits.entries.first().executor]);
-                }
+                if(message.client.lastdelmsg.has(message.guild.id) && ((audits.entries.first().extra.count != message.client.lastdelmsg.get(message.guild.id).count) || (audits.entries.first().id != message.client.lastdelmsg.get(message.guild.id).id))) executor = message.client.langs[channelLanguage].get('executor', [audits.entries.first().executor]);
+                message.client.lastdelmsg.set(message.guild.id, {
+                    count: audits.entries.first().extra.count,
+                    id: audits.entries.first().id,
+                });
             }
         }
         const channelDoc = await channel.findById(message.channel.id);

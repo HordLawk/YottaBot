@@ -14,7 +14,7 @@ module.exports = {
             case 'botEmbed': return 'Eu preciso de permissão para enviar links nesse canal';
             case 'botManageMessages': return 'Eu preciso de permissão para gerenciar mensagens nesse canal';
             case 'helpEmbedTitle': return 'Ajuda de comandos';
-            case 'helpEmbedDescription': return `[**Servidor de suporte**](https://discord.gg/${vars[0]})\n[**Me convide**](${vars[1]})\nUse \`${vars[2]}help (comando)\` para mais informações sobre um comando específico\n\n__Note que:__\n- \`(canal)\` = \`<(menção de canal)/(ID de canal)>\`\n- \`(usuário)\` = \`<(menção de usuário)/(ID de usuário)>\`\n- \`(cargo)\` = \`<(menção de cargo)/(ID de cargo)/(nome de cargo)>\`\n- \`(emoji)\` = \`<(emoji)/(nome de emoji personalizado)/(ID de emoji personalizado)>\``;
+            case 'helpEmbedDescription': return `**[Servidor de suporte](https://discord.gg/${vars[0]})**\n**[Me convide](${vars[1]})**\nUse \`${vars[2]}help (comando)\` para mais informações sobre um comando específico\n\n__Note que:__\n- \`(canal)\` = \`<(menção de canal)/(ID de canal)>\`\n- \`(usuário)\` = \`<(menção de usuário)/(ID de usuário)>\`\n- \`(cargo)\` = \`<(menção de cargo)/(ID de cargo)/(nome de cargo)>\`\n- \`(emoji)\` = \`<(emoji)/(nome de emoji personalizado)/(ID de emoji personalizado)>\``;
             case 'helpEmbedFooter': return `${vars[0]} comandos | [] = Opcional - () = Variável - </> = Qualquer`;
             case 'category0': return 'Comandos';
             case 'invalidCommand': return 'Esse não é um comando válido';
@@ -179,7 +179,7 @@ module.exports = {
             case 'logattachmentsOffSuccess': return 'Anexos não serão registrados';
             case 'premiumDescription': return 'Informações sobre se tornar premium';
             case 'alreadyPremium': return 'Esse servidor já tem acesso a funções premium';
-            case 'premiumEmbedDesc': return `Ainda não é possível comprar o modo premium, se você deseja solicitar parceria ou pagar pelo premium diretamente [**entre no servidor de suporte**](https://discord.gg/${vars[0]}) e contate os desenvolvedores`;
+            case 'premiumEmbedDesc': return `Ainda não é possível comprar o modo premium, se você deseja solicitar parceria ou pagar pelo premium diretamente **[entre no servidor de suporte](https://discord.gg/${vars[0]})** e contate os desenvolvedores`;
         }
     },
 };

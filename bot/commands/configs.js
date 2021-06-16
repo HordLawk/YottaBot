@@ -84,7 +84,7 @@ module.exports = {
                             case 'autosetup': {
                                 if(!['on', 'off'].includes(args[3])) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                                 await guild.findByIdAndUpdate(message.guild.id, {$set: {autoSetupMute: (args[3] === 'on')}});
-                                message.guild.guildData.get(message.guild.id).autoSetupMute = (args[3] === 'on');
+                                message.client.guildData.get(message.guild.id).autoSetupMute = (args[3] === 'on');
                                 message.channel.send(`Auto setup mute mode turned **${args[3]}**`);
                             }
                             break;

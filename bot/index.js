@@ -17,7 +17,7 @@ fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js
     if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send(`Error: *${error.message}*\nEvent: ${e.name}`, {files: [
         {
             name: 'args.json',
-            attachment: Buffer.from(JSON.stringify(args)),
+            attachment: Buffer.from(JSON.stringify(args, null, 4)),
         },
         {
             name: 'stack.log',

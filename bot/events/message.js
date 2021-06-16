@@ -63,10 +63,7 @@ module.exports = {
                 }
             });
         }
-        if(message.mentions.has(message.client.user, {
-            ignoreRoles: true,
-            ignoreEveryone: true,
-        })) return message.channel.send(message.client.langs[channelLanguage].get('mentionHelp', [prefix]));
+        if((new RegExp(`<@!?${message.client.user.id}>`)).test(message.content)) return message.channel.send(message.client.langs[channelLanguage].get('mentionHelp', [prefix]));
         if(!message.content.startsWith(prefix)) return;
         const userDoc = await user.findById(message.author.id);
         if(userDoc && userDoc.blacklisted) return;

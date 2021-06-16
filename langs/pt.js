@@ -29,8 +29,8 @@ module.exports = {
             case 'bad': return 'Ruim';
             case 'normal': return 'Normal';
             case 'good': return 'Bom';
-            case 'average': return 'Médio';
-            case 'current': return 'Atual';
+            case 'average': return 'Conexão';
+            case 'current': return 'Resposta';
             case 'invalidValue': return `Valor inválido. ${vars[0]}`;
             case 'maintenance': return 'Em manutenção, tente novamente mais tarde';
             case 'guildOnly': return 'Esse comando funciona apenas em servidores';

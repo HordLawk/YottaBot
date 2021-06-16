@@ -47,7 +47,7 @@ module.exports = {
                         if(!page) return;
                         page--;
                     }
-                    embed.setDescription(memberDocs.map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${i + 1} -** ${message.guild.members.cache.get(e.userID).user.tag} **|** \`${e.xp}xp\`${(e.userID === message.author.id) ? '__' : ''}`).slice(page * 20, (page + 1) * 20).join('\n'));
+                    embed.setDescription(memberDocs.map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${e.xp}xp\`${(e.userID === message.author.id) ? '__' : ''}`).slice(page * 20, (page + 1) * 20).join('\n'));
                     await msg.edit(embed);
                 });
                 col.on('end', () => msg.reactions.removeAll());

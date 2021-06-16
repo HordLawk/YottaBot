@@ -1,7 +1,7 @@
 {
   "name": "yottabot",
-  "version": "0.1.0",
-  "description": "",
+  "version": "1.1.1",
+  "description": "A levelroles and moderation focused Discord bot",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

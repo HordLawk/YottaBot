@@ -19,6 +19,7 @@ module.exports = {
         switch(args[0]){
             case 'lb':
             case 'rank': {
+                if(args[0] === 'lb') await message.channel.send('The `lb` argument is deprecated and will be removed at a future update, please use `rank` instead');
                 let msg = await message.channel.send('Loading...');
                 let members = await message.guild.members.fetch();
                 let memberDocs = await member.find({
@@ -47,7 +48,7 @@ module.exports = {
                         if(!page) return;
                         page--;
                     }
-                    embed.setDescription(memberDocs.map((e, i) => `**#${i + 1} -** ${message.guild.members.cache.get(e.userID).user.tag} **|** \`${e.xp}xp\``).slice(page * 20, (page + 1) * 20).join('\n'));
+                    embed.setDescription(memberDocs.map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${i + 1} -** ${message.guild.members.cache.get(e.userID).user.tag} **|** \`${e.xp}xp\`${(e.userID === message.author.id) ? '__' : ''}`).slice(page * 20, (page + 1) * 20).join('\n'));
                     await msg.edit(embed);
                 });
                 col.on('end', () => msg.reactions.removeAll());

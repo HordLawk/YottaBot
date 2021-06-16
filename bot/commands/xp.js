@@ -30,7 +30,7 @@ module.exports = {
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor('Xp ranking', message.guild.iconURL({dynamic: true}))
                     .setTimestamp()
-                    .setDescription(memberDocs.slice(0, 20).map((e, i) => `**#${i + 1} -** <@${e.userID}> **|** \`${e.xp}xp\``).join('\n'));
+                    .setDescription(memberDocs.slice(0, 20).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${e.xp}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
                 if(memberDocs.some(e => (e.userID === message.author.id))) embed.setFooter(`You are ranked at #${memberDocs.findIndex(e => (e.userID === message.author.id)) + 1}`);
                 await msg.edit('', embed);
                 await msg.react('⬅');

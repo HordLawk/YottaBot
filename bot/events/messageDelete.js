@@ -23,7 +23,7 @@ module.exports = {
             }
         }
         const channelDoc = await channel.findById(message.channel.id);
-        if(channelDoc && chanenlDoc.ignoreActions.includes('delmsg')) return;
+        if(channelDoc && channelDoc.ignoreActions.includes('delmsg')) return;
         const memb = message.guild.members.cache.get(message.author.id) || await message.guild.members.fetch(message.author.id).catch(() => null);
         if(memb){
             let roleDoc = await role.findOne({

@@ -70,11 +70,10 @@ module.exports = {
             }
             break;
             default: {
-                let id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
-                if(!id) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                let id = args[0]?.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
                 let user = await member.findOne({
                     guild: message.guild.id,
-                    userID: args[0] || message.author.id,
+                    userID: id || message.author.id,
                 });
                 if(!user) return message.channel.send('This member does not yet have any xp');
                 let roleDocs = await role.find({

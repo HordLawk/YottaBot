@@ -66,7 +66,7 @@ module.exports = {
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor('Xp roles', message.guild.iconURL({dynamic: true}))
-                    .setDescription(roles.map(e => `\`${e.xp}\` **-** <@&${e.roleID}>`).join('\n'));
+                    .setDescription(roles.map(e => `\`${(new Array(roles[0].xp.toString().length - e.xp.toString().length)).fill(' ').join('')}${e.xp}\` **-** <@&${e.roleID}>`).join('\n'));
                 message.channel.send(embed);
             }
             break;

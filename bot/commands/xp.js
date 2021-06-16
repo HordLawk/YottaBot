@@ -15,7 +15,7 @@ module.exports = {
     execute: async function(message, args){
         const channelLanguage = message.guild ? message.client.guildData.get(message.guild.id).language : 'en';
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
-        if(!message.client.guildData.get(message.guild.id).gainExp) return message.chanenl.send('The xp system is disabled in this server');
+        if(!message.client.guildData.get(message.guild.id).gainExp) return message.channel.send('The xp system is disabled in this server');
         switch(args[0]){
             case 'lb':
             case 'rank': {

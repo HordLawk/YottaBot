@@ -7,8 +7,8 @@ module.exports = {
     name: 'xp',
     description: lang => 'Tells a member\'s xp in a server',
     aliases: ['xp', 'exp', 'rank'],
-    usage: lang => ['[<(user)/rank>]'],
-    example: ['xp @LordHawk#0572', 'xp rank'],
+    usage: lang => ['[<(user)/rank/roles>]'],
+    example: ['xp @LordHawk#0572', 'xp rank', 'xp roles'],
     cooldown: 5,
     categoryID: 0,
     guildOnly: true,
@@ -19,6 +19,7 @@ module.exports = {
         switch(args[0]){
             case 'lb':
             case 'rank': {
+                let msg = await message.channel.send('Loading...');
                 let members = await message.guild.members.fetch();
                 let memberDocs = await member.find({
                     guild: message.guild.id,
@@ -29,9 +30,9 @@ module.exports = {
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor('Xp ranking', message.guild.iconURL({dynamic: true}))
                     .setTimestamp()
-                    .setDescription(memberDocs.slice(0, 20).map((e, i) => `**#${i + 1} -** ${message.guild.members.cache.get(e.userID).user.tag} **|** \`${e.xp}xp\``).join('\n'));
+                    .setDescription(memberDocs.slice(0, 20).map((e, i) => `**#${i + 1} -** <@${e.userID}> **|** \`${e.xp}xp\``).join('\n'));
                 if(memberDocs.some(e => (e.userID === message.author.id))) embed.setFooter(`You are ranked at #${memberDocs.findIndex(e => (e.userID === message.author.id)) + 1}`);
-                let msg = await message.channel.send(embed);
+                await msg.edit(embed);
                 await msg.react('⬅');
                 await msg.react('➡');
                 let col = msg.createReactionCollector((r, u) => (['➡', '⬅'].includes(r.emoji.name) && (u.id === message.author.id)), {time: 600000});
@@ -46,7 +47,7 @@ module.exports = {
                         if(!page) return;
                         page--;
                     }
-                    embed.setDescription(memberDocs.slice(page * 20, (page + 1) * 20).map((e, i) => `**#${i + 1} -** ${message.guild.members.cache.get(e.userID).user.tag} **|** \`${e.xp}xp\``).join('\n'));
+                    embed.setDescription(memberDocs.map((e, i) => `**#${i + 1} -** ${message.guild.members.cache.get(e.userID).user.tag} **|** \`${e.xp}xp\``).slice(page * 20, (page + 1) * 20).join('\n'));
                     await msg.edit(embed);
                 });
                 col.on('end', () => msg.reactions.removeAll());
@@ -65,7 +66,7 @@ module.exports = {
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor('Xp roles', message.guild.iconURL({dynamic: true}))
-                    .setDescription(roles.map(e => `<@&${e.roleID}> **-** \`${e.xp}\``).join('\n'));
+                    .setDescription(roles.map(e => `\`${e.xp}\` **-** <@&${e.roleID}>`).join('\n'));
                 message.channel.send(embed);
             }
             break;

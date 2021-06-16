@@ -17,9 +17,8 @@ module.exports = {
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
         if(!message.client.guildData.get(message.guild.id).gainExp) return message.channel.send('The xp system is disabled in this server');
         switch(args[0]){
-            case 'lb':
+            case 'lb': await message.channel.send('The `lb` argument is deprecated and will be removed at a future update, please use `rank` instead');
             case 'rank': {
-                if(args[0] === 'lb') await message.channel.send('The `lb` argument is deprecated and will be removed at a future update, please use `rank` instead');
                 let msg = await message.channel.send('Loading...');
                 let members = await message.guild.members.fetch();
                 let memberDocs = await member.find({

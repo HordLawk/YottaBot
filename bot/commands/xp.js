@@ -32,7 +32,7 @@ module.exports = {
                     .setTimestamp()
                     .setDescription(memberDocs.slice(0, 20).map((e, i) => `**#${i + 1} -** <@${e.userID}> **|** \`${e.xp}xp\``).join('\n'));
                 if(memberDocs.some(e => (e.userID === message.author.id))) embed.setFooter(`You are ranked at #${memberDocs.findIndex(e => (e.userID === message.author.id)) + 1}`);
-                await msg.edit(embed);
+                await msg.edit('', embed);
                 await msg.react('⬅');
                 await msg.react('➡');
                 let col = msg.createReactionCollector((r, u) => (['➡', '⬅'].includes(r.emoji.name) && (u.id === message.author.id)), {time: 600000});

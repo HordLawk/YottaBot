@@ -32,7 +32,7 @@ module.exports = {
         const hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookID || message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookToken || message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
         const embed = new MessageEmbed()
-            .setColor(message.guild.me.displayColor || 0xff0000)
+            .setColor(0xff0000)
             .setFooter(message.client.langs[channelLanguage].get('delmsgEmbedFooter', [message.author.id]))
             .setTimestamp(message.createdAt)
             .setAuthor(message.client.langs[channelLanguage].get('delmsgEmbedAuthor'), message.author.displayAvatarURL({

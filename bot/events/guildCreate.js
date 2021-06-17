@@ -13,7 +13,7 @@ module.exports = {
         const embed = new MessageEmbed()
             .setColor(0x00ff00)
             .setAuthor('Joined Guild', guild.iconURL({dynamic: true}))
-            .setDescription(`${content}Member count: ${guild.memberCount}\nID: ${guild.id}\nName: ${guild.name}\nOwner: ${guild.owner.user} (${guild.owner.user.tag})\nRegion: ${guild.region}\nFeatures:\`\`\`${guild.features.join('\n')}\`\`\``);
+            .setDescription(`${content}Member count: ${guild.memberCount}\nID: ${guild.id}\nName: ${guild.name}\nOwner: <@${guild.ownerID}>\nRegion: ${guild.region}\nFeatures:\`\`\`${guild.features.join('\n')}\`\`\``);
         guild.client.channels.cache.get(guild.client.configs.guildlog).send(embed);
     },
 };

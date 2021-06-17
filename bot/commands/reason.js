@@ -23,8 +23,8 @@ module.exports = {
             guild: message.guild.id,
         });
         if(!current) return message.channel.send('Case not found');
-        const member = await message.guild.members.fetch(current.executor).catch(() => null);
-        if(current.executor && member && (current.executor != message.author.id) && (message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0)) return message.channel.send('You can\'t edit this case');
+        const member = current.executor && await message.guild.members.fetch(current.executor).catch(() => null);
+        if(member && (current.executor != message.author.id) && (message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0)) return message.channel.send('You can\'t edit this case');
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
         current.reason = reason;
         await current.save();

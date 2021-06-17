@@ -18,7 +18,8 @@ module.exports = {
         const channelLanguage = (message.channel.type != 'dm') ? message.client.guildData.get(message.guild.id).language : 'en';
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
         if(!message.member) return;
-        const member = await message.guild.members.fetch(args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1]).catch(() => null);
+        const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
+        const member = id && await message.guild.members.fetch(id).catch(() => null);
         if(!member) return message.channel.send('Member not found');
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
         if(member.user.bot) return message.channel.send('I can\'t warn a bot');

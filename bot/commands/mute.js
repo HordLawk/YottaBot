@@ -18,7 +18,8 @@ module.exports = {
         const channelLanguage = message.guild ? message.client.guildData.get(message.guild.id).language : 'en';
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
         if(!message.member) return;
-        const member = await message.guild.members.fetch(args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1]).catch(() => null);
+        const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
+        const member = id && await message.guild.members.fetch(id).catch(() => null);
         if(!member) return message.channel.send('Member not found');
         if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return message.channel.send('You can\'t mute this member');
         const duration = args[1] && (((parseInt(args[1].match(/(\d+)d/)?.[1], 10) * 86400000) || 0) + ((parseInt(args[1].match(/(\d+)h/)?.[1], 10) * 3600000) || 0) + ((parseInt(args[1].match(/(\d+)m/)?.[1], 10) * 60000) || 0));

@@ -11,7 +11,7 @@ module.exports = {
         client.user.setActivity("pinging territory", {type:'COMPETING'});
         const application = await client.fetchApplication();
         client.configs.owner = application.owner;
-        await client.channels.get(client.configs.bootlog).send(`Connected with ping \`${client.ws.ping}ms\`!`);
+        await client.channels.cache.get(client.configs.bootlog).send(`Connected with ping \`${client.ws.ping}ms\`!`);
         await channel.deleteMany({
             _id: {$nin: client.channels.cache.map(e => e.id)},
             guild: {$in: client.guilds.cache.map(e => e.id)},

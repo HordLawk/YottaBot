@@ -6,7 +6,7 @@ module.exports = {
     active: true,
     name: 'ban',
     description: lang => 'Bans an user\nAlso accepts a media attachment',
-    aliases: ['b'],
+    aliases: ['b', 'forceban', 'hackban'],
     usage: lang => ['(user) (reason)'],
     example: ['@LordHawk#0572 spammer'],
     cooldown: 3,

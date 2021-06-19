@@ -29,5 +29,5 @@ client.ws.on('INTERACTION_CREATE', console.log);
 (async () => {
     const guilds = await guild.find({});
     client.guildData = new Discord.Collection(guilds.map(e => [e._id, e]));
-    client.login(process.env.TOKEN);
+    client.login();
 })();

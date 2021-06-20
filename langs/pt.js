@@ -5,7 +5,7 @@ module.exports = {
             case 'mentionHelp': return `Use \`${vars[0]}help\` para ver todos os meus comandos!`;
             case 'noArgs': return `Você não forneceu nenhum argumento, ${vars[0]}!\nO uso correto seria:\n${vars[3].map(e => `\`${vars[1]}${vars[2]} ${e}\``).join('\n')}`;
             case 'cooldown': return `Por favor espere mais ${vars[0]} segundo(s) antes de usar o comando \`${vars[1]}\` novamente`;
-            case 'error': return `Houve um erro ao tentar executar o comando \`${vars[0]}\`!`;
+            case 'error': return `Houve um erro ao tentar executar o comando \`${vars[0]}\`\nO problema foi enviado à equipe de suporte e será corrigido no futuro proximo`;
             case 'helpDescription': return 'Lista todos os comandos ou mostra informações sobre um específico';
             case 'helpUsage': return '[(comando)]';
             case 'pingDescription': return 'Ping!';

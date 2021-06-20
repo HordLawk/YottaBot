@@ -23,7 +23,7 @@ module.exports = {
             return message.client.langs[channelLanguage].get('good');
         }
         const embed = new MessageEmbed()
-            .setAuthor('Pong!', 'https://cdn.discordapp.com/emojis/468893394052186132.png')
+            .setTitle('🏓 Pong!')
             .setColor(hex(message.client.ws.ping))
             .addField(message.client.langs[channelLanguage].get('average'), `${message.client.ws.ping}ms`, true)
             .setFooter(foot(message.client.ws.ping))

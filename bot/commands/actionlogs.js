@@ -17,18 +17,17 @@ module.exports = {
     guildOnly: true,
     execute: async function(message, args){
         const channelLanguage = (message.channel.type != 'dm') ? message.client.guildData.get(message.guild.id).language : 'en';
-        let oldHook, hook;
         switch(args[0]){
             case 'defaultchannel': {
                 if(!args[1]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 let discordChannel = message.guild.channels.cache.get((args[1].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
                 if(!discordChannel || !discordChannel.isText()) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 if(!message.guild.me.permissionsIn(discordChannel).has('MANAGE_WEBHOOKS')) return message.channel.send(message.client.langs[channelLanguage].get('botWebhooks'));
-                hook = await discordChannel.createWebhook(message.client.user.username, {
+                let hook = await discordChannel.createWebhook(message.client.user.username, {
                     avatar: message.client.user.avatarURL({size: 4096}),
                     reason: message.client.langs[channelLanguage].get('newDefaultHookReason'),
                 });
-                oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
+                let oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
                 if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelID)).has('MANAGE_WEBHOOKS')) await oldHook.delete(message.client.langs[channelLanguage].get('oldDefaultHookReason'));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {
                     defaultLogsHookID: hook.id,
@@ -42,9 +41,9 @@ module.exports = {
             case 'set': {
                 if((args.length < 3) || !message.client.configs.actions.includes(args[1])) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 if(args[2] === 'default'){
-                    hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
+                    let hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
                     if(!hook) return message.channel.send(message.client.langs[channelLanguage].get('noDefaultLog'));
-                    oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
+                    let oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
                     if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelID)).has('MANAGE_WEBHOOKS')) await oldHook.delete(message.client.langs[channelLanguage].get('oldHookReason', [message.client.langs[channelLanguage].get(`action${args[1]}`)]));
                     let guildDoc = await guild.findById(message.guild.id);
                     if(!guildDoc.actionlogs.id(args[1])){
@@ -62,11 +61,11 @@ module.exports = {
                     let discordChannel = message.guild.channels.cache.get((args[2].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
                     if(!discordChannel || !discordChannel.isText()) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                     if(!message.guild.me.permissionsIn(discordChannel).has('MANAGE_WEBHOOKS')) return message.channel.send(message.client.langs[channelLanguage].get('botWebhooks'));
-                    hook = await discordChannel.createWebhook(message.client.user.username, {
+                    let hook = await discordChannel.createWebhook(message.client.user.username, {
                         avatar: message.client.user.avatarURL({size: 4096}),
                         reason: message.client.langs[channelLanguage].get('newHookReason', [message.client.langs[channelLanguage].get(`action${args[1]}`)]),
                     });
-                    oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
+                    let oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
                     if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelID)).has('MANAGE_WEBHOOKS')) await oldHook.delete(message.client.langs[channelLanguage].get('oldHookReason', [args[1]]));
                     let guildDoc = await guild.findById(message.guild.id);
                     if(!guildDoc.actionlogs.id(args[1])){
@@ -88,7 +87,7 @@ module.exports = {
             break;
             case 'remove': {
                 if(!args[1] || !message.client.configs.actions.includes(args[1]) || !message.client.configs.actions.includes(args[1])) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
+                let oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
                 if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelID)).has('MANAGE_WEBHOOKS')) await oldHook.delete(message.client.langs[channelLanguage].get('oldHookReason', [args[1]]));
                 let guildDoc = await guild.findById(message.guild.id);
                 if(guildDoc.actionlogs.id(args[1])){
@@ -111,7 +110,7 @@ module.exports = {
                             if(!channelDoc || !channelDoc.ignoreActions.length) return message.channel.send(message.client.langs[channelLanguage].get('noIgnoredActionsChannel'));
                             let embed = new MessageEmbed()
                                 .setColor(message.guild.me.displayColor || 0x8000ff)
-                                .setAuthor(message.client.langs[channelLanguage].get('ignoredActionsChannelEmbedAuthor'), message.guil.iconURL({
+                                .setAuthor(message.client.langs[channelLanguage].get('ignoredActionsChannelEmbedAuthor'), message.guild.iconURL({
                                     size: 4096,
                                     dynamic: true,
                                 }))
@@ -132,7 +131,7 @@ module.exports = {
                             if(!roleDoc) return message.channel.send(message.client.langs[channelLanguage].get('noIgnoredActionsRole'));
                             let embed = new MessageEmbed()
                                 .setColor(message.guild.me.displayColor || 0x8000ff)
-                                .setAuthor(message.client.langs[channelLanguage].get('ignoredActionsRoleEmbedAuthor'), message.guil.iconURL({
+                                .setAuthor(message.client.langs[channelLanguage].get('ignoredActionsRoleEmbedAuthor'), message.guild.iconURL({
                                     size: 4096,
                                     dynamic: true,
                                 }))
@@ -238,7 +237,7 @@ module.exports = {
             break;
             case 'view': {
                 if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
-                hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
+                let hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor(message.client.langs[channelLanguage].get('logsViewEmbedAuthor'), message.guild.iconURL({

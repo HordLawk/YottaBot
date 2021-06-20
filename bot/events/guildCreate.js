@@ -3,6 +3,7 @@ const {MessageEmbed} = require('discord.js');
 module.exports = {
     name: 'guildCreate',
     execute: async guild => {
+        if(process.env.NODE_ENV === 'development') return;
         var content = '';
         if(guild.me.permissions.has('MANAGE_SERVER')){
             let integrations = await guild.fetchIntegrations({includeApplications: true});
@@ -14,6 +15,7 @@ module.exports = {
             .setColor(0x00ff00)
             .setAuthor('Joined Guild', guild.iconURL({dynamic: true}))
             .setDescription(`${content}Member count: ${guild.memberCount}\nID: ${guild.id}\nName: ${guild.name}\nOwner: <@${guild.ownerID}>\nRegion: ${guild.region}\nFeatures:\`\`\`${guild.features.join('\n')}\`\`\``);
-        guild.client.channels.cache.get(guild.client.configs.guildlog).send(embed);
+        await guild.client.channels.cache.get(guild.client.configs.guildlog).send(embed);
+        guild.client.channels.cache.get(guild.client.configs.guildlog).setTopic(guild.client.guilds.size);
     },
 };

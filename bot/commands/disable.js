@@ -19,12 +19,11 @@ module.exports = {
         if(args.length < 2) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
         const discordChannel = message.guild.channels.cache.get((args[0].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[0]);
         if(!discordChannel || !discordChannel.isText()) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-        var channelDoc;
         switch(args[1]){
             case 'on':
             case 'off': {
                 if(!args[2]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                channelDoc = await channel.findById(discordChannel.id) || new channel({
+                let channelDoc = await channel.findById(discordChannel.id) || new channel({
                     _id: discordChannel.id,
                     guild: message.guild.id,
                 });
@@ -45,7 +44,7 @@ module.exports = {
             }
             break;
             case 'view':{
-                channelDoc = await channel.findById(discordChannel.id);
+                let channelDoc = await channel.findById(discordChannel.id);
                 if(!channelDoc || !channelDoc.ignoreCommands.length) return message.channel.send(message.client.langs[channelLanguage].get('noDisabledCmds'));
                 const embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)

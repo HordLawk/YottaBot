@@ -20,12 +20,11 @@ module.exports = {
         if(args.length < 2) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
         const discordRole = message.guild.roles.cache.get((args[1].match(/<@&(\d{17,19})>/) || [])[1]) || message.guild.roles.cache.get(args[1]) || message.guild.roles.cache.find(e => (e.name === args[1].replace(/"/g, ''))) || message.guild.roles.cache.find(e => (e.name.startsWith(args[1].replace(/"/g, ''))));
         if(!discordRole) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-        var roleDoc;
         switch(args[0]){
             case 'allow':
             case 'deny': {
                 if(!args[2]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                roleDoc = await role.findOne({
+                let roleDoc = await role.findOne({
                     guild: message.guild.id,
                     roleID: discordRole.id,
                 }) || new role({
@@ -47,7 +46,7 @@ module.exports = {
             break;
             case 'default': {
                 if(!args[2]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                roleDoc = await role.findOne({
+                let roleDoc = await role.findOne({
                     guild: message.guild.id,
                     roleID: discordRole.id,
                     commandPermissions: {$ne: []},
@@ -65,7 +64,7 @@ module.exports = {
             }
             break;
             case 'view': {
-                roleDoc = await role.findOne({
+                let roleDoc = await role.findOne({
                     guild: message.guild.id,
                     roleID: discordRole.id,
                     commandPermissions: {$ne: []},

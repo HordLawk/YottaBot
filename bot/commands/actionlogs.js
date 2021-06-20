@@ -117,7 +117,7 @@ module.exports = {
                                 .setDescription(message.client.langs[channelLanguage].get('ignoredActionsChannelEmbedDesc', [discordChannel]))
                                 .setTimestamp()
                                 .setFooter(message.client.langs[channelLanguage].get('ignoredActionsEmbedFooter', [channelDoc.ignoreActions.length]))
-                                .addField(message.client.langs[channelLanguage].get('ignoredActionsEmbedActionsTitle'), channelDoc.ignoreActions.map(e => message.client.langs[channelLanguage].get(`action${e._id}`)).join(', '));
+                                .addField(message.client.langs[channelLanguage].get('ignoredActionsEmbedActionsTitle'), channelDoc.ignoreActions.map(e => message.client.langs[channelLanguage].get(`action${e}`)).join(', '));
                             message.channel.send(embed);
                         }
                         else{
@@ -138,7 +138,7 @@ module.exports = {
                                 .setDescription(message.client.langs[channelLanguage].get('ignoredActionsRoleEmbedDesc', [discordRole]))
                                 .setTimestamp()
                                 .setFooter(message.client.langs[channelLanguage].get('ignoredActionsEmbedFooter', [roleDoc.ignoreActions.length]))
-                                .addField(message.client.langs[channelLanguage].get('ignoredActionsEmbedActionsTitle'), roleDoc.ignoreActions.map(e => message.client.langs[channelLanguage].get(`action${e._id}`)).join(', '));
+                                .addField(message.client.langs[channelLanguage].get('ignoredActionsEmbedActionsTitle'), roleDoc.ignoreActions.map(e => message.client.langs[channelLanguage].get(`action${e}`)).join(', '));
                             message.channel.send(embed);
                         }
                     }

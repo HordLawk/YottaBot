@@ -93,6 +93,7 @@ module.exports = {
         }
         timestamps.set(message.author.id, now);
         setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+        message.channel.startTyping();
         command.execute(message, args).catch(error => {
             console.error(error);
             message.channel.send(message.client.langs[channelLanguage].get('error', [command.name])).catch(() => null);
@@ -105,7 +106,7 @@ module.exports = {
                     name: 'stack.log',
                     attachment: Buffer.from(error.stack),
                 },
-            ]}).catch(console.error);
+            ]}).catch(console.error).finally(() => message.channel.stopTyping());
         });
     },
 };

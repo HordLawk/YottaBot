@@ -25,7 +25,7 @@ module.exports = {
         const discordRole = message.guild.roles.cache.get(message.client.guildData.get(message.guild.id).muteRoleID);
         if(member){
             if(!discordRole) return message.channel.send('Mute role not found');
-            if(!discordRole.editable) return message.channel.send('I can\'t manage the mute role');
+            if(!discordRole.editable || discordRole.managed) return message.channel.send('I can\'t manage the mute role');
         }
         const mute = await log.findOneAndUpdate({
             target: id,

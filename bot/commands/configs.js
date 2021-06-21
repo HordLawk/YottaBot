@@ -75,7 +75,7 @@ module.exports = {
                             case 'role': {
                                 let discordRole = message.guild.roles.cache.get(args[3]);
                                 if(!discordRole) return message.channel.send('Role not found');
-                                if(!discordRole.editable) return message.channel.send('I can\'t manage this role');
+                                if(!discordRole.editable || discordRole.managed) return message.channel.send('I can\'t manage this role');
                                 await guild.findByIdAndUpdate(message.guild.id, {$set: {muteRoleID: discordRole.id}});
                                 message.client.guildData.get(message.guild.id).muteRoleID = discordRole.id;
                                 message.channel.send(`Mute role set to **${discordRole.name}**`);

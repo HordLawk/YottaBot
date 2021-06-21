@@ -32,7 +32,7 @@ module.exports = {
         const reason = message.content.replace(/^(?:\S+\s+){2}\S+\s*/, '').slice(0, 500);
         var discordRole = message.guild.roles.cache.get(message.client.guildData.get(message.guild.id).muteRoleID);
         if(!message.guild.me.permissions.has('MANAGE_ROLES')) return message.channel.send('I can\'t manage roles in this server');
-        if(discordRole && !discordRole.editable) return message.channel.send('I can\'t give the mute role to users');
+        if(discordRole && (!discordRole.editable || discordRole.managed)) return message.channel.send('I can\'t give the mute role to users');
         const guildDoc = await guild.findById(message.guild.id);
         if(!discordRole){
             if(!message.client.guildData.get(message.guild.id).autoSetupMute) return message.channel.send('No mute role was defined and the auto setup mute mode is disabled');

@@ -106,7 +106,7 @@ module.exports = {
                     name: 'stack.log',
                     attachment: Buffer.from(error.stack),
                 },
-            ]}).catch(console.error).finally(() => message.channel.stopTyping());
-        });
+            ]}).catch(console.error);
+        }).finally(() => message.channel.stopTyping());
     },
 };

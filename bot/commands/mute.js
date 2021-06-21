@@ -75,14 +75,14 @@ module.exports = {
         const m = Math.floor((duration % 3600000) / 60000);
         const formattedDuration = `${d ? `${d}d` : ''}${h ? `${h}h` : ''}${m ? `${m}m` : ''}`;
         const embed = new MessageEmbed()
-            .setTimestamp(current.duration)
+            .setTimestamp()
             .setColor(0xff8000)
             .setAuthor(`${message.author.tag} muted ${member.user.tag}`, member.user.displayAvatarURL({dynamic: true}))
             .setDescription(`[Action message](${message.url})`)
             .addField('Target', `${member}\n${member.id}`, true)
             .addField('Executor', message.author, true)
-            .addField('Duration', formattedDuration, true)
-            .setFooter(`Case ${current.id} | Ends at:`, message.guild.iconURL({dynamic: true}));
+            .addField('Duration', `${formattedDuration}\n<t:${Math.floor(current.duration.getTime() / 1000)}:R>`, true)
+            .setFooter(`Case ${current.id}`, message.guild.iconURL({dynamic: true}));
         if(reason) embed.addField('Reason', reason);
         if(current.image) embed.setImage(current.image);
         const msg = await discordChannel.send(embed);

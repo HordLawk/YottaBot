@@ -19,7 +19,6 @@ module.exports = {
         switch(args[0]){
             case 'lb': await message.channel.send('The `lb` argument is deprecated and will be removed at a future update, please use `rank` instead');
             case 'rank': {
-                let msg = await message.channel.send('Loading...');
                 let members = await message.guild.members.fetch();
                 let memberDocs = await member.find({
                     guild: message.guild.id,
@@ -32,7 +31,7 @@ module.exports = {
                     .setTimestamp()
                     .setDescription(memberDocs.slice(0, 20).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${e.xp}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
                 if(memberDocs.some(e => (e.userID === message.author.id))) embed.setFooter(`You are ranked at #${memberDocs.findIndex(e => (e.userID === message.author.id)) + 1}`);
-                await msg.edit('', embed);
+                let msg = await message.channel.send(embed);
                 await msg.react('⬅');
                 await msg.react('➡');
                 let col = msg.createReactionCollector((r, u) => (['➡', '⬅'].includes(r.emoji.name) && (u.id === message.author.id)), {time: 600000});

@@ -5,7 +5,7 @@ module.exports = {
     execute: async guild => {
         if(process.env.NODE_ENV === 'development') return;
         var content = '';
-        if(guild.me.permissions.has('MANAGE_SERVER')){
+        if(guild.me.permissions.has('MANAGE_GUILD')){
             let integrations = await guild.fetchIntegrations({includeApplications: true});
             let adder = integrations.find(e => (e.application.id === guild.client.user.id)).user;
             content = `Added by: ${adder} (${adder.tag})\n`;

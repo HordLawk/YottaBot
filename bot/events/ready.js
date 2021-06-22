@@ -8,7 +8,7 @@ module.exports = {
     name: 'ready',
     execute: async client => {
         console.log(`Logged in as ${client.user.tag}!`);
-        client.user.setActivity("pinging territory", {type:'COMPETING'});
+        client.user.setActivity("your pings", {type:'LISTENING'});
         const application = await client.fetchApplication();
         client.configs.owner = application.owner;
         if(process.env.NODE_ENV === 'production') await client.channels.cache.get(client.configs.bootlog).send(`Connected with ping \`${client.ws.ping}ms\`!`);

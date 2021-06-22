@@ -15,3 +15,13 @@ The default prefix is `y!`
 `(role)` = `<(role mention)/(role ID)/(role name)>`
 
 `(emoji)` = `<(emoji)/(custom emoji name)/(custom emoji ID)>`
+
+## W.i.P
+- [ ] finish this `README`
+- [ ] organize the [support server](https://discord.gg/eNcsvsy)
+- [ ] finish pt-br translations
+- [ ] add missing moderation commands `massban` an `kick`
+- [ ] transfer the process to a web dyno
+- [ ] add premium feature "reward time spent in vcs with xp"
+- [ ] add actionlog for bulkdelete
+- [ ] add rss feeds for youtube notifications

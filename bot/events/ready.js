@@ -38,6 +38,7 @@ module.exports = {
                             .setColor(0x0000ff)
                             .setAuthor(discordMember ? `${discordMember.user.tag} was unmuted` : 'Unmute', discordMember?.user.displayAvatarURL({dynamic: true}))
                             .addField('Target', `<@${unmuteDoc.target}>\n${unmuteDoc.target}`, true)
+                            .setTimestamp()
                             .addField('Reason', 'End of mute');
                         let msg = await discordChannel.messages.fetch(unmuteDoc.logMessage).catch(() => null);
                         if(msg) embed.setDescription(`[Referred mute](${msg.url})`);

@@ -47,6 +47,7 @@ module.exports = {
             .setDescription(`[Action message](${message.url})`)
             .addField('Target', `${ban.user}\n${ban.user.id}`, true)
             .addField('Executor', message.author, true)
+            .setTimestamp()
             .setFooter(`Case ${current.id}`, message.guild.iconURL({dynamic: true}));
         if(reason) embed.addField('Reason', reason);
         if(current.image) embed.setImage(current.image);

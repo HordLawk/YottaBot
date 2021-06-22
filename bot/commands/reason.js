@@ -45,7 +45,7 @@ module.exports = {
             let h = Math.floor((current.duration.getTime() % 86400000) / 3600000);
             let m = Math.floor((current.duration.getTime() % 3600000) / 60000);
             let s = Math.floor((current.duration.getTime() % 60000) / 1000);
-            embed.adFieldd('Duration', `${d ? `${d}d` : ''}${h ? `${h}h` : ''}${m ? `${m}m` : ''}${s ? `${s}s` : ''}\n<t:${Math.floor(current.duration.getTime() / 1000)}:R>`);
+            embed.addField('Duration', `${d ? `${d}d` : ''}${h ? `${h}h` : ''}${m ? `${m}m` : ''}${s ? `${s}s` : ''}\n<t:${Math.floor(current.duration.getTime() / 1000)}:R>`);
         }
         embed.addField('Reason', reason);
         msg.edit(embed);

@@ -16,7 +16,7 @@ The default prefix is `y!`
 
 `(emoji)` = `<(emoji)/(custom emoji name)/(custom emoji ID)>`
 
-## W.i.P
+## W.I.P
 - [ ] finish this `README`
 - [ ] organize the [support server](https://discord.gg/eNcsvsy)
 - [ ] finish pt-br translations

@@ -41,10 +41,11 @@ module.exports = {
         });
         if(current.executor) embed.addField('Executor', `<@${current.executor}>`, true);
         if(current.duration){
-            let d = Math.floor(current.duration.getTime() / 86400000);
-            let h = Math.floor((current.duration.getTime() % 86400000) / 3600000);
-            let m = Math.floor((current.duration.getTime() % 3600000) / 60000);
-            let s = Math.floor((current.duration.getTime() % 60000) / 1000);
+            let duration = current.duration.getTime() - current.timeStamp.getTime();
+            let d = Math.floor(duration / 86400000);
+            let h = Math.floor((duration % 86400000) / 3600000);
+            let m = Math.floor((duration % 3600000) / 60000);
+            let s = Math.floor((duration % 60000) / 1000);
             embed.addField('Duration', `${d ? `${d}d` : ''}${h ? `${h}h` : ''}${m ? `${m}m` : ''}${s ? `${s}s` : ''}\n<t:${Math.floor(current.duration.getTime() / 1000)}:R>`);
         }
         embed.addField('Reason', reason);

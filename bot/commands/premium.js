@@ -10,16 +10,17 @@ module.exports = {
     categoryID: 0,
     execute: async message => {
         const channelLanguage = (message.channel.type != 'dm') ? message.client.guildData.get(message.guild.id).language : 'en';
-        if(message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner) return message.channel.send(message.client.langs[channelLanguage].get('alreadyPremium'));
+        if(message.guild && (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner)) return message.channel.send(message.client.langs[channelLanguage].get('alreadyPremium'));
         const userDoc = await user.findById(message.author.id);
         if(!userDoc?.premiumKeys){
-            if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
+            if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
             const embed = new MessageEmbed()
-                .setColor(message.guild.me.displayColor || 0x8000ff)
+                .setColor(message.guild?.me.displayColor || 0x8000ff)
                 .setDescription(message.client.langs[channelLanguage].get('premiumEmbedDesc', [message.client.configs.support]));
             message.channel.send(embed);
         }
         else{
+            if(!message.guild) return message.channel.send(`You have **${userDoc.premiumKeys}** premium keys remaining`);
             if(!message.guild.me.permissionsIn(message.channel).has('ADD_REACTIONS')) return message.channel.send(message.client.langs[channelLanguage].get('botReactions'));
             let msg = await message.channel.send(`You have **${userDoc.premiumKeys}** premium keys remaining\nDo you want to activate premium features for this server? This action cannot be undone`);
             await msg.react('✅');

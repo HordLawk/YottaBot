@@ -14,7 +14,7 @@ module.exports = {
             case 'botEmbed': return 'I need permission to embed links in this channel';
             case 'botManageMessages': return 'I need permission to manage messages in this channel';
             case 'helpEmbedTitle': return 'Commands help';
-            case 'helpEmbedDescription': return `**[Support server](https://discord.gg/${vars[0]})**\n**[Invite me](${vars[1]})**\nUse \`${vars[2]}help (command)\` for more info about a specific command\n\n__Note that:__\n- \`(channel)\` = \`<(channel mention)/(channel ID)>\`\n- \`(user)\` = \`<(user mention)/(user ID)>\`\n- \`(role)\` = \`<(role mention)/(role ID)/(role name)>\`\n- \`(emoji)\` = \`<(emoji)/(custom emoji name)/(custom emoji ID)>\``;
+            case 'helpEmbedDescription': return `**[Support server](https://discord.gg/${vars[0]})**\n**[Invite me](${vars[1]})**\n**[Extended documentation](https://github.com/HordLawk/YottaBot#readme)**\nUse \`${vars[2]}help (command)\` for more info about a specific command\n\n__Note that:__\n- \`(channel)\` = \`<(channel mention)/(channel ID)>\`\n- \`(user)\` = \`<(user mention)/(user ID)>\`\n- \`(role)\` = \`<(role mention)/(role ID)/(role name)>\`\n- \`(emoji)\` = \`<(emoji)/(custom emoji name)/(custom emoji ID)>\``;
             case 'helpEmbedFooter': return `${vars[0]} commands | [] = Optional - () = Variable - </> = Either`;
             case 'category0': return 'Commands';
             case 'invalidCommand': return 'This is not a valid command';

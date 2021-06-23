@@ -20,8 +20,12 @@ The default prefix is `y!`
 - [ ] finish this `README`
 - [ ] organize the [support server](https://discord.gg/eNcsvsy)
 - [ ] finish pt-br translations
-- [ ] add missing moderation commands `massban` an `kick`
+- [ ] add missing moderation commands `massban` and `kick`
+- [ ] organize the commands in the correct categories
+- [ ] reward boosters with one premium key
+- [ ] recommend xp amounts for levelroles
 - [ ] transfer the process to a web dyno
 - [ ] add premium feature "reward time spent in vcs with xp"
 - [ ] add actionlog for bulkdelete
 - [ ] add rss feeds for youtube notifications
+- [ ] setup a patreon

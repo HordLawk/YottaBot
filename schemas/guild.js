@@ -53,7 +53,7 @@ const guildSchema = new Schema({
         default: 'default',
     },
     alpha: Boolean,
-    premium: Boolean,
+    premiumUntil: Date,
     partner: Boolean,
     logAttachments: Boolean,
 });

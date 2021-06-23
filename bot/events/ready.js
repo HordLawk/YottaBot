@@ -19,14 +19,14 @@ module.exports = {
         const roleDocs = await role.find({guild: {$in: client.guilds.cache.map(e => e.id)}});
         await role.deleteMany({_id: {$in: roleDocs.filter(e => !client.guilds.cache.get(e.guild).roles.cache.has(e.roleID)).map(e => e._id)}});
         await menu.deleteMany({channelID: {$nin: client.channels.cache.map(e => e.id)}});
-        const muteTimeout = () => {
+        const tick = () => {
             setTimeout(async () => {
                 const unmutes = await log.find({
                     type: 'mute',
                     duration: {$lte: Date.now()},
                     ongoing: true,
                 });
-                if(!unmutes.length) return muteTimeout();
+                if(!unmutes.length) return tick();
                 await log.updateMany({_id: {$in: unmutes.map(e => e._id)}}, {$set: {ongoing: false}});
                 for(let unmuteDoc of unmutes){
                     let guild = client.guilds.cache.get(unmuteDoc.guild);
@@ -50,9 +50,9 @@ module.exports = {
                     if(!discordRole || !discordRole.editable || !discordMember.roles.cache.has(discordRole.id)) continue;
                     await discordMember.roles.remove(discordRole);
                 }
-                muteTimeout();
+                tick();
             }, 10000);
         }
-        muteTimeout();
+        tick();
     },
 };

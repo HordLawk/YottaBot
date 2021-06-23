@@ -4,7 +4,7 @@ module.exports = {
         switch(line){
             case 'mentionHelp': return `Use \`${vars[0]}help\` to see all my commands!`;
             case 'noArgs': return `You didn't provide any arguments, ${vars[0]}!\nThe proper usage would be:\n${vars[3].map(e => `\`${vars[1]}${vars[2]} ${e}\``).join('\n')}`;
-            case 'cooldown': return `Please wait ${vars[0]} more second(s) before reusing the \`${vars[1]}\` command`;
+            case 'cooldown': return `Please wait ${vars[0]} more second(s) before reusing the \`${vars[1]}\` command${vars[3] ? '' : `\nTip: Premium servers have half the cooldown for all commands\nTo get __premium__ use \`${vars[2]}premium\``}`;
             case 'error': return `There was an error trying to execute the command \`${vars[0]}\`\nThe issue was sent to the support team and will be fixed in the near future`;
             case 'helpDescription': return 'Lists all commands or gives info about a specific one';
             case 'helpUsage': return '[(command)]';
@@ -74,7 +74,7 @@ module.exports = {
             case 'xpStack': return `Role stacking successfully ${(vars[0] === 'on') ? 'enabled': 'disabled'}`
             case 'manageRole': return 'I need permissions to manage this role';
             case 'sameXp': return 'There is another role being rewarded at this amount of xp';
-            case 'maxXpRoles': return 'Maximum amount of xp roles is 20';
+            case 'maxXpRoles': return `The maximum amount of xp roles for non premium servers is 10, but you can add more with __premium__! To understand how, use \`${vars[0]}premium\``;
             case 'setXpRole': return `**${vars[0]}** is now achieveable at **${vars[1]}** xp\nbe aware that members will only get this role when they send new messages`;
             case 'resetXpRoles': return `All xp roles were removed\nbe aware that these roles won't be automatically removed from members, if you want this, it's recommended that you delete the roles from the server so no member can have it`;
             case 'removeXpRole': return `**${vars[0]}** was removed from the xp rewards\nbe aware that this role won't be automatically removed from members, if you want this, it's recommended that you delete the role from the server so no member can have it`;
@@ -101,9 +101,9 @@ module.exports = {
             case 'rolemenuDescription': return 'Creates a message where users can react to claim one or more roles';
             case 'rolemenuUsage0': return 'create (channel) <(role mention)/(role ID)/"(role name)"> (emoji) [(list of roles and emojis)] [toggle]';
             case 'rolemenuUsage1': return 'edit (menu ID) <(role mention)/(role ID)/"(role name)"> (emoji) [(list of roles and emojis)] [toggle]';
-            case 'maxRolesMenu': return 'The maximum amount of roles per menu is 40';
+            case 'maxRolesMenu': return 'The maximum amount of roles per menu is 20';
             case 'botReactions': return 'I need permission to add reactions in this channel';
-            case 'maxRolemenus': return 'The maximum amount of menus per server is 20';
+            case 'maxRolemenus': return `The maximum amount of menus for non premium servers is 10, but you can add more with __premium__! To understand how, use \`${vars[0]}premium\``;
             case 'uniqueEmoji': return 'Each emoji can only be used once per menu';
             case 'loading': return 'Loading...';
             case 'rolemenuEmbedAuthor': return 'React to claim a role';

@@ -73,7 +73,7 @@ module.exports = {
         if(message.client.configs.maintenance && (message.author.id != message.client.configs.owner.id)) return message.channel.send(message.client.langs[channelLanguage].get('maintenance')).catch(() => null);
         if(command.guildOnly && !message.guild) return message.channel.send(message.client.langs[channelLanguage].get('guildOnly'));
         if(command.beta && !message.client.guildData.get(message.guild.id).beta) return message.channel.send(message.client.langs[channelLanguage].get('betaCommand')).catch(() => null);
-        if(command.premium && !message.client.guildData.get(message.guild.id).premium && !message.client.guildData.get(message.guild.id).partner) return message.channel.send(message.client.langs[channelLanguage].get('premiumCommand', [prefix])).catch(() => null);
+        if(command.premium && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) return message.channel.send(message.client.langs[channelLanguage].get('premiumCommand', [prefix])).catch(() => null);
         if(command.args && !args.length) return message.channel.send(message.client.langs[channelLanguage].get('noArgs', [message.author, prefix, command.name, command.usage(message.client.langs[channelLanguage])]));
         if(message.guild && !message.member.permissions.has('ADMINISTRATOR')){
             const roles = roleDocs.filter(e => (e.commandPermissions.id(command.name) && message.member.roles.cache.has(e.roleID)));
@@ -83,12 +83,12 @@ module.exports = {
         if(!message.client.cooldowns.has(command.name)) message.client.cooldowns.set(command.name, new Collection());
         const now = Date.now();
         const timestamps = message.client.cooldowns.get(command.name);
-        const cooldownAmount = command.cooldown * 1000;
+        const cooldownAmount = (command.cooldown / (1 + (!!message.client.guildData.get(message.guild?.id)?.premiumUntil || !!message.client.guildData.get(message.guild?.id)?.partner))) * 1000;
         if(timestamps.has(message.author.id) && (message.author.id != message.client.configs.owner.id)){
             const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
             if(now < expirationTime){
                 const timeLeft = (expirationTime - now) / 1000;
-                return message.channel.send(message.client.langs[channelLanguage].get('cooldown', [timeLeft.toFixed(1), command.name]));
+                return message.channel.send(message.client.langs[channelLanguage].get('cooldown', [timeLeft.toFixed(1), command.name, prefix, (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner)]));
             }
         }
         timestamps.set(message.author.id, now);

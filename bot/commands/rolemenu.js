@@ -33,7 +33,7 @@ module.exports = {
                 channelID: {$in: message.client.channels.cache.map(e => e.id)},
             });
             for(let menuDoc of menus) await message.client.channels.cache.get(menuDoc.channelID).messages.fetch(menuDoc.messageID).catch(() => null);
-            if(menus.filter(e => message.client.channels.cache.get(e.channelID).messages.cache.has(e.messageID)) >= 20) return message.channel.send(message.client.langs[channelLanguage].get('maxRolemenus'));
+            if((menus.filter(e => message.client.channels.cache.get(e.channelID).messages.cache.has(e.messageID)) >= 10) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) return message.channel.send(message.client.langs[channelLanguage].get('maxRolemenus', [message.client.guildData.get(message.guild.id).prefix]));
             let roles = args.slice(2).filter((e, i) => ((i % 2) === 0)).map(e => (message.guild.roles.cache.get((e.match(/^(?:<@&)?(\d{17,19})>?$/) || [])[1]) || message.guild.roles.cache.find(ee => (ee.name === e.replace(/"/g, ''))) || message.guild.roles.cache.find(ee => (ee.name.startsWith(e.replace(/"/g, ''))))));
             if(roles.some(e => (!e || (e.id === message.guild.id)))) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
             if(roles.some(e => (!e.editable || e.managed))) return message.channel.send(message.client.langs[channelLanguage].get('manageRole'));

@@ -54,7 +54,7 @@ module.exports = {
                             await oldRole.save();
                         }
                         else{
-                            if(roleDocs.length > 19) return message.channel.send(message.client.langs[channelLanguage].get('maxXpRoles'));
+                            if((roleDocs.length >= 10) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) return message.channel.send(message.client.langs[channelLanguage].get('maxXpRoles', [message.client.guildData.get(message.guild.id).prefix]));
                             let newRole = new role({
                                 guild: message.guild.id,
                                 roleID: discordRole.id,
@@ -207,7 +207,7 @@ module.exports = {
                     guild: message.guild.id,
                     roleID: {$in: message.guild.roles.cache.map(e => e.id)},
                 }).sort({xp: -1});
-                if(roles.filter(e => e.xp).length) embed.addField(message.client.langs[channelLanguage].get('xpViewRoles'), roles.filter(e => e.xp).map(e => `<@&${e.roleID}> **-** \`${e.xp}\``).join('\n'));
+                if(roles.filter(e => e.xp).length) embed.addField(message.client.langs[channelLanguage].get('xpViewRoles'), roles.filter(e => e.xp).map(e => `\`${(new Array(roles[0].xp.toString().length - e.xp.toString().length)).fill(' ').join('')}${e.xp}\` **-** <@&${e.roleID}>`).join('\n'));
                 if(roles.filter(e => e.ignoreXp).length) embed.addField(message.client.langs[channelLanguage].get('xpViewIgnoredRoles'), roles.filter(e => e.ignoreXp).map(e => `<@&${e.roleID}>`).join(' '));
                 let channels = await channel.find({
                     _id: {$in: message.guild.channels.cache.map(e => e.id)},

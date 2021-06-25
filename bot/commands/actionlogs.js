@@ -203,7 +203,7 @@ module.exports = {
                                     message.channel.send(message.client.langs[channelLanguage].get('actionIgnoredChannelSuccess', [message.client.langs[channelLanguage].get(`action${args[4]}`), discordChannel]));
                                 }
                                 else{
-                                    await channel.findByIdAndUpdate(discordChannel.id, {$pull: {ignoreActions: {$eq: args[4]}}});
+                                    await channel.findByIdAndUpdate(discordChannel.id, {$pull: {ignoreActions: args[4]}});
                                     message.channel.send(message.client.langs[channelLanguage].get('actionNotIgnoredChannelSuccess', [message.client.langs[channelLanguage].get(`action${args[4]}`), discordChannel]));
                                 }
                             }
@@ -224,7 +224,7 @@ module.exports = {
                                     await role.findOneAndUpdate({
                                         roleID: discordRole.id,
                                         guild: message.guild.id,
-                                    }, {$pull: {ignoreActions: {$eq: args[4]}}});
+                                    }, {$pull: {ignoreActions: args[4]}});
                                     message.channel.send(message.client.langs[channelLanguage].get('actionNotIgnoredRoleSuccess', [message.client.langs[channelLanguage].get(`action${args[4]}`), discordRole.name]));
                                 }
                             }

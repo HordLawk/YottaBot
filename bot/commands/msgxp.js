@@ -219,7 +219,7 @@ module.exports = {
             }
             break;
             case 'reset': {
-                let msg = message.channel.send(message.client.langs[channelLanguage].get('resetXpConfirm'));
+                let msg = await message.channel.send(message.client.langs[channelLanguage].get('resetXpConfirm'));
                 await msg.react('✅');
                 await msg.react('❌');
                 let col = msg.createReactionCollector((r, u) => (['✅', '❌'].includes(r.emoji.name) && (u.id === message.author.id)), {

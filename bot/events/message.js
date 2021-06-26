@@ -40,7 +40,7 @@ module.exports = {
                 upsert: true,
                 setDefaultsOnInsert: true,
             }, async (err, doc) => {
-                if(err) return console.log(err);
+                if(err) throw err;
                 if(message.client.xpcds.has(message.guild.id)){
                     message.client.xpcds.get(message.guild.id).set(message.author.id, Date.now());
                 }

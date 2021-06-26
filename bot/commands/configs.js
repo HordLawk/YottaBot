@@ -34,6 +34,7 @@ module.exports = {
             case 'logattachments': {
                 if(!['on', 'off'].includes(args[1])) return message.channel.send(message.client.langs[channelLanguage].get('logattachmentsBadArgs'));
                 if(args[1] === 'on'){
+                    if(!message.client.guildData.get(message.guild.id).actionlogs.id('delmsg')) return message.channel.send(message.client.langs[channelLanguage].get('logattachmentsNoHook'));
                     let hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookID || message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookToken || message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
                     if(!hook) return message.channel.send(message.client.langs[channelLanguage].get('logattachmentsNoHook'));
                     if(!message.guild.channels.cache.get(hook.channelID).nsfw) return message.channel.send(message.client.langs[channelLanguage].get('logattachmentsNoNSFW'));

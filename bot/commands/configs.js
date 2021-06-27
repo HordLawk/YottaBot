@@ -74,7 +74,7 @@ module.exports = {
                     case 'mute': {
                         switch(args[2]){
                             case 'role': {
-                                let discordRole = message.guild.roles.cache.get(args[3]);
+                                let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) || message.guild.roles.cache.find(e => ((e.name === message.content.replace(/^(?:\S+\s+){4}/, '')) || e.name.startsWith(message.content.replace(/^(?:\S+\s+){4}/, ''))));
                                 if(!discordRole) return message.channel.send('Role not found');
                                 if(!discordRole.editable || discordRole.managed) return message.channel.send('I can\'t manage this role');
                                 await guild.findByIdAndUpdate(message.guild.id, {$set: {muteRoleID: discordRole.id}});

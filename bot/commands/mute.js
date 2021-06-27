@@ -25,6 +25,7 @@ module.exports = {
         const duration = args[1] && (((parseInt(args[1].match(/(\d+)d/)?.[1], 10) * 86400000) || 0) + ((parseInt(args[1].match(/(\d+)h/)?.[1], 10) * 3600000) || 0) + ((parseInt(args[1].match(/(\d+)m/)?.[1], 10) * 60000) || 0));
         if(!duration || !isFinite(duration)) return message.channel.send('Invalid mute duration');
         let mute = await log.findOne({
+            guild: message.guild.id,
             target: member.id,
             ongoing: true,
         });

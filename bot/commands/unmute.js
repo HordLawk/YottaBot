@@ -28,8 +28,10 @@ module.exports = {
             if(!discordRole.editable || discordRole.managed) return message.channel.send('I can\'t manage the mute role');
         }
         const mute = await log.findOneAndUpdate({
+            guild: message.guild.id,
             target: id,
             ongoing: true,
+            type: 'mute',
         }, {$set: {ongoing: false}});
         if(!mute) return message.channel.send('Muted user not found');
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});

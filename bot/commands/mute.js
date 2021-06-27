@@ -28,6 +28,7 @@ module.exports = {
             guild: message.guild.id,
             target: member.id,
             ongoing: true,
+            type: 'mute',
         });
         if(mute) return message.channel.send('This member is already muted');
         const reason = message.content.replace(/^(?:\S+\s+){2}\S+\s*/, '').slice(0, 500);

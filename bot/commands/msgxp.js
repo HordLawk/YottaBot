@@ -177,7 +177,7 @@ module.exports = {
                     default: {
                         let discordChannel = message.guild.channels.cache.get((args[1].match(/<#(\d{17,19})>/) || [])[1]) || message.client.channels.cache.get(args[1]);
                         if(!discordChannel || !discordChannel.isText()) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-                        if(!message.guild.me.permissionsIn(discordChannel).has('SEND_MESSAGES')) return message.channel.send(message.client.langs[channelLanguage].get('sendMessages'));
+                        if(!message.guild.me.permissionsIn(discordChannel).has('SEND_MESSAGES') || !discordChannel.viewable) return message.channel.send(message.client.langs[channelLanguage].get('sendMessages'));
                         await guild.findByIdAndUpdate(message.guild.id, {$set: {xpChannel: discordChannel.id}});
                         message.client.guildData.get(message.guild.id).xpChannel = discordChannel.id;
                         message.channel.send(message.client.langs[channelLanguage].get('notifyChannel', [discordChannel]));

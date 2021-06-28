@@ -7,7 +7,7 @@ module.exports = {
     name: 'warn',
     description: lang => 'Warns a member\nAlso accepts a media attachment',
     aliases: ['adv', 'advert'],
-    usage: lang => ['(user) (reason)'],
+    usage: lang => ['(user) [(reason)]'],
     example: ['@LordHawk#0572 stop spamming'],
     cooldown: 3,
     categoryID: 0,

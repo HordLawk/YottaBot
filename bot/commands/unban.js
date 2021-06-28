@@ -6,7 +6,7 @@ module.exports = {
     active: true,
     name: 'unban',
     description: lang => 'Unbans an user\nAlso accepts a media attachment',
-    usage: lang => ['(user) (reason)'],
+    usage: lang => ['(user) [(reason)]'],
     example: ['@LordHawk apologised'],
     cooldown: 5,
     categoryID: 0,

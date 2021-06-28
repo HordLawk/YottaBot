@@ -19,7 +19,7 @@ The default permission for any command is usually the closest normal Discord per
 * [Premium](https://github.com/HordLawk/YottaBot/wiki/Premium)
 
 ## W.I.P
-- [ ] finish this `README`
+- [x] finish this `README`
 - [ ] organize the [support server](https://discord.gg/eNcsvsy)
 - [ ] finish pt-br translations
 - [ ] add missing moderation commands `massban` and `kick`

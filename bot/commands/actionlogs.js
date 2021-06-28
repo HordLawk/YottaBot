@@ -272,7 +272,7 @@ module.exports = {
                     roleID: {$in: message.guild.roles.cache.map(e => e.id)},
                     ignoreActions: {$ne: []},
                 });
-                if(roles.length) embed.addField(message.client.langs[channelLanguage].get('logsViewEmbedIgnoredRolesTitle'), roles.map(e => `<@&${e.roleID}> = \`${(e.ignoreActions.length === message.client.configs.actions.length) ? message.client.langs[channelLanguage].get('logsViewEmbedIgnoredAll') : message.client.langs[channelLanguage].get('logsViewEmbedIgnoredSome')}\``).join('\n'));
+                if(roles.length) embed.addField(message.client.langs[channelLanguage].get('logsViewEmbedIgnoredRolesTitle'), roles.map(e => `<@&${e.roleID}> - \`${(e.ignoreActions.length === message.client.configs.actions.length) ? message.client.langs[channelLanguage].get('logsViewEmbedIgnoredAll') : message.client.langs[channelLanguage].get('logsViewEmbedIgnoredSome')}\``).join('\n'));
                 message.channel.send(embed);
             }
             break;

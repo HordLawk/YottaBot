@@ -6,7 +6,7 @@ module.exports = {
     active: true,
     name: 'unmute',
     description: lang => 'Unmutes an user\nAlso accepts a media attachment',
-    usage: lang => ['(user) (reason)'],
+    usage: lang => ['(user) [(reason)]'],
     example: ['@LordHawk#0572 bribed me'],
     cooldown: 5,
     categoryID: 0,

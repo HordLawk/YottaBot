@@ -1,6 +1,7 @@
 const menu = require('../../schemas/menu.js');
 const guild = require('../../schemas/guild.js');
 const {MessageEmbed} = require('discord.js');
+const {parse} = require('twemoji-parser');
 
 module.exports = {
     active: true,
@@ -38,7 +39,7 @@ module.exports = {
             if(roles.some(e => (!e || (e.id === message.guild.id)))) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
             if(roles.some(e => (!e.editable || e.managed))) return message.channel.send(message.client.langs[channelLanguage].get('manageRole'));
             if(roles.some(e => (e.position >= message.member.roles.highest.position))) return message.channel.send(message.client.langs[channelLanguage].get('memberManageRole'));
-            let emojis = args.slice(2).filter((e, i) => ((i % 2) != 0)).map(e => (message.guild.emojis.cache.get((e.match(/^(?:<:\w+:)?(\d{17,19})>?$/) || [])[1]) || message.guild.emojis.cache.find(ee => ((ee.name === e) || ee.name.startsWith(e))) || (e.match(/(?:\p{Extended_Pictographic}|\d\uFE0F\u20E3)/ug) || [])[0]));
+            let emojis = args.slice(2).filter((e, i) => ((i % 2) != 0)).map(e => (message.guild.emojis.cache.get((e.match(/^(?:<:\w+:)?(\d{17,19})>?$/) || [])[1]) || message.guild.emojis.cache.find(ee => ((ee.name === e) || ee.name.startsWith(e))) || parse(e)[0]?.text));
             if(emojis.some(e => (!e || (e.id && (!e.available || e.managed))))) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
             if(emojis.some(e => (emojis.filter(ee => ((ee.id || ee) === (e.id || e))).length > 1))) return message.channel.send(message.client.langs[channelLanguage].get('uniqueEmoji'));
             let loadmsg = await message.channel.send(message.client.langs[channelLanguage].get('loading'));
@@ -86,7 +87,7 @@ module.exports = {
             if(roles.some(e => (!e || (e.id === message.guild.id)))) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
             if(roles.some(e => (!e.editable || e.managed))) return message.channel.send(message.client.langs[channelLanguage].get('manageRole'));
             if(roles.some(e => (e.position >= message.member.roles.highest.position))) return message.channel.send(sage.client.langs[channelLanguage].get('memberManageRole'));
-            let emojis = args.slice(2).filter((e, i) => ((i % 2) != 0)).map(e => (message.guild.emojis.cache.get((e.match(/^(?:<:\w+:)?(\d{17,19})>?$/) || [])[1]) || message.guild.emojis.cache.find(ee => ((ee.name === e) || ee.name.startsWith(e))) || (e.match(/(?:\p{Extended_Pictographic}|\d\uFE0F\u20E3)/ug) || [])[0]));
+            let emojis = args.slice(2).filter((e, i) => ((i % 2) != 0)).map(e => (message.guild.emojis.cache.get((e.match(/^(?:<:\w+:)?(\d{17,19})>?$/) || [])[1]) || message.guild.emojis.cache.find(ee => ((ee.name === e) || ee.name.startsWith(e))) || parse(e)[0]?.text));
             if(emojis.some(e => (!e || (e.id && (!e.available || e.managed))))) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
             if(emojis.some(e => (emojis.filter(ee => ((ee.id || ee) === (e.id || e))).length > 1))) return message.channel.send(message.client.langs[channelLanguage].get('uniqueEmoji'));
             let loadmsg = await message.channel.send(message.client.langs[channelLanguage].get('loading'));

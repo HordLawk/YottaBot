@@ -22,7 +22,7 @@ module.exports = {
         else{
             if(!message.guild) return message.channel.send(`You have **${userDoc.premiumKeys}** premium keys remaining`);
             if(!message.guild.me.permissionsIn(message.channel).has('ADD_REACTIONS')) return message.channel.send(message.client.langs[channelLanguage].get('botReactions'));
-            let msg = await message.channel.send(`You have **${userDoc.premiumKeys}** premium keys remaining\nDo you want to activate premium features for this server? This action cannot be undone`);
+            let msg = await message.channel.send(message.client.langs[channelLanguage].get('activatePremium', [userDoc.premiumKeys]));
             await msg.react('✅');
             await msg.react('❌');
             let collector = msg.createReactionCollector((r, u) => (['✅', '❌'].includes(r.emoji.name) && (u.id === message.author.id)), {
@@ -38,7 +38,7 @@ module.exports = {
                 let premiumUntil = new Date(Date.now() + 2592000000);
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {premiumUntil: premiumUntil}});
                 message.client.guildData.get(message.guild.id).premiumUntil = premiumUntil;
-                await msg.edit('Premium features activated');
+                await msg.edit(message.client.langs[channelLanguage].get('activatePremiumSuccess'));
             });
         }
     },

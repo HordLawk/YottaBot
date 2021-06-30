@@ -33,13 +33,13 @@ module.exports = {
         if(!hook) return;
         const embed = new MessageEmbed()
             .setColor(0xff0000)
-            .setFooter(message.client.langs[channelLanguage].get('delmsgEmbedFooter', [message.author.id]))
-            .setTimestamp(message.createdAt)
+            .setFooter(message.author.id)
+            .setTimestamp()
             .setAuthor(message.client.langs[channelLanguage].get('delmsgEmbedAuthor'), message.author.displayAvatarURL({
                 size: 4096,
                 dynamic: true,
             }))
-            .setDescription(message.client.langs[channelLanguage].get('delmsgEmbedDesc', [message.author, message.channel, executor]));
+            .setDescription(message.client.langs[channelLanguage].get('delmsgEmbedDesc', [message.author, message.channel, executor, Math.floor(message.createdTimestamp / 1000)]));
         if(message.content) embed.addField(message.client.langs[channelLanguage].get('delmsgEmbedContent'), `${message.content.slice(0, (message.content.length > 1024) ? 1021 : undefined)}${(message.content.length > 1024) ? '...' : ''}`);
         var files = [];
         if(message.attachments.size){

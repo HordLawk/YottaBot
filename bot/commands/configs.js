@@ -6,7 +6,7 @@ module.exports = {
     name: 'configs',
     description: lang => lang.get('configsDescription'),
     aliases: ['config', 'settings', 'setting'],
-    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', 'mod logs (channel) <warn/mute/kick/ban> [(other types)]', 'mod clearonban (days)', 'mod mute role (role)', 'mod mute autosetup <on/off>'],
+    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', lang.get('configsUsage3'), lang.get('configsUsage4'), lang.get('configsUsage5'), 'mod mute autosetup <on/off>'],
     example: ['prefix !', 'language pt', 'logattachments on', 'mod logs #warn-and-mute-logs warn mute', 'mod mute role @Muted', 'mod mute autosetup off'],
     cooldown: 5,
     categoryID: 0,
@@ -61,32 +61,32 @@ module.exports = {
                         args.slice(3, 7).forEach(e => (guildDoc.modlogs[e] = discordChannel.id));
                         await guildDoc.save();
                         message.client.guildData.get(message.guild.id).modlogs = guildDoc.modlogs;
-                        message.channel.send(`Log channel for ${args.slice(3, 7).map(e => `\`${e}\``).join(' ')} set to ${discordChannel}`);
+                        message.channel.send(message.client.langs[channelLanguage].get('modLogsSetSuccess', [args.slice(3, 7), discordChannel]));
                     }
                     break;
                     case 'clearonban': {
-                        if(isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[2], 10) < 0) || (parseInt(args[2], 10) > 7)) return message.channel.send('Number of days must be between 0 and 7');
+                        if(isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[2], 10) < 0) || (parseInt(args[2], 10) > 7)) return message.channel.send(message.client.langs[channelLanguage].get('invClearOnBanDays'));
                         await guild.findByIdAndUpdate(message.guild.id, {$set: {pruneBan: parseInt(args[2], 10)}});
                         message.client.guildData.get(message.guild.id).pruneBan = parseInt(args[2], 10);
-                        message.channel.send(`Number of days of messages to delete set to **${message.client.guildData.get(message.guild.id).pruneBan}**`);
+                        message.channel.send(message.client.langs[channelLanguage].get('clearOnBanDaysSetSuccess', [message.client.guildData.get(message.guild.id).pruneBan]));
                     }
                     break;
                     case 'mute': {
                         switch(args[2]){
                             case 'role': {
                                 let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) || message.guild.roles.cache.find(e => ((e.name === message.content.replace(/^(?:\S+\s+){4}/, '')) || e.name.startsWith(message.content.replace(/^(?:\S+\s+){4}/, ''))));
-                                if(!discordRole) return message.channel.send('Role not found');
-                                if(!discordRole.editable || discordRole.managed) return message.channel.send('I can\'t manage this role');
+                                if(!discordRole) return message.channel.send(message.client.langs[channelLanguage].get('invRole'));
+                                if(!discordRole.editable || discordRole.managed) return message.channel.send(message.client.langs[channelLanguage].get('manageRole'));
                                 await guild.findByIdAndUpdate(message.guild.id, {$set: {muteRoleID: discordRole.id}});
                                 message.client.guildData.get(message.guild.id).muteRoleID = discordRole.id;
-                                message.channel.send(`Mute role set to **${discordRole.name}**`);
+                                message.channel.send(message.client.langs[channelLanguage].get('muteRoleSetSuccess', [discordRole.name]));
                             }
                             break;
                             case 'autosetup': {
                                 if(!['on', 'off'].includes(args[3])) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                                 await guild.findByIdAndUpdate(message.guild.id, {$set: {autoSetupMute: (args[3] === 'on')}});
                                 message.client.guildData.get(message.guild.id).autoSetupMute = (args[3] === 'on');
-                                message.channel.send(`Auto setup mute mode turned **${args[3]}**`);
+                                message.channel.send(message.client.langs[channelLanguage].get('autoSetupMuteSetSuccess', [args[3]]));
                             }
                             break;
                             default: message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));

@@ -34,14 +34,15 @@ module.exports = {
                     let discordMember = await guild.members.fetch(unmuteDoc.target).catch(() => null);
                     let discordChannel = guild.channels.cache.get(client.guildData.get(guild.id).modlogs.mute);
                     if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(guild.me).has('SEND_MESSAGES') && discordChannel.permissionsFor(guild.me).has('EMBED_LINKS')){
+                        let guildLanguage = client.langs[client.guildData.get(guild.id).language];
                         let embed = new MessageEmbed()
                             .setColor(0x0000ff)
-                            .setAuthor(discordMember ? `${discordMember.user.tag} was unmuted` : 'Unmute', discordMember?.user.displayAvatarURL({dynamic: true}))
-                            .addField('Target', `<@${unmuteDoc.target}>\n${unmuteDoc.target}`, true)
+                            .setAuthor(discordMember ? guildLanguage.get('autoUnmuteEmbedAuthorMember', [discordMember.user.tag]) : guildLanguage.get('autoUnmuteEmbedAuthorNoMember'), discordMember?.user.displayAvatarURL({dynamic: true}))
+                            .addField(guildLanguage.get('autoUnmuteEmbedTargetTitle'), guildLanguage.get('autoUnmuteEmbedTargetValue', [unmuteDoc.target]), true)
                             .setTimestamp()
-                            .addField('Reason', 'End of mute');
+                            .addField(guildLanguage.get('autoUnmuteEmbedReasonTitle'), guildLanguage.get('autoUnmuteEmbedReasonValue'));
                         let msg = await discordChannel.messages.fetch(unmuteDoc.logMessage).catch(() => null);
-                        if(msg) embed.setDescription(`[Referred mute](${msg.url})`);
+                        if(msg) embed.setDescription(guildLanguage.get('autoUnmuteEmbedDescription', [msg.url]));
                         await discordChannel.send(embed);
                     };
                     if(!guild.me.permissions.has('MANAGE_ROLES') || !client.guildData.get(guild.id).muteRoleID) continue;

@@ -4,9 +4,9 @@ const {MessageEmbed} = require('discord.js');
 module.exports = {
     active: true,
     name: 'reason',
-    description: lang => 'Edits the reason for a mod case',
+    description: lang => lang.get('reasonDescription'),
     aliases: ['editreason'],
-    usage: lang => ['(case ID) (new reason)'],
+    usage: lang => [lang.get('reasonUsage')],
     example: ['7 is actually a spammer not a scammer'],
     cooldown: 5,
     categoryID: 0,
@@ -22,33 +22,33 @@ module.exports = {
             id: parseInt(args[0], 10),
             guild: message.guild.id,
         });
-        if(!current) return message.channel.send('Case not found');
+        if(!current) return message.channel.send(message.client.langs[channelLanguage].get('invCase'));
         const member = current.executor && await message.guild.members.fetch(current.executor).catch(() => null);
-        if(member && (current.executor != message.author.id) && (message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0)) return message.channel.send('You can\'t edit this case');
+        if(member && (current.executor != message.author.id) && (message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0)) return message.channel.send(message.client.langs[channelLanguage].get('youCantEditCase'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
         current.reason = reason;
         await current.save();
-        await message.channel.send('Reason edited');
+        await message.channel.send(message.client.langs[channelLanguage].get('reasonEditSuccess'));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs[current.type]);
         if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) return;
         const msg = await discordChannel.messages.fetch(current.logMessage).catch(() => null);
         if(!msg || !msg.editable || !msg.embeds.length) return;
         const embed = msg.embeds.find(e => (e.type === 'rich'));
         embed.spliceFields(0, 25, {
-            name: 'Target',
-            value: `<@${current.target}>\n${current.target}`,
+            name: message.client.langs[channelLanguage].get('reasonEmbedTargetTitle'),
+            value: message.client.langs[channelLanguage].get('reasonEmbedTargetValue', [current.target]),
             inline: true,
         });
-        if(current.executor) embed.addField('Executor', `<@${current.executor}>`, true);
+        if(current.executor) embed.addField(message.client.langs[channelLanguage].get('reasonEmbedExecutorTitle'), message.client.langs[channelLanguage].get('reasonEmbedExecutorValue', [current.executor]), true);
         if(current.duration){
             let duration = current.duration.getTime() - current.timeStamp.getTime();
             let d = Math.floor(duration / 86400000);
             let h = Math.floor((duration % 86400000) / 3600000);
             let m = Math.floor((duration % 3600000) / 60000);
             let s = Math.floor((duration % 60000) / 1000);
-            embed.addField('Duration', `${d ? `${d}d` : ''}${h ? `${h}h` : ''}${m ? `${m}m` : ''}${s ? `${s}s` : ''}\n<t:${Math.floor(current.duration.getTime() / 1000)}:R>`, true);
+            embed.addField(message.client.langs[channelLanguage].get('reasonEmbedDurationTitle'), message.client.langs[channelLanguage].get('reasonEmbedDurationValue', [d, h, m, s, Math.floor(current.duration.getTime() / 1000)]), true);
         }
-        embed.addField('Reason', reason);
+        embed.addField(message.client.langs[channelLanguage].get('reasonEmbedReasonTitle'), reason);
         msg.edit(embed);
     },
 };

@@ -3,7 +3,7 @@ const {Permissions, MessageEmbed} = require('discord.js');
 module.exports = {
     active: true,
     name: 'invite',
-    description: lang => 'Gives you an url to add the bot to your server',
+    description: lang => lang.get('inviteDescription'),
     cooldown: 5,
     categoryID: 0,
     execute: async function(message){
@@ -12,7 +12,7 @@ module.exports = {
         const url = await message.client.generateInvite({permissions: Permissions.ALL});
         const embed = new MessageEmbed()
             .setColor(message.guild?.me.displayColor || 0x8000ff)
-            .setDescription(`**[Invite](${url})** me to your server!`);
+            .setDescription(message.client.langs[channelLanguage].get('inviteEmbedDescription', [url]));
         message.channel.send(embed);
     }
 }

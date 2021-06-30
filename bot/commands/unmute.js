@@ -5,8 +5,8 @@ const {MessageEmbed} = require('discord.js');
 module.exports = {
     active: true,
     name: 'unmute',
-    description: lang => 'Unmutes an user\nAlso accepts a media attachment',
-    usage: lang => ['(user) [(reason)]'],
+    description: lang => lang.get('unmuteDescription'),
+    usage: lang => [lang.get('unmuteUsage')],
     example: ['@LordHawk#0572 bribed me'],
     cooldown: 5,
     categoryID: 0,
@@ -18,14 +18,14 @@ module.exports = {
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
         if(!message.member) return;
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
-        if(!id) return message.channel.send('Invalid user');
+        if(!id) return message.channel.send(message.client.langs[channelLanguage].get('invUser'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
         const member = await message.guild.members.fetch(id).catch(() => null);
-        if(member && (message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0)) return message.channel.send('You can\'t unmute this member');
+        if(member && (message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0)) return message.channel.send(message.client.langs[channelLanguage].get('youCantUnmute'));
         const discordRole = message.guild.roles.cache.get(message.client.guildData.get(message.guild.id).muteRoleID);
         if(member){
-            if(!discordRole) return message.channel.send('Mute role not found');
-            if(!discordRole.editable || discordRole.managed) return message.channel.send('I can\'t manage the mute role');
+            if(!discordRole) return message.channel.send(message.client.langs[channelLanguage].get('invMuteRole'));
+            if(!discordRole.editable || discordRole.managed) return message.channel.send(message.client.langs[channelLanguage].get('cantManageMuteRole'));
         }
         const mute = await log.findOneAndUpdate({
             guild: message.guild.id,
@@ -33,7 +33,7 @@ module.exports = {
             ongoing: true,
             type: 'mute',
         }, {$set: {ongoing: false}});
-        if(!mute) return message.channel.send('Muted user not found');
+        if(!mute) return message.channel.send(message.client.langs[channelLanguage].get('invMuted'));
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
         const current = new log({
@@ -50,18 +50,18 @@ module.exports = {
         });
         await current.save();
         if(member) await member.roles.remove(discordRole);
-        await message.channel.send(`Member unmuted\nCase ID: \`${current.id}\``);
+        await message.channel.send(message.client.langs[channelLanguage].get('unmuteSuccess', [current.id]));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.mute);
         if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('SEND_MESSAGES') || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) return;
         const embed = new MessageEmbed()
             .setColor(0x0000ff)
-            .setAuthor(`${message.author.tag} unmuted ${member?.user.tag || 'someone'}`, member?.user.displayAvatarURL({dynamic: true}))
-            .setDescription(`[Action message](${message.url})`)
-            .addField('Target', `<@${current.target}>\n${current.target}`, true)
-            .addField('Executor', message.author, true)
+            .setAuthor(message.client.langs[channelLanguage].get('unmuteEmbedAuthor', [message.author.tag, member?.user.tag]), member?.user.displayAvatarURL({dynamic: true}))
+            .setDescription(message.client.langs[channelLanguage].get('unmuteEmbedDescription', [message.url]))
+            .addField(message.client.langs[channelLanguage].get('unmuteEmbedTargetTitle'), message.client.langs[channelLanguage].get('unmuteEmbedTargetValue', [current.target]), true)
+            .addField(message.client.langs[channelLanguage].get('unmuteEmbedExecutorTitle'), message.author, true)
             .setTimestamp()
-            .setFooter(`Case ${current.id}`, message.guild.iconURL({dynamic: true}));
-        if(reason) embed.addField('Reason', reason);
+            .setFooter(message.client.langs[channelLanguage].get('unmuteEmbedFooter', [current.id]), message.guild.iconURL({dynamic: true}));
+        if(reason) embed.addField(message.client.langs[channelLanguage].get('unmuteEmbedReasonTitle'), reason);
         if(current.image) embed.setImage(current.image);
         const msg = await discordChannel.send(embed);
         current.logMessage = msg.id;

@@ -4,9 +4,9 @@ const {MessageEmbed} = require('discord.js');
 module.exports = {
     active: true,
     name: 'check',
-    description: lang => 'Shows an user\'s cases',
+    description: lang => lang.get('checkDescription'),
     aliases: ['modlogs'],
-    usage: lang => ['(user) <all/warn/mute/kick/ban> [(time filter)]'],
+    usage: lang => [lang.get('checkUsage')],
     example: ['@LordHawk#0572 mute 15d12h30m30s'],
     cooldown: 5,
     categoryID: 0,
@@ -25,7 +25,7 @@ module.exports = {
             type: (args[1] === 'all') ? {$ne: args[1]} : {$eq: args[1]},
             timeStamp: {$gte: filter},
         }).sort({timeStamp: -1});
-        if(!logDocs.length) return message.channel.send('No logs meeting these conditions were found');
+        if(!logDocs.length) return message.channel.send(message.client.langs[channelLanguage].get('invLogs'));
         const discordMember = await message.guild.members.fetch(id).catch(() => null);
         const formatDuration = (ms) => {
             let d = Math.floor(ms / 86400000);
@@ -35,13 +35,13 @@ module.exports = {
         }
         const embed = new MessageEmbed()
             .setColor((discordMember || message.guild.me).displayColor || 0x8000ff)
-            .setAuthor(discordMember?.user.tag || 'Cases', discordMember?.user.displayAvatarURL({dynamic: true}))
+            .setAuthor(discordMember?.user.tag || message.client.langs[channelLanguage].get('checkEmbedAuthor'), discordMember?.user.displayAvatarURL({dynamic: true}))
             .setTimestamp()
-            .setFooter(`${logDocs.length} cases found`)
+            .setFooter(message.client.langs[channelLanguage].get('checkEmbedFooter', [logDocs.length]))
             .setDescription(`${['all', 'warn'].includes(args[1]) ? `Warns: \`${logDocs.filter(e => (e.type === 'warn')).length}\`\n` : ''}${['all', 'mute'].includes(args[1]) ? `Mutes: \`${logDocs.filter(e => ((e.type === 'mute') && !e.removal)).length}\`\nUnmutes: \`${logDocs.filter(e => ((e.type === 'mute') && e.removal)).length}\`\n` : ''}${['all', 'kick'].includes(args[1]) ? `Kicks: \`${logDocs.filter(e => (e.type === 'kick')).length}\`\n` : ''}${['all', 'ban'].includes(args[1]) ? `Bans: \`${logDocs.filter(e => ((e.type === 'ban') && !e.removal)).length}\`\nUnbans: \`${logDocs.filter(e => ((e.type === 'ban') && e.removal)).length}\`\n` : ''}`)
             .addFields(logDocs.slice(0, 25).map(e => ({
-                name: `Case ${e.id}`,
-                value: `Type: \`${e.removal ? `${'un'}${e.type}` : e.type}\`\n[Action message](${e.actionMessage})\n${e.executor ? `Executor: <@${e.executor}>\n` : ''}${e.duration ? `Duration: \`${formatDuration(e.duration.getTime() - e.timeStamp.getTime())}\`\n` : ''}${e.reason ? `Reason: "${e.reason}"\n` : ''}Date: <t:${Math.floor(e.timeStamp.getTime() / 1000)}>${e.image ? `\n**[Media](${e.image})**` : ''}`,
+                name: message.client.langs[channelLanguage].get('checkEmbedCaseTitle', [e.id]),
+                value: message.client.langs[channelLanguage].get('checkEmbedCaseValue', [e]),
             })));
             let msg = await message.channel.send(embed);
             if(logDocs.length <= 25) return;
@@ -60,8 +60,8 @@ module.exports = {
                     page--;
                 }
                 embed.spliceFields(0, 25, logDocs.slice(page * 25, (page + 1) * 25).map(e => ({
-                    name: `Case ${e.id}`,
-                    value: `Type: \`${e.removal ? `${'un'}${e.type}` : e.type}\`\n[Action message](${e.actionMessage})\n${e.executor ? `Executor: <@${e.executor}>\n` : ''}${e.duration ? `Duration: \`${formatDuration(e.duration.getTime() - e.timeStamp.getTime())}\`\n` : ''}${e.reason ? `Reason: "${e.reason}"\n` : ''}Date: <t:${Math.floor(e.timeStamp.getTime() / 1000)}>${e.image ? `\n**[Media](${e.image})**` : ''}`,
+                    name: message.client.langs[channelLanguage].get('checkEmbedCaseTitle', [e.id]),
+                    value: message.client.langs[channelLanguage].get('checkEmbedCaseValue', [e]),
                 })));
                 await msg.edit(embed);
             });

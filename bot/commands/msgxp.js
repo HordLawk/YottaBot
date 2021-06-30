@@ -7,9 +7,9 @@ const {MessageEmbed} = require('discord.js');
 module.exports = {
     active: true,
     name: 'msgxp',
-    description: lang => lang.get('msgexpDescription'),
+    description: lang => lang.get('msgxpDescription'),
     aliases: ['lvlup', 'msgexp', 'messagexp', 'messageexp'],
-    usage: lang => [lang.get('msgexpUsage0'), lang.get('msgexpUsage1'), lang.get('msgexpUsage2'), lang.get('msgexpUsage3'), lang.get('msgexpUsage4'), lang.get('msgexpUsage5'), lang.get('msgexpUsage6'), lang.get('msgexpUsage7')],
+    usage: lang => [lang.get('msgxpUsage0'), lang.get('msgxpUsage8'), lang.get('msgxpUsage1'), lang.get('msgxpUsage2'), lang.get('msgxpUsage3'), lang.get('msgxpUsage4'), lang.get('msgxpUsage5'), lang.get('msgxpUsage6'), lang.get('msgxpUsage7'), lang.get('msgxpUsage9')],
     example: ['enable on', 'roles add @Active 1440', 'roles remove @Active', 'user add 100 @LordHawk#0572', 'ignore role remove @Mods', 'ignore channel add #spam', 'notify #levelup'],
     cooldown: 5,
     categoryID: 0,

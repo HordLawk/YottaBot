@@ -10,7 +10,7 @@ module.exports = {
     usage: lang => [lang.get('banUsage')],
     example: ['@LordHawk#0572 spammer'],
     cooldown: 3,
-    categoryID: 0,
+    categoryID: 3,
     args: true,
     perm: 'BAN_MEMBERS',
     guildOnly: true,

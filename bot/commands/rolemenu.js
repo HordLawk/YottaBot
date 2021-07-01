@@ -11,7 +11,7 @@ module.exports = {
     usage: lang => [lang.get('rolemenuUsage0'), lang.get('rolemenuUsage1')],
     example: ['create #colors @Red 🔴 @Green 🟢 @Blue 🔵 toggle', 'edit 7 @Red 🔴 @Green 🟢 @Blue 🔵 @Yellow 🟡 toggle'],
     cooldown: 10,
-    categoryID: 0,
+    categoryID: 2,
     args: true,
     perm: 'MANAGE_ROLES',
     guildOnly: true,

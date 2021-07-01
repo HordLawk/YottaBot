@@ -9,7 +9,7 @@ module.exports = {
     usage: lang => [lang.get('permUsage0'), lang.get('permUsage1')],
     example: ['allow Mods warn mute kick ban', 'view Admins'],
     cooldown: 5,
-    categoryID: 0,
+    categoryID: 2,
     args: true,
     perm: 'ADMINISTRATOR',
     guildOnly: true,

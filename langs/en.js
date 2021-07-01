@@ -17,6 +17,10 @@ module.exports = {
             case 'helpEmbedDescription': return `**[Support server](https://discord.gg/${vars[0]})**\n**[Invite me](${vars[1]})**\n**[Extended documentation](https://github.com/HordLawk/YottaBot#readme)**\nUse \`${vars[2]}help (command)\` for more info about a specific command\n\n__Note that:__\n- \`(channel)\` = \`<(channel mention)/(channel ID)>\`\n- \`(user)\` = \`<(user mention)/(user ID)>\`\n- \`(role)\` = \`<(role mention)/(role ID)/(role name)>\`\n- \`(emoji)\` = \`<(emoji)/(custom emoji name)/(custom emoji ID)>\``;
             case 'helpEmbedFooter': return `${vars[0]} commands | [] = Optional - () = Variable - </> = Either`;
             case 'category0': return 'Commands';
+            case 'category1': return 'Information';
+            case 'category2': return 'Administration';
+            case 'category3': return 'Moderation';
+            case 'category4': return 'Utility';
             case 'invalidCommand': return 'This is not a valid command';
             case 'helpCommandEmbedTitle': return `Help for the ${vars[0]} command`;
             case 'helpCommandEmbedFooter': return '[] = Optional - () = Variable - </> = Either';
@@ -42,6 +46,7 @@ module.exports = {
             case 'ADMINISTRATOR': return 'Administrator';
             case 'MANAGE_ROLES': return 'Manage Roles';
             case 'BAN_MEMBERS': return 'Ban Members';
+            case 'KICK_MEMBERS': return 'Kick Members';
             case 'invArgs': return `Invalid arguments!\nThe proper usage would be:\n${vars[2].map(e => `\`${vars[0]}${vars[1]} ${e}\``).join('\n')}`;
             case 'permSuccess': return `**${vars[0]}** was ${(vars[1] === 'allow') ? 'allowed to use' : 'denied from using'} these commands`;
             case 'noSpecialPerms': return 'There are no special permissions set to this role';
@@ -314,6 +319,22 @@ module.exports = {
             case 'autoUnmuteEmbedReasonTitle': return 'Reason';
             case 'autoUnmuteEmbedReasonValue': return 'End of mute';
             case 'autoUnmuteEmbedDescription': return `[Referred mute](${vars[0]})`;
+            case 'kickDescription': return 'Kicks a member from a server\nAlso Accepts a media attachments';
+            case 'kickUsage': return '(user) [(reason)]';
+            case 'cantKick': return 'I can\'t kick this member';
+            case 'youCantKick': return 'You can\'t kick this member';
+            case 'kickAuditReason': return `Executor: ${vars[0]}${vars[1] ? ` | Reason: ${vars[1]}` : ''}`;
+            case 'kickSuccess': return `Member kicked\nCase ID: \`${vars[0]}\``;
+            case 'kickEmbedAuthor': return `${vars[0]} kicked ${vars[1]}`;
+            case 'kickEmbedDescription': return `[Action message](${vars[0]})`;
+            case 'kickEmbedTargetTitle': return 'Target';
+            case 'kickEmbedTargetValue': return `${vars[0]}\n${vars[1]}`;
+            case 'kickEmbedExecutorTitle': return 'Executor';
+            case 'kickEmbedFooter': return `Case ${vars[0]}`;
+            case 'kickEmbedReasonTitle': return 'Reason';
+            case 'massbanDescription': return 'Bans many users at the same time\nAlso accepts a media attachment';
+            case 'massbanUsage': return '(user) [(list of users)] [(reason)]';
+            case 'massbanSuccess': return `${vars[0] ? `${vars[0]} users banned\n` : ''}${vars[1] ? `${vars[1]} invalid users\n` : ''}${vars[2] ? `${vars[2]} users could not be banned\n` : ''}${vars[3] ? `${vars[3]} users were already banned` : ''}`;
         }
     },
 };

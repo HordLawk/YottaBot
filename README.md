@@ -24,8 +24,8 @@ The default permission for any command is usually the closest normal Discord per
 - [x] finish this `README`
 - [x] organize the [support server](https://discord.gg/eNcsvsy)
 - [x] finish pt-br translations
-- [ ] add missing moderation commands `massban` and `kick`
-- [ ] organize the commands in the correct categories
+- [x] add missing moderation commands `massban` and `kick`
+- [x] organize the commands in the correct categories
 - [ ] reward boosters with one premium key
 - [ ] recommend xp amounts for levelroles
 - [ ] transfer the process to a web dyno

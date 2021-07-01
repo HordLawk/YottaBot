@@ -9,7 +9,7 @@ module.exports = {
     usage: lang => [lang.get('disableUsage0'), lang.get('disableUsage1')],
     example: ['#general on ping help xp', '#general view'],
     cooldown: 5,
-    categoryID: 0,
+    categoryID: 2,
     args: true,
     perm: 'ADMINISTRATOR',
     guildOnly: true,

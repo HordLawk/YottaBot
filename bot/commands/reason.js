@@ -9,7 +9,7 @@ module.exports = {
     usage: lang => [lang.get('reasonUsage')],
     example: ['7 is actually a spammer not a scammer'],
     cooldown: 5,
-    categoryID: 0,
+    categoryID: 3,
     args: true,
     perm: 'BAN_MEMBERS',
     guildOnly: true,
@@ -24,7 +24,7 @@ module.exports = {
         });
         if(!current) return message.channel.send(message.client.langs[channelLanguage].get('invCase'));
         const member = current.executor && await message.guild.members.fetch(current.executor).catch(() => null);
-        if(member && (current.executor != message.author.id) && (message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0)) return message.channel.send(message.client.langs[channelLanguage].get('youCantEditCase'));
+        if(member && (current.executor != message.author.id) && ((message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || (message.guild.ownerID === member.id))) return message.channel.send(message.client.langs[channelLanguage].get('youCantEditCase'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
         current.reason = reason;
         await current.save();

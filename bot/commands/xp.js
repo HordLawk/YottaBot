@@ -10,7 +10,7 @@ module.exports = {
     usage: lang => [lang.get('xpUsage0'), lang.get('xpUsage1'), lang.get('xpUsage2')],
     example: ['xp @LordHawk#0572', 'xp rank', 'xp roles'],
     cooldown: 5,
-    categoryID: 0,
+    categoryID: 4,
     guildOnly: true,
     execute: async function(message, args){
         const channelLanguage = message.guild ? message.client.guildData.get(message.guild.id).language : 'en';

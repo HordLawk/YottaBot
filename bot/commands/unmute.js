@@ -9,7 +9,7 @@ module.exports = {
     usage: lang => [lang.get('unmuteUsage')],
     example: ['@LordHawk#0572 bribed me'],
     cooldown: 5,
-    categoryID: 0,
+    categoryID: 3,
     args: true,
     perm: 'MANAGE_ROLES',
     guildOnly: true,

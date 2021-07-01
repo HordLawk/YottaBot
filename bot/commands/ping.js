@@ -5,7 +5,7 @@ module.exports = {
     name: 'ping',
     description: (lang) => lang.get('pingDescription'),
     cooldown: 5,
-    categoryID: 0,
+    categoryID: 1,
     execute: async (message) => {
         const channelLanguage = message.guild ? message.client.guildData.get(message.guild.id).language : 'en';
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));

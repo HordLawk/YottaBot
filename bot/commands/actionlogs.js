@@ -11,7 +11,7 @@ module.exports = {
     usage: lang => [lang.get('actionlogsUsage0'), lang.get('actionlogsUsage1'), 'remove delmsg', lang.get('actionlogsUsage2'), lang.get('actionlogsUsage3'), lang.get('actionlogsUsage4'), lang.get('actionlogsUsage5'), 'view'],
     example: ['defaultchannel #logs', 'set delmsg #deleted-messages', 'remove delmsg', 'ignore channel add #staff delmsg', 'ignore channel view #staff', 'ignore role remove @Mods all', 'ignore role view @Mods'],
     cooldown: 5,
-    categoryID: 0,
+    categoryID: 2,
     args: true,
     perm: 'ADMINISTRATOR',
     guildOnly: true,

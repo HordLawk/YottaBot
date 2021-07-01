@@ -9,7 +9,7 @@ module.exports = {
     usage: lang => [lang.get('unbanUsage')],
     example: ['@LordHawk apologised'],
     cooldown: 5,
-    categoryID: 0,
+    categoryID: 3,
     args: true,
     guildOnly: true,
     execute: async function(message, args){

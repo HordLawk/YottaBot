@@ -10,7 +10,7 @@ module.exports = {
     usage: lang => [lang.get('warnUsage')],
     example: ['@LordHawk#0572 stop spamming'],
     cooldown: 3,
-    categoryID: 0,
+    categoryID: 3,
     args: true,
     perm: 'BAN_MEMBERS',
     guildOnly: true,
@@ -23,7 +23,7 @@ module.exports = {
         if(!member) return message.channel.send(message.client.langs[channelLanguage].get('invMember'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
         if(member.user.bot) return message.channel.send(message.client.langs[channelLanguage].get('cantWarnBot'));
-        if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return message.channel.send(message.client.langs[channelLanguage].get('youCantWarn'));
+        if((message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || (message.guild.ownerID === member.id)) return message.channel.send(message.client.langs[channelLanguage].get('youCantWarn'));
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
         const current = new log({

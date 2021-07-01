@@ -9,7 +9,7 @@ module.exports = {
     usage: lang => [lang.get('checkUsage')],
     example: ['@LordHawk#0572 mute 15d12h30m30s'],
     cooldown: 5,
-    categoryID: 0,
+    categoryID: 3,
     args: true,
     guilOnly: true,
     execute: async function(message, args){

@@ -8,7 +8,7 @@ module.exports = {
     usage: lang => [lang.get('helpUsage')],
     example: ['ping'],
     cooldown: 5,
-    categoryID: 0,
+    categoryID: 1,
     execute: async (message, args) => {
         const channelLanguage = message.guild ? message.client.guildData.get(message.guild.id).language : 'en';
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
@@ -23,9 +23,10 @@ module.exports = {
                     dynamic: true,
                 }))
                 .setDescription(message.client.langs[channelLanguage].get('helpEmbedDescription', [message.client.configs.support, perms, prefix]))
-                .addField(message.client.langs[channelLanguage].get('category0'), message.client.commands.filter(command => (!command.dev && (command.categoryID == 0))).map(command => `\`${command.name}\``).join(' '))
                 .setFooter(message.client.langs[channelLanguage].get('helpEmbedFooter', [message.client.commands.filter(command => !command.dev).size]))
                 .setTimestamp();
+            let categories = message.client.commands.filter(cmd => !cmd.dev).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
+            categories.forEach((e, i) => embed.addField(message.client.langs[channelLanguage].get(`category${i}`), e.map(cmd => `\`${cmd.name}\``).join(' ')));
             return message.channel.send(embed);
         }
         const name = args[0];

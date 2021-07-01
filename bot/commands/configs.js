@@ -9,7 +9,7 @@ module.exports = {
     usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', lang.get('configsUsage3'), lang.get('configsUsage4'), lang.get('configsUsage5'), 'mod mute autosetup <on/off>'],
     example: ['prefix !', 'language pt', 'logattachments on', 'mod logs #warn-and-mute-logs warn mute', 'mod mute role @Muted', 'mod mute autosetup off'],
     cooldown: 5,
-    categoryID: 0,
+    categoryID: 2,
     args: true,
     perm: 'ADMINISTRATOR',
     guildOnly: true,

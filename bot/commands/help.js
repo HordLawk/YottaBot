@@ -47,5 +47,5 @@ module.exports = {
         if(command.perm) embed.addField(message.client.langs[channelLanguage].get('permissionLevel'), message.client.langs[channelLanguage].get(command.perm), true);
         embed.addField('Cooldown', message.client.langs[channelLanguage].get('helpCommandCooldown', [command.cooldown]), true);
         message.channel.send(embed);
-    }
-}
+    },
+};

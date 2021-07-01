@@ -41,7 +41,7 @@ module.exports = {
             .setDescription(`${['all', 'warn'].includes(args[1]) ? `Warns: \`${logDocs.filter(e => (e.type === 'warn')).length}\`\n` : ''}${['all', 'mute'].includes(args[1]) ? `Mutes: \`${logDocs.filter(e => ((e.type === 'mute') && !e.removal)).length}\`\nUnmutes: \`${logDocs.filter(e => ((e.type === 'mute') && e.removal)).length}\`\n` : ''}${['all', 'kick'].includes(args[1]) ? `Kicks: \`${logDocs.filter(e => (e.type === 'kick')).length}\`\n` : ''}${['all', 'ban'].includes(args[1]) ? `Bans: \`${logDocs.filter(e => ((e.type === 'ban') && !e.removal)).length}\`\nUnbans: \`${logDocs.filter(e => ((e.type === 'ban') && e.removal)).length}\`\n` : ''}`)
             .addFields(logDocs.slice(0, 25).map(e => ({
                 name: message.client.langs[channelLanguage].get('checkEmbedCaseTitle', [e.id]),
-                value: message.client.langs[channelLanguage].get('checkEmbedCaseValue', [e]),
+                value: message.client.langs[channelLanguage].get('checkEmbedCaseValue', [e, formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
             })));
             let msg = await message.channel.send(embed);
             if(logDocs.length <= 25) return;
@@ -61,7 +61,7 @@ module.exports = {
                 }
                 embed.spliceFields(0, 25, logDocs.slice(page * 25, (page + 1) * 25).map(e => ({
                     name: message.client.langs[channelLanguage].get('checkEmbedCaseTitle', [e.id]),
-                    value: message.client.langs[channelLanguage].get('checkEmbedCaseValue', [e]),
+                    value: message.client.langs[channelLanguage].get('checkEmbedCaseValue', [e, formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
                 })));
                 await msg.edit(embed);
             });

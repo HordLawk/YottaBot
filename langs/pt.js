@@ -211,7 +211,7 @@ module.exports = {
             case 'checkEmbedAuthor': return 'Casos';
             case 'checkEmbedFooter': return `${vars[0]} casos encontrados`;
             case 'checkEmbedCaseTitle': return `Caso ${vars[0]}`;
-            case 'checkEmbedCaseValue': return `Tipo: \`${vars[0].removal ? `${'un'}${vars[0].type}` : vars[0].type}\`\n[Mensagem da ação](${vars[0].actionMessage})\n${vars[0].executor ? `Executor: <@${vars[0].executor}>\n` : ''}${vars[0].duration ? `Duração: \`${formatDuration(vars[0].duration.getTime() - vars[0].timeStamp.getTime())}\`\n` : ''}${vars[0].reason ? `Motivo: "${vars[0].reason}"\n` : ''}Data: <t:${Math.floor(vars[0].timeStamp.getTime() / 1000)}>${vars[0].image ? `\n**[Mídia](${vars[0].image})**` : ''}`;
+            case 'checkEmbedCaseValue': return `Tipo: \`${vars[0].removal ? `${'un'}${vars[0].type}` : vars[0].type}\`\n[Mensagem da ação](${vars[0].actionMessage})\n${vars[0].executor ? `Executor: <@${vars[0].executor}>\n` : ''}${vars[0].duration ? `Duração: \`${vars[1]}\`\n` : ''}${vars[0].reason ? `Motivo: "${vars[0].reason}"\n` : ''}Data: <t:${Math.floor(vars[0].timeStamp.getTime() / 1000)}>${vars[0].image ? `\n**[Mídia](${vars[0].image})**` : ''}`;
             case 'modLogsSetSuccess': return `Canal de registro de ${vars[0].map(e => `\`${e}\``).join(' ')} definido como ${vars[1]}`;
             case 'invClearOnBanDays': return 'O número de dias precisa ser entre 0 e 7';
             case 'clearOnBanDaysSetSuccess': return `Número de dias de mensagens para deletar em bans definido como **${vars[0]}**`;

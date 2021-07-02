@@ -135,8 +135,11 @@ module.exports = {
             case 'botWebhooks': return 'I need permission to manage webhooks in this channel';
             case 'executor': return `\nExecutor: ${vars[0]}`;
             case 'delmsgEmbedAuthor': return 'Deleted message';
-            case 'delmsgEmbedDesc': return `Author: ${vars[0]}\nChannel: ${vars[1]}${vars[2]}\nSent: <t:${vars[3]}>`;
-            case 'delmsgEmbedContent': return 'Content';
+            case 'delmsgEmbedAuthorTitle': return 'Author';
+            case 'delmsgEmbedChannelTitle': return 'Channel';
+            case 'delmsgEmbedExecutorTitle': return 'Executor';
+            case 'delmsgEmbedSentTitle': return 'Sent';
+            case 'delmsgEmbedSentValue': return `<t:${vars[0]}>`;
             case 'delmsgEmbedAttachmentsTitle': return 'Attachments';
             case 'delmsgEmbedAttachmentsMedia': return `**[Attachment-${vars[0]}-Media](${vars[1]})**`;
             case 'delmsgEmbedAttachmentsFile': return `**[Attachment-${vars[0]}-File](${vars[1]})**`;
@@ -211,7 +214,7 @@ module.exports = {
             case 'checkEmbedAuthor': return 'Cases';
             case 'checkEmbedFooter': return `${vars[0]} cases found`;
             case 'checkEmbedCaseTitle': return `Case ${vars[0]}`;
-            case 'checkEmbedCaseValue': return `Type: \`${vars[0].removal ? `${'un'}${vars[0].type}` : vars[0].type}\`\n[Action message](${vars[0].actionMessage})\n${vars[0].executor ? `Executor: <@${vars[0].executor}>\n` : ''}${vars[0].duration ? `Duration: \`${vars[1](vars[0].duration.getTime() - vars[0].timeStamp.getTime())}\`\n` : ''}${vars[0].reason ? `Reason: "${vars[0].reason}"\n` : ''}Date: <t:${Math.floor(vars[0].timeStamp.getTime() / 1000)}>${vars[0].image ? `\n**[Media](${vars[0].image})**` : ''}`;
+            case 'checkEmbedCaseValue': return `Type: \`${vars[0].removal ? `${'un'}${vars[0].type}` : vars[0].type}\`\n[Action message](${vars[0].actionMessage})\n${vars[0].executor ? `Executor: <@${vars[0].executor}>\n` : ''}${vars[1] ? `Duration: \`${vars[1][0] ? `${vars[1][0]}d` : ''}${vars[1][1] ? `${vars[1][1]}h` : ''}${vars[1][2] ? `${vars[1][2]}m` : ''}\`\n` : ''}${vars[0].reason ? `Reason: "${vars[0].reason}"\n` : ''}Date: <t:${Math.floor(vars[0].timeStamp.getTime() / 1000)}>${vars[0].image ? `\n**[Media](${vars[0].image})**` : ''}`;
             case 'modLogsSetSuccess': return `Log channel for ${vars[0].map(e => `\`${e}\``).join(' ')} set to ${vars[1]}`;
             case 'invClearOnBanDays': return 'Number of days must be between 0 and 7';
             case 'clearOnBanDaysSetSuccess': return `Number of days of messages to delete on bans set to **${vars[0]}**`;
@@ -311,7 +314,7 @@ module.exports = {
             case 'noXp': return 'This member does not yet have any xp';
             case 'xpEmbedAuthor': return 'Xp';
             case 'xpEmbedDescription': return `${vars[0] ? `Current level: <@&${vars[0].roleID}>\n` : ''}${vars[1] ? `Next level: <@&${vars[1].roleID}>\n` : ''}Progress: **${vars[2]}${vars[1] ? `/${vars[1].xp}` : ''}**`;
-            case 'dmBotAdder': return `Greetings ${vars[0]}! Thank you for adding me to **${vars[1]}**. Since I am a highly customizable bot, I recommend that you start by having a look at \`${vars[2]}help configs\` and setting up command permissions with \`${vars[2]}help perm\`, otherwise, some of them might have too restrictive default permissions, like the \`mute\` command, which by default is only allowed to users with the Manage Roles permission\n\nThe full documentation is available at <https://github.com/HordLawk/YottaBot#readme>`;
+            case 'dmBotAdder': return `Greetings ${vars[0]}! Thank you for adding me to **${vars[1]}**. Since I am a highly customizable bot, I recommend that you start by having a look at \`${vars[2]}help configs\` and setting up command permissions with \`${vars[2]}help perm\`, otherwise, some of them might have too restrictive default permissions, like the \`mute\` command, which by default is only allowed to users with the Manage Roles permission\n\nIf you need any help, don\'t hesitate to ask for support in my [support server](https://discord.gg/${vars[3]}), you can also read the [full documentation](https://github.com/HordLawk/YottaBot#readme) for more detailed information`;
             case 'autoUnmuteEmbedAuthorMember': return `${vars[0]} was unmuted`;
             case 'autoUnmuteEmbedAuthorNoMember': return 'Unmute';
             case 'autoUnmuteEmbedTargetTitle': return 'Target';

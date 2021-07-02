@@ -44,10 +44,14 @@ module.exports = {
                 banneds++;
                 continue;
             };
-            await message.guild.members.ban(user.id, {
+            let realban = await message.guild.members.ban(user.id, {
                 reason: message.client.langs[channelLanguage].get('banReason', [message.author.tag, reason]),
                 days: message.client.guildData.get(message.guild.id).pruneBan,
-            });
+            }).catch(() => null);
+            if(!realban){
+                invusers++;
+                continue;
+            }
             bans++;
             let current = new log({
                 id: message.client.guildData.get(message.guild.id).counterLogs++,

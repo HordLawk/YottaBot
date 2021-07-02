@@ -9,7 +9,10 @@ module.exports = {
             let integrations = await guild.fetchIntegrations({includeApplications: true});
             let adder = integrations.find(e => (e.application.id === guild.client.user.id)).user;
             content = `Added by: ${adder} (${adder.tag})\n`;
-            await adder.send(guild.client.langs[guild.client.guildData.get(guild.id)?.language ?? (guild.region === 'brazil') ? 'pt' : 'en'].get('dmBotAdder', [adder, guild.name, guild.client.guildData.get(guild.id)?.prefix ?? 'y!'])).catch(() => null);
+            let dmEmbed = new MessageEmbed()
+                .setColor(0x8000ff)
+                .setDescription(guild.client.langs[guild.client.guildData.get(guild.id)?.language ?? (guild.region === 'brazil') ? 'pt' : 'en'].get('dmBotAdder', [adder, guild.name, guild.client.guildData.get(guild.id)?.prefix ?? 'y!', guild.client.configs.support]))
+            await adder.send(dmEmbed).catch(() => null);
         }
         const embed = new MessageEmbed()
             .setColor(0x00ff00)

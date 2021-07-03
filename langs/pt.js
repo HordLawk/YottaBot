@@ -232,7 +232,7 @@ module.exports = {
             case 'botManageRolesServer': return 'Eu não consigo gerenciar cargos nesse servidor';
             case 'cantGiveMuteRole': return 'Eu não consigo dar o cargo de mute aos membros';
             case 'noMuteRole': return 'Nenhum cargo de mute foi definido e o modo de configuração automática de mute está desativado';
-            case 'muteRoleName': return 'Mutedo';
+            case 'muteRoleName': return 'Mutado';
             case 'muteMemberSuccess': return `Membro mutado\nID do caso: \`${vars[0]}\``;
             case 'muteRoleSetupReason': return 'Configuração das permissões do cargo de mute';
             case 'muteEmbedAuthor': return `${vars[0]} mutou ${vars[1]}`;
@@ -338,6 +338,8 @@ module.exports = {
             case 'massbanDescription': return 'Bane varios usuários ao mesmo tempo\nTambém aceita um anexo de mídia';
             case 'massbanUsage': return '(usuário) [(lista de usuários)] [(motivo)]';
             case 'massbanSuccess': return `${vars[0] ? `${vars[0]} usuários banidos\n` : ''}${vars[1] ? `${vars[1]} usuários inválidos\n` : ''}${vars[2] ? `${vars[2]} usuários não puderam ser banidos\n` : ''}${vars[3] ? `${vars[3]} usuários já estavam banidos` : ''}`;
+            case 'firstBoost': return `Parabéns ${vars[0]}, você impulsionou **${vars[1]}** e foi recompensado com uma chave premium, use o comando \`premium\` em qualquer servidor para ativar as funções premium`;
+            case 'renewBoost': return `Obrigado por impulsionar **${vars[0]}** por mais um mês! Você recebeu uma chave premium como recompensa, use o comando \`premium\` em qualquer servidor para ativar as funções premium`;
         }
     },
 };

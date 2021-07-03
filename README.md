@@ -26,7 +26,7 @@ The default permission for any command is usually the closest normal Discord per
 - [x] finish pt-br translations
 - [x] add missing moderation commands `massban` and `kick`
 - [x] organize the commands in the correct categories
-- [ ] reward boosters with one premium key
+- [x] reward boosters with one premium key
 - [ ] recommend xp amounts for levelroles
 - [ ] transfer the process to a web dyno
 - [ ] add premium feature "reward time spent in vcs with xp"

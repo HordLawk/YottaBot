@@ -6,4 +6,5 @@ module.exports = {
     defaultPrefix: 'y!',
     actions: ['delmsg'],
     support: 'eNcsvsy',
+    supportID: '476244157245947904',
 };

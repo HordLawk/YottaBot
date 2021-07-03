@@ -338,6 +338,8 @@ module.exports = {
             case 'massbanDescription': return 'Bans many users at the same time\nAlso accepts a media attachment';
             case 'massbanUsage': return '(user) [(list of users)] [(reason)]';
             case 'massbanSuccess': return `${vars[0] ? `${vars[0]} users banned\n` : ''}${vars[1] ? `${vars[1]} invalid users\n` : ''}${vars[2] ? `${vars[2]} users could not be banned\n` : ''}${vars[3] ? `${vars[3]} users were already banned` : ''}`;
+            case 'firstBoost': return `Congratulations ${vars[0]}, you boosted **${vars[1]}** and was rewarded with a premium key, use the \`premium\` commannd in any server to activate its premium features`;
+            case 'renewBoost': return `Thank you for boosting **${vars[0]}** for another month! You got a premium key as a reward, use the \`premium\` commannd in any server to activate its premium features`;
         }
     },
 };

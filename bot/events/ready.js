@@ -3,6 +3,7 @@ const role = require('../../schemas/role.js');
 const menu = require('../../schemas/menu.js');
 const log = require('../../schemas/log.js');
 const guildModel = require('../../schemas/guild.js');
+const user = require('../../schemas/user.js');
 const {MessageEmbed} = require('discord.js');
 
 module.exports = {
@@ -58,10 +59,29 @@ module.exports = {
             await guildModel.updateMany({premiumUntil: {$lt: Date.now()}}, {$set: {premiumUntil: null}});
             endedPremium.forEach(e => client.guildData.get(e._id).premiumUntil = null);
         }
+        const renewBoost = async () => {
+            const endedBoost = await user.find({boostUntil: {$lt: Date.now()}});
+            console.log(endedBoost);
+            if(!endedBoost.length) return;
+            for(userDoc of endedBoost){
+                let discordMember = await client.guilds.cache.get(client.configs.supportID).members.fetch(userDoc._id).catch(() => null);
+                userDoc.boostUntil = discordMember?.premiumSince && new Date(userDoc.boostUntil.getTime() + 2592000000);
+                if(discordMember?.premiumSince){
+                    userDoc.boostUntil = new Date(userDoc.boostUntil.getTime() + 2592000000);
+                    userDoc.premiumKeys++;
+                    discordMember.send(client.langs.en.get('renewBoost', [discordMember.guild.name])).catch(() => null);
+                }
+                else{
+                    userDoc.boostUntil = null;
+                }
+                userDoc.save();
+            }
+        }
         const tick = () => {
             setTimeout(() => {
-                unpremiumTimer();
                 unmuteTimer();
+                unpremiumTimer();
+                renewBoost();
                 tick();
             }, 10000);
         }

@@ -6,7 +6,8 @@ const userSchema = new Schema({
     premiumKeys: {
         type: Number,
         default: 0,
-    }
+    },
+    boostUntil: Date,
 });
 
 module.exports = model('user', userSchema);

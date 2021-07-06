@@ -19,7 +19,7 @@ module.exports = {
         switch(args[0]){
             case 'lb': await message.channel.send(message.client.langs[channelLanguage].get('lbDeprecated'));
             case 'rank': {
-                let members = await message.guild.members.fetch();
+                let members = await message.guild.members.fetch({cache: false});
                 let memberDocs = await member.find({
                     guild: message.guild.id,
                     userID: {$in: members.map(e => e.id)},

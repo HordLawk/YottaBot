@@ -25,7 +25,6 @@ The default permission for any command is usually the closest normal Discord per
 - [x] organize the [support server](https://discord.gg/eNcsvsy)
 - [x] finish pt-br translations
 - [x] add missing moderation commands `massban` and `kick`
-- [x] organize the commands in the correct categories
 - [x] reward boosters with one premium key
 - [ ] recommend xp amounts for levelroles
 - [ ] transfer the process to a web dyno
@@ -33,3 +32,5 @@ The default permission for any command is usually the closest normal Discord per
 - [ ] add actionlog for bulkdelete
 - [ ] add rss feeds for youtube notifications
 - [ ] setup a patreon
+- [ ] `prune`
+- [ ] delete cases

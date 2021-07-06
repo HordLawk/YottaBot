@@ -61,7 +61,6 @@ module.exports = {
         }
         const renewBoost = async () => {
             const endedBoost = await user.find({boostUntil: {$lt: Date.now()}});
-            console.log(endedBoost);
             if(!endedBoost.length) return;
             for(userDoc of endedBoost){
                 let discordMember = await client.guilds.cache.get(client.configs.supportID).members.fetch(userDoc._id).catch(() => null);

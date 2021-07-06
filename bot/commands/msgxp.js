@@ -185,6 +185,16 @@ module.exports = {
                 }
             }
             break;
+            // case 'recommend': {
+            //     if(isNaN(parseInt(args[1], 10)) || isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[1], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[1], 10) < 1) || (parseInt(args[2], 10) < 1)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+            //     let levels = [];
+            //     let sum = 0;
+            //     for(let i = 0; sum < parseInt(args[2], 10); i++){
+            //         levels.push((5 * (i ** 2)) + (50 * i) + 100);
+            //         sum += levels[i];
+            //     }
+            // }
+            // break;
             case 'view': {
                 if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
                 let notifs;

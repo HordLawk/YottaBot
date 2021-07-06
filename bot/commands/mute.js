@@ -75,7 +75,6 @@ module.exports = {
         const d = Math.floor(duration / 86400000);
         const h = Math.floor((duration % 86400000) / 3600000);
         const m = Math.floor((duration % 3600000) / 60000);
-        const formattedDuration = `${d ? `${d}d` : ''}${h ? `${h}h` : ''}${m ? `${m}m` : ''}`;
         const embed = new MessageEmbed()
             .setTimestamp()
             .setColor(0xff8000)
@@ -83,7 +82,7 @@ module.exports = {
             .setDescription(message.client.langs[channelLanguage].get('muteEmbedDescription', [message.url]))
             .addField(message.client.langs[channelLanguage].get('muteEmbedTargetTitle'), message.client.langs[channelLanguage].get('muteEmbedTargetValue', [member]), true)
             .addField(message.client.langs[channelLanguage].get('muteEmbedExecutorTitle'), message.author, true)
-            .addField(message.client.langs[channelLanguage].get('muteEmbedDurationTitle'), message.client.langs[channelLanguage].get('muteEmbedDurationValue', [formattedDuration, Math.floor(current.duration.getTime() / 1000)]), true)
+            .addField(message.client.langs[channelLanguage].get('muteEmbedDurationTitle'), message.client.langs[channelLanguage].get('muteEmbedDurationValue', [d, h, m, Math.floor(current.duration.getTime() / 1000)]), true)
             .setFooter(message.client.langs[channelLanguage].get('muteEmbedFooter', [current.id]), message.guild.iconURL({dynamic: true}));
         if(reason) embed.addField(message.client.langs[channelLanguage].get('muteEmbedReasonTitle'), reason);
         if(current.image) embed.setImage(current.image);

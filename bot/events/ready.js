@@ -33,12 +33,13 @@ module.exports = {
                 let guild = client.guilds.cache.get(unmuteDoc.guild);
                 if(!guild) continue;
                 let discordMember = await guild.members.fetch(unmuteDoc.target).catch(() => null);
+                let discordUser = discordMember?.user ?? await client.users.fetch(unmuteDoc.target).catch(() => {});
                 let discordChannel = guild.channels.cache.get(client.guildData.get(guild.id).modlogs.mute);
                 if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(guild.me).has('SEND_MESSAGES') && discordChannel.permissionsFor(guild.me).has('EMBED_LINKS')){
                     let guildLanguage = client.langs[client.guildData.get(guild.id).language];
                     let embed = new MessageEmbed()
                         .setColor(0x0000ff)
-                        .setAuthor(discordMember ? guildLanguage.get('autoUnmuteEmbedAuthorMember', [discordMember.user.tag]) : guildLanguage.get('autoUnmuteEmbedAuthorNoMember'), discordMember?.user.displayAvatarURL({dynamic: true}))
+                        .setAuthor(discordUser ? guildLanguage.get('autoUnmuteEmbedAuthorMember', [discordUser.tag]) : guildLanguage.get('autoUnmuteEmbedAuthorNoMember'), discordUser?.displayAvatarURL({dynamic: true}))
                         .addField(guildLanguage.get('autoUnmuteEmbedTargetTitle'), guildLanguage.get('autoUnmuteEmbedTargetValue', [unmuteDoc.target]), true)
                         .setTimestamp()
                         .addField(guildLanguage.get('autoUnmuteEmbedReasonTitle'), guildLanguage.get('autoUnmuteEmbedReasonValue'));

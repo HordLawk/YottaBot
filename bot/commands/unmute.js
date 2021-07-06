@@ -21,6 +21,7 @@ module.exports = {
         if(!id) return message.channel.send(message.client.langs[channelLanguage].get('invUser'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
         const member = await message.guild.members.fetch(id).catch(() => null);
+        const discordUser = member?.user ?? await message.client.users.fetch(id).catch(() => {});
         if(member && (message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0)) return message.channel.send(message.client.langs[channelLanguage].get('youCantUnmute'));
         const discordRole = message.guild.roles.cache.get(message.client.guildData.get(message.guild.id).muteRoleID);
         if(member){
@@ -55,7 +56,7 @@ module.exports = {
         if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('SEND_MESSAGES') || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) return;
         const embed = new MessageEmbed()
             .setColor(0x0000ff)
-            .setAuthor(message.client.langs[channelLanguage].get('unmuteEmbedAuthor', [message.author.tag, member?.user.tag]), member?.user.displayAvatarURL({dynamic: true}))
+            .setAuthor(message.client.langs[channelLanguage].get('unmuteEmbedAuthor', [message.author.tag, discordUser?.tag]), discordUser?.displayAvatarURL({dynamic: true}))
             .setDescription(message.client.langs[channelLanguage].get('unmuteEmbedDescription', [message.url]))
             .addField(message.client.langs[channelLanguage].get('unmuteEmbedTargetTitle'), message.client.langs[channelLanguage].get('unmuteEmbedTargetValue', [current.target]), true)
             .addField(message.client.langs[channelLanguage].get('unmuteEmbedExecutorTitle'), message.author, true)

@@ -45,8 +45,7 @@ module.exports = {
             let d = Math.floor(duration / 86400000);
             let h = Math.floor((duration % 86400000) / 3600000);
             let m = Math.floor((duration % 3600000) / 60000);
-            let s = Math.floor((duration % 60000) / 1000);
-            embed.addField(message.client.langs[channelLanguage].get('reasonEmbedDurationTitle'), message.client.langs[channelLanguage].get('reasonEmbedDurationValue', [d, h, m, s, Math.floor(current.duration.getTime() / 1000)]), true);
+            embed.addField(message.client.langs[channelLanguage].get('reasonEmbedDurationTitle'), message.client.langs[channelLanguage].get('reasonEmbedDurationValue', [d, h, m, Math.floor(current.duration.getTime() / 1000)]), true);
         }
         embed.addField(message.client.langs[channelLanguage].get('reasonEmbedReasonTitle'), reason);
         msg.edit(embed);

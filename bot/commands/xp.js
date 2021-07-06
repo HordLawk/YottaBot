@@ -17,7 +17,6 @@ module.exports = {
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
         if(!message.client.guildData.get(message.guild.id).gainExp) return message.channel.send(message.client.langs[channelLanguage].get('xpDisabled'));
         switch(args[0]){
-            case 'lb': await message.channel.send(message.client.langs[channelLanguage].get('lbDeprecated'));
             case 'rank': {
                 let members = await message.guild.members.fetch({cache: false});
                 let memberDocs = await member.find({
@@ -87,9 +86,10 @@ module.exports = {
                 let current = roleDocs.find(e => (e.xp <= user.xp));
                 let next = roleDocs.reverse().find(e => (e.xp > user.xp));
                 let discordMember = await message.guild.members.fetch(user.userID).catch(() => null);
+                let discordUser = discordMember?.user ?? await message.client.users.fetch(id).catch(() => null);
                 let embed = new MessageEmbed()
                     .setColor((discordMember || message.guild.me).displayColor || 0x8000ff)
-                    .setAuthor(discordMember?.user.tag || message.client.langs[channelLanguage].get('xpEmbedAuthor'), discordMember?.user.displayAvatarURL({dynamic: true}))
+                    .setAuthor(discordUser?.tag ?? message.client.langs[channelLanguage].get('xpEmbedAuthor'), discordUser?.displayAvatarURL({dynamic: true}))
                     .setTimestamp()
                     .setDescription(message.client.langs[channelLanguage].get('xpEmbedDescription', [current, next, user.xp]));
                 message.channel.send(embed);

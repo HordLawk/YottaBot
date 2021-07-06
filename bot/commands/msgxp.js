@@ -9,8 +9,8 @@ module.exports = {
     name: 'msgxp',
     description: lang => lang.get('msgxpDescription'),
     aliases: ['lvlup', 'msgexp', 'messagexp', 'messageexp'],
-    usage: lang => [lang.get('msgxpUsage0'), lang.get('msgxpUsage8'), lang.get('msgxpUsage1'), lang.get('msgxpUsage2'), lang.get('msgxpUsage3'), lang.get('msgxpUsage4'), lang.get('msgxpUsage5'), lang.get('msgxpUsage6'), lang.get('msgxpUsage7'), lang.get('msgxpUsage9')],
-    example: ['enable on', 'roles add @Active 1440', 'roles remove @Active', 'user add 100 @LordHawk#0572', 'ignore role remove @Mods', 'ignore channel add #spam', 'notify #levelup'],
+    usage: lang => [lang.get('msgxpUsage0'), lang.get('msgxpUsage8'), lang.get('msgxpUsage1'), lang.get('msgxpUsage2'), lang.get('msgxpUsage3'), lang.get('msgxpUsage4'), lang.get('msgxpUsage5'), lang.get('msgxpUsage6'), 'recommend (role amount) (max xp)', lang.get('msgxpUsage7'), lang.get('msgxpUsage9')],
+    example: ['enable on', 'roles add @Active 1440', 'roles remove @Active', 'user add 100 @LordHawk#0572', 'ignore role remove @Mods', 'ignore channel add #spam', 'notify #levelup', 'recommend 16 43368'],
     cooldown: 5,
     categoryID: 2,
     args: true,
@@ -185,16 +185,31 @@ module.exports = {
                 }
             }
             break;
-            // case 'recommend': {
-            //     if(isNaN(parseInt(args[1], 10)) || isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[1], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[1], 10) < 1) || (parseInt(args[2], 10) < 1)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
-            //     let levels = [];
-            //     let sum = 0;
-            //     for(let i = 0; sum < parseInt(args[2], 10); i++){
-            //         levels.push((5 * (i ** 2)) + (50 * i) + 100);
-            //         sum += levels[i];
-            //     }
-            // }
-            // break;
+            case 'recommend': {
+                if(isNaN(parseInt(args[1], 10)) || isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[1], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[1], 10) < 0) || (parseInt(args[2], 10) < 0)) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                if(parseInt(args[1], 10) < 2) return message.channel.send(message.client.langs[channelLanguage].get('recommendMinLevels'));
+                if(parseInt(args[2], 10) < 13) return message.channel.send(message.client.langs[channelLanguage].get('recommendMinXp'));
+                let levels = [];
+                for(let i = 0; (levels[levels.length - 1] ?? 0) < (parseInt(args[2], 10) * 20); i++) levels.push((levels[levels.length - 1] ?? 0) + (5 * (i ** 2)) + (50 * i) + 100);
+                if((levels[levels.length - 1] - (parseInt(args[2], 10) * 20)) > ((parseInt(args[2], 10) * 20) - levels[levels.length - 2])) levels.pop();
+                if(parseInt(args[1], 10) > levels.length) return message.channel.send(message.client.langs[channelLanguage].get('recommendXpNotEnough', [args[2], args[1]]));
+                let realLevels = [];
+                // Throughout the entirety of this project, the next lines are the only part of it I don't quite undestand what's really happening, thus, they are utterly unoptimized and will continue to be so, as I truly hope I don't need to touch this piece of code ever again.
+                let cei = Math.ceil(levels.length / parseInt(args[1], 10));
+                let flr = Math.floor(levels.length / parseInt(args[1], 10));
+                let dec = Math.floor(((levels.length / parseInt(args[1], 10)) - flr) * 1000) / 1000;
+                let multCei = parseInt(args[1], 10) * dec;
+                let multFlr = parseInt(args[1], 10) * (1 - dec);
+                let ceis = (new Array(multCei)).fill(cei);
+                let flrs = (new Array(multFlr)).fill(flr).concat(ceis);
+                let index = 0;
+                for(let i = 0; i < parseInt(args[1], 10); i++){
+                    index += flrs[i];
+                    realLevels.push(levels[index - 1]);
+                }
+                message.channel.send(message.client.langs[channelLanguage].get('recommendSuccess', [realLevels]));
+            }
+            break;
             case 'view': {
                 if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
                 let notifs;

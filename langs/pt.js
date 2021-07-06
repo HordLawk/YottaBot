@@ -77,6 +77,7 @@ module.exports = {
             case 'msgxpUsage7': return 'view';
             case 'msgxpUsage8': return 'stack <on/off>';
             case 'msgxpUsage9': return 'reset';
+            case 'msgxpUsage10': return 'recommend (quantia de cargos) (xp máximo)';
             case 'xpEnable': return `Sistema de xp do servidor ${(vars[0] === 'on') ? 'ativado': 'desativado'}`
             case 'xpStack': return `Acumulo de cargos de xp ${(vars[0] === 'on') ? 'ativado': 'desativao'}`
             case 'manageRole': return 'Eu preciso de permissão para gerenciar esse cargo';
@@ -241,7 +242,7 @@ module.exports = {
             case 'muteEmbedTargetValue': return `${vars[0]}\n${vars[0].id}`;
             case 'muteEmbedExecutorTitle': return 'Executor';
             case 'muteEmbedDurationTitle': return 'Duração';
-            case 'muteEmbedDurationValue': return `${vars[0]}\n<t:${vars[1]}:R>`;
+            case 'muteEmbedDurationValue': return `${vars[0] ? `${vars[0]}d` : ''}${vars[1] ? `${vars[1]}h` : ''}${vars[2] ? `${vars[2]}m` : ''}\n<t:${vars[3]}:R>`;
             case 'muteEmbedFooter': return `Caso ${vars[0]}`;
             case 'muteEmbedReasonTitle': return 'Motivo';
             case 'activatePremium': return `Você tem **${vars[0]}** chaves premium restantes\nVocê quer ativar funções premium nesse servidor? Essa ação não pode ser revertida`;
@@ -256,7 +257,7 @@ module.exports = {
             case 'reasonEmbedExecutorTitle': return 'Executor';
             case 'reasonEmbedExecutorValue': return `<@${vars[0]}>`;
             case 'reasonEmbedDurationTitle': return 'Duração';
-            case 'reasonEmbedDurationValue': return `${vars[0] ? `${vars[0]}d` : ''}${vars[1] ? `${vars[1]}h` : ''}${vars[2] ? `${vars[2]}m` : ''}${vars[3] ? `${vars[3]}s` : ''}\n<t:${vars[4]}:R>`;
+            case 'reasonEmbedDurationValue': return `${vars[0] ? `${vars[0]}d` : ''}${vars[1] ? `${vars[1]}h` : ''}${vars[2] ? `${vars[2]}m` : ''}\n<t:${vars[3]}:R>`;
             case 'reasonEmbedReasonTitle': return 'Motivo';
             case 'supportDescription': return 'Envia um convite para o servidor de suporte';
             case 'supportEmbedDescription': return `**[Entre](https://discord.gg/${vars[0]})** em meu servidor de suporte!`;
@@ -340,6 +341,10 @@ module.exports = {
             case 'massbanSuccess': return `${vars[0] ? `${vars[0]} usuários banidos\n` : ''}${vars[1] ? `${vars[1]} usuários inválidos\n` : ''}${vars[2] ? `${vars[2]} usuários não puderam ser banidos\n` : ''}${vars[3] ? `${vars[3]} usuários já estavam banidos` : ''}`;
             case 'firstBoost': return `Parabéns ${vars[0]}, você impulsionou **${vars[1]}** e foi recompensado com uma chave premium, use o comando \`premium\` em qualquer servidor para ativar as funções premium`;
             case 'renewBoost': return `Obrigado por impulsionar **${vars[0]}** por mais um mês! Você recebeu uma chave premium como recompensa, use o comando \`premium\` em qualquer servidor para ativar as funções premium`;
+            case 'recommendMinLevels': return 'Você não pode pedir por recomendações para menos de 2 níveis';
+            case 'recommendMinXp': return 'O xp do nível máximo deve ser no mínimo 13';
+            case 'recommendXpNotEnough': return `**${vars[0]}** não é xp suficiente para **${vars[1]}** níveis`;
+            case 'recommendSuccess': return `As quantias de xp recomendadas são ${vars[0].map(e => `\`${Math.round(e / 20)}\``).join(' ')}`;
         }
     },
 };

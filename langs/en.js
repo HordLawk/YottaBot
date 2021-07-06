@@ -77,6 +77,7 @@ module.exports = {
             case 'msgxpUsage7': return 'view';
             case 'msgxpUsage8': return 'stack <on/off>';
             case 'msgxpUsage9': return 'reset';
+            case 'msgxpUsage10': return 'recommend (role amount) (max xp)';
             case 'xpEnable': return `Server xp system successfully ${(vars[0] === 'on') ? 'enabled': 'disabled'}`
             case 'xpStack': return `Role stacking successfully ${(vars[0] === 'on') ? 'enabled': 'disabled'}`
             case 'manageRole': return 'I need permissions to manage this role';
@@ -241,7 +242,7 @@ module.exports = {
             case 'muteEmbedTargetValue': return `${vars[0]}\n${vars[0].id}`;
             case 'muteEmbedExecutorTitle': return 'Executor';
             case 'muteEmbedDurationTitle': return 'Duration';
-            case 'muteEmbedDurationValue': return `${vars[0]}\n<t:${vars[1]}:R>`;
+            case 'muteEmbedDurationValue': return `${vars[0] ? `${vars[0]}d` : ''}${vars[1] ? `${vars[1]}h` : ''}${vars[2] ? `${vars[2]}m` : ''}\n<t:${vars[3]}:R>`;
             case 'muteEmbedFooter': return `Case ${vars[0]}`;
             case 'muteEmbedReasonTitle': return 'Reason';
             case 'activatePremium': return `You have **${vars[0]}** premium keys remaining\nDo you want to activate premium features for this server? This action cannot be undone`;
@@ -256,7 +257,7 @@ module.exports = {
             case 'reasonEmbedExecutorTitle': return 'Executor';
             case 'reasonEmbedExecutorValue': return `<@${vars[0]}>`;
             case 'reasonEmbedDurationTitle': return 'Duration';
-            case 'reasonEmbedDurationValue': return `${vars[0] ? `${vars[0]}d` : ''}${vars[1] ? `${vars[1]}h` : ''}${vars[2] ? `${vars[2]}m` : ''}${vars[3] ? `${vars[3]}s` : ''}\n<t:${vars[4]}:R>`;
+            case 'reasonEmbedDurationValue': return `${vars[0] ? `${vars[0]}d` : ''}${vars[1] ? `${vars[1]}h` : ''}${vars[2] ? `${vars[2]}m` : ''}\n<t:${vars[3]}:R>`;
             case 'reasonEmbedReasonTitle': return 'Reason';
             case 'supportDescription': return 'Gives you an invite to the support server';
             case 'supportEmbedDescription': return `**[Join](https://discord.gg/${vars[0]})** my support server!`;
@@ -340,6 +341,10 @@ module.exports = {
             case 'massbanSuccess': return `${vars[0] ? `${vars[0]} users banned\n` : ''}${vars[1] ? `${vars[1]} invalid users\n` : ''}${vars[2] ? `${vars[2]} users could not be banned\n` : ''}${vars[3] ? `${vars[3]} users were already banned` : ''}`;
             case 'firstBoost': return `Congratulations ${vars[0]}, you boosted **${vars[1]}** and was rewarded with a premium key, use the \`premium\` commannd in any server to activate its premium features`;
             case 'renewBoost': return `Thank you for boosting **${vars[0]}** for another month! You got a premium key as a reward, use the \`premium\` commannd in any server to activate its premium features`;
+            case 'recommendMinLevels': return 'You can\'t ask for recommendations for less than 2 levels';
+            case 'recommendMinXp': return 'Highest level xp has to be at least 13';
+            case 'recommendXpNotEnough': return `**${vars[0]}** is not enough xp for **${vars[1]}** levels`;
+            case 'recommendSuccess': return `The recommended xp amounts are ${vars[0].map(e => `\`${Math.round(e / 20)}\``).join(' ')}`;
         }
     },
 };

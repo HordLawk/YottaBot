@@ -3,7 +3,7 @@
 
 **[Invite me to your server](https://discord.com/oauth2/authorize?client_id=371902120561082368&permissions=2147483647&scope=bot)**
 
-**[Support server](https://discord.gg/eNcsvsy)**
+**[Join the support server](https://discord.gg/eNcsvsy)**
 
 ## Get started
 Like any other bot, the `help` command will list all the other commands and using `help (command)` will show you the correct usage for a specified command, note that all commands have to be prefixed with your server's prefix ~~(duh)~~ and the default prefix is `y!`

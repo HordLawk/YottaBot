@@ -17,6 +17,7 @@ module.exports = {
         var channelLanguage = (message.channel.type != 'dm') ? message.client.guildData.get(message.guild.id).language : 'en';
         switch(args[0]){
             case 'prefix': {
+                if(!args[1]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
                 if(args[1].length > 10) return message.channel.send(message.client.langs[channelLanguage].get('longPrefix'));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {prefix: args[1]}});
                 message.client.guildData.get(message.guild.id).prefix = args[1];

@@ -39,7 +39,7 @@ module.exports = {
             .setAuthor(message.client.langs[channelLanguage].get('delmsgEmbedAuthor'), message.author.displayAvatarURL({
                 size: 4096,
                 dynamic: true,
-            }))
+            }), message.url)
             .setDescription(message.content)
             .addField(message.client.langs[channelLanguage].get('delmsgEmbedAuthorTitle'), message.author, true)
             .addField(message.client.langs[channelLanguage].get('delmsgEmbedChannelTitle'), message.channel, true);

@@ -35,7 +35,7 @@ module.exports = {
             return [d, h, m];
         }
         const embed = new MessageEmbed()
-            .setColor((discordMember || message.guild.me).displayColor || 0x8000ff)
+            .setColor(discordMember?.displayColor ?? message.guild.me.displayColor ?? 0x8000ff)
             .setAuthor(discordUser?.tag ?? message.client.langs[channelLanguage].get('checkEmbedAuthor'), discordUser?.displayAvatarURL({dynamic: true}))
             .setTimestamp()
             .setFooter(message.client.langs[channelLanguage].get('checkEmbedFooter', [logDocs.length]))

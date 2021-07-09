@@ -88,7 +88,7 @@ module.exports = {
                 let discordMember = await message.guild.members.fetch(user.userID).catch(() => null);
                 let discordUser = discordMember?.user ?? await message.client.users.fetch(id).catch(() => null);
                 let embed = new MessageEmbed()
-                    .setColor((discordMember || message.guild.me).displayColor || 0x8000ff)
+                    .setColor(discordMember?.displayColor ?? message.guild.me.displayColor ?? 0x8000ff)
                     .setAuthor(discordUser?.tag ?? message.client.langs[channelLanguage].get('xpEmbedAuthor'), discordUser?.displayAvatarURL({dynamic: true}))
                     .setTimestamp()
                     .setDescription(message.client.langs[channelLanguage].get('xpEmbedDescription', [current, next, user.xp]));

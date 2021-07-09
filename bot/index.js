@@ -4,7 +4,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client({partials: ['REACTION', 'MESSAGE']});
 const guild = require('../schemas/guild.js');
 client.configs = require('./configs.js');
-client.langs = fs.readdirSync(path.join(__dirname, '..', 'langs')).filter(file => file.endsWith('.js')).map(e => require(`../langs/${e}`)).reduce((obj, e) => ({...obj, [e.lang]: e}), {});
+client.langs = fs.readdirSync(path.join(__dirname, '..', 'locale')).filter(file => file.endsWith('.js')).map(e => require(`../locale/${e}`)).reduce((obj, e) => ({...obj, [e.lang]: e}), {});
 client.commands = new Discord.Collection(fs.readdirSync(path.join(__dirname, 'commands')).filter(file => file.endsWith('.js')).map(e => require(`./commands/${e}`)).filter(e => e.active).map(e => [e.name, e]));
 client.cooldowns = new Discord.Collection();
 client.xpcds = new Discord.Collection();

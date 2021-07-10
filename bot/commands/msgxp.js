@@ -110,10 +110,7 @@ module.exports = {
                 await member.updateMany({
                     guild: message.guild.id,
                     userID: {$in: memberDocs.filter(e => !members.some(ee => (e.userID === ee.id))).map(e => e.userID).concat(members.map(e => e.id))},
-                }, query, {
-                    upsert: true,
-                    setDefaultsOnInsert: true,
-                });
+                }, query);
                 if(args[1] === 'remove') await member.updateMany({
                     guild: message.guild.id,
                     xp: {$lt: 0},

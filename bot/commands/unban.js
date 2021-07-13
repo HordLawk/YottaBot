@@ -33,7 +33,7 @@ module.exports = {
             timeStamp: Date.now(),
             actionMessage: message.url,
             reason: reason || null,
-            image: message.attachments.first()?.height ? message.attachments.first().url : null,
+            image: message.attachments.first()?.height && message.attachments.first().url,
             removal: true,
         });
         await current.save();

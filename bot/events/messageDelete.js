@@ -11,6 +11,7 @@ module.exports = {
         if(message.guild.me.permissions.has('VIEW_AUDIT_LOG')){
             let audits = await message.guild.fetchAuditLogs({type: 'MESSAGE_DELETE', limit: 1});
             if(audits.entries.first()){
+                console.log(message.client.lastdelmsg.get(message.guild.id));
                 if(message.client.lastdelmsg.has(message.guild.id) && ((audits.entries.first().extra.count != message.client.lastdelmsg.get(message.guild.id).count) || (audits.entries.first().id != message.client.lastdelmsg.get(message.guild.id).id))) executor = audits.entries.first().executor;
                 message.client.lastdelmsg.set(message.guild.id, {
                     count: audits.entries.first().extra.count,

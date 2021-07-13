@@ -62,7 +62,7 @@ module.exports = {
                 timeStamp: Date.now(),
                 actionMessage: message.url,
                 reason: reason || null,
-                image: message.attachments.first()?.height ? message.attachments.first().url : null,
+                image: message.attachments.first()?.height && message.attachments.first().url,
             });
             caseLogs.push(current);
             if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('SEND_MESSAGES') || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) continue;

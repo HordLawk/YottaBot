@@ -53,7 +53,7 @@ module.exports = {
             timeStamp: timeStamp,
             actionMessage: message.url,
             reason: reason || null,
-            image: message.attachments.first()?.height ? message.attachments.first().url : null,
+            image: message.attachments.first()?.height && message.attachments.first().url,
             duration: new Date(timeStamp + duration),
             ongoing: true,
         });

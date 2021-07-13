@@ -35,7 +35,7 @@ module.exports = {
             timeStamp: Date.now(),
             actionMessage: message.url,
             reason: reason || null,
-            image: message.attachments.first()?.height ? message.attachments.first().url : null,
+            image: message.attachments.first()?.height && message.attachments.first().url,
         });
         await current.save();
         await member.user.send(message.client.langs[channelLanguage].get('dmWarned', [message.guild.name, reason])).catch(() => message.channel.send(message.client.langs[channelLanguage].get('warnedBlockedDms')));

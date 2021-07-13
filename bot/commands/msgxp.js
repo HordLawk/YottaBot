@@ -194,15 +194,15 @@ module.exports = {
                 // Throughout the entirety of this project, the next lines are the only part of it I don't quite undestand what's really happening, thus, they are utterly unoptimized and will continue to be so, as I truly hope I don't need to touch this piece of code ever again.
                 let cei = Math.ceil(levels.length / parseInt(args[1], 10));
                 let flr = Math.floor(levels.length / parseInt(args[1], 10));
-                let dec = Math.floor(((levels.length / parseInt(args[1], 10)) - flr) * 1000) / 1000;
+                let dec = (levels.length / parseInt(args[1], 10)) - flr;
                 let multCei = parseInt(args[1], 10) * dec;
                 let multFlr = parseInt(args[1], 10) * (1 - dec);
-                let ceis = (new Array(multCei)).fill(cei);
-                let flrs = (new Array(multFlr)).fill(flr).concat(ceis);
+                let ceis = (new Array(Math.round(multCei))).fill(cei);
+                let flrs = (new Array(Math.round(multFlr))).fill(flr).concat(ceis);
                 let index = 0;
                 for(let i = 0; i < parseInt(args[1], 10); i++){
                     index += flrs[i];
-                    realLevels.push(levels[index - 1]);
+                    realLevels.push(levels[Math.round(index - 1)]);
                 }
                 message.channel.send(message.client.langs[channelLanguage].get('recommendSuccess', [realLevels]));
             }

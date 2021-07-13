@@ -22,7 +22,7 @@ module.exports = {
                 message.client.guildData.set(guildData._id, guildData);
             }
             prefix = message.client.guildData.get(message.guild.id).prefix;
-            if(!message.member) message.member = await message.guild.members.fetch(member.author.id).catch(() => null);
+            if(!message.member) message.member = await message.guild.members.fetch(message.author.id).catch(() => null);
             if(!message.member) return;
             roleDocs = await role.find({
                 guild: message.guild.id,

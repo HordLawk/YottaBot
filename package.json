@@ -1,12 +1,12 @@
 {
   "name": "yottabot",
-  "version": "2.7.3",
+  "version": "2.7.4",
   "description": "A levelroles and moderation focused Discord bot",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "node -r dotenv/config index.js dotenv_config_path=.env"
+    "dev": "node --inspect -r dotenv/config index.js dotenv_config_path=.env"
   },
   "repository": {
     "type": "git",

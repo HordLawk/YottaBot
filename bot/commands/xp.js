@@ -21,7 +21,7 @@ module.exports = {
                 console.log(process.memoryUsage().heapUsed);
                 let members = await message.guild.members.fetch({cache: false}).then(res => res.map(e => e.id));
                 console.log(process.memoryUsage().heapUsed);
-                let pageSize = 2;
+                let pageSize = 20;
                 let memberDocs = await member.find({
                     guild: message.guild.id,
                     userID: {$in: members},

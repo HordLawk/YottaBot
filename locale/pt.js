@@ -345,6 +345,22 @@ module.exports = {
             case 'recommendMinXp': return 'O xp do nível máximo deve ser no mínimo 13';
             case 'recommendXpNotEnough': return `**${vars[0]}** não é xp suficiente para **${vars[1]}** níveis`;
             case 'recommendSuccess': return `As quantias de xp recomendadas são ${vars[0].map(e => `\`${Math.round(e / 20)}\``).join(' ')}`;
+            case 'infoEmbedAuthor': return 'Informações sobre YottaBot';
+            case 'infoEmbedDescription': return `**[Me convide](${vars[0]})**`;
+            case 'infoEmbedVersionTitle': return 'Versão';
+            case 'infoEmbedEngineTitle': return 'Engine';
+            case 'infoEmbedEngineValue': return `Node.js ${vars[0]}`;
+            case 'infoEmbedLibraryTitle': return 'Biblioteca';
+            case 'infoEmbedLibraryValue': return `discord.js v${vars[0]}`;
+            case 'infoEmbedDeveloperTitle': return 'Desenvolvedor';
+            case 'infoEmbedUptimeTitle': return 'Último login';
+            case 'infoEmbedUptimeValue': return `<t:${Math.floor(vars[0] / 1000)}:R>`;
+            case 'infoEmbedRAMTitle': return 'Uso de RAM';
+            case 'infoEmbedRAMValue': return `${(vars[0] / 1048576).toFixed(2)} MB`;
+            case 'infoEmbedSupportTitle': return 'Servidor de suporte';
+            case 'infoEmbedSupportValue': return `[discord.gg/${vars[0]}](https://discord.gg/${vars[0]})`;
+            case 'infoEmbedRepoTitle': return 'Repositório git';
+            case 'infoEmbedRepoValue': return '[github.com/HordLawk/YottaBot](https://github.com/HordLawk/YottaBot)';
         }
     },
 };

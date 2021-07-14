@@ -24,6 +24,7 @@ module.exports = {
                     userID: {$in: members.map(e => e.id)},
                     xp: {$ne: 0},
                 }).sort({xp: -1});
+                members = null;
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor(message.client.langs[channelLanguage].get('xpRankEmbedAuthor'), message.guild.iconURL({dynamic: true}))

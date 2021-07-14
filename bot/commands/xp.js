@@ -18,13 +18,14 @@ module.exports = {
         if(!message.client.guildData.get(message.guild.id).gainExp) return message.channel.send(message.client.langs[channelLanguage].get('xpDisabled'));
         switch(args[0]){
             case 'rank': {
+                console.log(process.memoryUsage().heapUsed);
                 let members = await message.guild.members.fetch({cache: false}).then(res => res.map(e => e.id));
                 console.log(process.memoryUsage().heapUsed);
                 let memberDocs = await member.find({
                     guild: message.guild.id,
                     userID: {$in: members},
                     xp: {$ne: 0},
-                }).sort({xp: -1});
+                }, 'userID xp').sort({xp: -1});
                 console.log(process.memoryUsage().heapUsed);
                 members = null;
                 console.log(process.memoryUsage().heapUsed);

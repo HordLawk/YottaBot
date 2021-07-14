@@ -18,13 +18,14 @@ module.exports = {
         if(!message.client.guildData.get(message.guild.id).gainExp) return message.channel.send(message.client.langs[channelLanguage].get('xpDisabled'));
         switch(args[0]){
             case 'rank': {
-                let members = await message.guild.members.fetch({cache: false});
-                let memberDocs = await member.find({
-                    guild: message.guild.id,
-                    userID: {$in: members.map(e => e.id)},
-                    xp: {$ne: 0},
-                }).sort({xp: -1});
-                members = null;
+                let memberDocs;
+                await message.guild.members.fetch({cache: false}).then(async members => {
+                    memberDocs = await member.find({
+                        guild: message.guild.id,
+                        userID: {$in: members.map(e => e.id)},
+                        xp: {$ne: 0},
+                    }).sort({xp: -1});
+                });
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor(message.client.langs[channelLanguage].get('xpRankEmbedAuthor'), message.guild.iconURL({dynamic: true}))

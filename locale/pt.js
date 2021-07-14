@@ -359,7 +359,7 @@ module.exports = {
             case 'infoEmbedRAMValue': return `${(vars[0] / 1048576).toFixed(2)} MB`;
             case 'infoEmbedSupportTitle': return 'Servidor de suporte';
             case 'infoEmbedSupportValue': return `[discord.gg/${vars[0]}](https://discord.gg/${vars[0]})`;
-            case 'infoEmbedRepoTitle': return 'Repositório git';
+            case 'infoEmbedRepoTitle': return 'Código fonte';
             case 'infoEmbedRepoValue': return '[github.com/HordLawk/YottaBot](https://github.com/HordLawk/YottaBot)';
         }
     },

@@ -18,9 +18,12 @@ module.exports = {
         if(!message.client.guildData.get(message.guild.id).gainExp) return message.channel.send(message.client.langs[channelLanguage].get('xpDisabled'));
         switch(args[0]){
             case 'rank': {
+                let members = await message.guild.members.fetch().then(res => res.map(e => e.id));
+                message.guild.members.cache.sweep(e => (e.id != message.client.user.id));
                 let pageSize = 20;
                 let memberDocs = await member.find({
                     guild: message.guild.id,
+                    userID: {$in: members},
                     xp: {$ne: 0},
                 }, 'userID xp').sort({xp: -1}).limit(pageSize);
                 let embed = new MessageEmbed()
@@ -39,6 +42,7 @@ module.exports = {
                     if(r.emoji.name === '➡'){
                         memberDocs = await member.find({
                             guild: message.guild.id,
+                            userID: {$in: members},
                             xp: {$ne: 0},
                         }, 'userID xp').sort({xp: -1}).skip((page + 1) * pageSize).limit(pageSize);
                         if(!memberDocs.length) return;
@@ -48,6 +52,7 @@ module.exports = {
                         if(!page) return;
                         memberDocs = await member.find({
                             guild: message.guild.id,
+                            userID: {$in: members},
                             xp: {$ne: 0},
                         }, 'userID xp').sort({xp: -1}).skip((page - 1) * pageSize).limit(pageSize);
                         page--;

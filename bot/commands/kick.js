@@ -8,7 +8,7 @@ module.exports = {
     description: lang => lang.get('kickDescription'),
     aliases: ['k'],
     usage: lang => [lang.get('kickUsage')],
-    example: ['@LordHawk#0572 come back when you stop being annoying'],
+    example: ['@LordHawk#0001 come back when you stop being annoying'],
     cooldown: 3,
     categoryID: 3,
     args: true,

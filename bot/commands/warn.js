@@ -8,7 +8,7 @@ module.exports = {
     description: lang => lang.get('warnDescription'),
     aliases: ['adv', 'advert'],
     usage: lang => [lang.get('warnUsage')],
-    example: ['@LordHawk#0572 stop spamming'],
+    example: ['@LordHawk#0001 stop spamming'],
     cooldown: 3,
     categoryID: 3,
     args: true,

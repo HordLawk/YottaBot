@@ -78,17 +78,11 @@ module.exports = {
                 userDoc.save();
             }
         }
-        const sweepMembers = () => {
-            const ram = process.memoryUsage().heapUsed;
-            if(ram < 209715200) return;
-            console.log(`${client.guilds.cache.filter(e => (e.id != client.configs.supportID)).reduce((a, e, i) => (a + client.guilds.cache.get(i).members.cache.sweep(memb => (memb.id != client.user.id))), 0)} members swept and ${((ram - process.memoryUsage().heapUsed) / 1048576).toFixed(2)} MB of RAM freed`);
-        }
         const tick = (i) => {
             setTimeout(() => {
                 unmuteTimer();
                 unpremiumTimer();
                 renewBoost();
-                sweepMembers();
                 tick(++i);
             }, 10000);
         }

@@ -8,7 +8,7 @@ module.exports = {
     description: lang => lang.get('banDescription'),
     aliases: ['b', 'forceban', 'hackban'],
     usage: lang => [lang.get('banUsage')],
-    example: ['@LordHawk#0572 spammer'],
+    example: ['@LordHawk#0001 spammer'],
     cooldown: 3,
     categoryID: 3,
     args: true,

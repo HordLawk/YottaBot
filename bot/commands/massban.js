@@ -8,7 +8,7 @@ module.exports = {
     description: lang => lang.get('massbanDescription'),
     aliases: ['mb'],
     usage: lang => [lang.get('massbanUsage')],
-    example: ['@LordHawk#0572 @Kamikat#7358 annoying raiders'],
+    example: ['@LordHawk#0001 @Kamikat#7358 annoying raiders'],
     cooldown: 10,
     categoryID: 3,
     args: true,

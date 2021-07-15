@@ -7,7 +7,7 @@ module.exports = {
     description: lang => lang.get('checkDescription'),
     aliases: ['modlogs'],
     usage: lang => [lang.get('checkUsage')],
-    example: ['@LordHawk#0572 mute 15d12h30m30s'],
+    example: ['@LordHawk#0001 mute 15d12h30m30s'],
     cooldown: 5,
     categoryID: 3,
     args: true,

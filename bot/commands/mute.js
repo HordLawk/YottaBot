@@ -8,7 +8,7 @@ module.exports = {
     description: lang => lang.get('muteDescription'),
     aliases: ['m'],
     usage: lang => [lang.get('muteUsage')],
-    example: ['@LordHawk#0572 1h30m spammer'],
+    example: ['@LordHawk#0001 1h30m spammer'],
     cooldown: 3,
     categoryID: 3,
     args: true,

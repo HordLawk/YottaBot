@@ -1,6 +1,6 @@
 {
   "name": "yottabot",
-  "version": "2.7.12",
+  "version": "2.7.13",
   "description": "A levelroles and moderation focused Discord bot",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/HordLawk/YottaBot.git"
   },
-  "author": "LordHawk#0572",
+  "author": "LordHawk#0001",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/HordLawk/YottaBot/issues"

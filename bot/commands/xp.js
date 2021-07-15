@@ -8,7 +8,7 @@ module.exports = {
     description: lang => lang.get('xpDescription'),
     aliases: ['xp', 'exp', 'rank'],
     usage: lang => [lang.get('xpUsage0'), lang.get('xpUsage1'), lang.get('xpUsage2')],
-    example: ['xp @LordHawk#0572', 'xp rank', 'xp roles'],
+    example: ['xp @LordHawk#0001', 'xp rank', 'xp roles'],
     cooldown: 10,
     categoryID: 4,
     guildOnly: true,

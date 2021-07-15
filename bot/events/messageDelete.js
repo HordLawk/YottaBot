@@ -6,7 +6,7 @@ module.exports = {
     name: 'messageDelete',
     execute: async message => {
         if(message.partial || !message.guild || !message.guild.available || message.system || !message.client.guildData.has(message.guild.id) || !message.client.guildData.get(message.guild.id).actionlogs.id('delmsg') || (!message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookID && !message.client.guildData.get(message.guild.id).defaultLogsHookID)) return;
-        const channelLanguage = message.client.guildData.get(message.guild.id).language;
+        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
         var executor = null;
         if(message.guild.me.permissions.has('VIEW_AUDIT_LOG')){
             let audits = await message.guild.fetchAuditLogs({type: 'MESSAGE_DELETE', limit: 1});
@@ -36,15 +36,15 @@ module.exports = {
             .setColor(0xff0000)
             .setFooter(message.author.id)
             .setTimestamp()
-            .setAuthor(message.client.langs[channelLanguage].get('delmsgEmbedAuthor'), message.author.displayAvatarURL({
+            .setAuthor(channelLanguage.get('delmsgEmbedAuthor'), message.author.displayAvatarURL({
                 size: 4096,
                 dynamic: true,
             }), message.url)
             .setDescription(message.content)
-            .addField(message.client.langs[channelLanguage].get('delmsgEmbedAuthorTitle'), message.author, true)
-            .addField(message.client.langs[channelLanguage].get('delmsgEmbedChannelTitle'), message.channel, true);
-        if(executor) embed.addField('\u200B', '\u200B', true).addField(message.client.langs[channelLanguage].get('delmsgEmbedExecutorTitle'), executor, true);
-        embed.addField(message.client.langs[channelLanguage].get('delmsgEmbedSentTitle'), message.client.langs[channelLanguage].get('delmsgEmbedSentValue', [Math.floor(message.createdTimestamp / 1000)]), true);
+            .addField(channelLanguage.get('delmsgEmbedAuthorTitle'), message.author, true)
+            .addField(channelLanguage.get('delmsgEmbedChannelTitle'), message.channel, true);
+        if(executor) embed.addField('\u200B', '\u200B', true).addField(channelLanguage.get('delmsgEmbedExecutorTitle'), executor, true);
+        embed.addField(channelLanguage.get('delmsgEmbedSentTitle'), channelLanguage.get('delmsgEmbedSentValue', [Math.floor(message.createdTimestamp / 1000)]), true);
         if(executor) embed.addField('\u200B', '\u200B', true);
         var files = [];
         if(message.attachments.size){
@@ -52,7 +52,7 @@ module.exports = {
                 files = message.attachments.map(e => ({name: e.name, attachment: e.url}));
             }
             else{
-                embed.addField(message.client.langs[channelLanguage].get('delmsgEmbedAttachmentsTitle'), message.attachments.array().map((e, i) => e.height ? message.client.langs[channelLanguage].get('delmsgEmbedAttachmentsMedia', [(i + 1), e.url.replace('cdn', 'media').replace('com', 'net')]) : message.client.langs[channelLanguage].get('delmsgEmbedAttachmentsFile', [(i + 1), e.url])).join('\n').concat('\n').slice(0, 1024).split(/\n/g).slice(0, -1).join('\n'));
+                embed.addField(channelLanguage.get('delmsgEmbedAttachmentsTitle'), message.attachments.array().map((e, i) => e.height ? channelLanguage.get('delmsgEmbedAttachmentsMedia', [(i + 1), e.url.replace('cdn', 'media').replace('com', 'net')]) : channelLanguage.get('delmsgEmbedAttachmentsFile', [(i + 1), e.url])).join('\n').concat('\n').slice(0, 1024).split(/\n/g).slice(0, -1).join('\n'));
             }
         }
         hook.send({

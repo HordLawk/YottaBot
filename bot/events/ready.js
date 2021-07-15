@@ -21,6 +21,7 @@ module.exports = {
         const roleDocs = await role.find({guild: {$in: client.guilds.cache.map(e => e.id)}});
         await role.deleteMany({_id: {$in: roleDocs.filter(e => !client.guilds.cache.get(e.guild).roles.cache.has(e.roleID)).map(e => e._id)}});
         await menu.deleteMany({channelID: {$nin: client.channels.cache.map(e => e.id)}});
+        if(process.env.NODE_ENV === 'production') await client.guilds.cache.get(client.configs.supportID).members.fetch();
         const unmuteTimer = async () => {
             const unmutes = await log.find({
                 type: 'mute',
@@ -77,14 +78,20 @@ module.exports = {
                 userDoc.save();
             }
         }
-        const tick = () => {
+        const sweepMembers = () => {
+            const ram = process.memoryUsage().heapUsed;
+            if(ram < 209715200) return;
+            console.log(`${client.guilds.cache.filter(e => (e.id != client.configs.supportID)).reduce((a, e, i) => (a + client.guilds.cache.get(i).members.cache.sweep(memb => (memb.id != client.user.id))), 0)} members swept and ${((ram - process.memoryUsage().heapUsed) / 1048576).toFixed(2)} MB of RAM freed`);
+        }
+        const tick = (i) => {
             setTimeout(() => {
                 unmuteTimer();
                 unpremiumTimer();
                 renewBoost();
-                tick();
+                sweepMembers();
+                tick(++i);
             }, 10000);
         }
-        tick();
+        tick(1);
     },
 };

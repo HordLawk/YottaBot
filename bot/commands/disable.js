@@ -14,22 +14,22 @@ module.exports = {
     perm: 'ADMINISTRATOR',
     guildOnly: true,
     execute: async function(message, args){
-        const channelLanguage = message.guild ? message.client.guildData.get(message.guild.id).language : 'en';
-        if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
-        if(args.length < 2) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
+        if(args.length < 2) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         const discordChannel = message.guild.channels.cache.get((args[0].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[0]);
-        if(!discordChannel || !discordChannel.isText()) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+        if(!discordChannel || !discordChannel.isText()) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         switch(args[1]){
             case 'on':
             case 'off': {
-                if(!args[2]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                if(!args[2]) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 let channelDoc = await channel.findById(discordChannel.id) || new channel({
                     _id: discordChannel.id,
                     guild: message.guild.id,
                 });
                 if(args[2] === 'all'){
                     channelDoc.ignoreCommands = (args[1] === 'on') ? message.client.commands.map(e => e.name) : [];
-                    message.channel.send(message.client.langs[channelLanguage].get('disableAll', [args[1], discordChannel]));
+                    message.channel.send(channelLanguage.get('disableAll', [args[1], discordChannel]));
                 }
                 else{
                     args.slice(2).forEach(e => {
@@ -38,27 +38,27 @@ module.exports = {
                         if(args[1] === 'on') return channelDoc.ignoreCommands.push(command.name);
                         channelDoc.ignoreCommands.splice(channelDoc.ignoreCommands.indexOf(command.name), 1);
                     });
-                    message.channel.send(message.client.langs[channelLanguage].get('disableSome', [args[1], discordChannel]));
+                    message.channel.send(channelLanguage.get('disableSome', [args[1], discordChannel]));
                 }
                 channelDoc.save();
             }
             break;
             case 'view':{
                 let channelDoc = await channel.findById(discordChannel.id);
-                if(!channelDoc || !channelDoc.ignoreCommands.length) return message.channel.send(message.client.langs[channelLanguage].get('noDisabledCmds'));
+                if(!channelDoc || !channelDoc.ignoreCommands.length) return message.channel.send(channelLanguage.get('noDisabledCmds'));
                 const embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
-                    .setAuthor(message.client.langs[channelLanguage].get('disabledEmbedAuthor'), message.guild.iconURL({
+                    .setAuthor(channelLanguage.get('disabledEmbedAuthor'), message.guild.iconURL({
                         size: 4096,
                         dynamic: true,
                     }))
-                    .setDescription(message.client.langs[channelLanguage].get('disabledEmbedDesc', [discordChannel]))
+                    .setDescription(channelLanguage.get('disabledEmbedDesc', [discordChannel]))
                     .setTimestamp()
-                    .addField(message.client.langs[channelLanguage].get('disabledField'), channelDoc.ignoreCommands.map(e => `\`${e}\``).join(' '));
+                    .addField(channelLanguage.get('disabledField'), channelDoc.ignoreCommands.map(e => `\`${e}\``).join(' '));
                 message.channel.send(embed);
             }
             break;
-            default: message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+            default: message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         }
     },
 };

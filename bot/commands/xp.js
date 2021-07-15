@@ -13,9 +13,9 @@ module.exports = {
     categoryID: 4,
     guildOnly: true,
     execute: async function(message, args){
-        const channelLanguage = message.guild ? message.client.guildData.get(message.guild.id).language : 'en';
-        if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
-        if(!message.client.guildData.get(message.guild.id).gainExp) return message.channel.send(message.client.langs[channelLanguage].get('xpDisabled'));
+        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
+        if(!message.client.guildData.get(message.guild.id).gainExp) return message.channel.send(channelLanguage.get('xpDisabled'));
         switch(args[0]){
             case 'rank': {
                 let members = await message.guild.members.fetch().then(res => res.map(e => e.id));
@@ -28,10 +28,10 @@ module.exports = {
                 }, 'userID xp').sort({xp: -1}).limit(pageSize);
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
-                    .setAuthor(message.client.langs[channelLanguage].get('xpRankEmbedAuthor'), message.guild.iconURL({dynamic: true}))
+                    .setAuthor(channelLanguage.get('xpRankEmbedAuthor'), message.guild.iconURL({dynamic: true}))
                     .setTimestamp()
                     .setDescription(memberDocs.map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${e.xp}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
-                if(memberDocs.some(e => (e.userID === message.author.id))) embed.setFooter(message.client.langs[channelLanguage].get('xpRankEmbedFooter', [memberDocs.findIndex(e => (e.userID === message.author.id)) + 1]));
+                if(memberDocs.some(e => (e.userID === message.author.id))) embed.setFooter(channelLanguage.get('xpRankEmbedFooter', [memberDocs.findIndex(e => (e.userID === message.author.id)) + 1]));
                 let msg = await message.channel.send(embed);
                 await msg.react('⬅');
                 await msg.react('➡');
@@ -72,10 +72,10 @@ module.exports = {
                         $ne: null,
                     },
                 }).sort({xp: -1});
-                if(!roles.length) return message.channel.send(message.client.langs[channelLanguage].get('noXpRoles'));
+                if(!roles.length) return message.channel.send(channelLanguage.get('noXpRoles'));
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
-                    .setAuthor(message.client.langs[channelLanguage].get('xpRolesEmbedAuthor'), message.guild.iconURL({dynamic: true}))
+                    .setAuthor(channelLanguage.get('xpRolesEmbedAuthor'), message.guild.iconURL({dynamic: true}))
                     .setDescription(roles.map(e => `\`${(new Array(roles[0].xp.toString().length - e.xp.toString().length)).fill(' ').join('')}${e.xp}\` **-** <@&${e.roleID}>`).join('\n'));
                 message.channel.send(embed);
             }
@@ -86,7 +86,7 @@ module.exports = {
                     guild: message.guild.id,
                     userID: id || message.author.id,
                 });
-                if(!user) return message.channel.send(message.client.langs[channelLanguage].get('noXp'));
+                if(!user) return message.channel.send(channelLanguage.get('noXp'));
                 let roleDocs = await role.find({
                     guild: message.guild.id,
                     roleID: {$in: message.guild.roles.cache.map(e => e.id)},
@@ -101,9 +101,9 @@ module.exports = {
                 let discordUser = discordMember?.user ?? await message.client.users.fetch(id).catch(() => null);
                 let embed = new MessageEmbed()
                     .setColor(discordMember?.displayColor ?? message.guild.me.displayColor ?? 0x8000ff)
-                    .setAuthor(discordUser?.tag ?? message.client.langs[channelLanguage].get('xpEmbedAuthor'), discordUser?.displayAvatarURL({dynamic: true}))
+                    .setAuthor(discordUser?.tag ?? channelLanguage.get('xpEmbedAuthor'), discordUser?.displayAvatarURL({dynamic: true}))
                     .setTimestamp()
-                    .setDescription(message.client.langs[channelLanguage].get('xpEmbedDescription', [current, next, user.xp]));
+                    .setDescription(channelLanguage.get('xpEmbedDescription', [current, next, user.xp]));
                 message.channel.send(embed);
             }
         }

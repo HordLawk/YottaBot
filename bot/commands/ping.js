@@ -7,8 +7,8 @@ module.exports = {
     cooldown: 5,
     categoryID: 1,
     execute: async (message) => {
-        const channelLanguage = message.guild ? message.client.guildData.get(message.guild.id).language : 'en';
-        if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
+        const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
+        if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
         const hex = (latency) => {
             if(latency <= 100) return '00ff00';
             if(latency >= 1000) return 'ff0000';
@@ -17,20 +17,20 @@ module.exports = {
             return `ff${(`0${(255 - (a - 255)).toString(16)}`).substr(-2)}00`;
         };
         const foot = (latency) => {
-            if(latency >= 1000) return message.client.langs[channelLanguage].get('terrible');
-            if(latency >= 300) return message.client.langs[channelLanguage].get('bad');
-            if(latency >= 100) return message.client.langs[channelLanguage].get('normal');
-            return message.client.langs[channelLanguage].get('good');
+            if(latency >= 1000) return channelLanguage.get('terrible');
+            if(latency >= 300) return channelLanguage.get('bad');
+            if(latency >= 100) return channelLanguage.get('normal');
+            return channelLanguage.get('good');
         }
         const embed = new MessageEmbed()
             .setTitle('🏓 Pong!')
             .setColor(hex(message.client.ws.ping))
-            .addField(message.client.langs[channelLanguage].get('average'), `${message.client.ws.ping}ms`, true)
+            .addField(channelLanguage.get('average'), `${message.client.ws.ping}ms`, true)
             .setFooter(foot(message.client.ws.ping))
             .setTimestamp();
         const msg = await message.channel.send(embed);
         const current = msg.createdTimestamp - message.createdTimestamp;
-        embed.setColor(hex(current)).setFooter(foot(current)).addField(message.client.langs[channelLanguage].get('current'), `${current}ms`, true);
+        embed.setColor(hex(current)).setFooter(foot(current)).addField(channelLanguage.get('current'), `${current}ms`, true);
         msg.edit(embed);
     },
 };

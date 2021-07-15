@@ -8,12 +8,12 @@ module.exports = {
         if(userDoc?.boostUntil) return;
         await user.findByIdAndUpdate(newMember.id, {
             $inc: {premiumKeys: 1},
-            boostUntil: new Date(Date.now() + 2592000000),
+            $set: {boostUntil: new Date(Date.now() + 2592000000)},
         }, {
             upsert: true,
             setDefaultsOnInsert: true,
             new: true,
         });
-        newMember.send(newMember.client.langs.en.get('firstBoost', [newMember, newMember.guild.name])).catch(() => null);
+        newMember.send(newMember.client.langs[newMember.client.guildData.get(newMember.client.configs.supportID).language].get('firstBoost', [newMember, newMember.guild.name])).catch(() => null);
     },
 };

@@ -14,16 +14,16 @@ module.exports = {
     perm: 'ADMINISTRATOR',
     guildOnly: true,
     execute: async function(message){
-        const channelLanguage = (message.channel.type != 'dm') ? message.client.guildData.get(message.guild.id).language : 'en';
-        if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(message.client.langs[channelLanguage].get('botEmbed'));
+        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
         const args = message.content.split(/\s+(?=(?:[^"]*"[^"]*")*[^"]*$)/g).slice(1);
-        if(args.length < 2) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+        if(args.length < 2) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         const discordRole = message.guild.roles.cache.get((args[1].match(/<@&(\d{17,19})>/) || [])[1]) || message.guild.roles.cache.get(args[1]) || message.guild.roles.cache.find(e => (e.name === args[1].replace(/"/g, ''))) || message.guild.roles.cache.find(e => (e.name.startsWith(args[1].replace(/"/g, ''))));
-        if(!discordRole) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+        if(!discordRole) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         switch(args[0]){
             case 'allow':
             case 'deny': {
-                if(!args[2]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                if(!args[2]) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 let roleDoc = await role.findOne({
                     guild: message.guild.id,
                     roleID: discordRole.id,
@@ -41,17 +41,17 @@ module.exports = {
                     roleDoc.commandPermissions.id(command.name).allow = (args[0] === 'allow');
                 });
                 await roleDoc.save();
-                message.channel.send(message.client.langs[channelLanguage].get('permSuccess', [discordRole.name, args[0]]));
+                message.channel.send(channelLanguage.get('permSuccess', [discordRole.name, args[0]]));
             }
             break;
             case 'default': {
-                if(!args[2]) return message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+                if(!args[2]) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 let roleDoc = await role.findOne({
                     guild: message.guild.id,
                     roleID: discordRole.id,
                     commandPermissions: {$ne: []},
                 });
-                if(!roleDoc) return message.channel.send(message.client.langs[channelLanguage].get('noSpecialPerms'));
+                if(!roleDoc) return message.channel.send(channelLanguage.get('noSpecialPerms'));
                 args.slice(2).forEach(e => {
                     const command = message.client.commands.get(e) || message.client.commands.find(cmd => (cmd.aliases && cmd.aliases.includes(e)));
                     if(!command) return;
@@ -60,7 +60,7 @@ module.exports = {
                     item.remove();
                 });
                 await roleDoc.save();
-                message.channel.send(message.client.langs[channelLanguage].get('defaultPermsSuccess', [discordRole.name]));
+                message.channel.send(channelLanguage.get('defaultPermsSuccess', [discordRole.name]));
             }
             break;
             case 'view': {
@@ -69,23 +69,23 @@ module.exports = {
                     roleID: discordRole.id,
                     commandPermissions: {$ne: []},
                 });
-                if(!roleDoc) return message.channel.send(message.client.langs[channelLanguage].get('noSpecialPerms'));
+                if(!roleDoc) return message.channel.send(channelLanguage.get('noSpecialPerms'));
                 const embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
-                    .setAuthor(message.client.langs[channelLanguage].get('permsEmbedAuthor'), message.guild.iconURL({
+                    .setAuthor(channelLanguage.get('permsEmbedAuthor'), message.guild.iconURL({
                         size: 4096,
                         dynamic: true,
                     }))
-                    .setDescription(message.client.langs[channelLanguage].get('permsEmbedDesc', [discordRole]))
+                    .setDescription(channelLanguage.get('permsEmbedDesc', [discordRole]))
                     .setTimestamp();
                 const allowed = roleDoc.commandPermissions.filter(e => e.allow);
-                if(allowed.length) embed.addField(message.client.langs[channelLanguage].get('permsAllowed'), allowed.map(e => `\`${e._id}\``).join(' '));
+                if(allowed.length) embed.addField(channelLanguage.get('permsAllowed'), allowed.map(e => `\`${e._id}\``).join(' '));
                 const denied = roleDoc.commandPermissions.filter(e => !e.allow);
-                if(denied.length) embed.addField(message.client.langs[channelLanguage].get('permsDenied'), denied.map(e => `\`${e._id}\``).join(' '));
+                if(denied.length) embed.addField(channelLanguage.get('permsDenied'), denied.map(e => `\`${e._id}\``).join(' '));
                 message.channel.send(embed);
             }
             break;
-            default: message.channel.send(message.client.langs[channelLanguage].get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(message.client.langs[channelLanguage])]));
+            default: message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         }
     },
 };

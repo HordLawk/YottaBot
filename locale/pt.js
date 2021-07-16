@@ -362,8 +362,8 @@ module.exports = {
             case 'infoEmbedSupportValue': return `[discord.gg/${vars[0]}](https://discord.gg/${vars[0]})`;
             case 'infoEmbedRepoTitle': return 'Código fonte';
             case 'infoEmbedRepoValue': return '[github.com/HordLawk/YottaBot](https://github.com/HordLawk/YottaBot)';
-            case 'upvoteDescription': return 'Vote em mim no top.gg';
-            case 'upvoteEmbedDescription': return `**[Vote em mim](https://top.gg/bot/${vars[0]}/vote)** no top.gg!`;
+            case 'upvoteDescription': return 'Vote em mim no Top.gg';
+            case 'upvoteEmbedDescription': return `**[Vote em mim](https://top.gg/bot/${vars[0]}/vote)** no Top.gg!`;
         }
     },
 };

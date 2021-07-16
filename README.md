@@ -18,6 +18,7 @@ The default permission for any command is usually the closest normal Discord per
 * [Administration](https://github.com/HordLawk/YottaBot/wiki/Administration)
 * [Moderation](https://github.com/HordLawk/YottaBot/wiki/Moderation)
 * [Levelling](https://github.com/HordLawk/YottaBot/wiki/Levelling)
+* [Miscellaneous](https://github.com/HordLawk/YottaBot/wiki/Miscellaneous)
 * [Premium](https://github.com/HordLawk/YottaBot/wiki/Premium)
 
 ## W.I.P

@@ -147,7 +147,10 @@ module.exports = {
                 else{
                     let discordChannel = message.guild.channels.cache.get((args[3].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[3]);
                     if(!discordChannel || !['text', 'news', 'voice'].includes(discordChannel.type)) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                    await channel.findByIdAndUpdate(discordChannel.id, {$set: {ignoreXp: (args[2] === 'add')}}, {
+                    await channel.findOneAndUpdate({
+                        _id: discordChannel.id,
+                        guild: message.guild.id,
+                    }, {$set: {ignoreXp: (args[2] === 'add')}}, {
                         upsert: true,
                         setDefaultsOnInsert: true,
                     });

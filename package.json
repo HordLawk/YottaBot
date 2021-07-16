@@ -1,6 +1,6 @@
 {
   "name": "yottabot",
-  "version": "2.7.13",
+  "version": "2.7.14",
   "description": "A levelroles and moderation focused Discord bot",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,7 @@
     "discord.js": "^12.5.3",
     "express": "^4.17.1",
     "mongoose": "^5.12.3",
+    "topgg-autoposter": "^2.0.0",
     "twemoji-parser": "^13.1.0"
   },
   "devDependencies": {

@@ -5,6 +5,7 @@ const log = require('../../schemas/log.js');
 const guildModel = require('../../schemas/guild.js');
 const user = require('../../schemas/user.js');
 const {MessageEmbed} = require('discord.js');
+const {AutoPoster} = require('topgg-autoposter');
 
 module.exports = {
     name: 'ready',
@@ -13,7 +14,11 @@ module.exports = {
         client.user.setActivity("your pings", {type:'LISTENING'});
         const application = await client.fetchApplication();
         client.configs.owner = application.owner;
-        if(process.env.NODE_ENV === 'production') await client.channels.cache.get(client.configs.bootlog).send(`Connected with ping \`${client.ws.ping}ms\`!`);
+        if(process.env.NODE_ENV === 'production'){
+            await client.channels.cache.get(client.configs.bootlog).send(`Connected with ping \`${client.ws.ping}ms\`!`);
+            await client.guilds.cache.get(client.configs.supportID).members.fetch();
+            AutoPoster(process.env.TOPGG_TOKEN, client);
+        }
         await channel.deleteMany({
             _id: {$nin: client.channels.cache.map(e => e.id)},
             guild: {$in: client.guilds.cache.map(e => e.id)},
@@ -21,7 +26,6 @@ module.exports = {
         const roleDocs = await role.find({guild: {$in: client.guilds.cache.map(e => e.id)}});
         await role.deleteMany({_id: {$in: roleDocs.filter(e => !client.guilds.cache.get(e.guild).roles.cache.has(e.roleID)).map(e => e._id)}});
         await menu.deleteMany({channelID: {$nin: client.channels.cache.map(e => e.id)}});
-        if(process.env.NODE_ENV === 'production') await client.guilds.cache.get(client.configs.supportID).members.fetch();
         const unmuteTimer = async () => {
             const unmutes = await log.find({
                 type: 'mute',

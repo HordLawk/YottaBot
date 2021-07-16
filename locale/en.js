@@ -14,13 +14,14 @@ module.exports = {
             case 'botEmbed': return 'I need permission to embed links in this channel';
             case 'botManageMessages': return 'I need permission to manage messages in this channel';
             case 'helpEmbedTitle': return 'Commands help';
-            case 'helpEmbedDescription': return `**[Support server](https://discord.gg/${vars[0]})**\n**[Invite me](${vars[1]})**\n**[Extended documentation](https://github.com/HordLawk/YottaBot#readme)**\nUse \`${vars[2]}help (command)\` for more info about a specific command\n\n__Note that:__\n- \`(channel)\` = \`<(channel mention)/(channel ID)>\`\n- \`(user)\` = \`<(user mention)/(user ID)>\`\n- \`(role)\` = \`<(role mention)/(role ID)/(role name)>\`\n- \`(emoji)\` = \`<(emoji)/(custom emoji name)/(custom emoji ID)>\``;
+            case 'helpEmbedDescription': return `**[Support server](https://discord.gg/${vars[0]})**\n**[Invite me](${vars[1]})**\n**[Extended documentation](https://github.com/HordLawk/YottaBot#readme)**\n**[Top.gg](https://top.gg/bot/${vars[3]})**\n\nUse \`${vars[2]}help (command)\` for more info about a specific command`;
             case 'helpEmbedFooter': return `${vars[0]} commands | [] = Optional - () = Variable - </> = Either`;
             case 'category0': return 'Commands';
             case 'category1': return 'Information';
             case 'category2': return 'Administration';
             case 'category3': return 'Moderation';
-            case 'category4': return 'Utility';
+            case 'category4': return 'Levelling';
+            case 'category5': return 'Miscellaneous';
             case 'invalidCommand': return 'This is not a valid command';
             case 'helpCommandEmbedTitle': return `Help for the ${vars[0]} command`;
             case 'helpCommandEmbedFooter': return '[] = Optional - () = Variable - </> = Either';
@@ -361,6 +362,8 @@ module.exports = {
             case 'infoEmbedSupportValue': return `[discord.gg/${vars[0]}](https://discord.gg/${vars[0]})`;
             case 'infoEmbedRepoTitle': return 'Source code';
             case 'infoEmbedRepoValue': return '[github.com/HordLawk/YottaBot](https://github.com/HordLawk/YottaBot)';
+            case 'upvoteDescription': return 'Upvote me on top.gg';
+            case 'upvoteEmbedDescription': return `**[Upvote me](https://top.gg/bot/${vars[0]}/vote)** on top.gg!`;
         }
     },
 };

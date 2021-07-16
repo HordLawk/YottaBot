@@ -12,7 +12,7 @@ module.exports = {
     usage: lang => [lang.get('msgxpUsage0'), lang.get('msgxpUsage8'), lang.get('msgxpUsage1'), lang.get('msgxpUsage2'), lang.get('msgxpUsage3'), lang.get('msgxpUsage4'), lang.get('msgxpUsage5'), lang.get('msgxpUsage6'), 'recommend (role amount) (max xp)', lang.get('msgxpUsage7'), lang.get('msgxpUsage9')],
     example: ['enable on', 'roles add @Active 1440', 'roles remove @Active', 'user add 100 @LordHawk#0001', 'ignore role remove @Mods', 'ignore channel add #spam', 'notify #levelup', 'recommend 16 43368'],
     cooldown: 5,
-    categoryID: 2,
+    categoryID: 4,
     args: true,
     perm: 'ADMINISTRATOR',
     guildOnly: true,

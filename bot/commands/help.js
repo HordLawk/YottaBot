@@ -22,7 +22,7 @@ module.exports = {
                     size: 4096,
                     dynamic: true,
                 }))
-                .setDescription(channelLanguage.get('helpEmbedDescription', [message.client.configs.support, perms, prefix]))
+                .setDescription(channelLanguage.get('helpEmbedDescription', [message.client.configs.support, perms, prefix, message.client.user.id]))
                 .setFooter(channelLanguage.get('helpEmbedFooter', [message.client.commands.filter(command => !command.dev).size]))
                 .setTimestamp();
             let categories = message.client.commands.filter(cmd => !cmd.dev).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);

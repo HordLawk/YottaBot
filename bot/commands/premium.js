@@ -7,7 +7,7 @@ module.exports = {
     name: 'premium',
     description: lang => lang.get('premiumDescription'),
     cooldown: 5,
-    categoryID: 1,
+    categoryID: 5,
     execute: async message => {
         const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
         if(message.guild && (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner)) return message.channel.send(channelLanguage.get('alreadyPremium'));

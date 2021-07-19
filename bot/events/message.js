@@ -23,12 +23,12 @@ module.exports = {
             }
             prefix = message.client.guildData.get(message.guild.id).prefix;
             if(!message.member) message.member = await message.guild.members.fetch(message.author.id).catch(() => null);
-            if(!message.member) return;
             roleDocs = await role.find({
                 guild: message.guild.id,
                 roleID: {$in: message.guild.roles.cache.map(e => e.id)},
             });
             savedChannel = await channel.findById(message.channel.id);
+            if(!message.member) return;
         }
         const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
         if(message.guild && message.client.guildData.get(message.guild.id).gainExp && (!message.client.xpcds.has(message.guild.id) || !message.client.xpcds.get(message.guild.id).has(message.author.id) || ((message.client.xpcds.get(message.guild.id).get(message.author.id) + 60000) <= Date.now())) && !roleDocs.some(e => (e.ignoreXp && message.member.roles.cache.has(e.roleID))) && (!savedChannel || !savedChannel.ignoreXp)){

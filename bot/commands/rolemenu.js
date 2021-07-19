@@ -70,6 +70,7 @@ module.exports = {
             loadmsg.edit(channelLanguage.get('rolemenuCreated'));
         }
         else{
+            if(isNaN(parseInt(args[1], 10)) || !isFinite(parseInt(args[1], 10))) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
             let menuDoc = await menu.findOne({
                 id: parseInt(args[1], 10),
                 guild: message.guild.id,

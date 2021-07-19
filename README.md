@@ -21,6 +21,13 @@ The default permission for any command is usually the closest normal Discord per
 * [Miscellaneous](https://github.com/HordLawk/YottaBot/wiki/Miscellaneous)
 * [Premium](https://github.com/HordLawk/YottaBot/wiki/Premium)
 
+## Selfhosting
+You may selfhost (AKA run your own instance of) this bot under the following circumstances:
+- Your instance (referred to as a "clone") must be **private**.
+    - As such, your clone must not be listed on any sort of public bot listing.
+- You understand that no support will be provided to aid you in self-hosting.
+- You agree to not submit any issues, features, or pull requests related to bugs exclusively related to self-hosting.
+
 ## W.I.P
 - [x] finish this `README`
 - [x] organize the [support server](https://discord.gg/eNcsvsy)

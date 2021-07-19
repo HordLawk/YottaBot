@@ -39,6 +39,7 @@ module.exports = {
                 if(memberDoc){
                     let rank = await member.countDocuments({
                         guild: message.guild.id,
+                        userID: {$in: members},
                         xp: {$gt: memberDoc.xp},
                     });
                     embed.setFooter(channelLanguage.get('xpRankEmbedFooter', [rank + 1]));
@@ -115,13 +116,6 @@ module.exports = {
                     .setAuthor(discordUser?.tag ?? channelLanguage.get('xpEmbedAuthor'), discordUser?.displayAvatarURL({dynamic: true}))
                     .setTimestamp()
                     .setDescription(channelLanguage.get('xpEmbedDescription', [current, next, user.xp]));
-                if(user.xp){
-                    let rank = await member.countDocuments({
-                        guild: message.guild.id,
-                        xp: {$gt: user.xp},
-                    });
-                    embed.setFooter(channelLanguage.get('xpEmbedFooter', [rank + 1]));
-                }
                 message.channel.send(embed);
             }
         }

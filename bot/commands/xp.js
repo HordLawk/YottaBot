@@ -26,12 +26,23 @@ module.exports = {
                     userID: {$in: members},
                     xp: {$ne: 0},
                 }, 'userID xp').sort({xp: -1}).limit(pageSize);
+                let memberDoc = await member.findOne({
+                    guild: message.guild.id,
+                    userID: message.author.id,
+                    xp: {$gt: 0},
+                });
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor(channelLanguage.get('xpRankEmbedAuthor'), message.guild.iconURL({dynamic: true}))
                     .setTimestamp()
                     .setDescription(memberDocs.map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${e.xp}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
-                if(memberDocs.some(e => (e.userID === message.author.id))) embed.setFooter(channelLanguage.get('xpRankEmbedFooter', [memberDocs.findIndex(e => (e.userID === message.author.id)) + 1]));
+                if(memberDoc){
+                    let rank = await member.countDocuments({
+                        guild: message.guild.id,
+                        xp: {$gt: memberDoc.xp},
+                    });
+                    embed.setFooter(channelLanguage.get('xpRankEmbedFooter', [rank + 1]));
+                }
                 let msg = await message.channel.send(embed);
                 await msg.react('⬅');
                 await msg.react('➡');

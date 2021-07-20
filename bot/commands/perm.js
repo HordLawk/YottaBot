@@ -18,8 +18,8 @@ module.exports = {
         if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
         const args = message.content.split(/\s+(?=(?:[^"]*"[^"]*")*[^"]*$)/g).slice(1);
         if(args.length < 2) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-        const discordRole = message.guild.roles.cache.get((args[1].match(/<@&(\d{17,19})>/) || [])[1]) || message.guild.roles.cache.get(args[1]) || message.guild.roles.cache.find(e => (e.name === args[1].replace(/"/g, ''))) || message.guild.roles.cache.find(e => (e.name.startsWith(args[1].replace(/"/g, ''))));
-        if(!discordRole) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+        const discordRole = message.guild.roles.cache.get(args[1].match(/<@&(\d{17,19})>/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name === args[1].replace(/"/g, ''))) ?? message.guild.roles.cache.find(e => e.name.startsWith(args[1].replace(/"/g, ''))) ?? message.guild.roles.cache.find(e => e.name.includes(args[1].replace(/"/g, '')));
+        if(!discordRole || (discordRole.id === message.guild.id)) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         switch(args[0]){
             case 'allow':
             case 'deny': {

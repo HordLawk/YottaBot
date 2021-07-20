@@ -38,7 +38,7 @@ module.exports = {
                 switch(args[1]){
                     case 'set': {
                         if(isNaN(parseInt(args[3], 10)) || !isFinite(parseInt(args[3], 10)) || (parseInt(args[3], 10) < 1)) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                        let discordRole = message.guild.roles.cache.get((args[2].match(/^(?:<@&)?(\d{17,19})>?$/) || [])[1]) || message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){3}/, '').replace(/\s+\S+\s+$/, ''))) || message.guild.roles.cache.find(e => (e.name.startsWith(message.content.replace(/^(?:\S+\s+){3}/, '').replace(/\s+\S+\s+$/, ''))));
+                        let discordRole = message.guild.roles.cache.get(args[2].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){3}(.+)\s+\S+$/, '$1'))) ?? message.guild.roles.cache.find(e => e.name.startsWith(message.content.replace(/^(?:\S+\s+){3}(.+)\s+\S+$/, '$1'))) ?? message.guild.roles.cache.find(e => e.name.includes(message.content.replace(/^(?:\S+\s+){3}(.+)\s+\S+$/, '$1')));
                         if(!discordRole || (discordRole.id === message.guild.id)) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                         if(!discordRole.editable || discordRole.managed) return message.channel.send(channelLanguage.get('manageRole'));
                         if(discordRole.position >= message.member.roles.highest.position) message.channel.send(channelLanguage.get('memberManageRole'));
@@ -74,8 +74,8 @@ module.exports = {
                             message.channel.send(channelLanguage.get('resetXpRoles'));
                         }
                         else{
-                            let discordRole = message.guild.roles.cache.get((args[2].match(/^(?:<@&)?(\d{17,19})>?$/) || [])[1]) || message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){3}/, ''))) || message.guild.roles.cache.find(e => (e.name.startsWith(message.content.replace(/^(?:\S+\s+){3}/, ''))));
-                            if(!discordRole) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                            let discordRole = message.guild.roles.cache.get(args[2].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){3}/, ''))) ?? message.guild.roles.cache.find(e => e.name.startsWith(message.content.replace(/^(?:\S+\s+){3}/, ''))) ?? message.guild.roles.cache.find(e => e.name.includes(message.content.replace(/^(?:\S+\s+){3}/, '')));
+                            if(!discordRole || (discordRole.id === message.guild.id)) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                             await role.findOneAndUpdate({
                                 guild: message.guild.id,
                                 roleID: discordRole.id,
@@ -133,8 +133,8 @@ module.exports = {
             case 'ignore': {
                 if(!['role', 'channel'].includes(args[1]) || !['add', 'remove'].includes(args[2])) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 if(args[1] === 'role'){
-                    let discordRole = message.guild.roles.cache.get((args[3].match(/^(?:<@&)?(\d{17,19})>?$/) || [])[1]) || message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){4}/, ''))) || message.guild.roles.cache.find(e => (e.name.startsWith(message.content.replace(/^(?:\S+\s+){4}/, ''))));
-                    if(!discordRole) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                    let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){4}/, ''))) ?? message.guild.roles.cache.find(e => e.name.startsWith(message.content.replace(/^(?:\S+\s+){4}/, ''))) ?? message.guild.roles.cache.find(e => e.name.includes(message.content.replace(/^(?:\S+\s+){4}/, '')));
+                    if(!discordRole || (discordRole.id === message.guild.id)) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                     await role.findOneAndUpdate({
                         guild: message.guild.id,
                         roleID: discordRole.id,

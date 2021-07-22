@@ -20,22 +20,24 @@ module.exports = {
         if(!message.member) return;
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
         if(!id) return message.channel.send(channelLanguage.get('invUser'));
+        const user = await message.client.users.fetch(id).catch(() => null);
+        if(!user) return message.channel.send(channelLanguage.get('invUser'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
-        const member = await message.guild.members.fetch(id).catch(() => null);
+        const member = await message.guild.members.fetch(user.id).catch(() => null);
         if(member){
             if(!member.bannable) return message.channel.send(channelLanguage.get('cantBan'));
             if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return message.channel.send(channelLanguage.get('youCantBan'));
             await member.send(channelLanguage.get('dmBanned', [message.guild.name, reason])).catch(() => null);
         }
         else{
-            const ban = await message.guild.fetchBan(id).catch(() => null);
+            const ban = await message.guild.fetchBan(user.id).catch(() => null);
             if(ban) return message.channel.send(channelLanguage.get('alreadyBanned'));
         }
-        const user = await message.guild.members.ban(id, {
+        const newban = await message.guild.members.ban(user.id, {
             reason: channelLanguage.get('banReason', [message.author.tag, reason]),
             days: message.client.guildData.get(message.guild.id).pruneBan,
         }).catch(() => null);
-        if(!user) return message.channel.send(channelLanguage.get('invUser'));
+        if(!newban) return message.channel.send(channelLanguage.get('cantBan'));
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
         const current = new log({

@@ -14,7 +14,7 @@ module.exports = {
             case 'botEmbed': return 'I need permission to embed links in this channel';
             case 'botManageMessages': return 'I need permission to manage messages in this channel';
             case 'helpEmbedTitle': return 'Commands help';
-            case 'helpEmbedDescription': return `**[Support server](https://discord.gg/${vars[0]})**\n**[Invite me](${vars[1]})**\n**[Extended documentation](https://github.com/HordLawk/YottaBot#readme)**\n**[Top.gg](https://top.gg/bot/${vars[3]})**\n\nUse \`${vars[2]}help (command)\` for more info about a specific command`;
+            case 'helpEmbedDescription': return `**[Support server](https://discord.gg/${vars[0]})**\n**[Invite me](${vars[1]})**\n**[Extended documentation](https://github.com/HordLawk/YottaBot#get-started)**\n**[Top.gg](https://top.gg/bot/${vars[3]})**\n\nUse \`${vars[2]}help (command)\` for more info about a specific command`;
             case 'helpEmbedFooter': return `${vars[0]} commands | [] = Optional - () = Variable - </> = Either`;
             case 'category0': return 'Commands';
             case 'category1': return 'Information';
@@ -317,7 +317,7 @@ module.exports = {
             case 'xpEmbedAuthor': return 'Xp';
             case 'xpEmbedDescription': return `${vars[0] ? `Current level: <@&${vars[0].roleID}>\n` : ''}${vars[1] ? `Next level: <@&${vars[1].roleID}>\n` : ''}Progress: **${vars[2]}${vars[1] ? `/${vars[1].xp}` : ''}**`;
             case 'xpEmbedFooter': return `#${vars[0]}`;
-            case 'dmBotAdder': return `Greetings ${vars[0]}! Thank you for adding me to **${vars[1]}**. Since I am a highly customizable bot, I recommend that you start by having a look at \`${vars[2]}help configs\` and setting up command permissions with \`${vars[2]}help perm\`, otherwise, some of them might have too restrictive default permissions, like the \`mute\` command, which by default is only allowed to users with the Manage Roles permission\n\nIf you need any help, don\'t hesitate to **[join my support server](https://discord.gg/${vars[3]})**, you can also read the **[full documentation](https://github.com/HordLawk/YottaBot#readme)** for more detailed information`;
+            case 'dmBotAdder': return `Greetings ${vars[0]}! Thank you for adding me to **${vars[1]}**. Since I am a highly customizable bot, I recommend that you start by having a look at \`${vars[2]}help configs\` and setting up command permissions with \`${vars[2]}help perm\`, otherwise, some of them might have too restrictive default permissions, like the \`mute\` command, which by default is only allowed to users with the Manage Roles permission\n\nIf you need any help, don\'t hesitate to **[join my support server](https://discord.gg/${vars[3]})**, you can also read the **[full documentation](https://github.com/HordLawk/YottaBot#get-started)** for more detailed information`;
             case 'autoUnmuteEmbedAuthorMember': return `${vars[0]} was unmuted`;
             case 'autoUnmuteEmbedAuthorNoMember': return 'Unmute';
             case 'autoUnmuteEmbedTargetTitle': return 'Target';

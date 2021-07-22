@@ -14,7 +14,7 @@ module.exports = {
             case 'botEmbed': return 'Eu preciso de permissão para enviar links nesse canal';
             case 'botManageMessages': return 'Eu preciso de permissão para gerenciar mensagens nesse canal';
             case 'helpEmbedTitle': return 'Ajuda de comandos';
-            case 'helpEmbedDescription': return `**[Servidor de suporte](https://discord.gg/${vars[0]})**\n**[Me convide](${vars[1]})**\n**[Documentação avançada](https://github.com/HordLawk/YottaBot#readme)**\n**[Top.gg](https://top.gg/bot/${vars[3]})**\n\nUse \`${vars[2]}help (comando)\` para mais informações sobre um comando específico`;
+            case 'helpEmbedDescription': return `**[Servidor de suporte](https://discord.gg/${vars[0]})**\n**[Me convide](${vars[1]})**\n**[Documentação avançada](https://github.com/HordLawk/YottaBot#get-started)**\n**[Top.gg](https://top.gg/bot/${vars[3]})**\n\nUse \`${vars[2]}help (comando)\` para mais informações sobre um comando específico`;
             case 'helpEmbedFooter': return `${vars[0]} comandos | [] = Opcional - () = Variável - </> = Qualquer`;
             case 'category0': return 'Comandos';
             case 'category1': return 'Informação';
@@ -317,7 +317,7 @@ module.exports = {
             case 'xpEmbedAuthor': return 'Xp';
             case 'xpEmbedDescription': return `${vars[0] ? `Nível atual: <@&${vars[0].roleID}>\n` : ''}${vars[1] ? `Proximo nível: <@&${vars[1].roleID}>\n` : ''}Progresso: **${vars[2]}${vars[1] ? `/${vars[1].xp}` : ''}**`;
             case 'xpEmbedFooter': return `#${vars[0]}`;
-            case 'dmBotAdder': return `Saudações ${vars[0]}! Obrigado por me adicionar a **${vars[1]}**. Como eu sou um bot muito customizavel recomendo que comece dando uma olhada em \`${vars[2]}help configs\` e configurando as permissões dos comandos com \`${vars[2]}help perm\`, senão alguns deles podem ter permissões padrão muito restritivas, como o comando \`mute\`, que por padrão só é permitido para usuários com a permissão Gerenciar Cargos\n\nSe precisar de ajuda, não hesite em **[entrar no servidor de suporte](https://discord.gg/${vars[3]})**, você também pode ler a **[documentação completa](https://github.com/HordLawk/YottaBot#readme)** para informações mais detalhadas`;
+            case 'dmBotAdder': return `Saudações ${vars[0]}! Obrigado por me adicionar a **${vars[1]}**. Como eu sou um bot muito customizavel recomendo que comece dando uma olhada em \`${vars[2]}help configs\` e configurando as permissões dos comandos com \`${vars[2]}help perm\`, senão alguns deles podem ter permissões padrão muito restritivas, como o comando \`mute\`, que por padrão só é permitido para usuários com a permissão Gerenciar Cargos\n\nSe precisar de ajuda, não hesite em **[entrar no servidor de suporte](https://discord.gg/${vars[3]})**, você também pode ler a **[documentação completa](https://github.com/HordLawk/YottaBot#get-started)** para informações mais detalhadas`;
             case 'autoUnmuteEmbedAuthorMember': return `${vars[0]} foi desmutado`;
             case 'autoUnmuteEmbedAuthorNoMember': return 'Unmute';
             case 'autoUnmuteEmbedTargetTitle': return 'Alvo';

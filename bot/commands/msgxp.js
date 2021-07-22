@@ -131,7 +131,7 @@ module.exports = {
             }
             break;
             case 'ignore': {
-                if(!['role', 'channel'].includes(args[1]) || !['add', 'remove'].includes(args[2])) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!args[3] || !['role', 'channel'].includes(args[1]) || !['add', 'remove'].includes(args[2])) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 if(args[1] === 'role'){
                     let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){4}/, ''))) ?? message.guild.roles.cache.find(e => e.name.startsWith(message.content.replace(/^(?:\S+\s+){4}/, ''))) ?? message.guild.roles.cache.find(e => e.name.includes(message.content.replace(/^(?:\S+\s+){4}/, '')));
                     if(!discordRole || (discordRole.id === message.guild.id)) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));

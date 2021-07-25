@@ -23,7 +23,8 @@ module.exports = {
         if(!member) return message.channel.send(channelLanguage.get('invMember'));
         if((message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || member.permissions.has('ADMINISTRATOR')) return message.channel.send(channelLanguage.get('youCantMute'));
         const duration = args[1] && (((parseInt(args[1].match(/(\d+)d/)?.[1], 10) * 86400000) || 0) + ((parseInt(args[1].match(/(\d+)h/)?.[1], 10) * 3600000) || 0) + ((parseInt(args[1].match(/(\d+)m/)?.[1], 10) * 60000) || 0));
-        if(!duration || !isFinite(duration)) return message.channel.send(channelLanguage.get('invMuteDuration'));
+        const timeStamp = Date.now();
+        if(!duration || !isFinite(duration) || 8640000000000000 < (duration + timeStamp)) return message.channel.send(channelLanguage.get('invMuteDuration'));
         let mute = await log.findOne({
             guild: message.guild.id,
             target: member.id,
@@ -43,7 +44,6 @@ module.exports = {
             message.client.guildData.get(message.guild.id).muteRoleID = discordRole.id;
         }
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
-        const timeStamp = Date.now();
         const current = new log({
             id: guildDoc.counterLogs++,
             guild: message.guild.id,

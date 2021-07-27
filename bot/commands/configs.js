@@ -6,7 +6,7 @@ module.exports = {
     name: 'configs',
     description: lang => lang.get('configsDescription'),
     aliases: ['config', 'settings', 'setting'],
-    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', lang.get('configsUsage3'), lang.get('configsUsage4'), lang.get('configsUsage5'), 'mod mute autosetup <on/off>'],
+    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', lang.get('configsUsage3'), lang.get('configsUsage4'), lang.get('configsUsage5'), 'mod mute autosetup <on/off>', 'beta <on/off>'],
     example: ['prefix !', 'language pt', 'logattachments on', 'mod logs #warn-and-mute-logs warn mute', 'mod mute role @Muted', 'mod mute autosetup off'],
     cooldown: 5,
     categoryID: 2,
@@ -75,7 +75,8 @@ module.exports = {
                         switch(args[2]){
                             case 'role': {
                                 if(!args[3]) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                                let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){4}/, ''))) ?? message.guild.roles.cache.find(e => e.name.startsWith(message.content.replace(/^(?:\S+\s+){4}/, ''))) ?? message.guild.roles.cache.find(e => e.name.includes(message.content.replace(/^(?:\S+\s+){4}/, '')));
+                                let roleName = message.content.toLowerCase().replace(/^(?:\S+\s+){4}/, '');
+                                let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
                                 if(!discordRole || (discordRole.id === message.guild.id)) return message.channel.send(channelLanguage.get('invRole'));
                                 if(!discordRole.editable || discordRole.managed) return message.channel.send(channelLanguage.get('manageRole'));
                                 await guild.findByIdAndUpdate(message.guild.id, {$set: {muteRoleID: discordRole.id}});
@@ -98,6 +99,12 @@ module.exports = {
                 }
             }
             break;
+            case 'beta': {
+                if(!['on', 'off'].includes(args[1])) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                await guild.findByIdAndUpdate(message.guild.id, {$set: {beta: (message.client.guildData.get(message.guild.id).beta = (args[1] === 'on'))}});
+                message.channel.send(channelLanguage.get('betaSuccess', [args[1]]));
+            }
+            break;
             case 'view': {
                 if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
                 let embed = new MessageEmbed()
@@ -106,7 +113,7 @@ module.exports = {
                         size: 4096,
                         dynamic: true,
                     }))
-                    .setDescription(channelLanguage.get('configsEmbedDesc', [message.client.guildData.get(message.guild.id).prefix, message.client.guildData.get(message.guild.id).language, message.client.guildData.get(message.guild.id).logAttachments, message.client.guildData.get(message.guild.id).modlogs, message.client.guildData.get(message.guild.id).pruneBan, message.client.guildData.get(message.guild.id).muteRoleID, message.client.guildData.get(message.guild.id).autoSetupMute]))
+                    .setDescription(channelLanguage.get('configsEmbedDesc', [message.client.guildData.get(message.guild.id).prefix, message.client.guildData.get(message.guild.id).language, message.client.guildData.get(message.guild.id).logAttachments, message.client.guildData.get(message.guild.id).modlogs, message.client.guildData.get(message.guild.id).pruneBan, message.client.guildData.get(message.guild.id).muteRoleID, message.client.guildData.get(message.guild.id).autoSetupMute, message.client.guildData.get(message.guild.id).beta]))
                     .setTimestamp();
                 message.channel.send(embed);
             }

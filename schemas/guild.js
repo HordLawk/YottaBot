@@ -56,6 +56,7 @@ const guildSchema = new Schema({
     premiumUntil: Date,
     partner: Boolean,
     logAttachments: Boolean,
+    voiceXpCooldown: Number,
 });
 
 module.exports = model("guild", guildSchema);

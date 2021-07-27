@@ -131,7 +131,7 @@ module.exports = {
             case 'lang404': return 'Language not supported';
             case 'newLang': return 'Server language updated';
             case 'configsEmbedAuthor': return 'Server settings';
-            case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\nLanguage: \`${vars[1]}\`\nLog attachments: \`${vars[2] ? 'on' : 'off'}\`\nWarn log channel: ${vars[3].warn ? `<#${vars[3].warn}>` : '`none`'}\nMute log channel: ${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\nKick log channel: ${vars[3].kick ? `<#${vars[3].kick}>` : '`none`'}\nBan log channel: ${vars[3].ban ? `<#${vars[3].ban}>` : '`none`'}\nDays of messages to delete on ban: \`${vars[4]}\`\nMute role: ${vars[5] ? `<@&${vars[5]}>` : '`none`'}\nAuto setup mute: \`${vars[6] ? 'on' : 'off'}\``;
+            case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\nLanguage: \`${vars[1]}\`\nLog attachments: \`${vars[2] ? 'on' : 'off'}\`\nWarn log channel: ${vars[3].warn ? `<#${vars[3].warn}>` : '`none`'}\nMute log channel: ${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\nKick log channel: ${vars[3].kick ? `<#${vars[3].kick}>` : '`none`'}\nBan log channel: ${vars[3].ban ? `<#${vars[3].ban}>` : '`none`'}\nDays of messages to delete on ban: \`${vars[4]}\`\nMute role: ${vars[5] ? `<@&${vars[5]}>` : '`none`'}\nAuto setup mute: \`${vars[6] ? 'on' : 'off'}\`\nBeta features: \`${vars[7] ? 'on' : 'off'}\``;
             case 'betaCommand': return 'This command is currently only available for servers that enabled open beta features in the bot settings';
             case 'premiumCommand': return `This command is a premium feature, use \`${vars[0]}premium\` for more information on becoming premium`;
             case 'botWebhooks': return 'I need permission to manage webhooks in this channel';
@@ -365,6 +365,16 @@ module.exports = {
             case 'infoEmbedRepoValue': return '[github.com/HordLawk/YottaBot](https://github.com/HordLawk/YottaBot)';
             case 'upvoteDescription': return 'Upvote me on Top.gg';
             case 'upvoteEmbedDescription': return `**[Upvote me](https://top.gg/bot/${vars[0]}/vote)** on Top.gg!`;
+            case 'voiceXpEmbedAuthor': return 'Voice xp system settings';
+            case 'voiceXpEmbedDesc': return `Enabled: ${vars[0] ? `\`on\`\nCooldown: \`${vars[0]} minutes\``: '`off`'}`;
+            case 'voiceXpIgnoredChannels': return 'Ignored voice channels';
+            case 'betaSuccess': return `Beta features turned **${vars[0]}**`;
+            case 'voicexpDescription': return 'Manages xp earnings in voice channels';
+            case 'voicexpUsage0': return 'enable (cooldown minutes)';
+            case 'voicexpUsage1': return 'ignore <add/remove> (channel)';
+            case 'invCooldown': return 'Cooldown minutes has to be an integer between 1 and 59';
+            case 'voicexpEnableSuccess': return `Xp earning in voice channels was enabled and its cooldown was set to ${vars[0]}`;
+            case 'voicexpDisableSuccess': return 'Xp earning in voice channels disabled';
         }
     },
 };

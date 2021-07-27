@@ -35,7 +35,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [x] add missing moderation commands `massban` and `kick`
 - [x] reward boosters with one premium key
 - [x] recommend xp amounts for levelroles
-- [ ] transfer the process to a web dyno
+- [x] transfer the process to a web dyno
 - [ ] add premium feature "reward time spent in vcs with xp"
 - [ ] add actionlog for bulkdelete
 - [ ] add rss feeds for youtube notifications

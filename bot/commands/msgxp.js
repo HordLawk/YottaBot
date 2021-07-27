@@ -38,7 +38,8 @@ module.exports = {
                 switch(args[1]){
                     case 'set': {
                         if(isNaN(parseInt(args[3], 10)) || !isFinite(parseInt(args[3], 10)) || (parseInt(args[3], 10) < 1)) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                        let discordRole = message.guild.roles.cache.get(args[2].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){3}(.+)\s+\S+$/, '$1'))) ?? message.guild.roles.cache.find(e => e.name.startsWith(message.content.replace(/^(?:\S+\s+){3}(.+)\s+\S+$/, '$1'))) ?? message.guild.roles.cache.find(e => e.name.includes(message.content.replace(/^(?:\S+\s+){3}(.+)\s+\S+$/, '$1')));
+                        let roleName = message.content.toLowerCase().replace(/^(?:\S+\s+){3}(.+)\s+\S+$/, '$1');
+                        let discordRole = message.guild.roles.cache.get(args[2].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
                         if(!discordRole || (discordRole.id === message.guild.id)) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                         if(!discordRole.editable || discordRole.managed) return message.channel.send(channelLanguage.get('manageRole'));
                         if(discordRole.position >= message.member.roles.highest.position) message.channel.send(channelLanguage.get('memberManageRole'));
@@ -74,7 +75,8 @@ module.exports = {
                             message.channel.send(channelLanguage.get('resetXpRoles'));
                         }
                         else{
-                            let discordRole = message.guild.roles.cache.get(args[2].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){3}/, ''))) ?? message.guild.roles.cache.find(e => e.name.startsWith(message.content.replace(/^(?:\S+\s+){3}/, ''))) ?? message.guild.roles.cache.find(e => e.name.includes(message.content.replace(/^(?:\S+\s+){3}/, '')));
+                            let roleName = message.content.toLowerCase().replace(/^(?:\S+\s+){3}/, '');
+                            let discordRole = message.guild.roles.cache.get(args[2].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
                             if(!discordRole || (discordRole.id === message.guild.id)) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                             await role.findOneAndUpdate({
                                 guild: message.guild.id,
@@ -133,7 +135,8 @@ module.exports = {
             case 'ignore': {
                 if(!args[3] || !['role', 'channel'].includes(args[1]) || !['add', 'remove'].includes(args[2])) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 if(args[1] === 'role'){
-                    let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name === message.content.replace(/^(?:\S+\s+){4}/, ''))) ?? message.guild.roles.cache.find(e => e.name.startsWith(message.content.replace(/^(?:\S+\s+){4}/, ''))) ?? message.guild.roles.cache.find(e => e.name.includes(message.content.replace(/^(?:\S+\s+){4}/, '')));
+                    let roleName = message.content.toLowerCase().replace(/^(?:\S+\s+){4}/, '');
+                    let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
                     if(!discordRole || (discordRole.id === message.guild.id)) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                     await role.findOneAndUpdate({
                         guild: message.guild.id,
@@ -146,7 +149,7 @@ module.exports = {
                 }
                 else{
                     let discordChannel = message.guild.channels.cache.get((args[3].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[3]);
-                    if(!discordChannel || !['text', 'news', 'voice'].includes(discordChannel.type)) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                    if(!discordChannel || !discordChannel.isText()) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                     await channel.findOneAndUpdate({
                         _id: discordChannel.id,
                         guild: message.guild.id,
@@ -235,7 +238,7 @@ module.exports = {
                 if(roles.filter(e => e.xp).length) embed.addField(channelLanguage.get('xpViewRoles'), roles.filter(e => e.xp).map(e => `\`${(new Array(roles[0].xp.toString().length - e.xp.toString().length)).fill(' ').join('')}${e.xp}\` **-** <@&${e.roleID}>`).join('\n'));
                 if(roles.filter(e => e.ignoreXp).length) embed.addField(channelLanguage.get('xpViewIgnoredRoles'), roles.filter(e => e.ignoreXp).map(e => `<@&${e.roleID}>`).join(' '));
                 let channels = await channel.find({
-                    _id: {$in: message.guild.channels.cache.map(e => e.id)},
+                    _id: {$in: message.guild.channels.cache.filter(e => e.isText()).map(e => e.id)},
                     guild: message.guild.id,
                     ignoreXp: true,
                 });

@@ -24,7 +24,7 @@ module.exports = {
         if((message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || member.permissions.has('ADMINISTRATOR')) return message.channel.send(channelLanguage.get('youCantMute'));
         const duration = args[1] && (((parseInt(args[1].match(/(\d+)d/)?.[1], 10) * 86400000) || 0) + ((parseInt(args[1].match(/(\d+)h/)?.[1], 10) * 3600000) || 0) + ((parseInt(args[1].match(/(\d+)m/)?.[1], 10) * 60000) || 0));
         const timeStamp = Date.now();
-        if(!duration || !isFinite(duration) || 8640000000000000 < (duration + timeStamp)) return message.channel.send(channelLanguage.get('invMuteDuration'));
+        if(!duration || !isFinite(duration) || ((duration + timeStamp) > 8640000000000000)) return message.channel.send(channelLanguage.get('invMuteDuration'));
         let mute = await log.findOne({
             guild: message.guild.id,
             target: member.id,

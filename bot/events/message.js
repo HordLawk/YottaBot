@@ -57,14 +57,14 @@ module.exports = {
                     case 'dm': message.author.send(channelLanguage.get('achieveDM', [message.guild.roles.cache.get(lowerRoles[0].roleID).name, message.guild.name])).catch(() => null);
                     break;
                     default: {
-                        const notifChannel = message.client.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel);
+                        let notifChannel = message.client.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel);
                         if(notifChannel) notifChannel.send(channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]));
                     }
                 }
             });
         }
         if((new RegExp(`<@!?${message.client.user.id}>`)).test(message.content)) return message.channel.send(channelLanguage.get('mentionHelp', [prefix]));
-        if(!message.content.startsWith(prefix)) return;
+        if(!message.content.toLowerCase().startsWith(prefix.toLowerCase())) return;
         const userDoc = await user.findById(message.author.id);
         if(userDoc && userDoc.blacklisted) return;
         const [commandName, ...args] = message.content.slice(prefix.length).toLowerCase().split(/\s+/g);
@@ -72,8 +72,8 @@ module.exports = {
         if(!command || (command.dev && (message.author.id != message.client.configs.owner.id)) || (command.alpha && !message.client.guildData.get(message.guild.id).alpha)) return;
         if(message.client.configs.maintenance && (message.author.id != message.client.configs.owner.id)) return message.channel.send(channelLanguage.get('maintenance')).catch(() => null);
         if(command.guildOnly && !message.guild) return message.channel.send(channelLanguage.get('guildOnly'));
-        if(command.beta && !message.client.guildData.get(message.guild.id).beta) return message.channel.send(channelLanguage.get('betaCommand')).catch(() => null);
         if(command.premium && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) return message.channel.send(channelLanguage.get('premiumCommand', [prefix])).catch(() => null);
+        if(command.beta && !message.client.guildData.get(message.guild.id).beta) return message.channel.send(channelLanguage.get('betaCommand')).catch(() => null);
         if(command.args && !args.length) return message.channel.send(channelLanguage.get('noArgs', [message.author, prefix, command.name, command.usage(channelLanguage)]));
         if(message.guild && !message.member.permissions.has('ADMINISTRATOR')){
             const roles = roleDocs.filter(e => (e.commandPermissions.id(command.name) && message.member.roles.cache.has(e.roleID)));

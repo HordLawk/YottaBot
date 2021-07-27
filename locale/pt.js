@@ -131,7 +131,7 @@ module.exports = {
             case 'lang404': return 'Idioma não suportado';
             case 'newLang': return 'Idioma do servidor atualizado';
             case 'configsEmbedAuthor': return 'Configurações do servidor';
-            case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\nIdioma: \`${vars[1]}\`\nRegistrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\`\nCanal de registro de warn: ${vars[3].warn ? `<#${vars[3].warn}>` : '`nenhum`'}\nCanal de registro de mute: ${vars[3].mute ? `<#${vars[3].mute}>` : '`nenhum`'}\nCanal de registro de kick: ${vars[3].kick ? `<#${vars[3].kick}>` : '`nenhum`'}\nCanal de registro de ban: ${vars[3].ban ? `<#${vars[3].ban}>` : '`nenhum`'}\nNúmero de dias de mensagens deletadas em bans: \`${vars[4]}\`\nCargo de mute: ${vars[5] ? `<@&${vars[5]}>` : '`nenhum`'}\nConfigurar mute automaticamente: \`${vars[6] ? 'ativado' : 'desativado'}\``;
+            case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\nIdioma: \`${vars[1]}\`\nRegistrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\`\nCanal de registro de warn: ${vars[3].warn ? `<#${vars[3].warn}>` : '`nenhum`'}\nCanal de registro de mute: ${vars[3].mute ? `<#${vars[3].mute}>` : '`nenhum`'}\nCanal de registro de kick: ${vars[3].kick ? `<#${vars[3].kick}>` : '`nenhum`'}\nCanal de registro de ban: ${vars[3].ban ? `<#${vars[3].ban}>` : '`nenhum`'}\nNúmero de dias de mensagens deletadas em bans: \`${vars[4]}\`\nCargo de mute: ${vars[5] ? `<@&${vars[5]}>` : '`nenhum`'}\nConfigurar mute automaticamente: \`${vars[6] ? 'ativado' : 'desativado'}\`\nFunções beta: \`${vars[7] ? 'ativadas' : 'desativadas'}\``;
             case 'betaCommand': return 'Esse comando atualmente está disponível apenas para servidor que ativaram funcionalidade beta nas configurações do bot';
             case 'premiumCommand': return `Esse comando é uma funcionalidade premium, use \`${vars[0]}premium\` para mais informações sobre se tornar premium`;
             case 'botWebhooks': return 'Eu preciso de permissão para gerenciar webhooks nesse canal';
@@ -365,6 +365,16 @@ module.exports = {
             case 'infoEmbedRepoValue': return '[github.com/HordLawk/YottaBot](https://github.com/HordLawk/YottaBot)';
             case 'upvoteDescription': return 'Vote em mim no Top.gg';
             case 'upvoteEmbedDescription': return `**[Vote em mim](https://top.gg/bot/${vars[0]}/vote)** no Top.gg!`;
+            case 'voiceXpEmbedAuthor': return 'Configurações do sistema de xp por voz';
+            case 'voiceXpEmbedDesc': return `Ativado: ${vars[0] ? `\`sim\`\nCooldown: \`${vars[0]} minutos\``: '`não`'}`;
+            case 'voiceXpIgnoredChannels': return 'Canais de voz ignorados';
+            case 'betaSuccess': return `Funções beta foram **${(vars[0] === 'on') ? '' : 'des'}ativadas**`;
+            case 'voicexpDescription': return 'Gerencia o ganho de xp em canais de voz';
+            case 'voicexpUsage0': return 'enable (cooldown em minutos)';
+            case 'voicexpUsage1': return 'ignore <add/remove> (canal)';
+            case 'invCooldown': return 'O cooldown em minutos deve ser um inteiro entre 1 e 59';
+            case 'voicexpEnableSuccess': return `O ganho de xp em canais de voz foi ativado e seu cooldown definido como ${vars[0]}`;
+            case 'voicexpDisableSuccess': return 'O ganho de xp em canais de voz foi desativado';
         }
     },
 };

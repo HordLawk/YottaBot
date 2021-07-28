@@ -7,6 +7,7 @@ const user = require('../../schemas/user.js');
 const member = require('../../schemas/member.js');
 const {MessageEmbed, Collection} = require('discord.js');
 const {AutoPoster} = require('topgg-autoposter');
+const axios = require('axios');
 
 module.exports = {
     name: 'ready',
@@ -19,6 +20,12 @@ module.exports = {
             await client.channels.cache.get(client.configs.bootlog).send(`Connected with ping \`${client.ws.ping}ms\`!`);
             await client.guilds.cache.get(client.configs.supportID).members.fetch();
             AutoPoster(process.env.TOPGG_TOKEN, client);
+            axios({
+                method: 'POST',
+                url: `https://discord.bots.gg/api/v1/bots/${client.user.id}/stats`,
+                headers: {authorization: process.env.DISCORDBOTS_TOKEN},
+                data: {guildCount: client.guilds.cache.size},
+            });
         }
         await channel.deleteMany({
             _id: {$nin: client.channels.cache.map(e => e.id)},

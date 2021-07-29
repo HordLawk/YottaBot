@@ -23,8 +23,20 @@ module.exports = {
             axios({
                 method: 'POST',
                 url: `https://discord.bots.gg/api/v1/bots/${client.user.id}/stats`,
-                headers: {authorization: process.env.DISCORDBOTS_TOKEN},
+                headers: {
+                    authorization: process.env.DISCORDBOTS_TOKEN,
+                    'content-type': 'application/json',
+                },
                 data: {guildCount: client.guilds.cache.size},
+            });
+            axios({
+                method: 'POST',
+                url: `https://botsfordiscord.com/api/bot/${client.user.id}`,
+                headers: {
+                    authorization: process.env.BOTSFORDISCORD_TOKEN,
+                    'content-type': 'application/json',
+                },
+                data: {server_count: client.guilds.cache.size},
             });
         }
         await channel.deleteMany({

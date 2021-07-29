@@ -19,7 +19,7 @@ module.exports = {
         switch(args[0]){
             case 'rank': {
                 let members = await message.guild.members.fetch().then(res => res.map(e => e.id));
-                message.guild.members.cache.sweep(e => (e.id != message.client.user.id));
+                message.guild.members.cache.sweep(e => ((e.id != message.client.user.id) || message.guild.voiceStates.cache.has(e.id)));
                 let pageSize = 20;
                 let memberDocs = await member.find({
                     guild: message.guild.id,

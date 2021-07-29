@@ -4,7 +4,7 @@ module.exports = {
         switch(line){
             case 'mentionHelp': return `Use \`${vars[0]}help\` para ver todos os meus comandos!`;
             case 'noArgs': return `Você não forneceu nenhum argumento, ${vars[0]}!\nO uso correto seria:\n${vars[3].map(e => `\`${vars[1]}${vars[2]} ${e}\``).join('\n')}`;
-            case 'cooldown': return `Por favor espere mais ${vars[0]} segundo(s) antes de usar o comando \`${vars[1]}\` novamente${vars[3] ? '' : `\nDica: Servidores __premium__ tem metade do cooldown para todos os comandos\nPara adquirir __premium__ use \`${vars[2]}premium\``}`;
+            case 'cooldown': return `Por favor espere mais ${vars[0]} segundo(s) antes de usar o comando \`${vars[1]}\` novamente${vars[3] ? '' : `\nDica: Servidores premium tem metade do cooldown para todos os comandos\nPara adquirir premium use \`${vars[2]}premium\``}`;
             case 'error': return `Houve um erro ao tentar executar o comando \`${vars[0]}\`\nO problema foi enviado à equipe de suporte e será corrigido no futuro proximo`;
             case 'helpDescription': return 'Lista todos os comandos ou mostra informações sobre um específico';
             case 'helpUsage': return '[(comando)]';
@@ -83,7 +83,7 @@ module.exports = {
             case 'xpStack': return `Acumulo de cargos de xp ${(vars[0] === 'on') ? 'ativado': 'desativao'}`
             case 'manageRole': return 'Eu preciso de permissão para gerenciar esse cargo';
             case 'sameXp': return 'Já existe outro cargo definido para essa quantidade de xp';
-            case 'maxXpRoles': return `O número maximo de cargos de xp para servidores não premium é 10, mas você pode adicionar mais com __premium__! Para entender como, use \`${vars[0]}premium\``;
+            case 'maxXpRoles': return `O número maximo de cargos de xp para servidores não premium é 10, mas você pode adicionar mais com premium! Para entender como, use \`${vars[0]}premium\``;
             case 'setXpRole': return `**${vars[0]}** definido como recompensa para **${vars[1]}** xp\nesteja ciente que membros apenas receberão esse cargo ao enviar novas mensagens`;
             case 'resetXpRoles': return `Todos os cargos de xp foram removidos\nesteja ciente que esses cargos não serão removidos automaticamente dos membros, se você quiser isso, é recomendado deletar os cargos do servidor para que nenhum membro continue com eles`;
             case 'removeXpRole': return `**${vars[0]}** foi removido das recompensas de xp\nesteja ciente que esse cargo não será removido automaticamente dos membros, se você quiser isso, é recomendado deletar o cargo do servidor para que nenhum membro continue com ele`;
@@ -112,7 +112,7 @@ module.exports = {
             case 'rolemenuUsage1': return 'edit (ID de menu) <(menção de cargo)/(ID de cargo)/"(nome de cargo)"> (emoji) [(lista de cargos e emojis)] [toggle]';
             case 'maxRolesMenu': return 'O número máximo de cargos por menu é 20';
             case 'botReactions': return 'Eu preciso de permissão para adicionar reações nesse canal';
-            case 'maxRolemenus': return `O número máximo de menus para servidores não premium é 10, mas você pode adicionar mais com __premium__! Para entender como, use \`${vars[0]}premium\``;
+            case 'maxRolemenus': return `O número máximo de menus para servidores não premium é 10, mas você pode adicionar mais com premium! Para entender como, use \`${vars[0]}premium\``;
             case 'uniqueEmoji': return 'Cada emoji só pode ser usado uma vez por menu';
             case 'loading': return 'Carregando...';
             case 'rolemenuEmbedAuthor': return 'Reaja para reivindicar um cargo';

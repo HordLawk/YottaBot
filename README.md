@@ -1,9 +1,11 @@
 # YottaBot
-[![DevServer](https://discordapp.com/api/guilds/476244157245947904/widget.png?style=shield)](https://discord.gg/eNcsvsy)
+[![BotsForDiscord](https://botsfordiscord.com/api/bot/371902120561082368/widget?theme=dark)](https://discords.com/bots/bot/371902120561082368)
 
 **[Invite me to your server](https://discord.com/oauth2/authorize?client_id=371902120561082368&permissions=2147483647&scope=bot)**
 
 **[Join the support server](https://discord.gg/eNcsvsy)**
+
+[![DevServer](https://discordapp.com/api/guilds/476244157245947904/widget.png?style=shield)](https://discord.gg/eNcsvsy)
 
 ## Get started
 Like any other bot, the `help` command will list all the other commands and using `help (command)` will show you the correct usage for a specified command, note that all commands have to be prefixed with your server's prefix ~~(duh)~~ and the default prefix is `y!`
@@ -47,3 +49,4 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] `profile` command
 - [ ] `userinfo` command
 - [ ] add actionlog for edited messages
+- [ ] xp multiplier for selected roles

@@ -155,7 +155,7 @@ module.exports = {
                 unmuteTimer();
                 unpremiumTimer();
                 renewBoost();
-                if((i % 6) === 0) earnVoiceXp();
+                // if((i % 6) === 0) earnVoiceXp();
                 tick(++i);
             }, 10000);
         }

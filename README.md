@@ -38,7 +38,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [x] reward boosters with one premium key
 - [x] recommend xp amounts for levelroles
 - [x] transfer the process to a web dyno
-- [x] add premium feature "reward time spent in vcs with xp"
+- [x] add xp earning in voice channels as premium feature
 - [ ] add actionlog for bulkdelete
 - [ ] add rss feeds for youtube notifications
 - [ ] setup a patreon
@@ -50,3 +50,4 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] `userinfo` command
 - [ ] add actionlog for edited messages
 - [ ] xp multiplier for selected roles
+- [ ] react to any messages in selected channels

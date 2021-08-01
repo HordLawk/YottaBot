@@ -19,7 +19,7 @@ module.exports = {
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
         if(!message.member) return;
         const ids = args.map(e => e.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1]);
-        const reasonStart = ids.findIndex(e => !e);
+        const reasonStart = ids.indexOf(undefined);
         if(!reasonStart) return message.channel.send(channelLanguage.get('invUser'));
         const reason = message.content.replace(new RegExp(`^(?:\\S+\\s+){${(reasonStart === -1) ? args.length : reasonStart}}\\S+\\s*`), '').slice(0, 500);
         var bans = 0;
@@ -28,7 +28,7 @@ module.exports = {
         var banneds = 0;
         const caseLogs = [];
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.ban);
-        for(let id of ids.slice(0, reasonStart)){
+        for(let id of [...(new Set(ids.slice(0, reasonStart)))]){
             let user = await message.client.users.fetch(id).catch(() => null);
             if(!user){
                 invargs++;

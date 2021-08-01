@@ -14,7 +14,7 @@ module.exports = {
             case 'botEmbed': return 'I need permission to embed links in this channel';
             case 'botManageMessages': return 'I need permission to manage messages in this channel';
             case 'helpEmbedTitle': return 'Commands help';
-            case 'helpEmbedDescription': return `\`[Support server](https://discord.gg/${vars[0]})\`\n\`[Invite me](${vars[1]})\`\n\`[Extended documentation](https://github.com/HordLawk/YottaBot#get-started)\`\n\`[Top.gg](https://top.gg/bot/${vars[3]})\`\n\nUse \`${vars[2]}help (command)\` for more info about a specific command`;
+            case 'helpEmbedDescription': return `[\`Support server\`](https://discord.gg/${vars[0]})\n[\`Invite me\`](${vars[1]})\n[\`Extended documentation\`](https://github.com/HordLawk/YottaBot#get-started)\n[\`Top.gg\`](https://top.gg/bot/${vars[3]})\n\nUse \`${vars[2]}help (command)\` for more info about a specific command`;
             case 'helpEmbedFooter': return `${vars[0]} commands | [] = Optional - () = Variable - </> = Either`;
             case 'category0': return 'Commands';
             case 'category1': return 'Information';
@@ -143,8 +143,8 @@ module.exports = {
             case 'delmsgEmbedSentTitle': return 'Sent';
             case 'delmsgEmbedSentValue': return `<t:${vars[0]}>`;
             case 'delmsgEmbedAttachmentsTitle': return 'Attachments';
-            case 'delmsgEmbedAttachmentsMedia': return `\`[Attachment-${vars[0]}-Media](${vars[1]})\``;
-            case 'delmsgEmbedAttachmentsFile': return `\`[Attachment-${vars[0]}-File](${vars[1]})\``;
+            case 'delmsgEmbedAttachmentsMedia': return `[\`Attachment-${vars[0]}-Media\`](${vars[1]})`;
+            case 'delmsgEmbedAttachmentsFile': return `[\`Attachment-${vars[0]}-File\`](${vars[1]})`;
             case 'actionlogsDescription': return 'Manages action logs for the server';
             case 'actionlogsUsage0': return 'defaultchannel (channel)';
             case 'actionlogsUsage1': return 'set delmsg <(channel)/default>';
@@ -204,7 +204,7 @@ module.exports = {
             case 'banReason': return `Executor: ${vars[0]}${vars[1] ? ` | Reason: ${vars[1]}` : ''}`;
             case 'memberBanSuccess': return `Member banned\nCase ID: \`${vars[0]}\``;
             case 'banEmbedAuthor': return `${vars[0]} banned ${vars[1]}`;
-            case 'banEmbedDescription': return `\`[Action message](${vars[0]})\``;
+            case 'banEmbedDescription': return `[\`Action message\`](${vars[0]})`;
             case 'banEmbedTargetTitle': return 'Target';
             case 'banEmbedTargetValue': return `${vars[0]}\n${vars[0].id}`;
             case 'banEmbedExecutorTitle': return 'Executor';
@@ -216,7 +216,7 @@ module.exports = {
             case 'checkEmbedAuthor': return 'Cases';
             case 'checkEmbedFooter': return `${vars[0]} cases found`;
             case 'checkEmbedCaseTitle': return `Case ${vars[0]}`;
-            case 'checkEmbedCaseValue': return `\`[Action message](${vars[0].actionMessage})\`\nType: \`${vars[0].removal ? `${'un'}${vars[0].type}` : vars[0].type}\`\n${vars[0].executor ? `Executor: <@${vars[0].executor}>\n` : ''}${vars[1] ? `Duration: \`${vars[1][0] ? `${vars[1][0]}d` : ''}${vars[1][1] ? `${vars[1][1]}h` : ''}${vars[1][2] ? `${vars[1][2]}m` : ''}\`\n` : ''}${vars[0].reason ? `Reason: *${vars[0].reason}*\n` : ''}Date: <t:${Math.floor(vars[0].timeStamp.getTime() / 1000)}>${vars[0].image ? `\n\`[Media](${vars[0].image})\`` : ''}`;
+            case 'checkEmbedCaseValue': return `[\`Action message\`](${vars[0].actionMessage})\nType: \`${vars[0].removal ? `${'un'}${vars[0].type}` : vars[0].type}\`\n${vars[0].executor ? `Executor: <@${vars[0].executor}>\n` : ''}${vars[1] ? `Duration: \`${vars[1][0] ? `${vars[1][0]}d` : ''}${vars[1][1] ? `${vars[1][1]}h` : ''}${vars[1][2] ? `${vars[1][2]}m` : ''}\`\n` : ''}${vars[0].reason ? `Reason: *${vars[0].reason}*\n` : ''}Date: <t:${Math.floor(vars[0].timeStamp.getTime() / 1000)}>${vars[0].image ? `\n[\`Media\`](${vars[0].image})` : ''}`;
             case 'modLogsSetSuccess': return `Log channel for ${vars[0].map(e => `\`${e}\``).join(' ')} set to ${vars[1]}`;
             case 'invClearOnBanDays': return 'Number of days must be between 0 and 7';
             case 'clearOnBanDaysSetSuccess': return `Number of days of messages to delete on bans set to **${vars[0]}**`;
@@ -238,7 +238,7 @@ module.exports = {
             case 'muteMemberSuccess': return `Member muted\nCase ID: \`${vars[0]}\``;
             case 'muteRoleSetupReason': return 'Mute role permissions setup';
             case 'muteEmbedAuthor': return `${vars[0]} muted ${vars[1]}`;
-            case 'muteEmbedDescription': return `\`[Action message](${vars[0]})\``;
+            case 'muteEmbedDescription': return `[\`Action message\`](${vars[0]})`;
             case 'muteEmbedTargetTitle': return 'Target';
             case 'muteEmbedTargetValue': return `${vars[0]}\n${vars[0].id}`;
             case 'muteEmbedExecutorTitle': return 'Executor';
@@ -269,7 +269,7 @@ module.exports = {
             case 'unbanAuditReason': return `Executor: ${vars[0]}${vars[1] ? ` | Reason: ${vars[1]}` : ''}`;
             case 'unbanSuccess': return `User unbanned\nCase ID: \`${vars[0]}\``;
             case 'unbanEmbedAuthor': return `${vars[0]} unbanned ${vars[1]}`;
-            case 'unbanEmbedDescription': return `\`[Action message](${vars[0]})\``;
+            case 'unbanEmbedDescription': return `[\`Action message\`](${vars[0]})`;
             case 'unbanEmbedTargetTitle': return 'Target';
             case 'unbanEmbedTargetValue': return `${vars[0]}\n${vars[0].id}`;
             case 'unbanEmbedExecutorTitle': return 'Executor';
@@ -283,7 +283,7 @@ module.exports = {
             case 'invMuted': return 'Muted user not found';
             case 'unmuteSuccess': return `Member unmuted\nCase ID: \`${vars[0]}\``;
             case 'unmuteEmbedAuthor': return `${vars[0]} unmuted ${vars[1] || 'someone'}`;
-            case 'unmuteEmbedDescription': return `\`[Action message](${vars[0]})\``;
+            case 'unmuteEmbedDescription': return `[\`Action message\`](${vars[0]})`;
             case 'unmuteEmbedTargetTitle': return 'Target';
             case 'unmuteEmbedTargetValue': return `<@${vars[0]}>\n${vars[0]}`;
             case 'unmuteEmbedExecutorTitle': return 'Executor';
@@ -297,7 +297,7 @@ module.exports = {
             case 'warnedBlockedDms': return 'The warn couldn\'t be DMed to the user. This usually happens when a user disables DMs for this server';
             case 'warnSuccess': return `Member warned\nCase ID: \`${vars[0]}\``;
             case 'warnEmbedAuthor': return `${vars[0]} warned ${vars[1]}`;
-            case 'warnEmbedDescription': return `\`[Action message](${vars[0]})\``;
+            case 'warnEmbedDescription': return `[\`Action message\`](${vars[0]})`;
             case 'warnEmbedTargetTitle': return 'Target';
             case 'warnEmbedTargetValue': return `${vars[0]}\n${vars[0].id}`;
             case 'warnEmbedExecutorTitle': return 'Executor';
@@ -324,7 +324,7 @@ module.exports = {
             case 'autoUnmuteEmbedTargetValue': return `<@${vars[0]}>\n${vars[0]}`;
             case 'autoUnmuteEmbedReasonTitle': return 'Reason';
             case 'autoUnmuteEmbedReasonValue': return 'End of mute';
-            case 'autoUnmuteEmbedDescription': return `\`[Referred mute](${vars[0]})\``;
+            case 'autoUnmuteEmbedDescription': return `[\`Referred mute\`](${vars[0]})`;
             case 'kickDescription': return 'Kicks a member from a server\nAlso Accepts a media attachments';
             case 'kickUsage': return '(user) [(reason)]';
             case 'cantKick': return 'I can\'t kick this member';
@@ -332,7 +332,7 @@ module.exports = {
             case 'kickAuditReason': return `Executor: ${vars[0]}${vars[1] ? ` | Reason: ${vars[1]}` : ''}`;
             case 'kickSuccess': return `Member kicked\nCase ID: \`${vars[0]}\``;
             case 'kickEmbedAuthor': return `${vars[0]} kicked ${vars[1]}`;
-            case 'kickEmbedDescription': return `\`[Action message](${vars[0]})\``;
+            case 'kickEmbedDescription': return `[\`Action message\`](${vars[0]})`;
             case 'kickEmbedTargetTitle': return 'Target';
             case 'kickEmbedTargetValue': return `${vars[0]}\n${vars[1]}`;
             case 'kickEmbedExecutorTitle': return 'Executor';
@@ -348,7 +348,7 @@ module.exports = {
             case 'recommendXpNotEnough': return `**${vars[0]}** is not enough xp for **${vars[1]}** levels`;
             case 'recommendSuccess': return `The recommended xp amounts are ${vars[0].map(e => `\`${Math.round(e / 20)}\``).join(' ')}`;
             case 'infoEmbedAuthor': return 'YottaBot information';
-            case 'infoEmbedDescription': return `\`[Invite me](${vars[0]})\``;
+            case 'infoEmbedDescription': return `[\`Invite me\`](${vars[0]})`;
             case 'infoEmbedVersionTitle': return 'Version';
             case 'infoEmbedEngineTitle': return 'Engine';
             case 'infoEmbedEngineValue': return `Node.js ${vars[0]}`;
@@ -360,9 +360,9 @@ module.exports = {
             case 'infoEmbedRAMTitle': return 'RAM usage';
             case 'infoEmbedRAMValue': return `${(vars[0] / 1048576).toFixed(2)} MB`;
             case 'infoEmbedSupportTitle': return 'Support server';
-            case 'infoEmbedSupportValue': return `\`[discord.gg/${vars[0]}](https://discord.gg/${vars[0]})\``;
+            case 'infoEmbedSupportValue': return `[\`discord.gg/${vars[0]}\`](https://discord.gg/${vars[0]})`;
             case 'infoEmbedRepoTitle': return 'Source code';
-            case 'infoEmbedRepoValue': return '\`[github.com/HordLawk/YottaBot](https://github.com/HordLawk/YottaBot)\`';
+            case 'infoEmbedRepoValue': return '[\`github.com/HordLawk/YottaBot\`](https://github.com/HordLawk/YottaBot)';
             case 'upvoteDescription': return 'Upvote me on Top.gg';
             case 'upvoteEmbedDescription': return `**[Upvote me](https://top.gg/bot/${vars[0]}/vote)** on Top.gg!`;
             case 'voiceXpEmbedAuthor': return 'Voice xp system settings';

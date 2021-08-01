@@ -1,6 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 const Discord = require('discord.js');
+Discord.Structures.extend('Guild', Guild => {
+    class CoolGuild extends Guild {
+        constructor(client, data) {
+            super(client, data);
+            this.cool = true;
+        }
+    }
+    return CoolGuild;
+});
 const client = new Discord.Client({partials: ['REACTION', 'MESSAGE']});
 const guild = require('../schemas/guild.js');
 client.configs = require('./configs.js');

@@ -5,7 +5,7 @@ module.exports = {
     name: 'messageDeleteBulk',
     execute: async messages => {
         const {guild, client} = messages.first();
-        if(!guild || !guild.available || (!client.guildData.get(guild.id)?.actionlogs.id('prune')?.hookID && !client.guildData.get(guild.id)?.defaultLogsHookID)) return;
+        if(!guild || !guild.available || !client.guildData.get(guild.id)?.actionlogs.id('prune') || (!client.guildData.get(guild.id)?.actionlogs.id('prune').hookID && !client.guildData.get(guild.id)?.defaultLogsHookID)) return;
         let relevantMessages = messages.filter(e => (!e.author.bot && !e.system));
         if(!relevantMessages.size) return;
         const channelLanguage = client.langs[client.guildData.get(guild.id).language];
@@ -28,7 +28,7 @@ module.exports = {
             });
             if(roleDoc) return;
         }
-        const hook = await client.fetchWebhook(client.guildData.get(guild.id).actionlogs.id('prune').hookID ?? client.guildData.get(guild.id).defaultLogsHookID, client.guildData.get(guild.id).actionlogs.id('prune').hookToken ?? client.guildData.get(guild.id).defaultLogsHookToken).catch(() => null);
+        const hook = await client.fetchWebhook(client.guildData.get(guild.id).actionlogs.id('prune')?.hookID ?? client.guildData.get(guild.id).defaultLogsHookID, client.guildData.get(guild.id).actionlogs.id('prune').hookToken ?? client.guildData.get(guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
         const embeds = relevantMessages.map(e => {
             const fields = [

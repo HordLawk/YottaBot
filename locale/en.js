@@ -147,10 +147,10 @@ module.exports = {
             case 'delmsgEmbedAttachmentsFile': return `[\`Attachment-${vars[0]}-File\`](${vars[1]})`;
             case 'actionlogsDescription': return 'Manages action logs for the server';
             case 'actionlogsUsage0': return 'defaultchannel (channel)';
-            case 'actionlogsUsage1': return 'set delmsg <(channel)/default>';
-            case 'actionlogsUsage2': return 'ignore channel <add/remove> (channel) <delmsg/all>';
+            case 'actionlogsUsage1': return 'set <delmsg/prune> <(channel)/default>';
+            case 'actionlogsUsage2': return 'ignore channel <add/remove> (channel) <delmsg/prune/all>';
             case 'actionlogsUsage3': return 'ignore channel view (channel)';
-            case 'actionlogsUsage4': return 'ignore role <add/remove> (role) <delmsg/all/view>';
+            case 'actionlogsUsage4': return 'ignore role <add/remove> (role) <delmsg/prune/all/view>';
             case 'actionlogsUsage5': return 'ignore role view (role)';
             case 'newDefaultHookReason': return 'Default log channel webhook';
             case 'oldDefaultHookReason': return 'Old default log channel webhook';
@@ -167,6 +167,7 @@ module.exports = {
             case 'ignoredActionsEmbedFooter': return `${vars[0]} ignored actions`;
             case 'ignoredActionsEmbedActionsTitle': return 'Actions';
             case 'actiondelmsg': return '**deleted messages**';
+            case 'actionprune': return '**pruned messages**';
             case 'noIgnoredActionsRole': return 'No actions are being ignored for this role';
             case 'ignoredActionsRoleEmbedAuthor': return 'Ignored role';
             case 'ignoredActionsRoleEmbedDesc': return `Role: ${vars[0]}`;

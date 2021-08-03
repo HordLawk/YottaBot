@@ -4,7 +4,7 @@ module.exports = {
     guildlog: '854893736588214282',
     bootlog: '854894584248664095',
     defaultPrefix: 'y!',
-    actions: ['delmsg'],
+    actions: ['delmsg', 'prune'],
     support: 'eNcsvsy',
     supportID: '476244157245947904',
 };

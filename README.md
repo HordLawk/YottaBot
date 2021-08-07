@@ -39,7 +39,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [x] recommend xp amounts for levelroles
 - [x] transfer the process to a web dyno
 - [x] add xp earning in voice channels as premium feature
-- [ ] add actionlog for bulkdelete
+- [x] add actionlog for bulkdelete
 - [ ] add rss feeds for youtube notifications
 - [ ] setup a patreon
 - [ ] `prune` commandd

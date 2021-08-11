@@ -14,7 +14,6 @@ module.exports = {
     args: true,
     perm: 'ADMINISTRATOR',
     guildOnly: true,
-    beta: true,
     premium: true,
     execute: async function(message, args){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];

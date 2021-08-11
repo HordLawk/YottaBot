@@ -5,7 +5,7 @@ module.exports = {
     active: true,
     name: 'check',
     description: lang => lang.get('checkDescription'),
-    aliases: ['modlogs'],
+    aliases: ['modlogs', 'chk'],
     usage: lang => [lang.get('checkUsage')],
     example: ['@LordHawk#0001 mute 15d12h30m30s'],
     cooldown: 5,
@@ -34,38 +34,39 @@ module.exports = {
             let m = Math.floor((ms % 3600000) / 60000);
             return [d, h, m];
         }
+        const pageSize = 10;
         const embed = new MessageEmbed()
             .setColor(discordMember?.displayColor ?? message.guild.me.displayColor ?? 0x8000ff)
             .setAuthor(discordUser?.tag ?? channelLanguage.get('checkEmbedAuthor'), discordUser?.displayAvatarURL({dynamic: true}))
             .setTimestamp()
             .setFooter(channelLanguage.get('checkEmbedFooter', [logDocs.length]))
             .setDescription(`${['all', 'warn'].includes(args[1]) ? `Warns: \`${logDocs.filter(e => (e.type === 'warn')).length}\`\n` : ''}${['all', 'mute'].includes(args[1]) ? `Mutes: \`${logDocs.filter(e => ((e.type === 'mute') && !e.removal)).length}\`\nUnmutes: \`${logDocs.filter(e => ((e.type === 'mute') && e.removal)).length}\`\n` : ''}${['all', 'kick'].includes(args[1]) ? `Kicks: \`${logDocs.filter(e => (e.type === 'kick')).length}\`\n` : ''}${['all', 'ban'].includes(args[1]) ? `Bans: \`${logDocs.filter(e => ((e.type === 'ban') && !e.removal)).length}\`\nUnbans: \`${logDocs.filter(e => ((e.type === 'ban') && e.removal)).length}\`\n` : ''}`)
-            .addFields(logDocs.slice(0, 25).map(e => ({
+            .addFields(logDocs.slice(0, pageSize).map(e => ({
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get('checkEmbedCaseValue', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
             })));
-            let msg = await message.channel.send(embed);
-            if(logDocs.length <= 25) return;
-            await msg.react('⬅');
-            await msg.react('➡');
-            let col = msg.createReactionCollector((r, u) => (['➡', '⬅'].includes(r.emoji.name) && (u.id === message.author.id)), {time: 600000});
-            let page = 0;
-            col.on('collect', async r => {
-                await r.users.remove(message.author);
-                if(r.emoji.name === '➡'){
-                    if(!logDocs.slice((page + 1) * 25).length) return;
-                    page++;
-                }
-                else{
-                    if(!page) return;
-                    page--;
-                }
-                embed.spliceFields(0, 25, logDocs.slice(page * 25, (page + 1) * 25).map(e => ({
-                    name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
-                    value: channelLanguage.get('checkEmbedCaseValue', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
-                })));
-                await msg.edit(embed);
-            });
-            col.on('end', () => msg.reactions.removeAll());
+        let msg = await message.channel.send(embed);
+        if(logDocs.length <= pageSize) return;
+        await msg.react('⬅');
+        await msg.react('➡');
+        let col = msg.createReactionCollector((r, u) => (['➡', '⬅'].includes(r.emoji.name) && (u.id === message.author.id)), {time: 600000});
+        let page = 0;
+        col.on('collect', async r => {
+            await r.users.remove(message.author);
+            if(r.emoji.name === '➡'){
+                if(!logDocs.slice((page + 1) * pageSize).length) return;
+                page++;
+            }
+            else{
+                if(!page) return;
+                page--;
+            }
+            embed.spliceFields(0, pageSize, logDocs.slice(page * pageSize, (page + 1) * pageSize).map(e => ({
+                name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
+                value: channelLanguage.get('checkEmbedCaseValue', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
+            })));
+            await msg.edit(embed);
+        });
+        col.on('end', () => msg.reactions.removeAll());
     },
 };

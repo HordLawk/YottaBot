@@ -15,7 +15,7 @@ module.exports = {
     execute: async function(message, args){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
-        if(!message.client.guildData.get(message.guild.id).gainExp) return message.channel.send(channelLanguage.get('xpDisabled'));
+        if(!message.client.guildData.get(message.guild.id).gainExp && !message.client.guildData.get(message.guild.id).voiceXpCooldown) return message.channel.send(channelLanguage.get('xpDisabled'));
         switch(args[0]){
             case 'rank': {
                 let members = await message.guild.members.fetch().then(res => res.map(e => e.id));

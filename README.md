@@ -40,6 +40,8 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [x] transfer the process to a web dyno
 - [x] add xp earning in voice channels as premium feature
 - [x] add actionlog for bulkdelete
+- [ ] use slash commands; context menus; buttons; and stuff
+- [ ] make mute durations editable
 - [ ] add rss feeds for youtube notifications
 - [ ] setup a patreon
 - [ ] `prune` commandd

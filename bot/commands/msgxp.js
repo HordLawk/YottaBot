@@ -247,6 +247,7 @@ module.exports = {
             }
             break;
             case 'reset': {
+                if(!message.guild.me.permissionsIn(message.channel).has('ADD_REACTIONS')) return message.channel.send(channelLanguage.get('botReactions'));
                 let msg = await message.channel.send(channelLanguage.get('resetXpConfirm'));
                 await msg.react('✅');
                 await msg.react('❌');

@@ -18,6 +18,7 @@ module.exports = {
         if(!message.client.guildData.get(message.guild.id).gainExp && !message.client.guildData.get(message.guild.id).voiceXpCooldown) return message.channel.send(channelLanguage.get('xpDisabled'));
         switch(args[0]){
             case 'rank': {
+                if(!message.guild.me.permissionsIn(message.channel).has('ADD_REACTIONS')) return message.channel.send(channelLanguage.get('botReactions'));
                 let members = await message.guild.members.fetch().then(res => res.map(e => e.id));
                 message.guild.members.cache.sweep(e => ((e.id != message.client.user.id) || message.guild.voiceStates.cache.has(e.id)));
                 let pageSize = 20;

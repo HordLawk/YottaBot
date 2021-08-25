@@ -15,6 +15,7 @@ module.exports = {
     execute: async function(message, args){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
         if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
+        if(!message.guild.me.permissionsIn(message.channel).has('ADD_REACTIONS')) return message.channel.send(channelLanguage.get('botReactions'));
         if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args[1])) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
         if(!id) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));

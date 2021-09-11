@@ -30,64 +30,10 @@ module.exports = {
         }
         const hook = await client.fetchWebhook(client.guildData.get(guild.id).actionlogs.id('prune')?.hookID ?? client.guildData.get(guild.id).defaultLogsHookID, client.guildData.get(guild.id).actionlogs.id('prune').hookToken ?? client.guildData.get(guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
-        const embeds = relevantMessages.map(e => {
-            const fields = [
-                {
-                    name: channelLanguage.get('delmsgEmbedAuthorTitle'),
-                    value: e.author,
-                    inline: true,
-                },
-                {
-                    name: channelLanguage.get('delmsgEmbedChannelTitle'),
-                    value: e.channel,
-                    inline: true,
-                },
-            ];
-            if(executor){
-                fields.push({
-                    name: '\u200B',
-                    value: '\u200B',
-                    inline: true,
-                });
-                fields.push({
-                    name: channelLanguage.get('delmsgEmbedExecutorTitle'),
-                    value: executor,
-                    inline: true,
-                })
-            }
-            fields.push({
-                name: channelLanguage.get('delmsgEmbedSentTitle'),
-                value: channelLanguage.get('delmsgEmbedSentValue', [Math.floor(e.createdTimestamp / 1000)]),
-                inline: true,
-            })
-            if(executor) fields.push({
-                name: '\u200B',
-                value: '\u200B',
-                inline: true,
-            });
-            if(e.attachments.size) fields.push({
-                name: channelLanguage.get('delmsgEmbedAttachmentsTitle'),
-                value: e.attachments.array().map((ee, i) => ee.height ? channelLanguage.get('delmsgEmbedAttachmentsMedia', [(i + 1), ee.url.replace('cdn', 'media').replace('com', 'net')]) : channelLanguage.get('delmsgEmbedAttachmentsFile', [(i + 1), ee.url])).join('\n').concat('\n').slice(0, 1024).split(/\n/g).slice(0, -1).join('\n'),
-            });
-            return {
-                color: 0xff0000,
-                author: {
-                    name: channelLanguage.get('delmsgEmbedAuthor'),
-                    icon_url: e.author.displayAvatarURL({dynamic: true}),
-                    url: e.url,
-                },
-                description: e.content,
-                footer: {text: e.author.id},
-                timestamp: e.createdAt,
-                fields,
-            };
-        }).reverse();
-        for(let i = 0; i < (relevantMessages.size / 10); i++){
-            await hook.send({
-                username: client.user.username,
-                avatarURL: client.user.avatarURL({size: 4096}),
-                embeds: embeds.slice(i * 10, (i * 10) + 10),
-            });
-        }
+        hook.send({
+            username: client.user.username,
+            avatarURL: client.user.avatarURL(),
+            files: [{name: 'bulkDeletedMessages.log', attachment: Buffer.from(relevantMessages.map(e => `${channelLanguage.get('delmsgEmbedAuthorTitle')}: ${e.author.tag} (${e.author.id})\n${channelLanguage.get('delmsgEmbedChannelTitle')}: ${e.channel.name} (${e.channel.id})${executor ? `\n${channelLanguage.get('delmsgEmbedExecutorTitle')}: ${executor.tag} (${executor.id})` : ''}\n${channelLanguage.get('delmsgEmbedSentTitle')}: ${e.createdAt.toUTCString()}${e.content ? `\n==================================================\n${e.content}\n==================================================` : ''}${e.attachments.array().map((ee, i) => `\nAttachment-${i + 1}-${ee.height ? `Media: ${ee.url.replace('cdn', 'media').replace('com', 'net')}` : `File: ${ee.url}`}`).join('')}`).join('\n\n'))}],
+        });
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "yottabot",
-  "version": "2.10.5",
+  "version": "2.10.6",
   "description": "A levelling and moderation focused Discord bot",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/HordLawk/YottaBot#readme",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "discord.js": "^12.5.3",
     "express": "^4.17.1",
     "mongoose": "^5.12.3",

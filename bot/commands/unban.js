@@ -12,6 +12,7 @@ module.exports = {
     categoryID: 3,
     args: true,
     guildOnly: true,
+    perm: 'BAN_MEMBERS',
     execute: async function(message, args){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);

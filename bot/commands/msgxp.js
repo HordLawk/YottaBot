@@ -99,7 +99,19 @@ module.exports = {
                     guild: message.guild.id,
                     userID: {$in: mentions},
                 });
+                console.log(memberDocs);
                 let members = await message.guild.members.fetch({user: mentions});
+                let newMembers = members.map(e => ({
+                    guild: message.guild.id,
+                    userID: e.id,
+                })).filter(e => !memberDocs.some(ee => (ee.userID === e.userID)));
+                console.log(newMembers);
+                await member.insertMany(newMembers);
+                memberDocs = await member.find({
+                    guild: message.guild.id,
+                    userID: {$in: mentions},
+                });
+                console.log(memberDocs);
                 let query;
                 switch(args[1]){
                     case 'add': query = {$inc: {xp: parseInt(args[2], 10)}};

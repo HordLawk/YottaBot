@@ -162,7 +162,7 @@ module.exports = {
                                     message.channel.send(channelLanguage.get('allActionsIgnoredChannelSuccess', [discordChannel]));
                                 }
                                 else{
-                                    await channel.findByIdAndUpadte(discordChannel.id, {$set: {ignoreActions: []}});
+                                    await channel.findByIdAndUpdate(discordChannel.id, {$set: {ignoreActions: []}});
                                     message.channel.send(channelLanguage.get('noActionsIgnoredChannelSuccess', [discordChannel]));
                                 }
                             }

@@ -1,6 +1,4 @@
 # YottaBot
-[![BotsForDiscord](https://botsfordiscord.com/api/bot/371902120561082368/widget?theme=dark)](https://discords.com/bots/bot/371902120561082368)
-
 **[Invite me to your server](https://discord.com/oauth2/authorize?client_id=371902120561082368&permissions=2147483647&scope=bot)**
 
 **[Join the support server](https://discord.gg/eNcsvsy)**
@@ -40,13 +38,17 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [x] transfer the process to a web dyno
 - [x] add xp earning in voice channels as premium feature
 - [x] add actionlog for bulkdelete
+- [ ] update to djs v13
+- [ ] change mute roles to native timeout
 - [ ] use slash commands; context menus; buttons; and stuff
+- [ ] apply for messages priviledge intent
+- [ ] setup a patreon
 - [ ] make mute durations editable
 - [ ] add rss feeds for youtube notifications
-- [ ] setup a patreon
-- [ ] `prune` commandd
-- [ ] command to delete cases
+- [ ] `prune` command
 - [ ] command to edit slowmode
+- [ ] `poll` command
+- [ ] command to delete cases
 - [ ] command to manage emojis
 - [ ] `profile` command
 - [ ] `userinfo` command

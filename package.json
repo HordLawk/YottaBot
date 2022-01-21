@@ -1,8 +1,11 @@
 {
   "name": "yottabot",
-  "version": "2.10.11",
+  "version": "2.10.12",
   "description": "A levelling and moderation focused Discord bot",
   "main": "index.js",
+  "engines": {
+    "node": "16.x"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",

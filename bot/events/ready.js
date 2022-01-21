@@ -5,7 +5,7 @@ const log = require('../../schemas/log.js');
 const guildModel = require('../../schemas/guild.js');
 const user = require('../../schemas/user.js');
 const member = require('../../schemas/member.js');
-const {MessageEmbed, Collection} = require('discord.js');
+const {MessageEmbed, Collection, Permissions} = require('discord.js');
 const {AutoPoster} = require('topgg-autoposter');
 const axios = require('axios');
 
@@ -14,8 +14,7 @@ module.exports = {
     execute: async client => {
         console.log(`Logged in as ${client.user.tag}!`);
         client.user.setActivity("your pings", {type:'LISTENING'});
-        const application = await client.fetchApplication();
-        client.configs.owner = application.owner;
+        await client.application.fetch();
         if(process.env.NODE_ENV === 'production'){
             await client.channels.cache.get(client.configs.bootlog).send(`Connected with ping \`${client.ws.ping}ms\`!`);
             await client.guilds.cache.get(client.configs.supportID).members.fetch();
@@ -61,19 +60,22 @@ module.exports = {
                 let discordMember = await guild.members.fetch(unmuteDoc.target).catch(() => null);
                 let discordUser = discordMember?.user ?? await client.users.fetch(unmuteDoc.target).catch(() => {});
                 let discordChannel = guild.channels.cache.get(client.guildData.get(guild.id).modlogs.mute);
-                if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(guild.me).has('SEND_MESSAGES') && discordChannel.permissionsFor(guild.me).has('EMBED_LINKS')){
+                if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(guild.me).has(Permissions.FLAGS.SEND_MESSAGES) && discordChannel.permissionsFor(guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
                     let guildLanguage = client.langs[client.guildData.get(guild.id).language];
                     let embed = new MessageEmbed()
                         .setColor(0x0000ff)
-                        .setAuthor(discordUser ? guildLanguage.get('autoUnmuteEmbedAuthorMember', [discordUser.tag]) : guildLanguage.get('autoUnmuteEmbedAuthorNoMember'), discordUser?.displayAvatarURL({dynamic: true}))
+                        .setAuthor({
+                            name: discordUser ? guildLanguage.get('autoUnmuteEmbedAuthorMember', [discordUser.tag]) : guildLanguage.get('autoUnmuteEmbedAuthorNoMember'),
+                            iconURL: discordUser?.displayAvatarURL({dynamic: true}),
+                        })
                         .addField(guildLanguage.get('autoUnmuteEmbedTargetTitle'), guildLanguage.get('autoUnmuteEmbedTargetValue', [unmuteDoc.target]), true)
                         .setTimestamp()
                         .addField(guildLanguage.get('autoUnmuteEmbedReasonTitle'), guildLanguage.get('autoUnmuteEmbedReasonValue'));
                     let msg = await discordChannel.messages.fetch(unmuteDoc.logMessage).catch(() => null);
                     if(msg) embed.setDescription(guildLanguage.get('autoUnmuteEmbedDescription', [msg.url]));
-                    await discordChannel.send(embed);
+                    await discordChannel.send({embeds: [embed]});
                 };
-                if(!guild.me.permissions.has('MANAGE_ROLES') || !client.guildData.get(guild.id).muteRoleID) continue;
+                if(!guild.me.permissions.has(Permissions.FLAGS.MANAGE_ROLES) || !client.guildData.get(guild.id).muteRoleID) continue;
                 if(!discordMember) continue;
                 let discordRole = guild.roles.cache.get(client.guildData.get(guild.id).muteRoleID);
                 if(!discordRole || !discordRole.editable || !discordMember.roles.cache.has(discordRole.id)) continue;
@@ -111,7 +113,7 @@ module.exports = {
             for(let voiceGuild of voiceGuilds){
                 let discordGuild = client.guilds.cache.get(voiceGuild._id);
                 let ignoredChannels = await channel.find({
-                    _id: {$in: discordGuild.channels.cache.filter(e => (e.type === 'voice')).map(e => e.id)},
+                    _id: {$in: discordGuild.channels.cache.filter(e => (e.type === 'GUILD_VOICE')).map(e => e.id)},
                     ignoreXp: true,
                 });
                 let roleDocs = await role.find({

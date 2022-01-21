@@ -1,6 +1,6 @@
 const log = require('../../schemas/log.js');
 const guild = require('../../schemas/guild.js');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -53,18 +53,24 @@ module.exports = {
         if(member) await member.roles.remove(discordRole);
         await message.channel.send(channelLanguage.get('unmuteSuccess', [current.id]));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.mute);
-        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('SEND_MESSAGES') || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) return;
+        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
         const embed = new MessageEmbed()
             .setColor(0x0000ff)
-            .setAuthor(channelLanguage.get('unmuteEmbedAuthor', [message.author.tag, discordUser?.tag]), discordUser?.displayAvatarURL({dynamic: true}))
+            .setAuthor({
+                name: channelLanguage.get('unmuteEmbedAuthor', [message.author.tag, discordUser?.tag]),
+                iconURL: discordUser?.displayAvatarURL({dynamic: true}),
+            })
             .setDescription(channelLanguage.get('unmuteEmbedDescription', [message.url]))
             .addField(channelLanguage.get('unmuteEmbedTargetTitle'), channelLanguage.get('unmuteEmbedTargetValue', [current.target]), true)
-            .addField(channelLanguage.get('unmuteEmbedExecutorTitle'), message.author, true)
+            .addField(channelLanguage.get('unmuteEmbedExecutorTitle'), message.author.toString(), true)
             .setTimestamp()
-            .setFooter(channelLanguage.get('unmuteEmbedFooter', [current.id]), message.guild.iconURL({dynamic: true}));
+            .setFooter({
+                text: channelLanguage.get('unmuteEmbedFooter', [current.id]),
+                iconURL: message.guild.iconURL({dynamic: true}),
+            });
         if(reason) embed.addField(channelLanguage.get('unmuteEmbedReasonTitle'), reason);
         if(current.image) embed.setImage(current.image);
-        const msg = await discordChannel.send(embed);
+        const msg = await discordChannel.send({embeds: [embed]});
         current.logMessage = msg.id;
         await current.save();
     },

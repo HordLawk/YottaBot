@@ -1,6 +1,6 @@
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -41,18 +41,24 @@ module.exports = {
         await member.kick(channelLanguage.get('kickAuditReason', [message.author.tag, reason]));
         await message.channel.send(channelLanguage.get('kickSuccess', [current.id]));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.kick);
-        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('SEND_MESSAGES') || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) return;
+        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
         const embed = new MessageEmbed()
             .setColor(0xffbf00)
-            .setAuthor(channelLanguage.get('kickEmbedAuthor', [message.author.tag, member.user.tag]), member.user.displayAvatarURL({dynamic: true}))
+            .setAuthor({
+                name: channelLanguage.get('kickEmbedAuthor', [message.author.tag, member.user.tag]),
+                iconURL: member.user.displayAvatarURL({dynamic: true}),
+            })
             .setDescription(channelLanguage.get('kickEmbedDescription', [message.url]))
             .addField(channelLanguage.get('kickEmbedTargetTitle'), channelLanguage.get('kickEmbedTargetValue', [member]), true)
-            .addField(channelLanguage.get('kickEmbedExecutorTitle'), message.author, true)
+            .addField(channelLanguage.get('kickEmbedExecutorTitle'), message.author.toString(), true)
             .setTimestamp()
-            .setFooter(channelLanguage.get('kickEmbedFooter', [current.id]), message.guild.iconURL({dynamic: true}));
+            .setFooter({
+                text: channelLanguage.get('kickEmbedFooter', [current.id]),
+                iconURL: message.guild.iconURL({dynamic: true}),
+            });
         if(reason) embed.addField(channelLanguage.get('kickEmbedReasonTitle'), reason);
         if(current.image) embed.setImage(current.image);
-        const msg = await discordChannel.send(embed);
+        const msg = await discordChannel.send({embeds: [embed]});
         current.logMessage = msg.id;
         await current.save();
     },

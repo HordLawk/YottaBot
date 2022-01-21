@@ -1,6 +1,6 @@
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -19,10 +19,10 @@ module.exports = {
         if(!message.member) return;
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
         if(!id) return message.channel.send(channelLanguage.get('invUser'));
-        const ban = await message.guild.fetchBan(id).catch(() => null);
+        const ban = await message.guild.bans.fetch(id).catch(() => null);
         if(!ban) return message.channel.send(channelLanguage.get('invBanned'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
-        if(!message.guild.me.permissions.has('BAN_MEMBERS')) return message.channel.send(channelLanguage.get('cantUnban'));
+        if(!message.guild.me.permissions.has(Permissions.FLAGS.BAN_MEMBERS)) return message.channel.send(channelLanguage.get('cantUnban'));
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
         const current = new log({
@@ -41,18 +41,24 @@ module.exports = {
         await message.guild.members.unban(ban.user.id, channelLanguage.get('unbanAuditReason', [message.author.tag, reason]));
         await message.channel.send(channelLanguage.get('unbanSuccess', [current.id]));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.ban);
-        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('SEND_MESSAGES') || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) return;
+        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
         const embed = new MessageEmbed()
             .setColor(0x00ff00)
-            .setAuthor(channelLanguage.get('unbanEmbedAuthor', [message.author.tag, ban.user.tag]), ban.user.displayAvatarURL({dynamic: true}))
+            .setAuthor({
+                name: channelLanguage.get('unbanEmbedAuthor', [message.author.tag, ban.user.tag]),
+                iconURL: ban.user.displayAvatarURL({dynamic: true}),
+            })
             .setDescription(channelLanguage.get('unbanEmbedDescription', [message.url]))
             .addField(channelLanguage.get('unbanEmbedTargetTitle'), channelLanguage.get('unbanEmbedTargetValue', [ban.user]), true)
-            .addField(channelLanguage.get('unbanEmbedExecutorTitle'), message.author, true)
+            .addField(channelLanguage.get('unbanEmbedExecutorTitle'), message.author.toString(), true)
             .setTimestamp()
-            .setFooter(channelLanguage.get('unbanEmbedFooter', [current.id]), message.guild.iconURL({dynamic: true}));
+            .setFooter({
+                text: channelLanguage.get('unbanEmbedFooter', [current.id]),
+                iconURL: message.guild.iconURL({dynamic: true}),
+            });
         if(reason) embed.addField(channelLanguage.get('unbanEmbedReasonTitle'), reason);
         if(current.image) embed.setImage(current.image);
-        const msg = await discordChannel.send(embed);
+        const msg = await discordChannel.send({embeds: [embed]});
         current.logMessage = msg.id;
         await current.save();
     },

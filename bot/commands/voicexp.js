@@ -1,6 +1,6 @@
 const guild = require('../../schemas/guild.js');
 const channel = require('../../schemas/channel.js');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -32,7 +32,7 @@ module.exports = {
             case 'ignore': {
                 if(!['add', 'remove'].includes(args[1])) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 let discordChannel = message.guild.channels.cache.get(args[2].match(/^(?:<#)?(\d{17,19})>?$/)?.[1]);
-                if(!discordChannel || (discordChannel.type != 'voice')) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!discordChannel || (discordChannel.type != 'GUILD_VOICE')) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 await channel.findOneAndUpdate({
                     _id: discordChannel.id,
                     guild: message.guild.id,
@@ -44,19 +44,22 @@ module.exports = {
             }
             break;
             case 'view': {
-                if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
+                if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(channelLanguage.get('botEmbed'));
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor ?? 0x8000ff)
-                    .setAuthor(channelLanguage.get('voiceXpEmbedAuthor'), message.guild.iconURL({dynamic: true}))
+                    .setAuthor({
+                        name: channelLanguage.get('voiceXpEmbedAuthor'),
+                        iconURL: message.guild.iconURL({dynamic: true}),
+                    })
                     .setDescription(channelLanguage.get('voiceXpEmbedDesc', [message.client.guildData.get(message.guild.id).voiceXpCooldown]))
                     .setTimestamp();
                 let channels = await channel.find({
-                    _id: {$in: message.guild.channels.cache.filter(e => (e.type === 'voice')).map(e => e.id)},
+                    _id: {$in: message.guild.channels.cache.filter(e => (e.type === 'GUILD_VOICE')).map(e => e.id)},
                     guild: message.guild.id,
                     ignoreXp: true,
                 });
                 if(channels.length) embed.addField(channelLanguage.get('voiceXpIgnoredChannels'), channels.map(e => `<#${e._id}>`).join(' '));
-                message.channel.send(embed);
+                message.channel.send({embeds: [embed]});
             }
             break;
             default: message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));

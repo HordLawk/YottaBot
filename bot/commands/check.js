@@ -1,5 +1,5 @@
 const log = require('../../schemas/log.js');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -14,8 +14,8 @@ module.exports = {
     guilOnly: true,
     execute: async function(message, args){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
-        if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
-        if(!message.guild.me.permissionsIn(message.channel).has('ADD_REACTIONS')) return message.channel.send(channelLanguage.get('botReactions'));
+        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(channelLanguage.get('botEmbed'));
+        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.channel.send(channelLanguage.get('botReactions'));
         if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args[1])) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
         if(!id) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
@@ -38,19 +38,25 @@ module.exports = {
         const pageSize = 10;
         const embed = new MessageEmbed()
             .setColor(discordMember?.displayColor ?? message.guild.me.displayColor ?? 0x8000ff)
-            .setAuthor(discordUser?.tag ?? channelLanguage.get('checkEmbedAuthor'), discordUser?.displayAvatarURL({dynamic: true}))
+            .setAuthor({
+                name: discordUser?.tag ?? channelLanguage.get('checkEmbedAuthor'),
+                iconURL: discordUser?.displayAvatarURL({dynamic: true}),
+            })
             .setTimestamp()
-            .setFooter(channelLanguage.get('checkEmbedFooter', [logDocs.length]))
+            .setFooter({text: channelLanguage.get('checkEmbedFooter', [logDocs.length])})
             .setDescription(`${['all', 'warn'].includes(args[1]) ? `Warns: \`${logDocs.filter(e => (e.type === 'warn')).length}\`\n` : ''}${['all', 'mute'].includes(args[1]) ? `Mutes: \`${logDocs.filter(e => ((e.type === 'mute') && !e.removal)).length}\`\nUnmutes: \`${logDocs.filter(e => ((e.type === 'mute') && e.removal)).length}\`\n` : ''}${['all', 'kick'].includes(args[1]) ? `Kicks: \`${logDocs.filter(e => (e.type === 'kick')).length}\`\n` : ''}${['all', 'ban'].includes(args[1]) ? `Bans: \`${logDocs.filter(e => ((e.type === 'ban') && !e.removal)).length}\`\nUnbans: \`${logDocs.filter(e => ((e.type === 'ban') && e.removal)).length}\`\n` : ''}`)
             .addFields(logDocs.slice(0, pageSize).map(e => ({
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get('checkEmbedCaseValue', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
             })));
-        let msg = await message.channel.send(embed);
+        let msg = await message.channel.send({embeds: [embed]});
         if(logDocs.length <= pageSize) return;
         await msg.react('⬅');
         await msg.react('➡');
-        let col = msg.createReactionCollector((r, u) => (['➡', '⬅'].includes(r.emoji.name) && (u.id === message.author.id)), {time: 600000});
+        let col = msg.createReactionCollector({
+            filter: (r, u) => (['➡', '⬅'].includes(r.emoji.name) && (u.id === message.author.id)),
+            time: 600000,
+        });
         let page = 0;
         col.on('collect', async r => {
             await r.users.remove(message.author);
@@ -62,11 +68,11 @@ module.exports = {
                 if(!page) return;
                 page--;
             }
-            embed.spliceFields(0, pageSize, logDocs.slice(page * pageSize, (page + 1) * pageSize).map(e => ({
+            embed.setFields(logDocs.slice(page * pageSize, (page + 1) * pageSize).map(e => ({
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get('checkEmbedCaseValue', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
             })));
-            await msg.edit(embed);
+            await msg.edit({embeds: [embed]});
         });
         col.on('end', () => msg.reactions.removeAll());
     },

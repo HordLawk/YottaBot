@@ -2,7 +2,7 @@ const guild = require('../../schemas/guild.js');
 const role = require('../../schemas/role.js');
 const channel = require('../../schemas/channel.js');
 const member = require('../../schemas/member.js');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -189,7 +189,7 @@ module.exports = {
                     default: {
                         let discordChannel = message.guild.channels.cache.get((args[1].match(/<#(\d{17,19})>/) || [])[1]) || message.client.channels.cache.get(args[1]);
                         if(!discordChannel || !discordChannel.isText()) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                        if(!message.guild.me.permissionsIn(discordChannel).has('SEND_MESSAGES') || !discordChannel.viewable) return message.channel.send(channelLanguage.get('sendMessages'));
+                        if(!message.guild.me.permissionsIn(discordChannel).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.viewable) return message.channel.send(channelLanguage.get('sendMessages'));
                         await guild.findByIdAndUpdate(message.guild.id, {$set: {xpChannel: discordChannel.id}});
                         message.client.guildData.get(message.guild.id).xpChannel = discordChannel.id;
                         message.channel.send(channelLanguage.get('notifyChannel', [discordChannel]));
@@ -223,7 +223,7 @@ module.exports = {
             }
             break;
             case 'view': {
-                if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
+                if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(channelLanguage.get('botEmbed'));
                 let notifs;
                 switch(message.client.guildData.get(message.guild.id).xpChannel){
                     case 'default': notifs = channelLanguage.get('notifyDefaultView');
@@ -234,10 +234,13 @@ module.exports = {
                 }
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
-                    .setAuthor(channelLanguage.get('xpViewEmbedAuthor'), message.guild.iconURL({
-                        size: 4096,
-                        dynamic: true,
-                    }))
+                    .setAuthor({
+                        name: channelLanguage.get('xpViewEmbedAuthor'),
+                        iconURL: message.guild.iconURL({
+                            size: 4096,
+                            dynamic: true,
+                        }),
+                    })
                     .setDescription(channelLanguage.get('xpViewEmbedDesc', [message.client.guildData.get(message.guild.id).gainExp, message.client.guildData.get(message.guild.id).dontStack, notifs]))
                     .setTimestamp();
                 let roles = await role.find({
@@ -252,15 +255,16 @@ module.exports = {
                     ignoreXp: true,
                 });
                 if(channels.length) embed.addField(channelLanguage.get('xpViewIgnoredChannels'), channels.map(e => `<#${e._id}>`).join(' '));
-                message.channel.send(embed);
+                message.channel.send({embeds: [embed]});
             }
             break;
             case 'reset': {
-                if(!message.guild.me.permissionsIn(message.channel).has('ADD_REACTIONS')) return message.channel.send(channelLanguage.get('botReactions'));
+                if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.channel.send(channelLanguage.get('botReactions'));
                 let msg = await message.channel.send(channelLanguage.get('resetXpConfirm'));
                 await msg.react('✅');
                 await msg.react('❌');
-                let col = msg.createReactionCollector((r, u) => (['✅', '❌'].includes(r.emoji.name) && (u.id === message.author.id)), {
+                let col = msg.createReactionCollector({
+                    filter: (r, u) => (['✅', '❌'].includes(r.emoji.name) && (u.id === message.author.id)),
                     time: 10000,
                     max: 1,
                 });

@@ -1,6 +1,6 @@
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -39,7 +39,7 @@ module.exports = {
                 invusers++;
                 continue;
             };
-            let ban = await message.guild.fetchBan(user.id).catch(() => null);
+            let ban = await message.guild.bans.fetch(user.id).catch(() => null);
             if(ban) {
                 banneds++;
                 continue;
@@ -65,18 +65,24 @@ module.exports = {
                 image: message.attachments.first()?.height && message.attachments.first().url,
             });
             caseLogs.push(current);
-            if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('SEND_MESSAGES') || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) continue;
+            if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) continue;
             let embed = new MessageEmbed()
                 .setColor(0xff0000)
-                .setAuthor(channelLanguage.get('banEmbedAuthor', [message.author.tag, user.tag]), user.displayAvatarURL({dynamic: true}))
+                .setAuthor({
+                    name: channelLanguage.get('banEmbedAuthor', [message.author.tag, user.tag]),
+                    iconURL: user.displayAvatarURL({dynamic: true}),
+                })
                 .setDescription(channelLanguage.get('banEmbedDescription', [message.url]))
                 .addField(channelLanguage.get('banEmbedTargetTitle'), channelLanguage.get('banEmbedTargetValue', [user]), true)
-                .addField(channelLanguage.get('banEmbedExecutorTitle'), message.author, true)
+                .addField(channelLanguage.get('banEmbedExecutorTitle'), message.author.toString(), true)
                 .setTimestamp()
-                .setFooter(channelLanguage.get('banEmbedFooter', [current.id]), message.guild.iconURL({dynamic: true}));
+                .setFooter({
+                    text: channelLanguage.get('banEmbedFooter', [current.id]),
+                    iconURL: message.guild.iconURL({dynamic: true}),
+                });
             if(reason) embed.addField(channelLanguage.get('banEmbedReasonTitle'), reason);
             if(current.image) embed.setImage(current.image);
-            let msg = await discordChannel.send(embed);
+            let msg = await discordChannel.send({embeds: [embed]});
             caseLogs[caseLogs.length - 1].logMessage = msg.id;
         }
         await guild.findByIdAndUpdate(message.guild.id, {$set: {counterLogs: message.client.guildData.get(message.guild.id).counterLogs}});

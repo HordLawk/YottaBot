@@ -1,6 +1,6 @@
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -23,7 +23,7 @@ module.exports = {
         if(!member) return message.channel.send(channelLanguage.get('invMember'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
         if(member.user.bot) return message.channel.send(channelLanguage.get('cantWarnBot'));
-        if((message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || (message.guild.ownerID === member.id)) return message.channel.send(channelLanguage.get('youCantWarn'));
+        if((message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || (message.guild.ownerId === member.id)) return message.channel.send(channelLanguage.get('youCantWarn'));
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
         const current = new log({
@@ -41,18 +41,24 @@ module.exports = {
         await member.user.send(channelLanguage.get('dmWarned', [message.guild.name, reason])).catch(() => message.channel.send(channelLanguage.get('warnedBlockedDms')));
         await message.channel.send(channelLanguage.get('warnSuccess', [current.id]));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.warn);
-        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('SEND_MESSAGES') || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) return;
+        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
         const embed = new MessageEmbed()
             .setColor(0xffff00)
-            .setAuthor(channelLanguage.get('warnEmbedAuthor', [message.author.tag, member.user.tag]), member.user.displayAvatarURL({dynamic: true}))
+            .setAuthor({
+                name: channelLanguage.get('warnEmbedAuthor', [message.author.tag, member.user.tag]),
+                iconURL: member.user.displayAvatarURL({dynamic: true}),
+            })
             .setDescription(channelLanguage.get('warnEmbedDescription', [message.url]))
             .addField(channelLanguage.get('warnEmbedTargetTitle'), channelLanguage.get('warnEmbedTargetValue', [member]), true)
-            .addField(channelLanguage.get('warnEmbedExecutorTitle'), message.author, true)
+            .addField(channelLanguage.get('warnEmbedExecutorTitle'), message.author.toString(), true)
             .setTimestamp()
-            .setFooter(channelLanguage.get('warnEmbedFooter', [current.id]), message.guild.iconURL({dynamic: true}));
+            .setFooter({
+                text: channelLanguage.get('warnEmbedFooter', [current.id]),
+                iconURL: message.guild.iconURL({dynamic: true}),
+            });
         if(reason) embed.addField(channelLanguage.get('warnEmbedReasonTitle'), reason);
         if(current.image) embed.setImage(current.image);
-        const msg = await discordChannel.send(embed);
+        const msg = await discordChannel.send({embeds: [embed]});
         current.logMessage = msg.id;
         await current.save();
     },

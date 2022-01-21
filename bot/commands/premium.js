@@ -1,4 +1,4 @@
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 const user = require('../../schemas/user.js');
 const guild = require('../../schemas/guild.js');
 
@@ -13,19 +13,20 @@ module.exports = {
         if(message.guild && (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner)) return message.channel.send(channelLanguage.get('alreadyPremium'));
         const userDoc = await user.findById(message.author.id);
         if(!userDoc?.premiumKeys){
-            if(message.guild && !message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
+            if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(channelLanguage.get('botEmbed'));
             const embed = new MessageEmbed()
                 .setColor(message.guild?.me.displayColor || 0x8000ff)
                 .setDescription(channelLanguage.get('premiumEmbedDesc', [message.client.configs.support]));
-            message.channel.send(embed);
+            message.channel.send({embeds: [embed]});
         }
         else{
             if(!message.guild) return message.channel.send(`You have **${userDoc.premiumKeys}** premium keys remaining`);
-            if(!message.guild.me.permissionsIn(message.channel).has('ADD_REACTIONS')) return message.channel.send(channelLanguage.get('botReactions'));
+            if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.channel.send(channelLanguage.get('botReactions'));
             let msg = await message.channel.send(channelLanguage.get('activatePremium', [userDoc.premiumKeys]));
             await msg.react('✅');
             await msg.react('❌');
-            let collector = msg.createReactionCollector((r, u) => (['✅', '❌'].includes(r.emoji.name) && (u.id === message.author.id)), {
+            let collector = msg.createReactionCollector({
+                filter: (r, u) => (['✅', '❌'].includes(r.emoji.name) && (u.id === message.author.id)),
                 time: 10000,
                 max: 1,
             });

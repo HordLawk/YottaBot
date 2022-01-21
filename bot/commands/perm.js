@@ -1,5 +1,5 @@
 const role = require('../../schemas/role.js');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -15,7 +15,7 @@ module.exports = {
     guildOnly: true,
     execute: async function(message){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
-        if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
+        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(channelLanguage.get('botEmbed'));
         const args = message.content.split(/\s+(?=(?:[^"]*"[^"]*")*[^"]*$)/g).slice(1);
         if(args.length < 2) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         let roleName = args[1].toLowerCase().replace(/"/g, '');
@@ -73,17 +73,20 @@ module.exports = {
                 if(!roleDoc) return message.channel.send(channelLanguage.get('noSpecialPerms'));
                 const embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
-                    .setAuthor(channelLanguage.get('permsEmbedAuthor'), message.guild.iconURL({
-                        size: 4096,
-                        dynamic: true,
-                    }))
+                    .setAuthor({
+                        name: channelLanguage.get('permsEmbedAuthor'),
+                        iconURL: message.guild.iconURL({
+                            size: 4096,
+                            dynamic: true,
+                        }),
+                    })
                     .setDescription(channelLanguage.get('permsEmbedDesc', [discordRole]))
                     .setTimestamp();
                 const allowed = roleDoc.commandPermissions.filter(e => e.allow);
                 if(allowed.length) embed.addField(channelLanguage.get('permsAllowed'), allowed.map(e => `\`${e._id}\``).join(' '));
                 const denied = roleDoc.commandPermissions.filter(e => !e.allow);
                 if(denied.length) embed.addField(channelLanguage.get('permsDenied'), denied.map(e => `\`${e._id}\``).join(' '));
-                message.channel.send(embed);
+                message.channel.send({embeds: [embed]});
             }
             break;
             default: message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));

@@ -1,5 +1,6 @@
 const channel = require('../../schemas/channel.js');
 const role = require('../../schemas/role.js');
+const {Permissions, GuildAuditLogs} = require('discord.js');
 
 module.exports = {
     name: 'messageDeleteBulk',
@@ -10,9 +11,9 @@ module.exports = {
         if(!relevantMessages.size) return;
         const channelLanguage = client.langs[client.guildData.get(guild.id).language];
         var executor = null;
-        if(guild.me.permissions.has('VIEW_AUDIT_LOG')){
+        if(guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)){
             let audits = await guild.fetchAuditLogs({
-                type: 'MESSAGE_BULK_DELETE',
+                type: GuildAuditLogs.Actions.MESSAGE_BULK_DELETE,
                 limit: 1,
             });
             executor = audits.entries.first()?.executor;
@@ -33,7 +34,10 @@ module.exports = {
         hook.send({
             username: client.user.username,
             avatarURL: client.user.avatarURL(),
-            files: [{name: 'bulkDeletedMessages.log', attachment: Buffer.from(relevantMessages.map(e => `${channelLanguage.get('delmsgEmbedAuthorTitle')}: ${e.author.tag} (${e.author.id})\n${channelLanguage.get('delmsgEmbedChannelTitle')}: ${e.channel.name} (${e.channel.id})${executor ? `\n${channelLanguage.get('delmsgEmbedExecutorTitle')}: ${executor.tag} (${executor.id})` : ''}\n${channelLanguage.get('delmsgEmbedSentTitle')}: ${e.createdAt.toUTCString()}${e.content ? `\n==================================================\n${e.content}\n==================================================` : ''}${e.attachments.array().map((ee, i) => `\nAttachment-${i + 1}-${ee.height ? `Media: ${ee.url.replace('cdn', 'media').replace('com', 'net')}` : `File: ${ee.url}`}`).join('')}`).join('\n\n'))}],
+            files: [{
+                name: 'bulkDeletedMessages.log',
+                attachment: Buffer.from(relevantMessages.map(e => `${channelLanguage.get('delmsgEmbedAuthorTitle')}: ${e.author.tag} (${e.author.id})\n${channelLanguage.get('delmsgEmbedChannelTitle')}: ${e.channel.name} (${e.channel.id})${executor ? `\n${channelLanguage.get('delmsgEmbedExecutorTitle')}: ${executor.tag} (${executor.id})` : ''}\n${channelLanguage.get('delmsgEmbedSentTitle')}: ${e.createdAt.toUTCString()}${e.content ? `\n==================================================\n${e.content}\n==================================================` : ''}${[...e.attachments.values()].map((ee, i) => `\nAttachment-${i + 1}-${ee.height ? `Media: ${ee.url.replace('cdn', 'media').replace('com', 'net')}` : `File: ${ee.url}`}`).join('')}`).join('\n\n'))
+            }],
         });
     }
 }

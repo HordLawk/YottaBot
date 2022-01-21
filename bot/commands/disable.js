@@ -1,5 +1,5 @@
 const channel = require('../../schemas/channel.js');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -15,7 +15,7 @@ module.exports = {
     guildOnly: true,
     execute: async function(message, args){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
-        if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
+        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(channelLanguage.get('botEmbed'));
         if(args.length < 2) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         const discordChannel = message.guild.channels.cache.get((args[0].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[0]);
         if(!discordChannel || !discordChannel.isText()) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
@@ -48,14 +48,17 @@ module.exports = {
                 if(!channelDoc || !channelDoc.ignoreCommands.length) return message.channel.send(channelLanguage.get('noDisabledCmds'));
                 const embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
-                    .setAuthor(channelLanguage.get('disabledEmbedAuthor'), message.guild.iconURL({
-                        size: 4096,
-                        dynamic: true,
-                    }))
+                    .setAuthor({
+                        name: channelLanguage.get('disabledEmbedAuthor'),
+                        iconURL: message.guild.iconURL({
+                            size: 4096,
+                            dynamic: true,
+                        }),
+                    })
                     .setDescription(channelLanguage.get('disabledEmbedDesc', [discordChannel]))
                     .setTimestamp()
                     .addField(channelLanguage.get('disabledField'), channelDoc.ignoreCommands.map(e => `\`${e}\``).join(' '));
-                message.channel.send(embed);
+                message.channel.send({embeds: [embed]});
             }
             break;
             default: message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));

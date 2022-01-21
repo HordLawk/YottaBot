@@ -180,7 +180,7 @@ module.exports = {
             case 'actionIgnoredRoleSuccess': return `**${vars[0]}** será ignorada para **${vars[1]}**`;
             case 'actionNotIgnoredRoleSuccess': return `**${vars[0]}** não será ignorada para **${vars[1]}**`;
             case 'logsViewEmbedAuthor': return 'Informações sobre registro de ações';
-            case 'logsViewEmbedDesc': return `Canal padrão: ${vars[0] ? `<#${vars[0].channelID}>` : '\`nenhum\`'}`;
+            case 'logsViewEmbedDesc': return `Canal padrão: ${vars[0] ? `<#${vars[0]}>` : '\`nenhum\`'}`;
             case 'logsViewEmbedActionsTitle': return 'Ações registradas';
             case 'logsViewEmbedActions': return `**${vars[0]}** - ${vars[1] ? `<#${vars[1]}>` : '`Padrão`'}`
             case 'logsViewEmbedIgnoredChannelsTitle': return 'Canais ignorados';

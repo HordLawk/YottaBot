@@ -1,6 +1,6 @@
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -30,7 +30,7 @@ module.exports = {
             await member.send(channelLanguage.get('dmBanned', [message.guild.name, reason])).catch(() => null);
         }
         else{
-            const ban = await message.guild.fetchBan(user.id).catch(() => null);
+            const ban = await message.guild.bans.fetch(user.id).catch(() => null);
             if(ban) return message.channel.send(channelLanguage.get('alreadyBanned'));
         }
         const newban = await message.guild.members.ban(user.id, {
@@ -54,18 +54,24 @@ module.exports = {
         await current.save();
         await message.channel.send(channelLanguage.get('memberBanSuccess', [current.id]));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.ban);
-        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has('SEND_MESSAGES') || !discordChannel.permissionsFor(message.guild.me).has('EMBED_LINKS')) return;
+        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
         const embed = new MessageEmbed()
             .setColor(0xff0000)
-            .setAuthor(channelLanguage.get('banEmbedAuthor', [message.author.tag, user.tag]), user.displayAvatarURL({dynamic: true}))
+            .setAuthor({
+                name: channelLanguage.get('banEmbedAuthor', [message.author.tag, user.tag]),
+                iconURL: user.displayAvatarURL({dynamic: true}),
+            })
             .setDescription(channelLanguage.get('banEmbedDescription', [message.url]))
             .addField(channelLanguage.get('banEmbedTargetTitle'), channelLanguage.get('banEmbedTargetValue', [user]), true)
-            .addField(channelLanguage.get('banEmbedExecutorTitle'), message.author, true)
+            .addField(channelLanguage.get('banEmbedExecutorTitle'), message.author.toString(), true)
             .setTimestamp()
-            .setFooter(channelLanguage.get('banEmbedFooter', [current.id]), message.guild.iconURL({dynamic: true}));
+            .setFooter({
+                text: channelLanguage.get('banEmbedFooter', [current.id]),
+                iconURL: message.guild.iconURL({dynamic: true}),
+            });
         if(reason) embed.addField(channelLanguage.get('banEmbedReasonTitle'), reason);
         if(current.image) embed.setImage(current.image);
-        const msg = await discordChannel.send(embed);
+        const msg = await discordChannel.send({embeds: [embed]});
         current.logMessage = msg.id;
         await current.save();
     },

@@ -1,5 +1,5 @@
 const guild = require('../../schemas/guild.js');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -37,7 +37,7 @@ module.exports = {
                     if(!message.client.guildData.get(message.guild.id).actionlogs.id('delmsg')) return message.channel.send(channelLanguage.get('logattachmentsNoHook'));
                     let hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookID || message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookToken || message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
                     if(!hook) return message.channel.send(channelLanguage.get('logattachmentsNoHook'));
-                    if(!message.guild.channels.cache.get(hook.channelID).nsfw) return message.channel.send(channelLanguage.get('logattachmentsNoNSFW'));
+                    if(!message.guild.channels.cache.get(hook.channelId).nsfw) return message.channel.send(channelLanguage.get('logattachmentsNoNSFW'));
                     await guild.findByIdAndUpdate(message.guild.id, {$set: {logAttachments: true}});
                     message.client.guildData.get(message.guild.id).logAttachments = true;
                     message.channel.send(channelLanguage.get('logattachmentsOnSuccess'));
@@ -55,8 +55,8 @@ module.exports = {
                         if(!args[3] || args.slice(3, 7).some(e => !['warn', 'mute', 'kick', 'ban'].includes(e))) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                         let discordChannel = message.guild.channels.cache.get(args[2].match(/^(?:<#)?(\d{17,19})>?$/)?.[1]);
                         if(!discordChannel || !discordChannel.isText()) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                        if(!message.guild.me.permissionsIn(discordChannel).has('SEND_MESSAGES') || !discordChannel.viewable) return message.channel.send(channelLanguage.get('sendMessages'));
-                        if(!message.guild.me.permissionsIn(discordChannel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
+                        if(!message.guild.me.permissionsIn(discordChannel).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.viewable) return message.channel.send(channelLanguage.get('sendMessages'));
+                        if(!message.guild.me.permissionsIn(discordChannel).has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(channelLanguage.get('botEmbed'));
                         let guildDoc = await guild.findById(message.guild.id);
                         args.slice(3, 7).forEach(e => (guildDoc.modlogs[e] = discordChannel.id));
                         await guildDoc.save();
@@ -106,16 +106,19 @@ module.exports = {
             }
             break;
             case 'view': {
-                if(!message.guild.me.permissionsIn(message.channel).has('EMBED_LINKS')) return message.channel.send(channelLanguage.get('botEmbed'));
+                if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(channelLanguage.get('botEmbed'));
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
-                    .setAuthor(channelLanguage.get('configsEmbedAuthor'), message.guild.iconURL({
-                        size: 4096,
-                        dynamic: true,
-                    }))
+                    .setAuthor({
+                        name: channelLanguage.get('configsEmbedAuthor'),
+                        iconURL: message.guild.iconURL({
+                            size: 4096,
+                            dynamic: true,
+                        }),
+                    })
                     .setDescription(channelLanguage.get('configsEmbedDesc', [message.client.guildData.get(message.guild.id).prefix, message.client.guildData.get(message.guild.id).language, message.client.guildData.get(message.guild.id).logAttachments, message.client.guildData.get(message.guild.id).modlogs, message.client.guildData.get(message.guild.id).pruneBan, message.client.guildData.get(message.guild.id).muteRoleID, message.client.guildData.get(message.guild.id).autoSetupMute, message.client.guildData.get(message.guild.id).beta]))
                     .setTimestamp();
-                message.channel.send(embed);
+                message.channel.send({embeds: [embed]});
             }
             break;
             default: message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));

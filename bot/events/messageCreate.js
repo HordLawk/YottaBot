@@ -3,12 +3,12 @@ const role = require('../../schemas/role.js');
 const channel = require('../../schemas/channel.js');
 const member = require('../../schemas/member.js');
 const user = require('../../schemas/user.js');
-const {Collection} = require('discord.js');
+const {Collection, Permissions} = require('discord.js');
 
 module.exports = {
-    name: 'message',
+    name: 'messageCreate',
     execute: async message => {
-        if(message.author.bot || (message.type != 'DEFAULT') || (message.guild && (!message.guild.me.permissionsIn(message.channel).has('SEND_MESSAGES') || !message.guild.available))) return;
+        if(message.author.bot || (message.type != 'DEFAULT') || (message.guild && (!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES) || !message.guild.available))) return;
         var prefix = message.client.configs.defaultPrefix;
         var roleDocs;
         var savedChannel;
@@ -63,28 +63,29 @@ module.exports = {
                 }
             });
         }
+        if(message.channel.partial) await message.channel.fetch();
         if((new RegExp(`<@!?${message.client.user.id}>`)).test(message.content)) return message.channel.send(channelLanguage.get('mentionHelp', [prefix]));
         if(!message.content.toLowerCase().startsWith(prefix.toLowerCase())) return;
         const userDoc = await user.findById(message.author.id);
         if(userDoc && userDoc.blacklisted) return;
         const [commandName, ...args] = message.content.slice(prefix.length).toLowerCase().split(/\s+/g);
         const command = message.client.commands.get(commandName) || message.client.commands.find(cmd => (cmd.aliases && cmd.aliases.includes(commandName)));
-        if(!command || (command.dev && (message.author.id != message.client.configs.owner.id)) || (command.alpha && !message.client.guildData.get(message.guild.id).alpha)) return;
-        if(message.client.configs.maintenance && (message.author.id != message.client.configs.owner.id)) return message.channel.send(channelLanguage.get('maintenance')).catch(() => null);
-        if(command.guildOnly && !message.guild) return message.channel.send(channelLanguage.get('guildOnly'));
+        if(!command || (command.dev && (message.author.id != message.client.application.owner.id)) || (command.alpha && !message.client.guildData.get(message.guild.id).alpha)) return;
+        if(message.client.configs.maintenance && (message.author.id != message.client.application.owner.id)) return message.channel.send(channelLanguage.get('maintenance')).catch(() => null);
+        if(command.guildOnly && !message.guild) return message.channel.send(channelLanguage.get('guildOnly')).catch(() => {});
         if(command.premium && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) return message.channel.send(channelLanguage.get('premiumCommand', [prefix])).catch(() => null);
         if(command.beta && !message.client.guildData.get(message.guild.id).beta) return message.channel.send(channelLanguage.get('betaCommand')).catch(() => null);
         if(command.args && !args.length) return message.channel.send(channelLanguage.get('noArgs', [message.author, prefix, command.name, command.usage(channelLanguage)]));
-        if(message.guild && !message.member.permissions.has('ADMINISTRATOR')){
+        if(message.guild && !message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
             const roles = roleDocs.filter(e => (e.commandPermissions.id(command.name) && message.member.roles.cache.has(e.roleID)));
             if((!roles.length && command.perm && !message.member.permissions.has(command.perm)) || (roles.length && roles.some(e => !e.commandPermissions.id(command.name).allow) && !roles.some(e => e.commandPermissions.id(command.name).allow))) return message.channel.send(channelLanguage.get('forbidden'));
-            if(savedChannel && savedChannel.ignoreCommands.includes(command.name) && message.guild.me.permissionsIn(message.channel).has('ADD_REACTIONS')) return await message.react('🚫');
+            if(savedChannel && savedChannel.ignoreCommands.includes(command.name) && message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return await message.react('🚫');
         }
         if(!message.client.cooldowns.has(command.name)) message.client.cooldowns.set(command.name, new Collection());
         const now = Date.now();
         const timestamps = message.client.cooldowns.get(command.name);
         const cooldownAmount = (command.cooldown / (1 + (!!message.client.guildData.get(message.guild?.id)?.premiumUntil || !!message.client.guildData.get(message.guild?.id)?.partner))) * 1000;
-        if(timestamps.has(message.author.id) && (message.author.id != message.client.configs.owner.id)){
+        if(timestamps.has(message.author.id) && (message.author.id != message.client.application.owner.id)){
             const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
             if(now < expirationTime){
                 const timeLeft = (expirationTime - now) / 1000;
@@ -93,20 +94,23 @@ module.exports = {
         }
         timestamps.set(message.author.id, now);
         setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
-        message.channel.startTyping();
+        await message.channel.sendTyping();
         command.execute(message, args).catch(error => {
             console.error(error);
             message.channel.send(channelLanguage.get('error', [command.name])).catch(() => null);
-            if(process.env.NODE_ENV === 'production') message.client.channels.cache.get(message.client.configs.errorlog).send(`Error: *${error.message}*\nMessage Author: ${message.author}\nMessage URL: ${message.url}`, {files: [
-                {
-                    name: 'content.txt',
-                    attachment: Buffer.from(message.content),
-                },
-                {
-                    name: 'stack.log',
-                    attachment: Buffer.from(error.stack),
-                },
-            ]}).catch(console.error);
-        }).finally(() => message.channel.stopTyping());
+            if(process.env.NODE_ENV === 'production') message.client.channels.cache.get(message.client.configs.errorlog).send({
+                content: `Error: *${error.message}*\nMessage Author: ${message.author}\nMessage URL: ${message.url}`,
+                files: [
+                    {
+                        name: 'content.txt',
+                        attachment: Buffer.from(message.content),
+                    },
+                    {
+                        name: 'stack.log',
+                        attachment: Buffer.from(error.stack),
+                    },
+                ],
+            }).catch(console.error);
+        });
     },
 };

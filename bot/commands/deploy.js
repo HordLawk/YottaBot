@@ -31,7 +31,12 @@ module.exports = {
                     data.description = command.description(message.client.langs['en']);
                     data.options = command.slashOptions;
                 }
-                await scope.commands.create(data);
+                const newCommand = await scope.commands.create(data);
+                newCommand.permissions.add({permissions: [{
+                    id: message.client.application.owner.id,
+                    type: 'USER',
+                    permission: true,
+                }]});
             }
             message.reply(channelLanguage.get('deploySuccess', [command.name, args[1]]));
         }

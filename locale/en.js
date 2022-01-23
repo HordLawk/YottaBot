@@ -354,7 +354,7 @@ module.exports = {
             case 'recommendXpNotEnough': return `**${vars[0]}** is not enough xp for **${vars[1]}** levels`;
             case 'recommendSuccess': return `The recommended xp amounts are ${vars[0].map(e => `\`${Math.round(e / 20)}\``).join(' ')}`;
             case 'infoEmbedAuthor': return 'YottaBot information';
-            case 'infoEmbedDescription': return `\`[Invite me](${vars[0]})\``;
+            case 'infoEmbedDescription': return `[\`Invite me\`](${vars[0]})`;
             case 'infoEmbedVersionTitle': return 'Version';
             case 'infoEmbedEngineTitle': return 'Engine';
             case 'infoEmbedEngineValue': return `Node.js ${vars[0]}`;
@@ -366,9 +366,9 @@ module.exports = {
             case 'infoEmbedRAMTitle': return 'RAM usage';
             case 'infoEmbedRAMValue': return `${(vars[0] / 1048576).toFixed(2)} MB`;
             case 'infoEmbedSupportTitle': return 'Support server';
-            case 'infoEmbedSupportValue': return `\`[discord.gg/${vars[0]}](https://discord.gg/${vars[0]})\``;
+            case 'infoEmbedSupportValue': return `[\`discord.gg/${vars[0]}\`](https://discord.gg/${vars[0]})`;
             case 'infoEmbedRepoTitle': return 'Source code';
-            case 'infoEmbedRepoValue': return '\`[github.com/HordLawk/YottaBot](https://github.com/HordLawk/YottaBot)\`';
+            case 'infoEmbedRepoValue': return '[\`github.com/HordLawk/YottaBot\`](https://github.com/HordLawk/YottaBot)';
             case 'upvoteDescription': return 'Upvote me on Top.gg';
             case 'upvoteEmbedDescription': return `**[Upvote me](https://top.gg/bot/${vars[0]}/vote)** on Top.gg!`;
             case 'voiceXpEmbedAuthor': return 'Voice xp system settings';

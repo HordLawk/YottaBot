@@ -32,11 +32,14 @@ module.exports = {
                     data.options = command.slashOptions;
                 }
                 const newCommand = await scope.commands.create(data);
-                newCommand.permissions.add({permissions: [{
-                    id: message.client.application.owner.id,
-                    type: 'USER',
-                    permission: true,
-                }]});
+                newCommand.permissions.add({
+                    guild: message.client.configs.supportID,
+                    permissions: [{
+                        id: message.client.application.owner.id,
+                        type: 'USER',
+                        permission: true,
+                    }]
+                });
             }
             message.reply(channelLanguage.get('deploySuccess', [command.name, args[1]]));
         }

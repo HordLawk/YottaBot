@@ -14,11 +14,11 @@ module.exports = {
     guildOnly: true,
     execute: async function(message, args){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
-        if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(channelLanguage.get('botEmbed'));
-        if(!message.client.guildData.get(message.guild.id).gainExp && !message.client.guildData.get(message.guild.id).voiceXpCooldown) return message.channel.send(channelLanguage.get('xpDisabled'));
+        if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
+        if(!message.client.guildData.get(message.guild.id).gainExp && !message.client.guildData.get(message.guild.id).voiceXpCooldown) return message.reply(channelLanguage.get('xpDisabled'));
         switch(args[0]){
             case 'rank': {
-                if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.channel.send(channelLanguage.get('botReactions'));
+                if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.reply(channelLanguage.get('botReactions'));
                 let members = await message.guild.members.fetch().then(res => res.map(e => e.id));
                 message.guild.members.cache.sweep(e => ((e.id != message.client.user.id) || message.guild.voiceStates.cache.has(e.id)));
                 let pageSize = 20;
@@ -48,7 +48,7 @@ module.exports = {
                     });
                     embed.setFooter({text: channelLanguage.get('xpRankEmbedFooter', [rank + 1])});
                 }
-                let msg = await message.channel.send({embeds: [embed]});
+                let msg = await message.reply({embeds: [embed]});
                 await msg.react('⬅');
                 await msg.react('➡');
                 let col = msg.createReactionCollector({
@@ -91,7 +91,7 @@ module.exports = {
                         $ne: null,
                     },
                 }).sort({xp: -1});
-                if(!roles.length) return message.channel.send(channelLanguage.get('noXpRoles'));
+                if(!roles.length) return message.reply(channelLanguage.get('noXpRoles'));
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor({
@@ -99,7 +99,7 @@ module.exports = {
                         iconURL: message.guild.iconURL({dynamic: true}),
                     })
                     .setDescription(roles.map(e => `\`${(new Array(roles[0].xp.toString().length - e.xp.toString().length)).fill(' ').join('')}${e.xp}\` **-** <@&${e.roleID}>`).join('\n'));
-                message.channel.send({embeds: [embed]});
+                message.reply({embeds: [embed]});
             }
             break;
             default: {
@@ -108,7 +108,7 @@ module.exports = {
                     guild: message.guild.id,
                     userID: id || message.author.id,
                 });
-                if(!user) return message.channel.send(channelLanguage.get('noXp'));
+                if(!user) return message.reply(channelLanguage.get('noXp'));
                 let roleDocs = await role.find({
                     guild: message.guild.id,
                     roleID: {$in: message.guild.roles.cache.map(e => e.id)},
@@ -129,7 +129,7 @@ module.exports = {
                     })
                     .setTimestamp()
                     .setDescription(channelLanguage.get('xpEmbedDescription', [current, next, user.xp]));
-                message.channel.send({embeds: [embed]});
+                message.reply({embeds: [embed]});
             }
         }
     },

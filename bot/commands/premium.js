@@ -10,19 +10,19 @@ module.exports = {
     categoryID: 5,
     execute: async message => {
         const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
-        if(message.guild && (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner)) return message.channel.send(channelLanguage.get('alreadyPremium'));
+        if(message.guild && (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner)) return message.reply(channelLanguage.get('alreadyPremium'));
         const userDoc = await user.findById(message.author.id);
         if(!userDoc?.premiumKeys){
-            if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(channelLanguage.get('botEmbed'));
+            if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
             const embed = new MessageEmbed()
                 .setColor(message.guild?.me.displayColor || 0x8000ff)
                 .setDescription(channelLanguage.get('premiumEmbedDesc', [message.client.configs.support]));
-            message.channel.send({embeds: [embed]});
+            message.reply({embeds: [embed]});
         }
         else{
-            if(!message.guild) return message.channel.send(`You have **${userDoc.premiumKeys}** premium keys remaining`);
-            if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.channel.send(channelLanguage.get('botReactions'));
-            let msg = await message.channel.send(channelLanguage.get('activatePremium', [userDoc.premiumKeys]));
+            if(!message.guild) return message.reply(`You have **${userDoc.premiumKeys}** premium keys remaining`);
+            if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.reply(channelLanguage.get('botReactions'));
+            let msg = await message.reply(channelLanguage.get('activatePremium', [userDoc.premiumKeys]));
             await msg.react('✅');
             await msg.react('❌');
             let collector = msg.createReactionCollector({

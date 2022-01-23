@@ -12,32 +12,32 @@ module.exports = {
     cooldown: 3,
     categoryID: 3,
     args: true,
-    perm: 'BAN_MEMBERS',
+    perm: Permissions.FLAGS.BAN_MEMBERS,
     guildOnly: true,
     execute: async function(message, args){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
         if(!message.member) return;
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
-        if(!id) return message.channel.send(channelLanguage.get('invUser'));
+        if(!id) return message.reply(channelLanguage.get('invUser'));
         const user = await message.client.users.fetch(id).catch(() => null);
-        if(!user) return message.channel.send(channelLanguage.get('invUser'));
+        if(!user) return message.reply(channelLanguage.get('invUser'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
         const member = await message.guild.members.fetch(user.id).catch(() => null);
         if(member){
-            if(!member.bannable) return message.channel.send(channelLanguage.get('cantBan'));
-            if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return message.channel.send(channelLanguage.get('youCantBan'));
+            if(!member.bannable) return message.reply(channelLanguage.get('cantBan'));
+            if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return message.reply(channelLanguage.get('youCantBan'));
             await member.send(channelLanguage.get('dmBanned', [message.guild.name, reason])).catch(() => null);
         }
         else{
             const ban = await message.guild.bans.fetch(user.id).catch(() => null);
-            if(ban) return message.channel.send(channelLanguage.get('alreadyBanned'));
+            if(ban) return message.reply(channelLanguage.get('alreadyBanned'));
         }
         const newban = await message.guild.members.ban(user.id, {
             reason: channelLanguage.get('banReason', [message.author.tag, reason]),
             days: message.client.guildData.get(message.guild.id).pruneBan,
         }).catch(() => null);
-        if(!newban) return message.channel.send(channelLanguage.get('cantBan'));
+        if(!newban) return message.reply(channelLanguage.get('cantBan'));
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
         const current = new log({
@@ -52,7 +52,7 @@ module.exports = {
             image: message.attachments.first()?.height && message.attachments.first().url,
         });
         await current.save();
-        await message.channel.send(channelLanguage.get('memberBanSuccess', [current.id]));
+        await message.reply(channelLanguage.get('memberBanSuccess', [current.id]));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.ban);
         if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
         const embed = new MessageEmbed()

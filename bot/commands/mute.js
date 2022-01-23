@@ -12,7 +12,7 @@ module.exports = {
     cooldown: 3,
     categoryID: 3,
     args: true,
-    perm: 'MANAGE_ROLES',
+    perm: Permissions.FLAGS.MODERATE_MEMBERS,
     guildOnly: true,
     execute: async function(message, args){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
@@ -20,29 +20,15 @@ module.exports = {
         if(!message.member) return;
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
         const member = id && await message.guild.members.fetch(id).catch(() => null);
-        if(!member) return message.channel.send(channelLanguage.get('invMember'));
-        if((message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return message.channel.send(channelLanguage.get('youCantMute'));
+        if(!member) return message.reply(channelLanguage.get('invMember'));
+        if((message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return message.reply(channelLanguage.get('youCantMute'));
+        if(!message.guild.me.permissions.has(Permissions.FLAGS.MODERATE_MEMBERS)) return message.reply(channelLanguage.get('botModerateMembersServer'));
         const duration = args[1] && (((parseInt(args[1].match(/(\d+)d/)?.[1], 10) * 86400000) || 0) + ((parseInt(args[1].match(/(\d+)h/)?.[1], 10) * 3600000) || 0) + ((parseInt(args[1].match(/(\d+)m/)?.[1], 10) * 60000) || 0));
         const timeStamp = Date.now();
-        if(!duration || !isFinite(duration) || ((duration + timeStamp) > 8640000000000000)) return message.channel.send(channelLanguage.get('invMuteDuration'));
-        let mute = await log.findOne({
-            guild: message.guild.id,
-            target: member.id,
-            ongoing: true,
-            type: 'mute',
-        });
-        if(mute) return message.channel.send(channelLanguage.get('alreadyMuted'));
+        if(!duration || (duration > 2419200000)) return message.reply(channelLanguage.get('invMuteDuration'));
+        if(member.isCommunicationDisabled()) return message.reply(channelLanguage.get('alreadyMuted'));
         const reason = message.content.replace(/^(?:\S+\s+){2}\S+\s*/, '').slice(0, 500);
-        var discordRole = message.guild.roles.cache.get(message.client.guildData.get(message.guild.id).muteRoleID);
-        if(!message.guild.me.permissions.has(Permissions.FLAGS.MANAGE_ROLES)) return message.channel.send(channelLanguage.get('botManageRolesServer'));
-        if(discordRole && (!discordRole.editable || discordRole.managed)) return message.channel.send(channelLanguage.get('cantGiveMuteRole'));
         const guildDoc = await guild.findById(message.guild.id);
-        if(!discordRole){
-            if(!message.client.guildData.get(message.guild.id).autoSetupMute) return message.channel.send(channelLanguage.get('noMuteRole'));
-            discordRole = await message.guild.roles.create({name: channelLanguage.get('muteRoleName')});
-            guildDoc.muteRoleID = discordRole.id;
-            message.client.guildData.get(message.guild.id).muteRoleID = discordRole.id;
-        }
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
         const current = new log({
             id: guildDoc.counterLogs++,
@@ -54,22 +40,14 @@ module.exports = {
             actionMessage: message.url,
             reason: reason || null,
             image: message.attachments.first()?.height && message.attachments.first().url,
-            duration: new Date(timeStamp + duration),
             ongoing: true,
         });
         await guildDoc.save();
         await current.save();
-        await member.roles.add(discordRole);
-        await message.channel.send(channelLanguage.get('muteMemberSuccess', [current.id]));
-        if(message.client.guildData.get(message.guild.id).autoSetupMute){
-            for(let channel of message.guild.channels.cache.filter(e => (e.manageable && ['GUILD_TEXT', 'GUILD_VOICE', 'GUILD_CATEGORY', 'GUILD_NEWS'].includes(e.type) && e.permissionsFor(message.guild.me).has(Permissions.FLAGS.MANAGE_ROLES) && !e.permissionOverwrites.cache.has(discordRole.id))).values()){
-                await message.guild.channels.cache.get(channel.id).permissionOverwrites.create(discordRole, {
-                    SEND_MESSAGES: false,
-                    ADD_REACTIONS: false,
-                    CONNECT: false,
-                }, channelLanguage.get('muteRoleSetupReason'));
-            }
-        }
+        await member.timeout(duration, current.reason);
+        current.duration = member.communicationDisabledUntil;
+        await current.save();
+        await message.reply(channelLanguage.get('muteMemberSuccess', [current.id]));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.mute);
         if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
         const d = Math.floor(duration / 86400000);

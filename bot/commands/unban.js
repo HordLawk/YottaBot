@@ -12,17 +12,17 @@ module.exports = {
     categoryID: 3,
     args: true,
     guildOnly: true,
-    perm: 'BAN_MEMBERS',
+    perm: Permissions.FLAGS.BAN_MEMBERS,
     execute: async function(message, args){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
         if(!message.member) return;
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
-        if(!id) return message.channel.send(channelLanguage.get('invUser'));
+        if(!id) return message.reply(channelLanguage.get('invUser'));
         const ban = await message.guild.bans.fetch(id).catch(() => null);
-        if(!ban) return message.channel.send(channelLanguage.get('invBanned'));
+        if(!ban) return message.reply(channelLanguage.get('invBanned'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
-        if(!message.guild.me.permissions.has(Permissions.FLAGS.BAN_MEMBERS)) return message.channel.send(channelLanguage.get('cantUnban'));
+        if(!message.guild.me.permissions.has(Permissions.FLAGS.BAN_MEMBERS)) return message.reply(channelLanguage.get('cantUnban'));
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
         const current = new log({
@@ -39,7 +39,7 @@ module.exports = {
         });
         await current.save();
         await message.guild.members.unban(ban.user.id, channelLanguage.get('unbanAuditReason', [message.author.tag, reason]));
-        await message.channel.send(channelLanguage.get('unbanSuccess', [current.id]));
+        await message.reply(channelLanguage.get('unbanSuccess', [current.id]));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.ban);
         if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
         const embed = new MessageEmbed()

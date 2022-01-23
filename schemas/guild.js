@@ -19,15 +19,15 @@ const guildSchema = new Schema({
         }),
         default: () => ({}),
     },
-    muteRoleID: String,
+    // muteRoleID: String,
     prefix: {
         type: String,
         default: defaultPrefix,
     },
-    autoSetupMute: {
-        type: Boolean,
-        default: true,
-    },
+    // autoSetupMute: {
+    //     type: Boolean,
+    //     default: true,
+    // },
     globalBan: Boolean,
     pruneBan: {
         type: Number,

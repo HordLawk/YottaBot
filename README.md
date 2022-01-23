@@ -38,8 +38,8 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [x] transfer the process to a web dyno
 - [x] add xp earning in voice channels as premium feature
 - [x] add actionlog for bulkdelete
-- [ ] update to djs v13
-- [ ] change mute roles to native timeout and answer commands with replys
+- [x] update to djs v13
+- [x] change mute roles to native timeout and answer commands with replys
 - [ ] use slash commands; context menus; buttons; and stuff
 - [ ] apply for messages priviledge intent
 - [ ] setup a patreon

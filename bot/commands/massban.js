@@ -12,7 +12,7 @@ module.exports = {
     cooldown: 10,
     categoryID: 3,
     args: true,
-    perm: 'ADMINISTRATOR',
+    perm: Permissions.FLAGS.ADMINISTRATOR,
     guildOnly: true,
     execute: async function(message, args){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
@@ -20,7 +20,7 @@ module.exports = {
         if(!message.member) return;
         const ids = args.map(e => e.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1]);
         const reasonStart = ids.indexOf(undefined);
-        if(!reasonStart) return message.channel.send(channelLanguage.get('invUser'));
+        if(!reasonStart) return message.reply(channelLanguage.get('invUser'));
         const reason = message.content.replace(new RegExp(`^(?:\\S+\\s+){${(reasonStart === -1) ? args.length : reasonStart}}\\S+\\s*`), '').slice(0, 500);
         var bans = 0;
         var invargs = 0;
@@ -87,6 +87,6 @@ module.exports = {
         }
         await guild.findByIdAndUpdate(message.guild.id, {$set: {counterLogs: message.client.guildData.get(message.guild.id).counterLogs}});
         await log.insertMany(caseLogs);
-        message.channel.send(channelLanguage.get('massbanSuccess', [bans, invargs, invusers, banneds]));
+        message.reply(channelLanguage.get('massbanSuccess', [bans, invargs, invusers, banneds]));
     },
 };

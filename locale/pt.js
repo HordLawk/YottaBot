@@ -3,6 +3,7 @@ module.exports = {
     get: (line, vars = []) => {
         switch(line){
             case 'mentionHelp': return `Use \`${vars[0]}help\` para ver todos os meus comandos!`;
+            case 'blacklisted': return `Você está proibido de usar este bot!`;
             case 'noArgs': return `Você não forneceu nenhum argumento, ${vars[0]}!\nO uso correto seria:\n${vars[3].map(e => `\`${vars[1]}${vars[2]} ${e}\``).join('\n')}`;
             case 'cooldown': return `Por favor espere mais ${vars[0]} segundo(s) antes de usar o comando \`${vars[1]}\` novamente${vars[3] ? '' : `\nDica: Servidores premium tem metade do cooldown para todos os comandos\nPara adquirir premium use \`${vars[2]}premium\``}`;
             case 'error': return `Houve um erro ao tentar executar o comando \`${vars[0]}\`\nO problema foi enviado à equipe de suporte e será corrigido no futuro proximo`;
@@ -23,6 +24,9 @@ module.exports = {
             case 'category4': return 'Níveis';
             case 'category5': return 'Outros';
             case 'invalidCommand': return 'Esse não é um comando válido';
+            case 'invalidStructure': return `O comando \`${vars[0]}\` não possui uma estrutura válida`;
+            case 'deploySuccess': return `O comando \`${vars[0]}\` foi implantado com sucesso no \`${vars[1]}\``;
+            case 'deployFail': return `O comando \`${vars[0]}\` não pode ser implantado no \`${vars[1]}\``;
             case 'helpCommandEmbedTitle': return `Ajuda para o comando ${vars[0]}`;
             case 'helpCommandEmbedFooter': return '[] = Opcional - () = Variável - </> = Qualquer';
             case 'syntax': return 'Sintaxe';
@@ -44,10 +48,11 @@ module.exports = {
             case 'permDescription': return 'Permite ou proibe cargos de usarem comandos específicos';
             case 'permUsage0': return '<allow/deny/default> <(menção de cargo)/(ID de cargo)/"(nome de cargo)"> (lista de comandos)';
             case 'permUsage1': return 'view <(menção de cargo)/(ID de cargo)/"(nome de cargo)">';
-            case 'ADMINISTRATOR': return 'Administrador';
-            case 'MANAGE_ROLES': return 'Gerenciar Cargos';
-            case 'BAN_MEMBERS': return 'Banir Membros';
-            case 'KICK_MEMBERS': return 'Expulsar Membros';
+            case 'permission8': return 'Administrador';
+            case 'permission268435456': return 'Gerenciar Cargos';
+            case 'permission4': return 'Banir Membros';
+            case 'permission2': return 'Expulsar Membros';
+            case 'permission1099511627776': return 'Moderar Membros';
             case 'invArgs': return `Argumentos inválidos!\nO uso correto seria:\n${vars[2].map(e => `\`${vars[0]}${vars[1]} ${e}\``).join('\n')}`;
             case 'permSuccess': return `**${vars[0]}** foi ${(vars[1] === 'allow') ? 'permitido a' : 'proibido de'} usar esses comandos`;
             case 'noSpecialPerms': return 'Não há nenhuma permissão especial definida para esse cargo';
@@ -125,13 +130,12 @@ module.exports = {
             case 'configsUsage2': return 'view';
             case 'configsUsage3': return 'mod logs (canal) <warn/mute/kick/ban> [(outros tipos de casos)]';
             case 'configsUsage4': return 'mod clearonban (dias)';
-            case 'configsUsage5': return 'mod mute role (cargo)';
             case 'longPrefix': return 'O prefixo não pode conter mais de 10 caracteres';
             case 'newPrefix': return 'Prefixo do servidor atualizado';
             case 'lang404': return 'Idioma não suportado';
             case 'newLang': return 'Idioma do servidor atualizado';
             case 'configsEmbedAuthor': return 'Configurações do servidor';
-            case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\nIdioma: \`${vars[1]}\`\nRegistrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\`\nCanal de registro de warn: ${vars[3].warn ? `<#${vars[3].warn}>` : '`nenhum`'}\nCanal de registro de mute: ${vars[3].mute ? `<#${vars[3].mute}>` : '`nenhum`'}\nCanal de registro de kick: ${vars[3].kick ? `<#${vars[3].kick}>` : '`nenhum`'}\nCanal de registro de ban: ${vars[3].ban ? `<#${vars[3].ban}>` : '`nenhum`'}\nNúmero de dias de mensagens deletadas em bans: \`${vars[4]}\`\nCargo de mute: ${vars[5] ? `<@&${vars[5]}>` : '`nenhum`'}\nConfigurar mute automaticamente: \`${vars[6] ? 'ativado' : 'desativado'}\`\nFunções beta: \`${vars[7] ? 'ativadas' : 'desativadas'}\``;
+            case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\nIdioma: \`${vars[1]}\`\nRegistrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\`\nCanal de registro de warn: ${vars[3].warn ? `<#${vars[3].warn}>` : '`nenhum`'}\nCanal de registro de mute: ${vars[3].mute ? `<#${vars[3].mute}>` : '`nenhum`'}\nCanal de registro de kick: ${vars[3].kick ? `<#${vars[3].kick}>` : '`nenhum`'}\nCanal de registro de ban: ${vars[3].ban ? `<#${vars[3].ban}>` : '`nenhum`'}\nNúmero de dias de mensagens deletadas em bans: \`${vars[4]}\`\nFunções beta: \`${vars[5] ? 'ativadas' : 'desativadas'}\``;
             case 'betaCommand': return 'Esse comando atualmente está disponível apenas para servidor que ativaram funcionalidade beta nas configurações do bot';
             case 'premiumCommand': return `Esse comando é uma funcionalidade premium, use \`${vars[0]}premium\` para mais informações sobre se tornar premium`;
             case 'botWebhooks': return 'Eu preciso de permissão para gerenciar webhooks nesse canal';
@@ -233,6 +237,7 @@ module.exports = {
             case 'invMuteDuration': return 'Duração de mute inválida';
             case 'alreadyMuted': return 'Esse usuário já está mutado';
             case 'botManageRolesServer': return 'Eu não consigo gerenciar cargos nesse servidor';
+            case 'botModerateMembersServer': return 'Eu não consigo moderar membros nesse servidor';
             case 'cantGiveMuteRole': return 'Eu não consigo dar o cargo de mute aos membros';
             case 'noMuteRole': return 'Nenhum cargo de mute foi definido e o modo de configuração automática de mute está desativado';
             case 'muteRoleName': return 'Mutado';
@@ -349,7 +354,7 @@ module.exports = {
             case 'recommendXpNotEnough': return `**${vars[0]}** não é xp suficiente para **${vars[1]}** níveis`;
             case 'recommendSuccess': return `As quantias de xp recomendadas são ${vars[0].map(e => `\`${Math.round(e / 20)}\``).join(' ')}`;
             case 'infoEmbedAuthor': return 'Informações sobre YottaBot';
-            case 'infoEmbedDescription': return `[\`Me convide\`](${vars[0]})`;
+            case 'infoEmbedDescription': return `\`[Me convide](${vars[0]})\``;
             case 'infoEmbedVersionTitle': return 'Versão';
             case 'infoEmbedEngineTitle': return 'Engine';
             case 'infoEmbedEngineValue': return `Node.js ${vars[0]}`;
@@ -361,9 +366,9 @@ module.exports = {
             case 'infoEmbedRAMTitle': return 'Uso de RAM';
             case 'infoEmbedRAMValue': return `${(vars[0] / 1048576).toFixed(2)} MB`;
             case 'infoEmbedSupportTitle': return 'Servidor de suporte';
-            case 'infoEmbedSupportValue': return `[\`discord.gg/${vars[0]}\`](https://discord.gg/${vars[0]})`;
+            case 'infoEmbedSupportValue': return `\`[discord.gg/${vars[0]}](https://discord.gg/${vars[0]})\``;
             case 'infoEmbedRepoTitle': return 'Código fonte';
-            case 'infoEmbedRepoValue': return '[\`github.com/HordLawk/YottaBot\`](https://github.com/HordLawk/YottaBot)';
+            case 'infoEmbedRepoValue': return '\`[github.com/HordLawk/YottaBot](https://github.com/HordLawk/YottaBot)\`';
             case 'upvoteDescription': return 'Vote em mim no Top.gg';
             case 'upvoteEmbedDescription': return `**[Vote em mim](https://top.gg/bot/${vars[0]}/vote)** no Top.gg!`;
             case 'voiceXpEmbedAuthor': return 'Configurações do sistema de xp por voz';

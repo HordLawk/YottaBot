@@ -9,7 +9,7 @@ module.exports = {
     categoryID: 1,
     execute: async function(message){
         const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
-        if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(channelLanguage.get('botEmbed'));
+        if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         const invite = await message.client.generateInvite({
             scopes: ['bot'],
             permissions: Permissions.ALL,
@@ -30,6 +30,6 @@ module.exports = {
             .addField(channelLanguage.get('infoEmbedRAMTitle'), channelLanguage.get('infoEmbedRAMValue', [process.memoryUsage().heapUsed]), true)
             .addField(channelLanguage.get('infoEmbedSupportTitle'), channelLanguage.get('infoEmbedSupportValue', [message.client.configs.support]), true)
             .addField(channelLanguage.get('infoEmbedRepoTitle'), channelLanguage.get('infoEmbedRepoValue'), true);
-        message.channel.send({embeds: [embed]});
+        message.reply({embeds: [embed]});
     },
 };

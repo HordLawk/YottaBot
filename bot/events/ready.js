@@ -58,6 +58,7 @@ module.exports = {
                 let guild = client.guilds.cache.get(unmuteDoc.guild);
                 if(!guild) continue;
                 let discordMember = await guild.members.fetch(unmuteDoc.target).catch(() => null);
+                if(discordMember && discordMember.isCommunicationDisabled()) continue;
                 let discordUser = discordMember?.user ?? await client.users.fetch(unmuteDoc.target).catch(() => {});
                 let discordChannel = guild.channels.cache.get(client.guildData.get(guild.id).modlogs.mute);
                 if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(guild.me).has(Permissions.FLAGS.SEND_MESSAGES) && discordChannel.permissionsFor(guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
@@ -75,11 +76,6 @@ module.exports = {
                     if(msg) embed.setDescription(guildLanguage.get('autoUnmuteEmbedDescription', [msg.url]));
                     await discordChannel.send({embeds: [embed]});
                 };
-                if(!guild.me.permissions.has(Permissions.FLAGS.MANAGE_ROLES) || !client.guildData.get(guild.id).muteRoleID) continue;
-                if(!discordMember) continue;
-                let discordRole = guild.roles.cache.get(client.guildData.get(guild.id).muteRoleID);
-                if(!discordRole || !discordRole.editable || !discordMember.roles.cache.has(discordRole.id)) continue;
-                await discordMember.roles.remove(discordRole);
             }
         }
         const unpremiumTimer = async () => {

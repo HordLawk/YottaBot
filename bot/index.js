@@ -4,11 +4,13 @@ const Discord = require('discord.js');
 const client = new Discord.Client({
     partials: ['REACTION', 'MESSAGE', 'CHANNEL'],
     intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MEMBERS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Discord.Intents.FLAGS.DIRECT_MESSAGES],
+    allowedMentions: {repliedUser: false},
 });
 const guild = require('../schemas/guild.js');
 client.configs = require('./configs.js');
 client.langs = fs.readdirSync(path.join(__dirname, '..', 'locale')).filter(file => file.endsWith('.js')).map(e => require(`../locale/${e}`)).reduce((obj, e) => ({...obj, [e.lang]: e}), {});
 client.commands = new Discord.Collection(fs.readdirSync(path.join(__dirname, 'commands')).filter(file => file.endsWith('.js')).map(e => require(`./commands/${e}`)).filter(e => e.active).map(e => [e.name, e]));
+client.interactions = new Discord.Collection(fs.readdirSync(path.join(__dirname, 'interactions')).filter(file => file.endsWith('.js')).map(e => require(`./interactions/${e}`)).map(e => [e.name, e]));
 client.cooldowns = new Discord.Collection();
 client.xpcds = new Discord.Collection();
 client.lastdelmsg = new Discord.Collection();

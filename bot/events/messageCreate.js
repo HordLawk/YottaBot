@@ -16,7 +16,7 @@ module.exports = {
             if(!message.client.guildData.has(message.guild.id)){
                 let guildData = new guild({
                     _id: message.guild.id,
-                    language: (message.guild.region === 'brazil') ? 'pt' : 'en'
+                    language: (message.guild.preferredLocale === 'pt-BR') ? 'pt' : 'en',
                 });
                 guildData.save();
                 message.client.guildData.set(guildData._id, guildData);
@@ -94,7 +94,7 @@ module.exports = {
         }
         timestamps.set(message.author.id, now);
         setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
-        await message.channel.sendTyping();
+        message.channel.sendTyping();
         command.execute(message, args).catch(error => {
             console.error(error);
             message.channel.send(channelLanguage.get('error', [command.name])).catch(() => null);

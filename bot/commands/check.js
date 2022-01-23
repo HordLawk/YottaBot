@@ -14,11 +14,11 @@ module.exports = {
     guilOnly: true,
     execute: async function(message, args){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
-        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.channel.send(channelLanguage.get('botEmbed'));
-        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.channel.send(channelLanguage.get('botReactions'));
-        if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args[1])) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
+        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.reply(channelLanguage.get('botReactions'));
+        if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
-        if(!id) return message.channel.send(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+        if(!id) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         const filter = args[2] ? (Date.now() - (((parseInt(args[2].match(/(\d+)d/)?.[1], 10) * 86400000) || 0) + ((parseInt(args[2].match(/(\d+)h/)?.[1], 10) * 3600000) || 0) + ((parseInt(args[2].match(/(\d+)m/)?.[1], 10) * 60000) || 0) + ((parseInt(args[2].match(/(\d+)s/)?.[1], 10) * 1000) || 0))) : 0;
         const logDocs = await log.find({
             guild: message.guild.id,
@@ -26,7 +26,7 @@ module.exports = {
             type: (args[1] === 'all') ? {$ne: args[1]} : {$eq: args[1]},
             timeStamp: {$gte: filter},
         }).sort({timeStamp: -1});
-        if(!logDocs.length) return message.channel.send(channelLanguage.get('invLogs'));
+        if(!logDocs.length) return message.reply(channelLanguage.get('invLogs'));
         const discordMember = await message.guild.members.fetch(id).catch(() => null);
         const discordUser = discordMember?.user ?? await message.client.users.fetch(id).catch(() => null);
         const formatDuration = (ms) => {
@@ -49,7 +49,7 @@ module.exports = {
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get('checkEmbedCaseValue', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
             })));
-        let msg = await message.channel.send({embeds: [embed]});
+        let msg = await message.reply({embeds: [embed]});
         if(logDocs.length <= pageSize) return;
         await msg.react('⬅');
         await msg.react('➡');

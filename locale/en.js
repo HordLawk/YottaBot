@@ -3,6 +3,7 @@ module.exports = {
     get: (line, vars = []) => {
         switch(line){
             case 'mentionHelp': return `Use \`${vars[0]}help\` to see all my commands!`;
+            case 'blacklisted': return 'You are blacklisted from using me!';
             case 'noArgs': return `You didn't provide any arguments, ${vars[0]}!\nThe proper usage would be:\n${vars[3].map(e => `\`${vars[1]}${vars[2]} ${e}\``).join('\n')}`;
             case 'cooldown': return `Please wait ${vars[0]} more second(s) before reusing the \`${vars[1]}\` command${vars[3] ? '' : `\nTip: Premium servers have half the cooldown for all commands\nTo get premium use \`${vars[2]}premium\``}`;
             case 'error': return `There was an error trying to execute the command \`${vars[0]}\`\nThe issue was sent to the support team and will be fixed in the near future`;
@@ -23,6 +24,9 @@ module.exports = {
             case 'category4': return 'Levelling';
             case 'category5': return 'Miscellaneous';
             case 'invalidCommand': return 'This is not a valid command';
+            case 'invalidStructure': return `The \`${vars[0]}\` command doesn't have a valid structure`;
+            case 'deploySuccess': return `The \`${vars[0]}\` command was successfully deployed to ${vars[1]}`;
+            case 'deployFail': return `The \`${vars[0]}\` command failed to deploy to ${vars[1]}`;
             case 'helpCommandEmbedTitle': return `Help for the ${vars[0]} command`;
             case 'helpCommandEmbedFooter': return '[] = Optional - () = Variable - </> = Either';
             case 'syntax': return 'Syntax';
@@ -44,10 +48,11 @@ module.exports = {
             case 'permDescription': return 'Allow or deny specific roles from using a command';
             case 'permUsage0': return '<allow/deny/default> <(role mention)/(role ID)/"(role name)"> (list of commands)';
             case 'permUsage1': return 'view <(role mention)/(role ID)/"(role name)">';
-            case 'ADMINISTRATOR': return 'Administrator';
-            case 'MANAGE_ROLES': return 'Manage Roles';
-            case 'BAN_MEMBERS': return 'Ban Members';
-            case 'KICK_MEMBERS': return 'Kick Members';
+            case 'permission8': return 'Administrator';
+            case 'permission268435456': return 'Manage Roles';
+            case 'permission4': return 'Ban Members';
+            case 'permission2': return 'Kick Members';
+            case 'permission1099511627776': return 'Moderate Members';
             case 'invArgs': return `Invalid arguments!\nThe proper usage would be:\n${vars[2].map(e => `\`${vars[0]}${vars[1]} ${e}\``).join('\n')}`;
             case 'permSuccess': return `**${vars[0]}** was ${(vars[1] === 'allow') ? 'allowed to use' : 'denied from using'} these commands`;
             case 'noSpecialPerms': return 'There are no special permissions set to this role';
@@ -125,13 +130,12 @@ module.exports = {
             case 'configsUsage2': return 'view';
             case 'configsUsage3': return 'mod logs (channel) <warn/mute/kick/ban> [(other case types)]';
             case 'configsUsage4': return 'mod clearonban (days)';
-            case 'configsUsage5': return 'mod mute role (role)';
             case 'longPrefix': return 'A prefix can\'t have more than 10 characters';
             case 'newPrefix': return 'Server prefix updated';
             case 'lang404': return 'Language not supported';
             case 'newLang': return 'Server language updated';
             case 'configsEmbedAuthor': return 'Server settings';
-            case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\nLanguage: \`${vars[1]}\`\nLog attachments: \`${vars[2] ? 'on' : 'off'}\`\nWarn log channel: ${vars[3].warn ? `<#${vars[3].warn}>` : '`none`'}\nMute log channel: ${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\nKick log channel: ${vars[3].kick ? `<#${vars[3].kick}>` : '`none`'}\nBan log channel: ${vars[3].ban ? `<#${vars[3].ban}>` : '`none`'}\nDays of messages to delete on ban: \`${vars[4]}\`\nMute role: ${vars[5] ? `<@&${vars[5]}>` : '`none`'}\nAuto setup mute: \`${vars[6] ? 'on' : 'off'}\`\nBeta features: \`${vars[7] ? 'on' : 'off'}\``;
+            case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\nLanguage: \`${vars[1]}\`\nLog attachments: \`${vars[2] ? 'on' : 'off'}\`\nWarn log channel: ${vars[3].warn ? `<#${vars[3].warn}>` : '`none`'}\nMute log channel: ${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\nKick log channel: ${vars[3].kick ? `<#${vars[3].kick}>` : '`none`'}\nBan log channel: ${vars[3].ban ? `<#${vars[3].ban}>` : '`none`'}\nDays of messages to delete on ban: \`${vars[4]}\`\nBeta features: \`${vars[5] ? 'on' : 'off'}\``;
             case 'betaCommand': return 'This command is currently only available for servers that enabled open beta features in the bot settings';
             case 'premiumCommand': return `This command is a premium feature, use \`${vars[0]}premium\` for more information on becoming premium`;
             case 'botWebhooks': return 'I need permission to manage webhooks in this channel';
@@ -233,6 +237,7 @@ module.exports = {
             case 'invMuteDuration': return 'Invalid mute duration';
             case 'alreadyMuted': return 'This member is already muted';
             case 'botManageRolesServer': return 'I can\'t manage roles in this server';
+            case 'botModerateMembersServer': return 'I can\'t moderate members in this server';
             case 'cantGiveMuteRole': return 'I can\'t give the mute role to users';
             case 'noMuteRole': return 'No mute role was defined and the auto setup mute mode is disabled';
             case 'muteRoleName': return 'Muted';
@@ -349,7 +354,7 @@ module.exports = {
             case 'recommendXpNotEnough': return `**${vars[0]}** is not enough xp for **${vars[1]}** levels`;
             case 'recommendSuccess': return `The recommended xp amounts are ${vars[0].map(e => `\`${Math.round(e / 20)}\``).join(' ')}`;
             case 'infoEmbedAuthor': return 'YottaBot information';
-            case 'infoEmbedDescription': return `[\`Invite me\`](${vars[0]})`;
+            case 'infoEmbedDescription': return `\`[Invite me](${vars[0]})\``;
             case 'infoEmbedVersionTitle': return 'Version';
             case 'infoEmbedEngineTitle': return 'Engine';
             case 'infoEmbedEngineValue': return `Node.js ${vars[0]}`;
@@ -361,9 +366,9 @@ module.exports = {
             case 'infoEmbedRAMTitle': return 'RAM usage';
             case 'infoEmbedRAMValue': return `${(vars[0] / 1048576).toFixed(2)} MB`;
             case 'infoEmbedSupportTitle': return 'Support server';
-            case 'infoEmbedSupportValue': return `[\`discord.gg/${vars[0]}\`](https://discord.gg/${vars[0]})`;
+            case 'infoEmbedSupportValue': return `\`[discord.gg/${vars[0]}](https://discord.gg/${vars[0]})\``;
             case 'infoEmbedRepoTitle': return 'Source code';
-            case 'infoEmbedRepoValue': return '[\`github.com/HordLawk/YottaBot\`](https://github.com/HordLawk/YottaBot)';
+            case 'infoEmbedRepoValue': return '\`[github.com/HordLawk/YottaBot](https://github.com/HordLawk/YottaBot)\`';
             case 'upvoteDescription': return 'Upvote me on Top.gg';
             case 'upvoteEmbedDescription': return `**[Upvote me](https://top.gg/bot/${vars[0]}/vote)** on Top.gg!`;
             case 'voiceXpEmbedAuthor': return 'Voice xp system settings';

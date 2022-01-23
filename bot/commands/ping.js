@@ -54,7 +54,7 @@ module.exports = {
             .addField(channelLanguage.get('average'), `${interaction.client.ws.ping}ms`, true)
             .setFooter({text: foot(interaction.client.ws.ping)})
             .setTimestamp();
-        interaction.reply({embeds: [embed]});
+        await interaction.reply({embeds: [embed]});
         const inter = await interaction.fetchReply();
         const current = inter.createdTimestamp - interaction.createdTimestamp;
         embed.setColor(hex(current)).setFooter({text: foot(current)}).addField(channelLanguage.get('current'), `${current}ms`, true);

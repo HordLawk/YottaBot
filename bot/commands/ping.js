@@ -6,7 +6,7 @@ module.exports = {
     description: (lang) => lang.get('pingDescription'),
     cooldown: 5,
     categoryID: 1,
-    execute: async (message) => {
+    execute: async message => {
         const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         const hex = (latency) => {
@@ -54,8 +54,10 @@ module.exports = {
             .addField(channelLanguage.get('average'), `${interaction.client.ws.ping}ms`, true)
             .setFooter({text: foot(interaction.client.ws.ping)})
             .setTimestamp();
-        await interaction.reply({embeds: [embed]});
-        const inter = await interaction.fetchReply();
+        const inter = await interaction.reply({
+            embeds: [embed],
+            fetchReply: true,
+        });
         const current = inter.createdTimestamp - interaction.createdTimestamp;
         embed.setColor(hex(current)).setFooter({text: foot(current)}).addField(channelLanguage.get('current'), `${current}ms`, true);
         interaction.editReply({embeds: [embed]});

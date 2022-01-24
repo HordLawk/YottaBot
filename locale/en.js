@@ -254,6 +254,8 @@ module.exports = {
             case 'muteEmbedFooter': return `Case ${vars[0]}`;
             case 'muteEmbedReasonTitle': return 'Reason';
             case 'activatePremium': return `You have **${vars[0]}** premium keys remaining\nDo you want to activate premium features for this server? This action cannot be undone`;
+            case 'confirm': return 'Confirm';
+            case 'cancel': return 'Cancel';
             case 'activatePremiumSuccess': return 'Premium features activated';
             case 'reasonDescription': return 'Edits the reason for a mod case';
             case 'reasonUsage': return '(case ID) (new reason)';

@@ -254,6 +254,8 @@ module.exports = {
             case 'muteEmbedFooter': return `Caso ${vars[0]}`;
             case 'muteEmbedReasonTitle': return 'Motivo';
             case 'activatePremium': return `Você tem **${vars[0]}** chaves premium restantes\nVocê quer ativar funções premium nesse servidor? Essa ação não pode ser revertida`;
+            case 'confirm': return 'Confirmar';
+            case 'cancel': return 'Cancelar';
             case 'activatePremiumSuccess': return 'Funções premium ativadas';
             case 'reasonDescription': return 'Edita o motivo de um caso de moderação';
             case 'reasonUsage': return '(ID do caso) (novo motivo)';

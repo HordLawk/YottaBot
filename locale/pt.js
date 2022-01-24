@@ -234,6 +234,7 @@ module.exports = {
             case 'muteUsage': return '(membro) (duração) [(motivo)]';
             case 'invMember': return 'Membro não encontrado';
             case 'youCantMute': return 'Você não pode mutar esse membro';
+            case 'iCantMute': return 'Eu não tenho permissão para moderar esse membro';
             case 'invMuteDuration': return 'Duração de mute inválida';
             case 'alreadyMuted': return 'Esse usuário já está mutado';
             case 'botManageRolesServer': return 'Eu não consigo gerenciar cargos nesse servidor';

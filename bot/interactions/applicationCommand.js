@@ -79,7 +79,10 @@ module.exports = {
         timestamps.set(interaction.user.id, now);
         setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
         const args = {};
-        if(interaction.options.data.length > 0) interaction.options.data.forEach(opt => (args[opt.name] = opt[opt.type.toLowerCase()] ? opt[opt.type.toLowerCase()] : opt.value) && (opt.type === 'USER' && opt['member']) && (args['member'] = opt['member']));
+        if(interaction.options.data.length > 0) interaction.options.data.forEach(opt => {
+            args[opt.name] = opt[opt.type.toLowerCase()] ? opt[opt.type.toLowerCase()] : opt.value;
+            if(opt.type === 'USER' && opt.member) args[opt.name].member = opt.member;
+        });
         command[`${subCommandName ?? 'execute'}Slash`](interaction, args).catch(error => {
             console.error(error);
             interaction.reply({

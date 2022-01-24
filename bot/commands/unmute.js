@@ -22,7 +22,7 @@ module.exports = {
         const member = id && await message.guild.members.fetch(id).catch(() => null);
         if(!member) return message.reply(channelLanguage.get('invMember'));
         if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return message.reply(channelLanguage.get('youCantUnmute'));
-        if(!message.guild.me.permissions.has(Permissions.FLAGS.MODERATE_MEMBERS)) return message.reply(channelLanguage.get('botModerateMembersServer'));
+        if(!member.moderatable) return message.reply(channelLanguage.get('iCantMute'));
         const mute = await log.findOneAndUpdate({
             guild: message.guild.id,
             target: id,

@@ -7,7 +7,7 @@ module.exports = {
     aliases: ['botinfo', 'about', 'stats'],
     cooldown: 5,
     categoryID: 1,
-    execute: async (message) => {
+    execute: async message => {
         const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         const invite = await message.client.generateInvite({

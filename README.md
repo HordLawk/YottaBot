@@ -29,14 +29,6 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - You agree to not submit any issues, features, or pull requests related to bugs exclusively related to self-hosting.
 
 ## W.I.P
-- [x] finish this `README`
-- [x] organize the [support server](https://discord.gg/eNcsvsy)
-- [x] finish pt-br translations
-- [x] add missing moderation commands `massban` and `kick`
-- [x] reward boosters with one premium key
-- [x] recommend xp amounts for levelroles
-- [x] transfer the process to a web dyno
-- [x] add xp earning in voice channels as premium feature
 - [x] add actionlog for bulkdelete
 - [x] update to djs v13
 - [x] change mute roles to native timeout and answer commands with replys

@@ -234,6 +234,7 @@ module.exports = {
             case 'muteUsage': return '(member) (duration) [(reason)]';
             case 'invMember': return 'Member not found';
             case 'youCantMute': return 'You can\'t mute this member';
+            case 'iCantMute': return 'I can\'t moderate this member';
             case 'invMuteDuration': return 'Invalid mute duration';
             case 'alreadyMuted': return 'This member is already muted';
             case 'botManageRolesServer': return 'I can\'t manage roles in this server';

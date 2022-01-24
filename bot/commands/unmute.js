@@ -18,7 +18,6 @@ module.exports = {
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
         if(!message.member) return;
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
-        if(!id) return message.reply(channelLanguage.get('invUser'));
         const member = id && await message.guild.members.fetch(id).catch(() => null);
         if(!member) return message.reply(channelLanguage.get('invMember'));
         if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return message.reply(channelLanguage.get('youCantUnmute'));

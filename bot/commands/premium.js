@@ -71,7 +71,7 @@ module.exports = {
         }
     },
     executeSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale ?? interaction.guild?.preferredLocale) === 'pt-BR' ? 'pt' : 'en'];
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         if(interaction.guild && (interaction.client.guildData.get(interaction.guild.id).premiumUntil || interaction.client.guildData.get(interaction.guild.id).partner)) return interaction.reply({
             content: channelLanguage.get('alreadyPremium'),
             ephemeral: true,

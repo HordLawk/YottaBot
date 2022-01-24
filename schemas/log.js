@@ -24,10 +24,7 @@ const logSchema = new Schema({
         type: Date,
         required: true,
     },
-    actionMessage: {
-        type: String,
-        required: true,
-    },
+    actionMessage: String,
     reason: String,
     logMessage: String,
     ongoing: Boolean,

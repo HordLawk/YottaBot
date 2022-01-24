@@ -7,8 +7,6 @@ const {Collection, Permissions} = require('discord.js');
 module.exports = {
     name: 'APPLICATION_COMMAND',
     execute: async interaction => {
-        console.log(interaction.locale);
-        console.log(interaction.guildLocale);
         if(interaction.guild && !interaction.guild.available) throw new Error('Invalid interaction.');
         var roleDocs;
         var savedChannel;
@@ -29,7 +27,7 @@ module.exports = {
             savedChannel = await channel.findById(interaction.channel.id);
             if(!interaction.member) throw new Error('Member could not be fetched.');
         }
-        const channelLanguage = interaction.client.langs[(interaction.locale ?? interaction.guild?.preferredLocale) === 'pt-BR' ? 'pt' : 'en'];
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         if(interaction.channel.partial) await interaction.channel.fetch();
         const userDoc = await user.findById(interaction.user.id);
         if(userDoc && userDoc.blacklisted) return interaction.reply({

@@ -1,6 +1,6 @@
 const log = require('../../schemas/log.js');
 const guild = require('../../schemas/guild.js');
-const {MessageEmbed, Permissions} = require('discord.js')
+const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
     active: true,

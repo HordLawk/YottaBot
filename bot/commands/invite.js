@@ -19,7 +19,7 @@ module.exports = {
         message.reply({embeds: [embed]});
     },
     executeSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[interaction.locale === 'pt-BR' ? 'pt' : 'en'];
+        const channelLanguage = interaction.client.langs[(interaction.locale ?? interaction.guild?.preferredLocale) === 'pt-BR' ? 'pt' : 'en'];
         const url = await interaction.client.generateInvite({
             scopes: ['bot'],
             permissions: Permissions.ALL,

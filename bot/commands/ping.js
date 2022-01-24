@@ -34,7 +34,7 @@ module.exports = {
         msg.edit({embeds: [embed]});
     },
     executeSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[interaction.locale === 'pt-BR' ? 'pt' : 'en'];
+        const channelLanguage = interaction.client.langs[(interaction.locale ?? interaction.guild?.preferredLocale) === 'pt-BR' ? 'pt' : 'en'];
         const hex = (latency) => {
             if(latency <= 100) return '00ff00';
             if(latency >= 1000) return 'ff0000';

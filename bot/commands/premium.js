@@ -21,30 +21,57 @@ module.exports = {
         }
         else{
             if(!message.guild) return message.reply(`You have **${userDoc.premiumKeys}** premium keys remaining`);
-            if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.reply(channelLanguage.get('botReactions'));
-            let msg = await message.reply(channelLanguage.get('activatePremium', [userDoc.premiumKeys]));
-            await msg.react('✅');
-            await msg.react('❌');
-            let collector = msg.createReactionCollector({
-                filter: (r, u) => (['✅', '❌'].includes(r.emoji.name) && (u.id === message.author.id)),
-                time: 10000,
+            let msg = await message.reply({
+                content: channelLanguage.get('activatePremium', [userDoc.premiumKeys]),
+                components: [{
+                    type: 'ACTION_ROW',
+                    components: [
+                        {
+                            type: 'BUTTON',
+                            label: channelLanguage.get('confirm'),
+                            style: 'SUCCESS',
+                            emoji: '✅',
+                            customId: 'confirm',
+                        },
+                        {
+                            type: 'BUTTON',
+                            label: channelLanguage.get('cancel'),
+                            style: 'DANGER',
+                            emoji: '❌',
+                            customId: 'cancel',
+                        },
+                    ],
+                }],
+            });
+            const collector = msg.createMessageComponentCollector({
+                filter: componentInteraction => (componentInteraction.user.id === message.author.id),
+                idle: 10000,
                 max: 1,
+                componentType: 'BUTTON',
             });
             collector.on('end', async c => {
-                await msg.reactions.removeAll();
-                if(!c.size) return msg.edit(channelLanguage.get('timedOut'));
-                if(c.first().emoji.name === '❌') return msg.edit(channelLanguage.get('cancelled'));
+                if(!c.size) return msg.edit({
+                    content: channelLanguage.get('timedOut'),
+                    components: [],
+                });
+                if(c.first().customId === 'cancel') return c.first().update({
+                    content: channelLanguage.get('cancelled'),
+                    components: [],
+                });
                 userDoc.premiumKeys--;
                 await userDoc.save();
-                let premiumUntil = new Date(Date.now() + 2592000000);
+                const premiumUntil = new Date(Date.now() + 2592000000);
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {premiumUntil: premiumUntil}});
                 message.client.guildData.get(message.guild.id).premiumUntil = premiumUntil;
-                await msg.edit(channelLanguage.get('activatePremiumSuccess'));
+                await c.first().update({
+                    content: channelLanguage.get('activatePremiumSuccess'),
+                    components: [],
+                });
             });
         }
     },
     executeSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[interaction.locale === 'pt-BR' ? 'pt' : 'en'];
+        const channelLanguage = interaction.client.langs[(interaction.locale ?? interaction.guild?.preferredLocale) === 'pt-BR' ? 'pt' : 'en'];
         if(interaction.guild && (interaction.client.guildData.get(interaction.guild.id).premiumUntil || interaction.client.guildData.get(interaction.guild.id).partner)) return interaction.reply({
             content: channelLanguage.get('alreadyPremium'),
             ephemeral: true,

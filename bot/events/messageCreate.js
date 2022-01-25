@@ -52,7 +52,7 @@ module.exports = {
                 await message.member.roles.set(message.member.roles.cache.map(e => e.id).filter(e => !lowerRoles.some(ee => (e === ee.roleID))).concat(lowerRoles.map(e => e.roleID).slice(0, message.client.guildData.get(message.guild.id).dontStack ? 1 : undefined)));
                 if(!message.client.guildData.get(message.guild.id).xpChannel || (doc.xp != lowerRoles[0].xp)) return;
                 switch(message.client.guildData.get(message.guild.id).xpChannel){
-                    case 'default': message.channel.send(channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]));
+                    case 'default': message.reply(channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]));
                     break;
                     case 'dm': message.author.send(channelLanguage.get('achieveDM', [message.guild.roles.cache.get(lowerRoles[0].roleID).name, message.guild.name])).catch(() => null);
                     break;
@@ -64,21 +64,22 @@ module.exports = {
             });
         }
         if(message.channel.partial) await message.channel.fetch();
-        if((new RegExp(`<@!?${message.client.user.id}>`)).test(message.content)) return message.channel.send(channelLanguage.get('mentionHelp', [prefix]));
+        if((new RegExp(`<@!?${message.client.user.id}>`)).test(message.content)) return message.reply(channelLanguage.get('mentionHelp', [prefix]));
         if(!message.content.toLowerCase().startsWith(prefix.toLowerCase())) return;
         const userDoc = await user.findById(message.author.id);
         if(userDoc && userDoc.blacklisted) return;
         const [commandName, ...args] = message.content.slice(prefix.length).toLowerCase().split(/\s+/g);
         const command = message.client.commands.get(commandName) || message.client.commands.find(cmd => (cmd.aliases && cmd.aliases.includes(commandName)));
         if(!command || (command.dev && (message.author.id != message.client.application.owner.id)) || (command.alpha && !message.client.guildData.get(message.guild.id).alpha)) return;
-        if(message.client.configs.maintenance && (message.author.id != message.client.application.owner.id)) return message.channel.send(channelLanguage.get('maintenance')).catch(() => null);
-        if(command.guildOnly && !message.guild) return message.channel.send(channelLanguage.get('guildOnly')).catch(() => {});
-        if(command.premium && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) return message.channel.send(channelLanguage.get('premiumCommand', [prefix])).catch(() => null);
-        if(command.beta && !message.client.guildData.get(message.guild.id).beta) return message.channel.send(channelLanguage.get('betaCommand')).catch(() => null);
-        if(command.args && !args.length) return message.channel.send(channelLanguage.get('noArgs', [message.author, prefix, command.name, command.usage(channelLanguage)]));
+        if(!command.execute) return message.reply(channelLanguage.get('slashOnly', [command.name]));
+        if(message.client.configs.maintenance && (message.author.id != message.client.application.owner.id)) return message.reply(channelLanguage.get('maintenance'));
+        if(command.guildOnly && !message.guild) return message.reply(channelLanguage.get('guildOnly'));
+        if(command.premium && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) return message.reply(channelLanguage.get('premiumCommand', [prefix]));
+        if(command.beta && !message.client.guildData.get(message.guild.id).beta) return message.reply(channelLanguage.get('betaCommand'));
+        if(command.args && !args.length) return message.reply(channelLanguage.get('noArgs', [message.author, prefix, command.name, command.usage(channelLanguage)]));
         if(message.guild && !message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
             const roles = roleDocs.filter(e => (e.commandPermissions.id(command.name) && message.member.roles.cache.has(e.roleID)));
-            if((!roles.length && command.perm && !message.member.permissions.has(command.perm)) || (roles.length && roles.some(e => !e.commandPermissions.id(command.name).allow) && !roles.some(e => e.commandPermissions.id(command.name).allow))) return message.channel.send(channelLanguage.get('forbidden'));
+            if((!roles.length && command.perm && !message.member.permissions.has(command.perm)) || (roles.length && roles.some(e => !e.commandPermissions.id(command.name).allow) && !roles.some(e => e.commandPermissions.id(command.name).allow))) return message.reply(channelLanguage.get('forbidden'));
             if(savedChannel && savedChannel.ignoreCommands.includes(command.name) && message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return await message.react('🚫');
         }
         if(!message.client.cooldowns.has(command.name)) message.client.cooldowns.set(command.name, new Collection());
@@ -89,7 +90,7 @@ module.exports = {
             const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
             if(now < expirationTime){
                 const timeLeft = (expirationTime - now) / 1000;
-                return message.channel.send(channelLanguage.get('cooldown', [timeLeft.toFixed(1), command.name, prefix, (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner)]));
+                return message.reply(channelLanguage.get('cooldown', [timeLeft.toFixed(1), command.name, prefix, (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner)]));
             }
         }
         timestamps.set(message.author.id, now);
@@ -97,7 +98,7 @@ module.exports = {
         message.channel.sendTyping();
         command.execute(message, args).catch(error => {
             console.error(error);
-            message.channel.send(channelLanguage.get('error', [command.name])).catch(() => null);
+            message.reply(channelLanguage.get('error', [command.name]));
             if(process.env.NODE_ENV === 'production') message.client.channels.cache.get(message.client.configs.errorlog).send({
                 content: `Error: *${error.message}*\nMessage Author: ${message.author}\nMessage URL: ${message.url}`,
                 files: [

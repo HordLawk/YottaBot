@@ -40,7 +40,7 @@ module.exports = {
                     type: 'mute',
                     target: newMember.id,
                     executor: audits.entries.first().executor.id,
-                    timeStamp: audits.entries.first().createdTimestamp,
+                    timeStamp: audits.entries.first().createdAt,
                     reason: reason,
                     ongoing: true,
                     duration: newMember.communicationDisabledUntil,
@@ -83,7 +83,7 @@ module.exports = {
                     type: 'mute',
                     target: newMember.id,
                     executor: audits.entries.first().executor.id,
-                    timeStamp: audits.entries.first().createdTimestamp,
+                    timeStamp: audits.entries.first().createdAt,
                     reason: reason,
                     removal: true,
                 });

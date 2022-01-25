@@ -384,6 +384,7 @@ module.exports = {
             case 'invCooldown': return 'Cooldown minutes has to be an integer between 1 and 59';
             case 'voicexpEnableSuccess': return `Xp earning in voice channels was enabled and its cooldown was set to ${vars[0]}`;
             case 'voicexpDisableSuccess': return 'Xp earning in voice channels disabled';
+            case 'slashOnly': return `The \`${args[0]}\` command can only be executed through Discord's built in slash commands feature\nType \`/${args[0]}\` to use it`;
         }
     },
 };

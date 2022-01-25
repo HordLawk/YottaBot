@@ -384,6 +384,7 @@ module.exports = {
             case 'invCooldown': return 'O cooldown em minutos deve ser um inteiro entre 1 e 59';
             case 'voicexpEnableSuccess': return `O ganho de xp em canais de voz foi ativado e seu cooldown definido como ${vars[0]}`;
             case 'voicexpDisableSuccess': return 'O ganho de xp em canais de voz foi desativado';
+            case 'slashOnly': return `O comando \`${args[0]}\` pode ser executado apenas por meio da função nativa de comandos de barra de Discord\nDigite \`/${args[0]}\` para usa-lo`;
         }
     },
 };

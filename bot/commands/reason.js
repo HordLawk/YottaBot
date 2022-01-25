@@ -44,7 +44,7 @@ module.exports = {
             let duration = current.duration.getTime() - current.timeStamp.getTime();
             let d = Math.floor(duration / 86400000);
             let h = Math.floor((duration % 86400000) / 3600000);
-            let m = Math.floor((duration % 3600000) / 60000);
+            let m = Math.round((duration % 3600000) / 60000);
             embed.addField(channelLanguage.get('reasonEmbedDurationTitle'), channelLanguage.get('reasonEmbedDurationValue', [d, h, m, Math.floor(current.duration.getTime() / 1000)]), true);
         }
         embed.addField(channelLanguage.get('reasonEmbedReasonTitle'), reason);

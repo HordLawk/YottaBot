@@ -13,33 +13,22 @@ module.exports = {
             const scope = (process.env.NODE_ENV === 'production') ? message.client.application : message.guild;
             const slash = scope.commands.cache.find(e => ((e.name === command.name) && (e.type.toLowerCase() === args[1])));
             if(slash){
-                const data = {defaultPermission: !command.dev};
-                if(slash.type === 'CHAT_INPUT'){
-                    data.description = command.description(message.client.langs['en']);
-                    data.options = command.slashOptions;
-                }
-                await slash.edit(data);
+                if(slash.type === 'CHAT_INPUT') await slash.edit({
+                    description: command.description(message.client.langs['en']),
+                    options: command.slashOptions,
+                });
             }
             else{
                 const data = {
                     name: command.name,
                     description: '',
                     type: args[1].toUpperCase(),
-                    defaultPermission: !command.dev,
                 };
                 if(args[1] === 'chat_input'){
                     data.description = command.description(message.client.langs['en']);
                     data.options = command.slashOptions;
                 }
-                const newCommand = await scope.commands.create(data);
-                newCommand.permissions.add({
-                    guild: message.client.configs.supportID,
-                    permissions: [{
-                        id: message.client.application.owner.id,
-                        type: 'USER',
-                        permission: true,
-                    }]
-                });
+                await scope.commands.create(data);
             }
             message.reply(channelLanguage.get('deploySuccess', [command.name, args[1]]));
         }

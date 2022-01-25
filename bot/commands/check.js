@@ -32,7 +32,7 @@ module.exports = {
         const formatDuration = (ms) => {
             let d = Math.floor(ms / 86400000);
             let h = Math.floor((ms % 86400000) / 3600000);
-            let m = Math.floor((ms % 3600000) / 60000);
+            let m = Math.round((ms % 3600000) / 60000);
             return [d, h, m];
         }
         const pageSize = 10;
@@ -49,18 +49,39 @@ module.exports = {
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get('checkEmbedCaseValue', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
             })));
-        let msg = await message.reply({embeds: [embed]});
+        let msg = await message.reply({
+            embeds: [embed],
+            components: [{
+                type: 'ACTION_ROW',
+                components: [
+                    {
+                        type: 'BUTTON',
+                        label: channelLanguage.get('previous'),
+                        style: 'PRIMARY',
+                        emoji: '⬅',
+                        customId: 'previous',
+                        disabled: true,
+                    },
+                    {
+                        type: 'BUTTON',
+                        label: channelLanguage.get('next'),
+                        style: 'PRIMARY',
+                        emoji: '➡',
+                        customId: 'next',
+                        disabled: (logDocs.length <= pageSize),
+                    },
+                ],
+            }],
+        });
         if(logDocs.length <= pageSize) return;
-        await msg.react('⬅');
-        await msg.react('➡');
-        let col = msg.createReactionCollector({
-            filter: (r, u) => (['➡', '⬅'].includes(r.emoji.name) && (u.id === message.author.id)),
+        const col = msg.createMessageComponentCollector({
+            filter: componentInteraction => (componentInteraction.user.id === message.author.id),
             time: 600000,
+            componentType: 'BUTTON',
         });
         let page = 0;
-        col.on('collect', async r => {
-            await r.users.remove(message.author);
-            if(r.emoji.name === '➡'){
+        col.on('collect', async button => {
+            if(button.customId === 'next'){
                 if(!logDocs.slice((page + 1) * pageSize).length) return;
                 page++;
             }
@@ -72,59 +93,121 @@ module.exports = {
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get('checkEmbedCaseValue', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
             })));
-            await msg.edit({embeds: [embed]});
+            await button.update({
+                embeds: [embed],
+                components: [{
+                    type: 'ACTION_ROW',
+                    components: [
+                        {
+                            type: 'BUTTON',
+                            label: channelLanguage.get('previous'),
+                            style: 'PRIMARY',
+                            emoji: '⬅',
+                            customId: 'previous',
+                            disabled: !page,
+                        },
+                        {
+                            type: 'BUTTON',
+                            label: channelLanguage.get('next'),
+                            style: 'PRIMARY',
+                            emoji: '➡',
+                            customId: 'next',
+                            disabled: (!logDocs.slice((page + 1) * pageSize).length),
+                        },
+                    ],
+                }],
+            });
         });
-        col.on('end', () => msg.reactions.removeAll());
+        col.on('end', () => msg.edit({
+            embeds: [embed],
+            components: [{
+                type: 'ACTION_ROW',
+                components: [
+                    {
+                        type: 'BUTTON',
+                        label: channelLanguage.get('previous'),
+                        style: 'PRIMARY',
+                        emoji: '⬅',
+                        customId: 'previous',
+                        disabled: true,
+                    },
+                    {
+                        type: 'BUTTON',
+                        label: channelLanguage.get('next'),
+                        style: 'PRIMARY',
+                        emoji: '➡',
+                        customId: 'next',
+                        disabled: true,
+                    },
+                ],
+            }]
+        }));
     },
     executeSlash: async function(interaction, args){
-        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
-        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
-        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.reply(channelLanguage.get('botReactions'));
-        if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-        const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
-        if(!id) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-        const filter = args[2] ? (Date.now() - (((parseInt(args[2].match(/(\d+)d/)?.[1], 10) * 86400000) || 0) + ((parseInt(args[2].match(/(\d+)h/)?.[1], 10) * 3600000) || 0) + ((parseInt(args[2].match(/(\d+)m/)?.[1], 10) * 60000) || 0) + ((parseInt(args[2].match(/(\d+)s/)?.[1], 10) * 1000) || 0))) : 0;
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args.case_type)) return interaction.reply(channelLanguage.get('invArgs', ['/', this.name, this.usage(channelLanguage)]));
+        const filter = (args.time_filter_unit ?? args.time_filter_value) ? (Date.now() - ((args.time_filter_unit ?? 86400000) * (args.time_filter_value ?? 1))) : 0;
         const logDocs = await log.find({
-            guild: message.guild.id,
-            target: id,
-            type: (args[1] === 'all') ? {$ne: args[1]} : {$eq: args[1]},
+            guild: interaction.guild.id,
+            target: args.user.id,
+            type: (args.case_type === 'all') ? {$ne: args.case_type} : {$eq: args.case_type},
             timeStamp: {$gte: filter},
         }).sort({timeStamp: -1});
-        if(!logDocs.length) return message.reply(channelLanguage.get('invLogs'));
-        const discordMember = await message.guild.members.fetch(id).catch(() => null);
-        const discordUser = discordMember?.user ?? await message.client.users.fetch(id).catch(() => null);
+        if(!logDocs.length) return interaction.reply(channelLanguage.get('invLogs'));
         const formatDuration = (ms) => {
             let d = Math.floor(ms / 86400000);
             let h = Math.floor((ms % 86400000) / 3600000);
-            let m = Math.floor((ms % 3600000) / 60000);
+            let m = Math.round((ms % 3600000) / 60000);
             return [d, h, m];
         }
         const pageSize = 10;
         const embed = new MessageEmbed()
-            .setColor(discordMember?.displayColor ?? message.guild.me.displayColor ?? 0x8000ff)
+            .setColor(args.user.member?.displayColor ?? interaction.guild.me.displayColor ?? 0x8000ff)
             .setAuthor({
-                name: discordUser?.tag ?? channelLanguage.get('checkEmbedAuthor'),
-                iconURL: discordUser?.displayAvatarURL({dynamic: true}),
+                name: args.user?.tag ?? channelLanguage.get('checkEmbedAuthor'),
+                iconURL: args.user?.displayAvatarURL({dynamic: true}),
             })
             .setTimestamp()
             .setFooter({text: channelLanguage.get('checkEmbedFooter', [logDocs.length])})
-            .setDescription(`${['all', 'warn'].includes(args[1]) ? `Warns: \`${logDocs.filter(e => (e.type === 'warn')).length}\`\n` : ''}${['all', 'mute'].includes(args[1]) ? `Mutes: \`${logDocs.filter(e => ((e.type === 'mute') && !e.removal)).length}\`\nUnmutes: \`${logDocs.filter(e => ((e.type === 'mute') && e.removal)).length}\`\n` : ''}${['all', 'kick'].includes(args[1]) ? `Kicks: \`${logDocs.filter(e => (e.type === 'kick')).length}\`\n` : ''}${['all', 'ban'].includes(args[1]) ? `Bans: \`${logDocs.filter(e => ((e.type === 'ban') && !e.removal)).length}\`\nUnbans: \`${logDocs.filter(e => ((e.type === 'ban') && e.removal)).length}\`\n` : ''}`)
+            .setDescription(`${['all', 'warn'].includes(args.case_type) ? `Warns: \`${logDocs.filter(e => (e.type === 'warn')).length}\`\n` : ''}${['all', 'mute'].includes(args.case_type) ? `Mutes: \`${logDocs.filter(e => ((e.type === 'mute') && !e.removal)).length}\`\nUnmutes: \`${logDocs.filter(e => ((e.type === 'mute') && e.removal)).length}\`\n` : ''}${['all', 'kick'].includes(args.case_type) ? `Kicks: \`${logDocs.filter(e => (e.type === 'kick')).length}\`\n` : ''}${['all', 'ban'].includes(args.case_type) ? `Bans: \`${logDocs.filter(e => ((e.type === 'ban') && !e.removal)).length}\`\nUnbans: \`${logDocs.filter(e => ((e.type === 'ban') && e.removal)).length}\`\n` : ''}`)
             .addFields(logDocs.slice(0, pageSize).map(e => ({
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get('checkEmbedCaseValue', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
             })));
-        let msg = await message.reply({embeds: [embed]});
+        const msg = await interaction.reply({
+            embeds: [embed],
+            fetchReply: true,
+            components: [{
+                type: 'ACTION_ROW',
+                components: [
+                    {
+                        type: 'BUTTON',
+                        label: channelLanguage.get('previous'),
+                        style: 'PRIMARY',
+                        emoji: '⬅',
+                        customId: 'previous',
+                        disabled: true,
+                    },
+                    {
+                        type: 'BUTTON',
+                        label: channelLanguage.get('next'),
+                        style: 'PRIMARY',
+                        emoji: '➡',
+                        customId: 'next',
+                        disabled: (logDocs.length <= pageSize),
+                    },
+                ],
+            }],
+        });
         if(logDocs.length <= pageSize) return;
-        await msg.react('⬅');
-        await msg.react('➡');
-        let col = msg.createReactionCollector({
-            filter: (r, u) => (['➡', '⬅'].includes(r.emoji.name) && (u.id === message.author.id)),
+        const col = msg.createMessageComponentCollector({
+            filter: componentInteraction => (componentInteraction.user.id === interaction.user.id),
             time: 600000,
+            componentType: 'BUTTON',
         });
         let page = 0;
-        col.on('collect', async r => {
-            await r.users.remove(message.author);
-            if(r.emoji.name === '➡'){
+        col.on('collect', async button => {
+            if(button.customId === 'next'){
                 if(!logDocs.slice((page + 1) * pageSize).length) return;
                 page++;
             }
@@ -136,9 +219,55 @@ module.exports = {
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get('checkEmbedCaseValue', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
             })));
-            await msg.edit({embeds: [embed]});
+            await button.update({
+                embeds: [embed],
+                components: [{
+                    type: 'ACTION_ROW',
+                    components: [
+                        {
+                            type: 'BUTTON',
+                            label: channelLanguage.get('previous'),
+                            style: 'PRIMARY',
+                            emoji: '⬅',
+                            customId: 'previous',
+                            disabled: !page,
+                        },
+                        {
+                            type: 'BUTTON',
+                            label: channelLanguage.get('next'),
+                            style: 'PRIMARY',
+                            emoji: '➡',
+                            customId: 'next',
+                            disabled: (!logDocs.slice((page + 1) * pageSize).length),
+                        },
+                    ],
+                }],
+            });
         });
-        col.on('end', () => msg.reactions.removeAll());
+        col.on('end', () => msg.edit({
+            embeds: [embed],
+            components: [{
+                type: 'ACTION_ROW',
+                components: [
+                    {
+                        type: 'BUTTON',
+                        label: channelLanguage.get('previous'),
+                        style: 'PRIMARY',
+                        emoji: '⬅',
+                        customId: 'previous',
+                        disabled: true,
+                    },
+                    {
+                        type: 'BUTTON',
+                        label: channelLanguage.get('next'),
+                        style: 'PRIMARY',
+                        emoji: '➡',
+                        customId: 'next',
+                        disabled: true,
+                    },
+                ],
+            }]
+        }));
     },
     slashOptions: [
         {
@@ -177,35 +306,33 @@ module.exports = {
         },
         {
             type: 'INTEGER',
-            name: 'in_the_last_x_hours',
-            description: 'How many hours ago at max to check the cases',
+            name: 'time_filter_unit',
+            description: 'The unit of how much time ago to check for cases. Defaults to days.',
             required: false,
-            minValue: 1,
-            maxValue: 4096,
+            choices: [
+                {
+                    name: 'Days',
+                    value: 86400000,
+                },
+                {
+                    name: 'Hours',
+                    value: 3600000,
+                },
+                {
+                    name: 'Minutes',
+                    value: 60000,
+                },
+                {
+                    name: 'Seconds',
+                    value: 1000,
+                },
+            ]
         },
         {
-            type: 'INTEGER',
-            name: 'in_the_last_x_days',
-            description: 'How many days ago at max to check the cases',
+            type: 'NUMBER',
+            name: 'time_filter_value',
+            description: 'How much of the chosen unit. Defaults to 1.',
             required: false,
-            minValue: 1,
-            maxValue: 4096,
-        },
-        {
-            type: 'INTEGER',
-            name: 'in_the_last_x_days',
-            description: 'How many days ago at max to check the cases',
-            required: false,
-            minValue: 1,
-            maxValue: 4096,
-        },
-        {
-            type: 'INTEGER',
-            name: 'in_the_last_x_days',
-            description: 'How many days ago at max to check the cases',
-            required: false,
-            minValue: 1,
-            maxValue: 4096,
         },
     ]
 };

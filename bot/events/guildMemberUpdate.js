@@ -27,7 +27,7 @@ module.exports = {
                 limit: 1,
                 type: 'MEMBER_UPDATE',
             });
-            if(audits.entries.first().executor.bot) return;
+            if(audits.entries.first()?.executor.bot) return;
             const reason = audits.entries.first().reason?.slice(0, 500);
             const guildDoc = await guild.findByIdAndUpdate(newMember.guild.id, {$inc: {counterLogs: 1}});
             newMember.client.guildData.get(newMember.guild.id).counterLogs = guildDoc.counterLogs + 1;

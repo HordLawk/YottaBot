@@ -256,6 +256,8 @@ module.exports = {
             case 'activatePremium': return `You have **${vars[0]}** premium keys remaining\nDo you want to activate premium features for this server? This action cannot be undone`;
             case 'confirm': return 'Confirm';
             case 'cancel': return 'Cancel';
+            case 'previous': return 'Previous';
+            case 'next': return 'Next';
             case 'activatePremiumSuccess': return 'Premium features activated';
             case 'reasonDescription': return 'Edits the reason for a mod case';
             case 'reasonUsage': return '(case ID) (new reason)';

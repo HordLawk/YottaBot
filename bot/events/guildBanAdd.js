@@ -5,7 +5,8 @@ const {MessageEmbed, Permissions} = require('discord.js');
 module.exports = {
     name: 'guildBanAdd',
     execute: async ban => {
-        if(ban.partial) await ban.fetch();
+        if(ban.partial) ban = await ban.fetch().catch(() => null);
+        if(!ban) return;
         if(!ban.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)) return;
         const audits = await ban.guild.fetchAuditLogs({
             limit: 1,

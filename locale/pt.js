@@ -199,7 +199,7 @@ module.exports = {
             case 'premiumDescription': return 'Informações sobre se tornar premium';
             case 'alreadyPremium': return 'Esse servidor já tem acesso a funções premium';
             case 'premiumEmbedDesc': return `Ainda não é possível comprar o modo premium, se você deseja solicitar parceria ou pagar pelo premium diretamente **[entre no servidor de suporte](https://discord.gg/${vars[0]})** e contate os desenvolvedores`;
-            case 'banDescription': return 'Bane um usuário\nTambém aceita um anexo de mídia';
+            case 'banDescription': return 'Bane um usuário';
             case 'banUsage': return '(usuário) [(motivo)]';
             case 'invUser': return 'Usuário inválido';
             case 'cantBan': return 'Eu não consigo banir esse membro';
@@ -230,7 +230,7 @@ module.exports = {
             case 'autoSetupMuteSetSuccess': return `Modo de configuração automática de mute foi **${(vars[0] === 'on') ? '' : 'des'}ativado**`;
             case 'inviteDescription': return 'Envia um link para adicionar o bot ao seu servidor';
             case 'inviteEmbedDescription': return `**[Me convide](${vars[0]})** para o seu servidor!`;
-            case 'muteDescription': return 'Muta um membro\nTambém aceita um anexo de mídia';
+            case 'muteDescription': return 'Muta um membro';
             case 'muteUsage': return '(membro) (duração) [(motivo)]';
             case 'invMember': return 'Membro não encontrado';
             case 'youCantMute': return 'Você não pode mutar esse membro';
@@ -271,7 +271,7 @@ module.exports = {
             case 'reasonEmbedReasonTitle': return 'Motivo';
             case 'supportDescription': return 'Envia um convite para o servidor de suporte';
             case 'supportEmbedDescription': return `**[Entre](https://discord.gg/${vars[0]})** em meu servidor de suporte!`;
-            case 'unbanDescription': return 'Desbane um usuário\nTambém aceita um anexo de mídia';
+            case 'unbanDescription': return 'Desbane um usuário';
             case 'unbanUsage': return '(usuário) [(motivo)]';
             case 'invBanned': return 'Usuário banido não encontrado';
             case 'cantUnban': return 'Eu não tenho permissão para desbanir membros';
@@ -284,7 +284,7 @@ module.exports = {
             case 'unbanEmbedExecutorTitle': return 'Executor';
             case 'unbanEmbedFooter': return `Caso ${vars[0]}`;
             case 'unbanEmbedReasonTitle': return 'Motivo';
-            case 'unmuteDescription': return 'Desmuta um usuário\nTambém aceita um anexo de mídia';
+            case 'unmuteDescription': return 'Desmuta um usuário';
             case 'unmuteUsage': return '(usuário) [(motivo)]';
             case 'youCantUnmute': return 'Você não pode desmutar esse membro';
             case 'invMuteRole': return 'Cargo de mute não encontrado';
@@ -298,7 +298,7 @@ module.exports = {
             case 'unmuteEmbedExecutorTitle': return 'Executor';
             case 'unmuteEmbedFooter': return `Caso ${vars[0]}`;
             case 'unmuteEmbedReasonTitle': return 'Motivo';
-            case 'warnDescription': return 'Avisa um membro\nTambém aceita um anexo de mídia';
+            case 'warnDescription': return 'Avisa um membro';
             case 'warnUsage': return '(usuário) [(motivo)]';
             case 'cantWarnBot': return 'Eu não posso avisar um bot';
             case 'youCantWarn': return 'Você não tem permissão para avisar esse membro';
@@ -334,7 +334,7 @@ module.exports = {
             case 'autoUnmuteEmbedReasonTitle': return 'Motivo';
             case 'autoUnmuteEmbedReasonValue': return 'Fim do mute';
             case 'autoUnmuteEmbedDescription': return `[\`Mute referido\`](${vars[0]})`;
-            case 'kickDescription': return 'Expulsa um membro de um servidor\nTambém aceita um anexo de mídia';
+            case 'kickDescription': return 'Expulsa um membro de um servidor';
             case 'kickUsage': return '(usuário) [(motivo)]';
             case 'cantKick': return 'Eu não consigo expulsar esse membro';
             case 'youCantKick': return 'Você não pode expulsar esse membro';
@@ -347,7 +347,7 @@ module.exports = {
             case 'kickEmbedExecutorTitle': return 'Executor';
             case 'kickEmbedFooter': return `Caso ${vars[0]}`;
             case 'kickEmbedReasonTitle': return 'Motivo';
-            case 'massbanDescription': return 'Bane varios usuários ao mesmo tempo\nTambém aceita um anexo de mídia';
+            case 'massbanDescription': return 'Bane varios usuários ao mesmo tempo';
             case 'massbanUsage': return '(usuário) [(lista de usuários)] [(motivo)]';
             case 'massbanSuccess': return `${vars[0] ? `${vars[0]} usuários banidos\n` : ''}${vars[1] ? `${vars[1]} usuários inválidos\n` : ''}${vars[2] ? `${vars[2]} usuários não puderam ser banidos\n` : ''}${vars[3] ? `${vars[3]} usuários já estavam banidos` : ''}`;
             case 'firstBoost': return `Parabéns ${vars[0]}, você impulsionou **${vars[1]}** e foi recompensado com uma chave premium, use o comando \`premium\` em qualquer servidor para ativar as funções premium`;

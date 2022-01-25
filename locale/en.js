@@ -199,7 +199,7 @@ module.exports = {
             case 'premiumDescription': return 'Information on becoming premium';
             case 'alreadyPremium': return 'This server already has access to premium features';
             case 'premiumEmbedDesc': return `Buying premium status is not ready yet, if you wish to apply for partnership or pay for premium directly **[join the support server](https://discord.gg/${vars[0]})** and contact the developers`;
-            case 'banDescription': return 'Bans an user\nAlso accepts a media attachment';
+            case 'banDescription': return 'Bans an user';
             case 'banUsage': return '(user) [(reason)]';
             case 'invUser': return 'Invalid user';
             case 'cantBan': return 'I can\'t ban this member';
@@ -230,7 +230,7 @@ module.exports = {
             case 'autoSetupMuteSetSuccess': return `Auto setup mute mode turned **${vars[0]}**`;
             case 'inviteDescription': return 'Gives you an url to add the bot to your server';
             case 'inviteEmbedDescription': return `**[Invite](${vars[0]})** me to your server!`;
-            case 'muteDescription': return 'Mutes a member\nAlso accepts a media attachment';
+            case 'muteDescription': return 'Mutes a member';
             case 'muteUsage': return '(member) (duration) [(reason)]';
             case 'invMember': return 'Member not found';
             case 'youCantMute': return 'You can\'t mute this member';
@@ -271,7 +271,7 @@ module.exports = {
             case 'reasonEmbedReasonTitle': return 'Reason';
             case 'supportDescription': return 'Gives you an invite to the support server';
             case 'supportEmbedDescription': return `**[Join](https://discord.gg/${vars[0]})** my support server!`;
-            case 'unbanDescription': return 'Unbans an user\nAlso accepts a media attachment';
+            case 'unbanDescription': return 'Unbans an user';
             case 'unbanUsage': return '(user) [(reason)]';
             case 'invBanned': return 'Banned user not found';
             case 'cantUnban': return 'I don\'t have permission to unban users';
@@ -284,7 +284,7 @@ module.exports = {
             case 'unbanEmbedExecutorTitle': return 'Executor';
             case 'unbanEmbedFooter': return `Case ${vars[0]}`;
             case 'unbanEmbedReasonTitle': return 'Reason';
-            case 'unmuteDescription': return 'Unmutes an user\nAlso accepts a media attachment';
+            case 'unmuteDescription': return 'Unmutes an user';
             case 'unmuteUsage': return '(user) [(reason)]';
             case 'youCantUnmute': return 'You can\'t unmute this member';
             case 'invMuteRole': return 'Mute role not found';
@@ -298,7 +298,7 @@ module.exports = {
             case 'unmuteEmbedExecutorTitle': return 'Executor';
             case 'unmuteEmbedFooter': return `Case ${vars[0]}`;
             case 'unmuteEmbedReasonTitle': return 'Reason';
-            case 'warnDescription': return 'Warns a member\nAlso accepts a media attachment';
+            case 'warnDescription': return 'Warns a member';
             case 'warnUsage': return '(user) [(reason)]';
             case 'cantWarnBot': return 'I can\'t warn a bot';
             case 'youCantWarn': return 'You are not allowed to warn this member';
@@ -334,7 +334,7 @@ module.exports = {
             case 'autoUnmuteEmbedReasonTitle': return 'Reason';
             case 'autoUnmuteEmbedReasonValue': return 'End of mute';
             case 'autoUnmuteEmbedDescription': return `[\`Referred mute\`](${vars[0]})`;
-            case 'kickDescription': return 'Kicks a member from a server\nAlso Accepts a media attachments';
+            case 'kickDescription': return 'Kicks a member from a server';
             case 'kickUsage': return '(user) [(reason)]';
             case 'cantKick': return 'I can\'t kick this member';
             case 'youCantKick': return 'You can\'t kick this member';
@@ -347,7 +347,7 @@ module.exports = {
             case 'kickEmbedExecutorTitle': return 'Executor';
             case 'kickEmbedFooter': return `Case ${vars[0]}`;
             case 'kickEmbedReasonTitle': return 'Reason';
-            case 'massbanDescription': return 'Bans many users at the same time\nAlso accepts a media attachment';
+            case 'massbanDescription': return 'Bans many users at the same time';
             case 'massbanUsage': return '(user) [(list of users)] [(reason)]';
             case 'massbanSuccess': return `${vars[0] ? `${vars[0]} users banned\n` : ''}${vars[1] ? `${vars[1]} invalid users\n` : ''}${vars[2] ? `${vars[2]} users could not be banned\n` : ''}${vars[3] ? `${vars[3]} users were already banned` : ''}`;
             case 'firstBoost': return `Congratulations ${vars[0]}, you boosted **${vars[1]}** and was rewarded with a premium key, use the \`premium\` commannd in any server to activate its premium features`;

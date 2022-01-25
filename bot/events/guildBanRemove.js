@@ -12,7 +12,7 @@ module.exports = {
             limit: 1,
             type: 'MEMBER_BAN_REMOVE',
         });
-        if(audits.entries.first().executor.id === ban.client.user.id) return;
+        if(audits.entries.first().executor.bot) return;
         const guildDoc = await guild.findByIdAndUpdate(ban.guild.id, {$inc: {counterLogs: 1}});
         ban.client.guildData.get(ban.guild.id).counterLogs = guildDoc.counterLogs + 1;
         const current = new log({

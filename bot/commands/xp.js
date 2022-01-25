@@ -12,7 +12,7 @@ module.exports = {
     cooldown: 10,
     categoryID: 4,
     guildOnly: true,
-    execute: async function(message, args){
+    execute: async (message, args) => {
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         if(!message.client.guildData.get(message.guild.id).gainExp && !message.client.guildData.get(message.guild.id).voiceXpCooldown) return message.reply(channelLanguage.get('xpDisabled'));

@@ -3,10 +3,10 @@ module.exports = {
     name: 'deploy',
     dev: true,
     args: true,
-    usage: () => '(commandName) [user/message/chat_input]',
-    execute: async (message, args) => {
+    usage: () => ['(command name) <user/message/chat_input>'],
+    execute: async function(message, args){
         const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
-        if(!args[0] || !['chat_input', 'user', 'message'].includes(args[1])) return message.reply(channelLanguage.get('invalidCommand'));
+        if(!args[0] || !['chat_input', 'user', 'message'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         const command = message.client.commands.get(args[0]) || message.client.commands.find(cmd => (cmd.aliases && cmd.aliases.includes(args[0])));
         if(!command) return message.reply(channelLanguage.get('invalidCommand'));
         try{

@@ -144,6 +144,10 @@ module.exports = {
         }));
     },
     executeSlash: async function(interaction, args){
+        if(interaction.isUserContextMenu()){
+            args.user = (interaction.targetUser.member = interaction.targetMember, interaction.targetUser);
+            args.case_type = 'all';
+        }
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args.case_type)) return interaction.reply(channelLanguage.get('invArgs', ['/', this.name, this.usage(channelLanguage)]));
         const filter = (args.time_filter_unit ?? args.time_filter_value) ? (Date.now() - ((args.time_filter_unit ?? 86400000) * (args.time_filter_value ?? 1))) : 0;

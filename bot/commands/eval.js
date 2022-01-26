@@ -3,6 +3,6 @@ module.exports = {
     name: 'eval',
     dev: true,
     args: true,
-    usage: () => '(code)',
+    usage: () => ['(code)'],
     execute: async message => eval(message.content.replace(/^\S+\s+/, '')),
 };

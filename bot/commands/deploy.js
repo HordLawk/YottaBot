@@ -4,7 +4,7 @@ module.exports = {
     dev: true,
     args: true,
     usage: () => ['<user/message/chat_input> (command name)'],
-    addSlash: async function(interaction, args){
+    addSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         if(!args.name || !['CHAT_INPUT', 'USER', 'MESSAGE'].includes(args.type)) throw new Error('Invalid slash command options');
         const command = interaction.client.commands.get(args.name);
@@ -17,7 +17,7 @@ module.exports = {
                 type: args.type,
                 ...((args.type === 'CHAT_INPUT') ? {
                     name: command.name,
-                    description: command.description(message.client.langs['en']),
+                    description: command.description(interaction.client.langs['en']),
                     options: command.slashOptions,
                 } : {name: command.contextName}),
             });
@@ -28,7 +28,7 @@ module.exports = {
             interaction.reply(channelLanguage.get('deployFail', [command.name, args.type]));
         }
     },
-    editSlash: async function(interaction, args){
+    editSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         if(!args.slash_name || !args.command_name || !['CHAT_INPUT', 'USER', 'MESSAGE'].includes(args.type)) throw new Error('Invalid slash command options');
         const command = interaction.client.commands.get(args.command_name);
@@ -142,5 +142,5 @@ module.exports = {
             name: e.name,
             value: e.name,
         }))),
-    }
+    },
 };

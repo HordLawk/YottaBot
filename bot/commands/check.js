@@ -143,7 +143,7 @@ module.exports = {
             }]
         }));
     },
-    executeSlash: async function(interaction, args){
+    executeSlash: async (interaction, args) => {
         if(interaction.isUserContextMenu()){
             args.user = (interaction.targetUser.member = interaction.targetMember, interaction.targetUser);
             args.case_type = 'all';

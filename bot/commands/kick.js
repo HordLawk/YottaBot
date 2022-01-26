@@ -49,7 +49,7 @@ module.exports = {
                 iconURL: member.user.displayAvatarURL({dynamic: true}),
             })
             .setDescription(channelLanguage.get('kickEmbedDescription', [message.url]))
-            .addField(channelLanguage.get('kickEmbedTargetTitle'), channelLanguage.get('kickEmbedTargetValue', [member]), true)
+            .addField(channelLanguage.get('kickEmbedTargetTitle'), channelLanguage.get('kickEmbedTargetValue', [member, member.id]), true)
             .addField(channelLanguage.get('kickEmbedExecutorTitle'), message.author.toString(), true)
             .setTimestamp()
             .setFooter({

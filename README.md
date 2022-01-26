@@ -49,5 +49,5 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] react to any messages in selected channels
 
 ## Credits
-- @CripBoy for helping me with a lot issues I had in the early stages of development (I was dumb(er))
-- @Rox0z for having coded the base of the slash commands handler I use for YottaBot while I was being lazy
+- [@CripBoy](https://github.com/CripBoy) for helping me with a lot issues I had in the early stages of development (I was dumb(er))
+- [@Rox0z](https://github.com/Rox0z) for having coded the base of the slash commands handler I use for YottaBot while I was being lazy

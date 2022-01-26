@@ -6,7 +6,7 @@ module.exports = {
     active: true,
     name: 'mute',
     description: lang => lang.get('muteDescription'),
-    aliases: ['m'],
+    aliases: ['m', 'timeout', 'to'],
     usage: lang => [lang.get('muteUsage')],
     example: ['@LordHawk#0001 1h30m spammer'],
     cooldown: 3,

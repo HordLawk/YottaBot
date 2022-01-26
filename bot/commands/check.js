@@ -149,7 +149,7 @@ module.exports = {
             args.case_type = 'all';
         }
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
-        if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args.case_type)) return interaction.reply(channelLanguage.get('invArgs', ['/', this.name, this.usage(channelLanguage)]));
+        if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args.case_type)) throw new Error('Invalid slash command options');
         const filter = (args.time_filter_unit ?? args.time_filter_value) ? (Date.now() - ((args.time_filter_unit ?? 86400000) * (args.time_filter_value ?? 1))) : 0;
         const logDocs = await log.find({
             guild: interaction.guild.id,
@@ -157,7 +157,10 @@ module.exports = {
             type: (args.case_type === 'all') ? {$ne: args.case_type} : {$eq: args.case_type},
             timeStamp: {$gte: filter},
         }).sort({timeStamp: -1});
-        if(!logDocs.length) return interaction.reply(channelLanguage.get('invLogs'));
+        if(!logDocs.length) return interaction.reply({
+            content: channelLanguage.get('invLogs'),
+            ephemeral: true,
+        });
         const formatDuration = (ms) => {
             let d = Math.floor(ms / 86400000);
             let h = Math.floor((ms % 86400000) / 3600000);

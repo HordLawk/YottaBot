@@ -26,6 +26,7 @@ module.exports = {
                     type: args[1].toUpperCase(),
                 };
                 if(args[1] === 'chat_input'){
+                    data.name = command.name;
                     data.description = command.description(message.client.langs['en']);
                     data.options = command.slashOptions;
                 }

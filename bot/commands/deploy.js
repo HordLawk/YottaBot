@@ -3,40 +3,150 @@ module.exports = {
     name: 'deploy',
     dev: true,
     args: true,
-    usage: () => ['(command name) <user/message/chat_input>'],
-    execute: async function(message, args){
-        const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
-        if(!args[0] || !['chat_input', 'user', 'message'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-        const command = message.client.commands.get(args[0]) || message.client.commands.find(cmd => (cmd.aliases && cmd.aliases.includes(args[0])));
-        if(!command) return message.reply(channelLanguage.get('invalidCommand'));
+    usage: () => ['<user/message/chat_input> (command name)'],
+    addSlash: async function(interaction, args){
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(!args.name || !['CHAT_INPUT', 'USER', 'MESSAGE'].includes(args.type)) return interaction.reply({
+            content: channelLanguage.get('invArgs', ['/', this.name, this.usage(channelLanguage)]),
+            ephemeral: true,
+        });
+        const command = interaction.client.commands.get(args.name);
+        if(!command) return interaction.reply({
+            content: channelLanguage.get('invalidCommand'),
+            ephemeral: true,
+        });
         try{
-            const scope = (process.env.NODE_ENV === 'production') ? message.client.application : message.guild;
-            const slashList = await scope.commands.fetch();
-            const slash = slashList.find(e => ((e.name === command.name) && (e.type.toLowerCase() === args[1])));
-            if(slash){
-                await slash.edit((slash.type === 'CHAT_INPUT') ? {
+            const slash = await ((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.guild).commands.create({
+                type: args.type,
+                ...((args.type === 'CHAT_INPUT') ? {
+                    name: command.name,
                     description: command.description(message.client.langs['en']),
                     options: command.slashOptions,
-                } : {name: command.contextName});
-            }
-            else{
-                const data = {
-                    name: command.contextName,
-                    description: '',
-                    type: args[1].toUpperCase(),
-                };
-                if(args[1] === 'chat_input'){
-                    data.name = command.name;
-                    data.description = command.description(message.client.langs['en']);
-                    data.options = command.slashOptions;
-                }
-                await scope.commands.create(data);
-            }
-            message.reply(channelLanguage.get('deploySuccess', [command.name, args[1]]));
+                } : {name: command.contextName}),
+            });
+            interaction.reply(channelLanguage.get('deploySuccess', [slash.name, slash.type]));
         }
         catch(e){
             console.error(e);
-            message.reply(channelLanguage.get('deployFail', [command.name, args[1]]));
+            interaction.reply(channelLanguage.get('deployFail', [command.name, args.type]));
         }
     },
+    editSlash: async function(interaction, args){
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(!args.slash_name || !args.command_name || !['CHAT_INPUT', 'USER', 'MESSAGE'].includes(args.type)) return interaction.reply({
+            content: channelLanguage.get('invArgs', ['/', this.name, this.usage(channelLanguage)]),
+            ephemeral: true,
+        });
+        const command = interaction.client.commands.get(args.command_name);
+        const slash = ((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.guild).commands.cache.get(args.slash_name);
+        if(!command || !slash) return interaction.reply({
+            content: channelLanguage.get('invalidCommand'),
+            ephemeral: true,
+        });
+        try{
+            await slash.edit((slash.type === 'CHAT_INPUT') ? {
+                name: command.name,
+                description: command.description(interaction.client.langs['en']),
+                options: command.slashOptions,
+            } : {name: command.contextName});
+            interaction.reply(channelLanguage.get('deploySuccess', [slash.name, slash.type]));
+        }
+        catch(e){
+            console.error(e);
+            interaction.reply(channelLanguage.get('deployFail', [slash.name, slash.type]));
+        }
+    },
+    slashOptions: [
+        {
+            type: 'SUB_COMMAND',
+            name: 'add',
+            description: 'Add a new command',
+            options: [
+                {
+                    type: 'STRING',
+                    name: 'type',
+                    description: 'The type of this command',
+                    required: true,
+                    choices: [
+                        {
+                            name: 'Chat command',
+                            value: 'CHAT_INPUT',
+                        },
+                        {
+                            name: 'User context menu command',
+                            value: 'USER',
+                        },
+                        {
+                            name: 'Message context menu command',
+                            value: 'MESSAGE',
+                        },
+                    ],
+                },
+                {
+                    type: 'STRING',
+                    name: 'name',
+                    description: 'The name of this command',
+                    required: true,
+                    autocomplete: true,
+                },
+            ],
+        },
+        {
+            type: 'SUB_COMMAND',
+            name: 'edit',
+            description: 'Edit an existing command',
+            options: [
+                {
+                    type: 'STRING',
+                    name: 'type',
+                    description: 'The type of this command',
+                    required: true,
+                    choices: [
+                        {
+                            name: 'Chat command',
+                            value: 'CHAT_INPUT',
+                        },
+                        {
+                            name: 'User context menu command',
+                            value: 'USER',
+                        },
+                        {
+                            name: 'Message context menu command',
+                            value: 'MESSAGE',
+                        },
+                    ],
+                },
+                {
+                    type: 'STRING',
+                    name: 'slash_name',
+                    description: 'Registered slash command name',
+                    required: true,
+                    autocomplete: true,
+                },
+                {
+                    type: 'STRING',
+                    name: 'command_name',
+                    description: 'Internal command name',
+                    required: true,
+                    autocomplete: true,
+                },
+            ],
+        },
+    ],
+    addAutocomplete: {
+        name: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => e.name.startsWith(value)).first(25).map(e => ({
+            name: e.name,
+            value: e.name,
+        }))),
+    },
+    editAutocomplete: {
+        slash_name: (interaction, value) => interaction.respond(((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.filter(e => e.name.startsWith(value) && (e.type === interaction.options.data[0].options.find(ee => (ee.name === 'type')).value)).first(25).map(e => ({
+            name: e.name,
+            value: e.id,
+        }))),
+        command_name: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => e.name.startsWith(value)).first(25).map(e => ({
+            name: e.name,
+            value: e.name,
+        }))),
+    }
 };

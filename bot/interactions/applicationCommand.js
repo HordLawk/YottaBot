@@ -36,7 +36,7 @@ module.exports = {
         });
         const {commandName} = interaction;
         const subCommandName = interaction.options.getSubcommand(false);
-        const command = interaction.client.commands.get(commandName);
+        const command = interaction.isContextMenu() ? interaction.client.commands.find(cmd => (cmd.contextName === commandName)) : interaction.client.commands.get(commandName);
         const subCommand = interaction.options.get(subCommandName);
         if(!command || (command.dev && (interaction.user.id != interaction.client.application.owner.id)) || (command.alpha && !interaction.client.guildData.get(interaction.guild.id).alpha)) throw new Error('Invalid command.');
         if(interaction.client.configs.maintenance && (interaction.user.id != interaction.client.application.owner.id)) return interaction.reply({

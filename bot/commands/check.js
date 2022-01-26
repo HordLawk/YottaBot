@@ -338,5 +338,6 @@ module.exports = {
             description: 'How much of the chosen unit. Defaults to 1.',
             required: false,
         },
-    ]
+    ],
+    contextName: 'Check cases',
 };

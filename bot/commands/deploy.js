@@ -11,16 +11,17 @@ module.exports = {
         if(!command) return message.reply(channelLanguage.get('invalidCommand'));
         try{
             const scope = (process.env.NODE_ENV === 'production') ? message.client.application : message.guild;
-            const slash = scope.commands.cache.find(e => ((e.name === command.name) && (e.type.toLowerCase() === args[1])));
+            const slashList = await scope.commands.fetch();
+            const slash = slashList.find(e => ((e.name === command.name) && (e.type.toLowerCase() === args[1])));
             if(slash){
-                if(slash.type === 'CHAT_INPUT') await slash.edit({
+                await slash.edit((slash.type === 'CHAT_INPUT') ? {
                     description: command.description(message.client.langs['en']),
                     options: command.slashOptions,
-                });
+                } : {name: command.contextName});
             }
             else{
                 const data = {
-                    name: command.name,
+                    name: command.contextName,
                     description: '',
                     type: args[1].toUpperCase(),
                 };

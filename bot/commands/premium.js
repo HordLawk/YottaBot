@@ -44,7 +44,6 @@ module.exports = {
                 }],
             });
             const collector = msg.createMessageComponentCollector({
-                filter: componentInteraction => (componentInteraction.user.id === message.author.id),
                 idle: 10000,
                 max: 1,
                 componentType: 'BUTTON',

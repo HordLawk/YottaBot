@@ -49,7 +49,7 @@ module.exports = {
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get('checkEmbedCaseValue', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
             })));
-        let msg = await message.reply({
+        const msg = await message.reply({
             embeds: [embed],
             components: [{
                 type: 'ACTION_ROW',
@@ -144,10 +144,10 @@ module.exports = {
         }));
     },
     executeSlash: async (interaction, args) => {
-        if(interaction.isUserContextMenu()){
-            args.user = (interaction.targetUser.member = interaction.targetMember, interaction.targetUser);
-            args.case_type = 'all';
-        }
+        if(interaction.isUserContextMenu()) args = {
+            user: (interaction.targetUser.member = interaction.targetMember, interaction.targetUser),
+            case_type: 'all',
+        };
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args.case_type)) throw new Error('Invalid slash command options');
         const filter = (args.time_filter_unit ?? args.time_filter_value) ? (Date.now() - ((args.time_filter_unit ?? 86400000) * (args.time_filter_value ?? 1))) : 0;

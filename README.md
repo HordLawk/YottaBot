@@ -6,11 +6,11 @@
 [![DevServer](https://discordapp.com/api/guilds/476244157245947904/widget.png?style=shield)](https://discord.gg/eNcsvsy)
 
 ## Get started
-Like any other bot, the `help` command will list all the other commands and using `help (command)` will show you the correct usage for a specified command, note that all commands have to be prefixed with your server's prefix ~~(duh)~~ and the default prefix is `y!`
+Like any other bot, the `help` command will list all the other commands and using `help (command)` will show you the correct usage for a specified command, note that all non slash commands have to be prefixed with your server's prefix ~~(duh)~~ and the default prefix is `y!`
 
 It is recommended to first have a look at the `configs` command so you can customize the bot's behaviour to your liking before using its features
 
-The default permission for any command is usually the closest normal Discord permission you would need to have to do whatever a command does without using the bot, for example, the default required permission for the `mute` command is Manage Roles, because that is the permission you would need to have to manually give the mute role to a member, however, you might not want to give this dangerous permission to every staff member you want to be able to mute people, in this case, the `perm` command will let you overwrite the default permission requirements for any command
+The default permission for any command is usually the closest normal Discord permission you would need to have to do whatever a command does without using the bot, for example, the default required permission for the `rolemenu` command is Manage Roles, because that is the permission you would need to have to manually give roles to a member, however, you might not want to give this dangerous permission to every staff member you want to be able to create selfrole menus, in this case, the `perm` command will let you overwrite the default permission requirements for any command
 
 ## Wiki
 * [Glossary](https://github.com/HordLawk/YottaBot/wiki/Glossary)
@@ -47,3 +47,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] add actionlog for edited messages
 - [ ] xp multiplier for selected roles
 - [ ] react to any messages in selected channels
+
+## Credits
+- @CripBoy for helping me with a lot issues I had in the early stages of development (I was dumb(er))
+- @Rox0z for having coded the base of the slash commands handler I use for YottaBot while I was being lazy

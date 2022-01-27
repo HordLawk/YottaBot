@@ -80,7 +80,7 @@ module.exports = {
         setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
         const args = {};
         const options = subCommandName ? interaction.options.data[0].options : interaction.options.data;
-        if(options.length > 0) options.forEach(opt => {
+        if(options?.length > 0) options.forEach(opt => {
             args[opt.name] = opt[opt.type.toLowerCase()] ? opt[opt.type.toLowerCase()] : opt.value;
             if(opt.type === 'USER' && opt.member) args[opt.name].member = opt.member;
         });

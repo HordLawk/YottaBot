@@ -260,23 +260,51 @@ module.exports = {
             break;
             case 'reset': {
                 if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.reply(channelLanguage.get('botReactions'));
-                let msg = await message.reply(channelLanguage.get('resetXpConfirm'));
-                await msg.react('✅');
-                await msg.react('❌');
-                let col = msg.createReactionCollector({
-                    filter: (r, u) => (['✅', '❌'].includes(r.emoji.name) && (u.id === message.author.id)),
-                    time: 10000,
+                const msg = await message.reply({
+                    content: channelLanguage.get('resetXpConfirm'),
+                    components: [{
+                        type: 'ACTION_ROW',
+                        components: [
+                            {
+                                type: 'BUTTON',
+                                label: channelLanguage.get('confirm'),
+                                style: 'SUCCESS',
+                                emoji: '✅',
+                                customId: 'confirm',
+                            },
+                            {
+                                type: 'BUTTON',
+                                label: channelLanguage.get('cancel'),
+                                style: 'DANGER',
+                                emoji: '❌',
+                                customId: 'cancel',
+                            },
+                        ],
+                    }],
+                });
+                const col = msg.createMessageComponentCollector({
+                    filter: componentInteraction => (componentInteraction.user.id === message.author.id),
+                    idle: 10000,
                     max: 1,
+                    componentType: 'BUTTON',
                 });
                 col.on('end', async c => {
-                    await msg.reactions.removeAll();
-                    if(!c.size) return msg.edit(channelLanguage.get('timedOut'));
-                    if(c.first().emoji.name === '❌') return msg.edit(channelLanguage.get('cancelled'));
+                    if(!c.size) return msg.edit({
+                        content: channelLanguage.get('timedOut'),
+                        components: [],
+                    });
+                    if(c.first().customId === 'cancel') return c.first().update({
+                        content: channelLanguage.get('cancelled'),
+                        components: [],
+                    });
                     await member.updateMany({
                         guild: message.guild.id,
                         xp: {$ne: 0},
                     }, {$set: {xp: 0}});
-                    msg.edit(channelLanguage.get('resetXp'));
+                    c.first().update({
+                        content: channelLanguage.get('resetXp'),
+                        components: [],
+                    });
                 });
             }
             break;

@@ -8,10 +8,11 @@ const {Collection, Permissions} = require('discord.js');
 module.exports = {
     name: 'messageCreate',
     execute: async message => {
-        if(message.author.bot || (message.type != 'DEFAULT') || (message.guild && (!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES) || !message.guild.available))) return;
+        if(message.author.bot || (message.type != 'DEFAULT') || (message.guild && !message.guild.available)) return;
         var prefix = message.client.configs.defaultPrefix;
         var roleDocs;
         var savedChannel;
+        if(message.channel.partial) await message.channel.fetch();
         if(message.guild){
             if(!message.client.guildData.has(message.guild.id)){
                 let guildData = new guild({
@@ -52,18 +53,22 @@ module.exports = {
                 await message.member.roles.set(message.member.roles.cache.map(e => e.id).filter(e => !lowerRoles.some(ee => (e === ee.roleID))).concat(lowerRoles.map(e => e.roleID).slice(0, message.client.guildData.get(message.guild.id).dontStack ? 1 : undefined)));
                 if(!message.client.guildData.get(message.guild.id).xpChannel || (doc.xp != lowerRoles[0].xp)) return;
                 switch(message.client.guildData.get(message.guild.id).xpChannel){
-                    case 'default': message.reply(channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]));
+                    case 'default': {
+                        if(message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES)) message.reply(channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]));
+                    }
                     break;
-                    case 'dm': message.author.send(channelLanguage.get('achieveDM', [message.guild.roles.cache.get(lowerRoles[0].roleID).name, message.guild.name])).catch(() => null);
+                    case 'dm': {
+                        message.author.send(channelLanguage.get('achieveDM', [message.guild.roles.cache.get(lowerRoles[0].roleID).name, message.guild.name])).catch(() => null);
+                    }
                     break;
                     default: {
-                        let notifChannel = message.client.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel);
-                        if(notifChannel) notifChannel.send(channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]));
+                        const notifChannel = message.client.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel);
+                        if(notifChannel && message.guild.me.permissionsIn(notifChannel).has(Permissions.FLAGS.SEND_MESSAGES)) notifChannel.send(channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]));
                     }
                 }
             });
         }
-        if(message.channel.partial) await message.channel.fetch();
+        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES)) return;
         if((new RegExp(`<@!?${message.client.user.id}>`)).test(message.content)) return message.reply(channelLanguage.get('mentionHelp', [prefix]));
         if(!message.content.toLowerCase().startsWith(prefix.toLowerCase())) return;
         const userDoc = await user.findById(message.author.id);

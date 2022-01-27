@@ -242,6 +242,7 @@ module.exports = {
             content: channelLanguage.get('xpDisabled'),
             ephemeral: true,
         });
+        await interaction.deferReply();
         const members = await interaction.guild.members.fetch().then(res => res.map(e => e.id));
         interaction.guild.members.cache.sweep(e => ((e.id != interaction.client.user.id) || interaction.guild.voiceStates.cache.has(e.id)));
         const pageSize = 20;
@@ -271,9 +272,8 @@ module.exports = {
             });
             embed.setFooter({text: channelLanguage.get('xpRankEmbedFooter', [rank + 1])});
         }
-        const msg = await interaction.reply({
+        const msg = await interaction.editReply({
             embeds: [embed],
-            fetchReply: true,
             components: [{
                 type: 'ACTION_ROW',
                 components: [
@@ -295,6 +295,7 @@ module.exports = {
                     },
                 ],
             }],
+            fetchReply: true,
         });
         if(memberDocs.length <= pageSize) return;
         const col = msg.createMessageComponentCollector({

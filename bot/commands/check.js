@@ -183,7 +183,6 @@ module.exports = {
             })));
         const msg = await interaction.reply({
             embeds: [embed],
-            fetchReply: true,
             components: [{
                 type: 'ACTION_ROW',
                 components: [
@@ -205,6 +204,8 @@ module.exports = {
                     },
                 ],
             }],
+            fetchReply: true,
+            ephemeral: true,
         });
         if(logDocs.length <= pageSize) return;
         const col = msg.createMessageComponentCollector({

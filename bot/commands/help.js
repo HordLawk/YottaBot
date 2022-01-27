@@ -16,7 +16,7 @@ module.exports = {
         let embed;
         if(!args.length){
             let perms = await message.client.generateInvite({
-                scopes: ['bot'],
+                scopes: ['bot', 'applications.commands'],
                 permissions: Permissions.ALL,
             });
             embed = new MessageEmbed()
@@ -63,7 +63,7 @@ module.exports = {
         let embed;
         if(!args.command){
             let perms = await interaction.client.generateInvite({
-                scopes: ['bot'],
+                scopes: ['bot', 'applications.commands'],
                 permissions: Permissions.ALL,
             });
             embed = new MessageEmbed()

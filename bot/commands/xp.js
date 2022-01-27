@@ -19,27 +19,27 @@ module.exports = {
         switch(args[0]){
             case 'rank': {
                 if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.reply(channelLanguage.get('botReactions'));
-                let members = await message.guild.members.fetch().then(res => res.map(e => e.id));
+                const members = await message.guild.members.fetch().then(res => res.map(e => e.id));
                 message.guild.members.cache.sweep(e => ((e.id != message.client.user.id) || message.guild.voiceStates.cache.has(e.id)));
-                let pageSize = 20;
+                const pageSize = 20;
                 let memberDocs = await member.find({
                     guild: message.guild.id,
                     userID: {$in: members},
                     xp: {$ne: 0},
-                }, 'userID xp').sort({xp: -1}).limit(pageSize);
-                let memberDoc = await member.findOne({
+                }, 'userID xp').sort({xp: -1}).limit(pageSize + 1);
+                const memberDoc = await member.findOne({
                     guild: message.guild.id,
                     userID: message.author.id,
                     xp: {$gt: 0},
                 });
-                let embed = new MessageEmbed()
+                const embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor({
                         name: channelLanguage.get('xpRankEmbedAuthor'),
                         iconURL: message.guild.iconURL({dynamic: true}),
                     })
                     .setTimestamp()
-                    .setDescription(memberDocs.map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${e.xp}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
+                    .setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${e.xp}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
                 if(memberDoc){
                     let rank = await member.countDocuments({
                         guild: message.guild.id,
@@ -48,23 +48,45 @@ module.exports = {
                     });
                     embed.setFooter({text: channelLanguage.get('xpRankEmbedFooter', [rank + 1])});
                 }
-                let msg = await message.reply({embeds: [embed]});
-                await msg.react('⬅');
-                await msg.react('➡');
-                let col = msg.createReactionCollector({
-                    filter: (r, u) => (['➡', '⬅'].includes(r.emoji.name) && (u.id === message.author.id)),
+                const msg = await message.reply({
+                    embeds: [embed],
+                    components: [{
+                        type: 'ACTION_ROW',
+                        components: [
+                            {
+                                type: 'BUTTON',
+                                label: channelLanguage.get('previous'),
+                                style: 'PRIMARY',
+                                emoji: '⬅',
+                                customId: 'previous',
+                                disabled: true,
+                            },
+                            {
+                                type: 'BUTTON',
+                                label: channelLanguage.get('next'),
+                                style: 'PRIMARY',
+                                emoji: '➡',
+                                customId: 'next',
+                                disabled: (memberDocs.length <= pageSize),
+                            },
+                        ],
+                    }],
+                });
+                if(memberDocs.length <= pageSize) return;
+                const col = msg.createMessageComponentCollector({
+                    filter: componentInteraction => (componentInteraction.user.id === message.author.id),
                     time: 600000,
+                    componentType: 'BUTTON',
                 });
                 let page = 0;
-                col.on('collect', async r => {
-                    await r.users.remove(message.author);
-                    if(r.emoji.name === '➡'){
+                col.on('collect', async buttonInteraction => {
+                    if(buttonInteraction.customId === 'next'){
+                        if(memberDocs.length <= pageSize) return;
                         memberDocs = await member.find({
                             guild: message.guild.id,
                             userID: {$in: members},
                             xp: {$ne: 0},
-                        }, 'userID xp').sort({xp: -1}).skip((page + 1) * pageSize).limit(pageSize);
-                        if(!memberDocs.length) return;
+                        }, 'userID xp').sort({xp: -1}).skip((page + 1) * pageSize).limit(pageSize + 1);
                         page++;
                     }
                     else{
@@ -73,13 +95,59 @@ module.exports = {
                             guild: message.guild.id,
                             userID: {$in: members},
                             xp: {$ne: 0},
-                        }, 'userID xp').sort({xp: -1}).skip((page - 1) * pageSize).limit(pageSize);
+                        }, 'userID xp').sort({xp: -1}).skip((page - 1) * pageSize).limit(pageSize + 1);
                         page--;
                     }
-                    embed.setDescription(memberDocs.map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${e.xp}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
-                    await msg.edit({embeds: [embed]});
+                    embed.setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${e.xp}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
+                    await buttonInteraction.update({
+                        embeds: [embed],
+                        components: [{
+                            type: 'ACTION_ROW',
+                            components: [
+                                {
+                                    type: 'BUTTON',
+                                    label: channelLanguage.get('previous'),
+                                    style: 'PRIMARY',
+                                    emoji: '⬅',
+                                    customId: 'previous',
+                                    disabled: !page,
+                                },
+                                {
+                                    type: 'BUTTON',
+                                    label: channelLanguage.get('next'),
+                                    style: 'PRIMARY',
+                                    emoji: '➡',
+                                    customId: 'next',
+                                    disabled: (memberDocs.length <= pageSize),
+                                },
+                            ],
+                        }],
+                    });
                 });
-                col.on('end', () => msg.reactions.removeAll());
+                col.on('end', () => msg.edit({
+                    embeds: [embed],
+                    components: [{
+                        type: 'ACTION_ROW',
+                        components: [
+                            {
+                                type: 'BUTTON',
+                                label: channelLanguage.get('previous'),
+                                style: 'PRIMARY',
+                                emoji: '⬅',
+                                customId: 'previous',
+                                disabled: true,
+                            },
+                            {
+                                type: 'BUTTON',
+                                label: channelLanguage.get('next'),
+                                style: 'PRIMARY',
+                                emoji: '➡',
+                                customId: 'next',
+                                disabled: true,
+                            },
+                        ],
+                    }],
+                }));
             }
             break;
             case 'roles': {

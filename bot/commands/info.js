@@ -11,7 +11,7 @@ module.exports = {
         const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         const invite = await message.client.generateInvite({
-            scopes: ['bot'],
+            scopes: ['bot', 'applications.commands'],
             permissions: Permissions.ALL,
         });
         const embed = new MessageEmbed()
@@ -35,7 +35,7 @@ module.exports = {
     executeSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         const invite = await interaction.client.generateInvite({
-            scopes: ['bot'],
+            scopes: ['bot', 'applications.commands'],
             permissions: Permissions.ALL,
         });
         const embed = new MessageEmbed()

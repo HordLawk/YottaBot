@@ -42,9 +42,9 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] command to delete cases
 - [ ] command to manage emojis
 - [ ] `profile` command
-- [ ] `userinfo` command
 - [ ] add actionlog for edited messages
 - [ ] xp multiplier for selected roles
+- [ ] mass ban limiter to mitagate damage from compromised mod accounts
 
 ## Credits
 - [@CripBoy](https://github.com/CripBoy) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

@@ -54,7 +54,10 @@ module.exports = {
                 if(!message.client.guildData.get(message.guild.id).xpChannel || (doc.xp != lowerRoles[0].xp)) return;
                 switch(message.client.guildData.get(message.guild.id).xpChannel){
                     case 'default': {
-                        if(message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES)) message.reply(channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]));
+                        if(message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES)) message.reply({
+                            content: channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]),
+                            allowedMentions: {repliedUser: true},
+                        });
                     }
                     break;
                     case 'dm': {
@@ -63,7 +66,10 @@ module.exports = {
                     break;
                     default: {
                         const notifChannel = message.client.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel);
-                        if(notifChannel && message.guild.me.permissionsIn(notifChannel).has(Permissions.FLAGS.SEND_MESSAGES)) notifChannel.send(channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]));
+                        if(notifChannel && message.guild.me.permissionsIn(notifChannel).has(Permissions.FLAGS.SEND_MESSAGES)) notifChannel.send({
+                            content: channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]),
+                            allowedMentions: {users: [message.author.id]},
+                        });
                     }
                 }
             });

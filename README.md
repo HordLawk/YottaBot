@@ -32,10 +32,9 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [x] add actionlog for bulkdelete
 - [x] update to djs v13
 - [x] change mute roles to native timeout and answer commands with replys
-- [ ] use slash commands; context menus; buttons; and stuff
+- [ ] use slash commands; context menus; buttons; and stuff (on hold until Discord improves slash permissions)
 - [ ] apply for messages priviledge intent
 - [ ] setup a patreon
-- [ ] make mute durations editable
 - [ ] add rss feeds for youtube notifications
 - [ ] `prune` command
 - [ ] command to edit slowmode
@@ -46,7 +45,6 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] `userinfo` command
 - [ ] add actionlog for edited messages
 - [ ] xp multiplier for selected roles
-- [ ] react to any messages in selected channels
 
 ## Credits
 - [@CripBoy](https://github.com/CripBoy) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

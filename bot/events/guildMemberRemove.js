@@ -6,7 +6,7 @@ module.exports = {
     name: 'guildMemberRemove',
     execute: async member => {
         if(member.partial) member = await member.fetch().catch(() => null);
-        if(!member || (member.id === member.client.user.id) || !member.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)) return;
+        if(!member || (member.id === member.client.user.id) || !member.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG) || !member.client.guildData.has(member.guild.id)) return;
         const audits = await member.guild.fetchAuditLogs({limit: 1});
         if((audits.entries.first()?.action != 'MEMBER_KICK') || (audits.entries.first()?.target.id != member.id) || audits.entries.first()?.executor.bot) return;
         const reason = audits.entries.first().reason?.slice(0, 500);

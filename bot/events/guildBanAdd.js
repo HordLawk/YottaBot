@@ -6,8 +6,7 @@ module.exports = {
     name: 'guildBanAdd',
     execute: async ban => {
         if(ban.partial) ban = await ban.fetch().catch(() => null);
-        if(!ban) return;
-        if(!ban.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)) return;
+        if(!ban || (ban.user.id === ban.client.user.id) || !ban.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG) || !ban.client.guildData.has(ban.guild.id)) return;
         const audits = await ban.guild.fetchAuditLogs({
             limit: 1,
             type: 'MEMBER_BAN_ADD',

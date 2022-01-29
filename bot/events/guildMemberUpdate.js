@@ -22,7 +22,7 @@ module.exports = {
             newMember.send(newMember.client.langs[newMember.client.guildData.get(newMember.client.configs.supportID).language].get('firstBoost', [newMember, newMember.guild.name])).catch(() => null);
         }
         else if(oldMember.communicationDisabledUntilTimestamp != newMember.communicationDisabledUntilTimestamp){
-            if(!newMember.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)) return;
+            if(!newMember.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG) || !newMember.client.guildData.has(newMember.guild.id)) return;
             const audits = await newMember.guild.fetchAuditLogs({
                 limit: 1,
                 type: 'MEMBER_UPDATE',

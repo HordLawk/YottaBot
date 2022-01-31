@@ -241,10 +241,15 @@ module.exports = {
     },
     rankSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
-        if(!interaction.client.guildData.get(interaction.guild.id).gainExp && !interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown) return message.reply({
+        if(!interaction.client.guildData.get(interaction.guild.id).gainExp && !interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown) return interaction.reply({
             content: channelLanguage.get('xpDisabled'),
             ephemeral: true,
         });
+        if(interaction.client.guildData.get(interaction.guild.id).processing) return interaction.reply({
+            content: channelLanguage.get('processing'),
+            ephemeral: true,
+        });
+        interaction.client.guildData.get(interaction.guild.id).processing = true;
         await interaction.deferReply();
         const members = await interaction.guild.members.fetch().then(res => res.map(e => e.id));
         interaction.guild.members.cache.sweep(e => ((e.id != interaction.client.user.id) || interaction.guild.voiceStates.cache.has(e.id)));
@@ -275,6 +280,7 @@ module.exports = {
             });
             embed.setFooter({text: channelLanguage.get('xpRankEmbedFooter', [rank + 1])});
         }
+        interaction.client.guildData.get(interaction.guild.id).processing = false;
         const msg = await interaction.editReply({
             embeds: [embed],
             components: [{

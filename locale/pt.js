@@ -387,6 +387,7 @@ module.exports = {
             case 'voicexpEnableSuccess': return `O ganho de xp em canais de voz foi ativado e seu cooldown definido como ${vars[0]}`;
             case 'voicexpDisableSuccess': return 'O ganho de xp em canais de voz foi desativado';
             case 'slashOnly': return `O comando \`${vars[0]}\` pode ser executado apenas por meio da função nativa de comandos de barra de Discord\nDigite \`/${vars[0]}\` para usa-lo`;
+            case 'processing': return 'Esse comando já está atualmente sendo processado em algum lugar desse servidor\nTente novamente mais tarde';
         }
     },
 };

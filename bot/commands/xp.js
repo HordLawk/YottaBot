@@ -19,6 +19,8 @@ module.exports = {
         switch(args[0]){
             case 'rank': {
                 if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.reply(channelLanguage.get('botReactions'));
+                if(message.client.guildData.get(message.guild.id).processing) return message.reply(channelLanguage.get('processing'));
+                message.client.guildData.get(message.guild.id).processing = true;
                 const members = await message.guild.members.fetch().then(res => res.map(e => e.id));
                 message.guild.members.cache.sweep(e => ((e.id != message.client.user.id) || message.guild.voiceStates.cache.has(e.id)));
                 const pageSize = 20;
@@ -48,6 +50,7 @@ module.exports = {
                     });
                     embed.setFooter({text: channelLanguage.get('xpRankEmbedFooter', [rank + 1])});
                 }
+                message.client.guildData.get(message.guild.id).processing = false;
                 const msg = await message.reply({
                     embeds: [embed],
                     components: [{

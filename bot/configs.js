@@ -1,5 +1,5 @@
 module.exports = {
-    maintenance: true,
+    maintenance: false,
     errorlog: '667650244028268565',
     guildlog: '854893736588214282',
     bootlog: '854894584248664095',

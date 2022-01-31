@@ -387,6 +387,7 @@ module.exports = {
             case 'voicexpEnableSuccess': return `Xp earning in voice channels was enabled and its cooldown was set to ${vars[0]}`;
             case 'voicexpDisableSuccess': return 'Xp earning in voice channels disabled';
             case 'slashOnly': return `The \`${vars[0]}\` command can only be executed through Discord's built in slash commands feature\nType \`/${vars[0]}\` to use it`;
+            case 'processing': return 'This command is currently already being processed somewhere in this server\nTry again later';
         }
     },
 };

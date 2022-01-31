@@ -13,7 +13,7 @@ module.exports = {
             ephemeral: true,
         });
         try{
-            const slash = await ((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.guild).commands.create({
+            const slash = await (((process.env.NODE_ENV === 'production') && !command.dev) ? interaction.client.application : interaction.guild).commands.create({
                 type: args.type,
                 ...((args.type === 'CHAT_INPUT') ? {
                     name: command.name,
@@ -127,12 +127,10 @@ module.exports = {
             ],
         },
     ],
-    addAutocomplete: {
-        name: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => e.name.startsWith(value)).first(25).map(e => ({
-            name: e.name,
-            value: e.name,
-        }))),
-    },
+    addAutocomplete: {name: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => e.name.startsWith(value)).first(25).map(e => ({
+        name: e.name,
+        value: e.name,
+    })))},
     editAutocomplete: {
         slash_name: (interaction, value) => interaction.respond(((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.filter(e => e.name.startsWith(value) && (e.type === interaction.options.data[0].options.find(ee => (ee.name === 'type')).value)).first(25).map(e => ({
             name: e.name,

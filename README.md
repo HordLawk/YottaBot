@@ -38,12 +38,13 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] add rss feeds for youtube notifications
 - [ ] `prune` command
 - [ ] command to edit slowmode
-- [ ] `poll` command
+- [ ] add actionlog for edited messages
 - [ ] command to delete cases
+- [ ] `poll` command
+- [ ] `check` for moderated cases instead of issued cases
+- [ ] xp multiplier for selected roles
 - [ ] command to manage emojis
 - [ ] `profile` command
-- [ ] add actionlog for edited messages
-- [ ] xp multiplier for selected roles
 - [ ] mass ban limiter to mitagate damage from compromised mod accounts
 
 ## Credits

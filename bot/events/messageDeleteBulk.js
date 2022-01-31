@@ -36,7 +36,7 @@ module.exports = {
             avatarURL: client.user.avatarURL(),
             files: [{
                 name: 'bulkDeletedMessages.log',
-                attachment: Buffer.from(relevantMessages.map(e => `${channelLanguage.get('delmsgEmbedAuthorTitle')}: ${e.author.tag} (${e.author.id})\n${channelLanguage.get('delmsgEmbedChannelTitle')}: ${e.channel.name} (${e.channel.id})${executor ? `\n${channelLanguage.get('delmsgEmbedExecutorTitle')}: ${executor.tag} (${executor.id})` : ''}\n${channelLanguage.get('delmsgEmbedSentTitle')}: ${e.createdAt.toUTCString()}${e.content ? `\n==================================================\n${e.content}\n==================================================` : ''}${[...e.attachments.values()].map((ee, i) => `\nAttachment-${i + 1}-${ee.height ? `Media: ${ee.url.replace('cdn', 'media').replace('com', 'net')}` : `File: ${ee.url}`}`).join('')}`).join('\n\n'))
+                attachment: Buffer.from(relevantMessages.reverse().map(e => `${channelLanguage.get('delmsgEmbedAuthorTitle')}: ${e.author.tag} (${e.author.id})\n${channelLanguage.get('delmsgEmbedChannelTitle')}: ${e.channel.name} (${e.channel.id})${executor ? `\n${channelLanguage.get('delmsgEmbedExecutorTitle')}: ${executor.tag} (${executor.id})` : ''}\n${channelLanguage.get('delmsgEmbedSentTitle')}: ${e.createdAt.toUTCString()}${e.content ? `\n================================================\n${e.content}\n================================================` : ''}${[...e.attachments.values()].map((ee, i) => `\nAttachment-${i + 1}-${ee.height ? `Media: ${ee.url.replace('cdn', 'media').replace('com', 'net')}` : `File: ${ee.url}`}`).join('')}`).join('\n\n'))
             }],
         });
     }

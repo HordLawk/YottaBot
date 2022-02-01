@@ -84,6 +84,7 @@ module.exports = {
             case 'msgxpUsage8': return 'stack <on/off>';
             case 'msgxpUsage9': return 'reset';
             case 'msgxpUsage10': return 'recommend (role amount) (max xp)';
+            case 'msgxpUsage11': return 'multiplier (role) (value)';
             case 'xpEnable': return `Server xp system successfully ${(vars[0] === 'on') ? 'enabled': 'disabled'}`
             case 'xpStack': return `Role stacking successfully ${(vars[0] === 'on') ? 'enabled': 'disabled'}`
             case 'manageRole': return 'I need permissions to manage this role';

@@ -11,7 +11,7 @@ module.exports = {
             limit: 1,
             type: 'MEMBER_BAN_ADD',
         });
-        if(audits.entries.first()?.executor.bot) return;
+        if(!audits.entries.first() || audits.entries.first().executor.bot) return;
         if(ban.client.guildData.get(ban.guild.id).antiMassBan){
             if(ban.client.guildData.get(ban.guild.id).bantimes){
                 if(ban.client.guildData.get(ban.guild.id).bantimes.has(audits.entries.first().executor.id)){

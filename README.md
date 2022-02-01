@@ -29,7 +29,6 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - You agree to not submit any issues, features, or pull requests related to bugs exclusively related to self-hosting.
 
 ## W.I.P
-- [x] change mute roles to native timeout and answer commands with replys
 - [ ] use slash commands; context menus; buttons; and stuff (on hold until Discord improves slash permissions)
 - [ ] apply for messages priviledge intent
 - [ ] setup a patreon
@@ -40,7 +39,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] command to delete cases
 - [ ] `poll` command
 - [x] `check` for moderated cases instead of issued cases
-- [ ] xp multiplier for selected roles
+- [x] xp multiplier for selected roles
 - [ ] command to manage emojis
 - [ ] `profile` command
 - [x] mass ban limiter to mitagate damage from compromised mod accounts

@@ -21,6 +21,7 @@ const roleSchema = new Schema({
     })],
     xp: Number,
     ignoreXp: Boolean,
+    xpMultiplier: Number,
 });
 
 module.exports = model('role', roleSchema);

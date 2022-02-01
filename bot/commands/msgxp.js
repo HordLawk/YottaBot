@@ -37,8 +37,10 @@ module.exports = {
                 if(!args[2]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 switch(args[1]){
                     case 'set': {
-                        if(isNaN(parseInt(args[3], 10)) || !isFinite(parseInt(args[3], 10)) || (parseInt(args[3], 10) < 1)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                        let roleName = message.content.toLowerCase().replace(/^(?:\S+\s+){3}(.+)\s+\S+$/, '$1');
+                        const match = message.content.toLowerCase().match(/^(?:\S+\s+){3}(.+)\s+(\d+)$/);
+                        if(!match) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                        if(isNaN(parseInt(match[2], 10)) || !isFinite(parseInt(match[2], 10)) || (parseInt(match[2], 10) < 1)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                        const roleName = match[1];
                         let discordRole = message.guild.roles.cache.get(args[2].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
                         if(!discordRole || (discordRole.id === message.guild.id)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                         if(!discordRole.editable || discordRole.managed) return message.reply(channelLanguage.get('manageRole'));
@@ -48,10 +50,10 @@ module.exports = {
                             roleID: {$in: message.guild.roles.cache.map(e => e.id)},
                             xp: {$ne: null},
                         });
-                        if(roleDocs.some(e => (e.xp === parseInt(args[3], 10)))) return message.reply(channelLanguage.get('sameXp'));
+                        if(roleDocs.some(e => (e.xp === parseInt(match[2], 10)))) return message.reply(channelLanguage.get('sameXp'));
                         let oldRole = roleDocs.find(e => (e.roleID === discordRole.id));
                         if(oldRole){
-                            oldRole.xp = parseInt(args[3], 10);
+                            oldRole.xp = parseInt(match[2], 10);
                             await oldRole.save();
                         }
                         else{
@@ -59,11 +61,11 @@ module.exports = {
                             let newRole = new role({
                                 guild: message.guild.id,
                                 roleID: discordRole.id,
-                                xp: parseInt(args[3], 10),
+                                xp: parseInt(match[2], 10),
                             });
                             await newRole.save();
                         }
-                        message.reply(channelLanguage.get('setXpRole', [discordRole.name, parseInt(args[3], 10)]));
+                        message.reply(channelLanguage.get('setXpRole', [discordRole.name, parseInt(match[2], 10)]));
                     }
                     break;
                     case 'remove': {
@@ -220,6 +222,24 @@ module.exports = {
                     realLevels.push(levels[Math.round(index - 1)]);
                 }
                 message.reply(channelLanguage.get('recommendSuccess', [realLevels]));
+            }
+            break;
+            case 'multiplier': {
+                const match = message.content.toLowerCase().match(/^(?:\S+\s+){2}(.+)\s+(\d+)$/);
+                if(!match) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(isNaN(parseInt(match[2], 10)) || !isFinite(parseInt(match[2], 10)) || (parseInt(match[2], 10) < 1)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                const roleName = match[1];
+                const discordRole = message.guild.roles.cache.get(args[1].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
+                if(!discordRole || (discordRole.id === message.guild.id)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                const roleDoc = await role.findOneAndUpdate({
+                    guild: message.guild.id,
+                    roleID: discordRole.id,
+                }, {$set: {xpMultiplier: parseInt(match[2], 10)}}, {
+                    upsert: true,
+                    setDefaultsOnInsert: true,
+                    new: true,
+                });
+                message.reply(channelLanguage.get('multiplierSuccess', [discordRole, roleDoc.xpMultiplier]));
             }
             break;
             case 'view': {

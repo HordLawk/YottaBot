@@ -36,7 +36,7 @@ module.exports = {
             member.findOneAndUpdate({
                 guild: message.guild.id,
                 userID: message.author.id,
-            }, {$inc: {xp: 1}}, {
+            }, {$inc: {xp: roleDocs.filter(e => e.xpMultiplier).sort((a, b) => (b.xpMultiplier - a.xpMultiplier))[0]?.xpMultiplier ?? 1}}, {
                 new: true,
                 upsert: true,
                 setDefaultsOnInsert: true,

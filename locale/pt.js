@@ -107,6 +107,7 @@ module.exports = {
             case 'xpViewRoles': return 'Cargos conquistáveis';
             case 'xpViewIgnoredRoles': return 'Cargos ignorados';
             case 'xpViewIgnoredChannels': return 'Canais ignorados';
+            case 'xpViewMultipliedRoles': return 'Multiplicadores de xp';
             case 'resetXpConfirm': return 'Isso **__REDEFINIRÁ O XP DE TODOS OS USUÁRIOS__** para 0, você tem certeza que deseja prosseguir?';
             case 'timedOut': return 'Limite de tempo da operação atingido';
             case 'cancelled': return 'Operação cancelada';
@@ -131,13 +132,13 @@ module.exports = {
             case 'configsUsage2': return 'view';
             case 'configsUsage3': return 'mod logs (canal) <warn/mute/kick/ban> [(outros tipos de casos)]';
             case 'configsUsage4': return 'mod clearonban (dias)';
-            case 'configsUsage5': return 'massbanprotection on [(quantidade de bans em 10 segundos)]';
+            case 'configsUsage5': return 'massbanprotection on [(máximo de bans por moderador por 10 segundos)]';
             case 'longPrefix': return 'O prefixo não pode conter mais de 10 caracteres';
             case 'newPrefix': return 'Prefixo do servidor atualizado';
             case 'lang404': return 'Idioma não suportado';
             case 'newLang': return 'Idioma do servidor atualizado';
             case 'configsEmbedAuthor': return 'Configurações do servidor';
-            case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\nIdioma: \`${vars[1]}\`\nRegistrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\`\nCanal de registro de warn: ${vars[3].warn ? `<#${vars[3].warn}>` : '`nenhum`'}\nCanal de registro de mute: ${vars[3].mute ? `<#${vars[3].mute}>` : '`nenhum`'}\nCanal de registro de kick: ${vars[3].kick ? `<#${vars[3].kick}>` : '`nenhum`'}\nCanal de registro de ban: ${vars[3].ban ? `<#${vars[3].ban}>` : '`nenhum`'}\nNúmero de dias de mensagens deletadas em bans: \`${vars[4]}\`\nFunções beta: \`${vars[5] ? 'ativadas' : 'desativadas'}\``;
+            case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\nIdioma: \`${vars[1]}\`\nRegistrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\`\nCanal de registro de warn: ${vars[3].warn ? `<#${vars[3].warn}>` : '`nenhum`'}\nCanal de registro de mute: ${vars[3].mute ? `<#${vars[3].mute}>` : '`nenhum`'}\nCanal de registro de kick: ${vars[3].kick ? `<#${vars[3].kick}>` : '`nenhum`'}\nCanal de registro de ban: ${vars[3].ban ? `<#${vars[3].ban}>` : '`nenhum`'}\nNúmero de dias de mensagens deletadas em bans: \`${vars[4]}\`\nMáximo de bans por moderador por 10 segundos: \`${vars[5] ?? '∞'}\`\nFunções beta: \`${vars[6] ? 'ativadas' : 'desativadas'}\``;
             case 'betaCommand': return 'Esse comando atualmente está disponível apenas para servidor que ativaram funcionalidade beta nas configurações do bot';
             case 'premiumCommand': return `Esse comando é uma funcionalidade premium, use \`${vars[0]}premium\` para mais informações sobre se tornar premium`;
             case 'botWebhooks': return 'Eu preciso de permissão para gerenciar webhooks nesse canal';

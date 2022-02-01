@@ -268,6 +268,7 @@ module.exports = {
                     roleID: {$in: message.guild.roles.cache.map(e => e.id)},
                 }).sort({xp: -1});
                 if(roles.filter(e => e.xp).length) embed.addField(channelLanguage.get('xpViewRoles'), roles.filter(e => e.xp).map(e => `\`${(new Array(roles[0].xp.toString().length - e.xp.toString().length)).fill(' ').join('')}${e.xp}\` **-** <@&${e.roleID}>`).join('\n'));
+                if(roles.filter(e => (e.xpMultiplier && (e.xpMultiplier > 1))).length) embed.addField(channelLanguage.get('xpViewMultipliedRoles'), roles.filter(e => (e.xpMultiplier && (e.xpMultiplier > 1))).map(e => `<@&${e.roleID}> **-** \`${e.xpMultiplier}x\``).join('\n'));
                 if(roles.filter(e => e.ignoreXp).length) embed.addField(channelLanguage.get('xpViewIgnoredRoles'), roles.filter(e => e.ignoreXp).map(e => `<@&${e.roleID}>`).join(' '));
                 let channels = await channel.find({
                     _id: {$in: message.guild.channels.cache.filter(e => e.isText()).map(e => e.id)},

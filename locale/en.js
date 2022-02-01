@@ -107,6 +107,7 @@ module.exports = {
             case 'xpViewRoles': return 'Achieveable roles';
             case 'xpViewIgnoredRoles': return 'Ignored roles';
             case 'xpViewIgnoredChannels': return 'Ignored channels';
+            case 'xpViewMultipliedRoles': return 'Xp multipliers';
             case 'resetXpConfirm': return 'This will **__RESET ALL USERS XP__** to 0, are you sure you want to proceed?';
             case 'timedOut': return 'Operation timed out';
             case 'cancelled': return 'Operation cancelled';
@@ -131,13 +132,13 @@ module.exports = {
             case 'configsUsage2': return 'view';
             case 'configsUsage3': return 'mod logs (channel) <warn/mute/kick/ban> [(other case types)]';
             case 'configsUsage4': return 'mod clearonban (days)';
-            case 'configsUsage5': return 'massbanprotection on [(amount of bans in 10 seconds)]';
+            case 'configsUsage5': return 'massbanprotection on [(max bans per moderator per 10 seconds)]';
             case 'longPrefix': return 'A prefix can\'t have more than 10 characters';
             case 'newPrefix': return 'Server prefix updated';
             case 'lang404': return 'Language not supported';
             case 'newLang': return 'Server language updated';
             case 'configsEmbedAuthor': return 'Server settings';
-            case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\nLanguage: \`${vars[1]}\`\nLog attachments: \`${vars[2] ? 'on' : 'off'}\`\nWarn log channel: ${vars[3].warn ? `<#${vars[3].warn}>` : '`none`'}\nMute log channel: ${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\nKick log channel: ${vars[3].kick ? `<#${vars[3].kick}>` : '`none`'}\nBan log channel: ${vars[3].ban ? `<#${vars[3].ban}>` : '`none`'}\nDays of messages to delete on ban: \`${vars[4]}\`\nBeta features: \`${vars[5] ? 'on' : 'off'}\``;
+            case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\nLanguage: \`${vars[1]}\`\nLog attachments: \`${vars[2] ? 'on' : 'off'}\`\nWarn log channel: ${vars[3].warn ? `<#${vars[3].warn}>` : '`none`'}\nMute log channel: ${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\nKick log channel: ${vars[3].kick ? `<#${vars[3].kick}>` : '`none`'}\nBan log channel: ${vars[3].ban ? `<#${vars[3].ban}>` : '`none`'}\nDays of messages to delete on ban: \`${vars[4]}\`\nMax bans per moderator per 10 seconds: \`${vars[5] ?? '∞'}\`\nBeta features: \`${vars[6] ? 'on' : 'off'}\``;
             case 'betaCommand': return 'This command is currently only available for servers that enabled open beta features in the bot settings';
             case 'premiumCommand': return `This command is a premium feature, use \`${vars[0]}premium\` for more information on becoming premium`;
             case 'botWebhooks': return 'I need permission to manage webhooks in this channel';

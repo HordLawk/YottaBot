@@ -84,6 +84,7 @@ module.exports = {
             case 'msgxpUsage8': return 'stack <on/off>';
             case 'msgxpUsage9': return 'reset';
             case 'msgxpUsage10': return 'recommend (quantia de cargos) (xp máximo)';
+            case 'msgxpUsage11': return 'multiplier (cargo) (valor)';
             case 'xpEnable': return `Sistema de xp do servidor ${(vars[0] === 'on') ? 'ativado': 'desativado'}`
             case 'xpStack': return `Acumulo de cargos de xp ${(vars[0] === 'on') ? 'ativado': 'desativao'}`
             case 'manageRole': return 'Eu preciso de permissão para gerenciar esse cargo';

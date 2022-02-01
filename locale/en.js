@@ -130,6 +130,7 @@ module.exports = {
             case 'configsUsage2': return 'view';
             case 'configsUsage3': return 'mod logs (channel) <warn/mute/kick/ban> [(other case types)]';
             case 'configsUsage4': return 'mod clearonban (days)';
+            case 'configsUsage5': return 'massbanprotection on [(amount of bans in 10 seconds)]';
             case 'longPrefix': return 'A prefix can\'t have more than 10 characters';
             case 'newPrefix': return 'Server prefix updated';
             case 'lang404': return 'Language not supported';
@@ -366,6 +367,7 @@ module.exports = {
             case 'infoEmbedLibraryTitle': return 'Library';
             case 'infoEmbedLibraryValue': return `discord.js v${vars[0]}`;
             case 'infoEmbedDeveloperTitle': return 'Developer';
+            case 'infoEmbedDeveloperValue': return `[${vars[0]}](https://discord.com/users/${vars[1]})`;
             case 'infoEmbedUptimeTitle': return 'Last login';
             case 'infoEmbedUptimeValue': return `<t:${Math.floor(vars[0] / 1000)}:R>`;
             case 'infoEmbedRAMTitle': return 'RAM usage';
@@ -388,6 +390,8 @@ module.exports = {
             case 'voicexpDisableSuccess': return 'Xp earning in voice channels disabled';
             case 'slashOnly': return `The \`${vars[0]}\` command can only be executed through Discord's built in slash commands feature\nType \`/${vars[0]}\` to use it`;
             case 'processing': return 'This command is currently already being processed somewhere in this server\nTry again later';
+            case 'invMassBanProtectionAmount': return 'Invalid amount of bans in 10 seconds';
+            case 'massBanProtectionSuccess': return `Mass ban protection setting was turned \`${vars[0]}\``;
         }
     },
 };

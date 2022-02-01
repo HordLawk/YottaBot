@@ -6,8 +6,8 @@ module.exports = {
     name: 'configs',
     description: lang => lang.get('configsDescription'),
     aliases: ['config', 'settings', 'setting'],
-    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', lang.get('configsUsage3'), lang.get('configsUsage4'), 'beta <on/off>'],
-    example: ['prefix !', 'language pt', 'logattachments on', 'mod logs #warn-and-mute-logs warn mute'],
+    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', lang.get('configsUsage3'), lang.get('configsUsage4'), 'beta <on/off>', lang.get('configsUsage5')],
+    example: ['prefix !', 'language pt', 'logattachments on', 'mod logs #warn-and-mute-logs warn mute', 'massbanprotection on 20'],
     cooldown: 5,
     categoryID: 2,
     args: true,
@@ -37,7 +37,6 @@ module.exports = {
                     if(!message.client.guildData.get(message.guild.id).actionlogs.id('delmsg')) return message.reply(channelLanguage.get('logattachmentsNoHook'));
                     let hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookID || message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookToken || message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
                     if(!hook) return message.reply(channelLanguage.get('logattachmentsNoHook'));
-                    if(!message.guild.channels.cache.get(hook.channelId).nsfw) return message.reply(channelLanguage.get('logattachmentsNoNSFW'));
                     await guild.findByIdAndUpdate(message.guild.id, {$set: {logAttachments: true}});
                     message.client.guildData.get(message.guild.id).logAttachments = true;
                     message.reply(channelLanguage.get('logattachmentsOnSuccess'));
@@ -103,6 +102,13 @@ module.exports = {
                 if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {beta: (message.client.guildData.get(message.guild.id).beta = (args[1] === 'on'))}});
                 message.reply(channelLanguage.get('betaSuccess', [args[1]]));
+            }
+            break;
+            case 'massbanprotection': {
+                if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if((args[1] === 'on') && args[2] && (isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[2], 10) < 1))) return message.reply(channelLanguage.get('invMassBanProtectionAmount'));
+                await guild.findByIdAndUpdate(message.guild.id, {$set: {antiMassBan: (message.client.guildData.get(message.guild.id).antiMassBan = ((args[1] === 'on') ? (parseInt(args[2], 10) || 15) : null))}});
+                message.reply(channelLanguage.get('massBanProtectionSuccess', [args[1]]));
             }
             break;
             case 'view': {

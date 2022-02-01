@@ -31,8 +31,10 @@ module.exports = {
             autocomplete: true,
         },
     ],
-    commandAutocomplete: {guild: (interaction, value) => interaction.respond(interaction.client.guilds.cache.filter(e => e.name.startsWith(value)).first(25).map(e => ({
-        name: e.name,
-        value: e.id,
-    })))},
+    commandAutocomplete: {
+        guild: (interaction, value) => interaction.respond(interaction.client.guilds.cache.filter(e => e.name.startsWith(value)).first(25).map(e => ({
+            name: e.name,
+            value: e.id,
+        }))),
+    },
 };

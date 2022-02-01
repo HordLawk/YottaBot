@@ -130,6 +130,7 @@ module.exports = {
             case 'configsUsage2': return 'view';
             case 'configsUsage3': return 'mod logs (canal) <warn/mute/kick/ban> [(outros tipos de casos)]';
             case 'configsUsage4': return 'mod clearonban (dias)';
+            case 'configsUsage5': return 'massbanprotection on [(quantidade de bans em 10 segundos)]';
             case 'longPrefix': return 'O prefixo não pode conter mais de 10 caracteres';
             case 'newPrefix': return 'Prefixo do servidor atualizado';
             case 'lang404': return 'Idioma não suportado';
@@ -366,6 +367,7 @@ module.exports = {
             case 'infoEmbedLibraryTitle': return 'Biblioteca';
             case 'infoEmbedLibraryValue': return `discord.js v${vars[0]}`;
             case 'infoEmbedDeveloperTitle': return 'Desenvolvedor';
+            case 'infoEmbedDeveloperValue': return `[${vars[0]}](https://discord.com/users/${vars[1]})`;
             case 'infoEmbedUptimeTitle': return 'Último login';
             case 'infoEmbedUptimeValue': return `<t:${Math.floor(vars[0] / 1000)}:R>`;
             case 'infoEmbedRAMTitle': return 'Uso de RAM';
@@ -388,6 +390,8 @@ module.exports = {
             case 'voicexpDisableSuccess': return 'O ganho de xp em canais de voz foi desativado';
             case 'slashOnly': return `O comando \`${vars[0]}\` pode ser executado apenas por meio da função nativa de comandos de barra de Discord\nDigite \`/${vars[0]}\` para usa-lo`;
             case 'processing': return 'Esse comando já está atualmente sendo processado em algum lugar desse servidor\nTente novamente mais tarde';
+            case 'invMassBanProtectionAmount': return 'Quantidade inválida de bans em 10 segundos';
+            case 'massBanProtectionSuccess': return `Configuração de proteção de banimentos em massa foi ${(vars[0] === 'on') ? 'ativada' : 'desativada'}`;
         }
     },
 };

@@ -57,6 +57,7 @@ const guildSchema = new Schema({
     partner: Boolean,
     logAttachments: Boolean,
     voiceXpCooldown: Number,
+    antiMassBan: Number,
 });
 
 module.exports = model("guild", guildSchema);

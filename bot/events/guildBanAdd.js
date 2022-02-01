@@ -1,6 +1,6 @@
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
-const {MessageEmbed, Permissions} = require('discord.js');
+const {MessageEmbed, Permissions, Collection} = require('discord.js');
 
 module.exports = {
     name: 'guildBanAdd',
@@ -12,6 +12,25 @@ module.exports = {
             type: 'MEMBER_BAN_ADD',
         });
         if(audits.entries.first()?.executor.bot) return;
+        if(ban.client.guildData.get(ban.guild.id).antiMassBan){
+            if(ban.client.guildData.get(ban.guild.id).bantimes){
+                if(ban.client.guildData.get(ban.guild.id).bantimes.has(audits.entries.first().executor.id)){
+                    ban.client.guildData.get(ban.guild.id).bantimes.get(audits.entries.first().executor.id).push(audits.entries.first().createdTimestamp);
+                    const notNow = Date.now() - 10000;
+                    if((ban.client.guildData.get(ban.guild.id).bantimes.get(audits.entries.first().executor.id).filter(e => (e > notNow)).length > ban.client.guildData.get(ban.guild.id).antiMassBan) && ban.guild.me.permissions.has(Permissions.FLAGS.MANAGE_ROLES)){
+                        const executorMember = await ban.guild.members.fetch(audits.entries.first().executor.id);
+                        const kickRoles = executorMember.roles.cache.filter(e => e.permissions.has(Permissions.FLAGS.BAN_MEMBERS));
+                        if(kickRoles.every(e => (e.comparePositionTo(ban.guild.me.roles.highest) < 0))) await executorMember.roles.remove(kickRoles);
+                    }
+                }
+                else{
+                    ban.client.guildData.get(ban.guild.id).bantimes.set(audits.entries.first().executor.id, [audits.entries.first().createdTimestamp]);
+                }
+            }
+            else{
+                ban.client.guildData.get(ban.guild.id).bantimes = new Collection([[audits.entries.first().executor.id, [audits.entries.first().createdTimestamp]]]);
+            }
+        }
         const reason = ban.reason?.slice(0, 500);
         const guildDoc = await guild.findByIdAndUpdate(ban.guild.id, {$inc: {counterLogs: 1}});
         ban.client.guildData.get(ban.guild.id).counterLogs = guildDoc.counterLogs + 1;

@@ -52,7 +52,7 @@ module.exports = {
         if(executor) embed.addField('\u200B', '\u200B', true);
         var files = [];
         if(message.attachments.size){
-            if(message.client.guildData.get(message.guild.id).logAttachments && message.guild.channels.cache.get(hook.channelId).nsfw){
+            if(message.client.guildData.get(message.guild.id).logAttachments){
                 files = message.attachments.map(e => ({name: e.name, attachment: e.url}));
             }
             else{

@@ -19,8 +19,8 @@ module.exports = {
                     const notNow = Date.now() - 10000;
                     if((ban.client.guildData.get(ban.guild.id).bantimes.get(audits.entries.first().executor.id).filter(e => (e > notNow)).length > ban.client.guildData.get(ban.guild.id).antiMassBan) && ban.guild.me.permissions.has(Permissions.FLAGS.MANAGE_ROLES)){
                         const executorMember = await ban.guild.members.fetch(audits.entries.first().executor.id);
-                        const kickRoles = executorMember.roles.cache.filter(e => e.permissions.has(Permissions.FLAGS.BAN_MEMBERS));
-                        if(kickRoles.every(e => (e.comparePositionTo(ban.guild.me.roles.highest) < 0))) await executorMember.roles.remove(kickRoles);
+                        const banRoles = executorMember.roles.cache.filter(e => e.permissions.has(Permissions.FLAGS.BAN_MEMBERS));
+                        if(banRoles.every(e => (e.comparePositionTo(ban.guild.me.roles.highest) < 0))) await executorMember.roles.remove(banRoles);
                     }
                 }
                 else{

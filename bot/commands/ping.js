@@ -62,21 +62,4 @@ module.exports = {
         embed.setColor(hex(current)).setFooter({text: foot(current)}).addField(channelLanguage.get('current'), `${current}ms`, true);
         interaction.editReply({embeds: [embed]});
     },
-    // slashOptions: [
-    //     {
-    //         name: 'user',
-    //         type: 'USER',
-    //         description: "Test args"
-    //     },
-    //     {
-    //         name: 'channel',
-    //         type: 'CHANNEL',
-    //         description: "Test args"
-    //     },
-    //     {
-    //         name: 'string',
-    //         type: 'STRING',
-    //         description: "Test args"
-    //     },
-    // ]
 };

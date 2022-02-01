@@ -29,8 +29,6 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - You agree to not submit any issues, features, or pull requests related to bugs exclusively related to self-hosting.
 
 ## W.I.P
-- [x] add actionlog for bulkdelete
-- [x] update to djs v13
 - [x] change mute roles to native timeout and answer commands with replys
 - [ ] use slash commands; context menus; buttons; and stuff (on hold until Discord improves slash permissions)
 - [ ] apply for messages priviledge intent
@@ -41,11 +39,11 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] add actionlog for edited messages
 - [ ] command to delete cases
 - [ ] `poll` command
-- [ ] `check` for moderated cases instead of issued cases
+- [x] `check` for moderated cases instead of issued cases
 - [ ] xp multiplier for selected roles
 - [ ] command to manage emojis
 - [ ] `profile` command
-- [ ] mass ban limiter to mitagate damage from compromised mod accounts
+- [x] mass ban limiter to mitagate damage from compromised mod accounts
 
 ## Credits
 - [@CripBoy](https://github.com/CripBoy) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

@@ -153,9 +153,9 @@ module.exports = {
         const filter = (args.time_filter_unit ?? args.time_filter_value) ? (Date.now() - ((args.time_filter_unit ?? 86400000) * (args.time_filter_value ?? 1))) : 0;
         const logDocs = await log.find({
             guild: interaction.guild.id,
-            target: args.user.id,
             type: (args.case_type === 'all') ? {$ne: args.case_type} : {$eq: args.case_type},
             timeStamp: {$gte: filter},
+            ...(args.executor ? {executor: args.user.id} : {target: args.user.id}),
         }).sort({timeStamp: -1});
         if(!logDocs.length) return interaction.reply({
             content: channelLanguage.get('invLogs'),
@@ -168,6 +168,7 @@ module.exports = {
             return [d, h, m];
         }
         const pageSize = 10;
+        const fieldString = `checkEmbedCaseValue${args.executor ? 'Executor' : 'Target'}`;
         const embed = new MessageEmbed()
             .setColor(args.user.member?.displayColor ?? interaction.guild.me.displayColor ?? 0x8000ff)
             .setAuthor({
@@ -179,7 +180,7 @@ module.exports = {
             .setDescription(`${['all', 'warn'].includes(args.case_type) ? `Warns: \`${logDocs.filter(e => (e.type === 'warn')).length}\`\n` : ''}${['all', 'mute'].includes(args.case_type) ? `Mutes: \`${logDocs.filter(e => ((e.type === 'mute') && !e.removal)).length}\`\nUnmutes: \`${logDocs.filter(e => ((e.type === 'mute') && e.removal)).length}\`\n` : ''}${['all', 'kick'].includes(args.case_type) ? `Kicks: \`${logDocs.filter(e => (e.type === 'kick')).length}\`\n` : ''}${['all', 'ban'].includes(args.case_type) ? `Bans: \`${logDocs.filter(e => ((e.type === 'ban') && !e.removal)).length}\`\nUnbans: \`${logDocs.filter(e => ((e.type === 'ban') && e.removal)).length}\`\n` : ''}`)
             .addFields(logDocs.slice(0, pageSize).map(e => ({
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
-                value: channelLanguage.get('checkEmbedCaseValue', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
+                value: channelLanguage.get(fieldString, [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
             })));
         const msg = await interaction.reply({
             embeds: [embed],
@@ -225,7 +226,7 @@ module.exports = {
             }
             embed.setFields(logDocs.slice(page * pageSize, (page + 1) * pageSize).map(e => ({
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
-                value: channelLanguage.get('checkEmbedCaseValue', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
+                value: channelLanguage.get(fieldString, [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
             })));
             await button.update({
                 embeds: [embed],
@@ -340,6 +341,12 @@ module.exports = {
             type: 'NUMBER',
             name: 'time_filter_value',
             description: 'How much of the chosen unit. Defaults to 1.',
+            required: false,
+        },
+        {
+            type: 'BOOLEAN',
+            name: 'executor',
+            description: 'Whether the selected user should be the executor of the desired cases',
             required: false,
         },
     ],

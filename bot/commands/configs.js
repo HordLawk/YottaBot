@@ -6,7 +6,7 @@ module.exports = {
     name: 'configs',
     description: lang => lang.get('configsDescription'),
     aliases: ['config', 'settings', 'setting'],
-    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', lang.get('configsUsage3'), lang.get('configsUsage4'), 'beta <on/off>', lang.get('configsUsage5')],
+    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', lang.get('configsUsage3'), lang.get('configsUsage4'), 'beta <on/off>', lang.get('configsUsage5'), 'massbanprotection off'],
     example: ['prefix !', 'language pt', 'logattachments on', 'mod logs #warn-and-mute-logs warn mute', 'massbanprotection on 20'],
     cooldown: 5,
     categoryID: 2,

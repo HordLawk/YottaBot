@@ -43,6 +43,8 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] command to manage emojis
 - [ ] `profile` command
 - [x] mass ban limiter to mitagate damage from compromised mod accounts
+- [ ] automoderation features
+- [ ] automated punishments when reaching a chosen amount of another type of punishment
 
 ## Credits
 - [@CripBoy](https://github.com/CripBoy) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

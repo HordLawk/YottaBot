@@ -7,9 +7,12 @@ module.exports = {
     execute: async message => {
         if(message.partial || !message.guild || !message.guild.available || message.system || !message.client.guildData.has(message.guild.id) || !message.client.guildData.get(message.guild.id).actionlogs.id('delmsg') || (!message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookID && !message.client.guildData.get(message.guild.id).defaultLogsHookID)) return;
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
-        var executor = null;
+        let executor = null;
         if(message.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)){
-            let audits = await message.guild.fetchAuditLogs({type: GuildAuditLogs.Actions.MESSAGE_DELETE, limit: 1});
+            const audits = await message.guild.fetchAuditLogs({
+                type: GuildAuditLogs.Actions.MESSAGE_DELETE,
+                limit: 1,
+            });
             if(audits.entries.first()){
                 if(message.client.lastdelmsg.has(message.guild.id) && (audits.entries.first().target.id === message.author.id) && ((audits.entries.first().extra.count != message.client.lastdelmsg.get(message.guild.id).count) || (audits.entries.first().id != message.client.lastdelmsg.get(message.guild.id).id))) executor = audits.entries.first().executor;
                 message.client.lastdelmsg.set(message.guild.id, {

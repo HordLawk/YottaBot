@@ -1,7 +1,7 @@
 const user = require('../../schemas/user.js');
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
-const {MessageEmbed, Permissions} = require('discord.js');
+const {MessageEmbed, Permissions, GuildAuditLogs} = require('discord.js');
 
 module.exports = {
     name: 'guildMemberUpdate',
@@ -25,7 +25,7 @@ module.exports = {
             if(!newMember.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG) || !newMember.client.guildData.has(newMember.guild.id)) return;
             const audits = await newMember.guild.fetchAuditLogs({
                 limit: 1,
-                type: 'MEMBER_UPDATE',
+                type: GuildAuditLogs.Actions.MEMBER_UPDATE,
             });
             if(audits.entries.first()?.executor.bot) return;
             const reason = audits.entries.first().reason?.slice(0, 500);

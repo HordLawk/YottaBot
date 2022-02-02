@@ -154,10 +154,10 @@ module.exports = {
             case 'delmsgEmbedAttachmentsFile': return `[\`Anexo-${vars[0]}-Arquivo\`](${vars[1]})`;
             case 'actionlogsDescription': return 'Gerencia registros de ações no servidor';
             case 'actionlogsUsage0': return 'defaultchannel (canal)';
-            case 'actionlogsUsage1': return 'set <delmsg/prune> <(canal)/default>';
-            case 'actionlogsUsage2': return 'ignore channel <add/remove> (canal) <delmsg/prune/all>';
+            case 'actionlogsUsage1': return 'set <delmsg/prune/editmsg> <(canal)/default>';
+            case 'actionlogsUsage2': return 'ignore channel <add/remove> (canal) <delmsg/prune/editmsg/all>';
             case 'actionlogsUsage3': return 'ignore channel view (canal)';
-            case 'actionlogsUsage4': return 'ignore role <add/remove> (cargo) <delmsg/prune/all/view>';
+            case 'actionlogsUsage4': return 'ignore role <add/remove> (cargo) <delmsg/prune/editmsg/all>';
             case 'actionlogsUsage5': return 'ignore role view (cargo)';
             case 'newDefaultHookReason': return 'Webhook do canal de registros padrão';
             case 'oldDefaultHookReason': return 'Webhook do canal antigo de registros padrão';
@@ -175,6 +175,7 @@ module.exports = {
             case 'ignoredActionsEmbedActionsTitle': return 'Ações';
             case 'actiondelmsg': return '**mensagens deletadas**';
             case 'actionprune': return '**mensagens limpas**';
+            case 'actioneditmsg': return '**mensagens editadas**';
             case 'noIgnoredActionsRole': return 'Nenhuma ação está sendo ignorada para esse cargo';
             case 'ignoredActionsRoleEmbedAuthor': return 'Cargo ignorado';
             case 'ignoredActionsRoleEmbedDesc': return `Cargo: ${vars[0]}`;
@@ -396,6 +397,8 @@ module.exports = {
             case 'invMassBanProtectionAmount': return 'Quantidade inválida de bans em 10 segundos';
             case 'massBanProtectionSuccess': return `Configuração de proteção de banimentos em massa foi ${(vars[0] === 'on') ? 'ativada' : 'desativada'}`;
             case 'multiplierSuccess': return `O multiplicador de xp de ${vars[0]} foi definido para \`${vars[1]}\` com sucesso`;
+            case 'editmsgEmbedAuthor': return 'Mensagem editada';
+            case 'editmsgEmbedDescription': return `**Conteúdo anterior:**\n${vars[0] || '*Vazio*\n'}\n**Novo conteúdo:**\n${vars[1] || '*Vazio*'}`;
         }
     },
 };

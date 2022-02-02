@@ -1,6 +1,6 @@
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
-const {MessageEmbed, Permissions, Collection} = require('discord.js');
+const {MessageEmbed, Permissions, Collection, GuildAuditLogs} = require('discord.js');
 
 module.exports = {
     name: 'guildBanAdd',
@@ -9,7 +9,7 @@ module.exports = {
         if(!ban || (ban.user.id === ban.client.user.id) || !ban.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG) || !ban.client.guildData.has(ban.guild.id)) return;
         const audits = await ban.guild.fetchAuditLogs({
             limit: 1,
-            type: 'MEMBER_BAN_ADD',
+            type: GuildAuditLogs.Actions.MEMBER_BAN_ADD,
         });
         if(!audits.entries.first() || audits.entries.first().executor.bot) return;
         if(ban.client.guildData.get(ban.guild.id).antiMassBan){

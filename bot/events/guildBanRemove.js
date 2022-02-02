@@ -1,6 +1,6 @@
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
-const {MessageEmbed, Permissions} = require('discord.js');
+const {MessageEmbed, Permissions, GuildAuditLogs} = require('discord.js');
 
 module.exports = {
     name: 'guildBanRemove',
@@ -9,7 +9,7 @@ module.exports = {
         if(!ban || !ban.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG) || !ban.client.guildData.has(ban.guild.id)) return;
         const audits = await ban.guild.fetchAuditLogs({
             limit: 1,
-            type: 'MEMBER_BAN_REMOVE',
+            type: GuildAuditLogs.Actions.MEMBER_BAN_REMOVE,
         });
         if(!audits.entries.first() || audits.entries.first().executor.bot) return;
         const guildDoc = await guild.findByIdAndUpdate(ban.guild.id, {$inc: {counterLogs: 1}});

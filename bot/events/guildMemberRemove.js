@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {MessageEmbed, Permissions, GuildAuditLogs} = require('discord.js');
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
 
@@ -8,7 +8,7 @@ module.exports = {
         if(member.partial) member = await member.fetch().catch(() => null);
         if(!member || (member.id === member.client.user.id) || !member.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG) || !member.client.guildData.has(member.guild.id)) return;
         const audits = await member.guild.fetchAuditLogs({limit: 1});
-        if((audits.entries.first()?.action != 'MEMBER_KICK') || (audits.entries.first()?.target.id != member.id) || audits.entries.first()?.executor.bot) return;
+        if((audits.entries.first()?.action != GuildAuditLogs.Actions.MEMBER_KICK) || (audits.entries.first()?.target.id != member.id) || audits.entries.first()?.executor.bot) return;
         const reason = audits.entries.first().reason?.slice(0, 500);
         const guildDoc = await guild.findByIdAndUpdate(member.guild.id, {$inc: {counterLogs: 1}});
         member.client.guildData.get(member.guild.id).counterLogs = guildDoc.counterLogs + 1;

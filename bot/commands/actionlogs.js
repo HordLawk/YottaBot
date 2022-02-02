@@ -8,7 +8,7 @@ module.exports = {
     name: 'actionlogs',
     description: lang => lang.get('actionlogsDescription'),
     aliases: ['logs'],
-    usage: lang => [lang.get('actionlogsUsage0'), lang.get('actionlogsUsage1'), 'remove delmsg', lang.get('actionlogsUsage2'), lang.get('actionlogsUsage3'), lang.get('actionlogsUsage4'), lang.get('actionlogsUsage5'), 'view'],
+    usage: lang => [lang.get('actionlogsUsage0'), lang.get('actionlogsUsage1'), 'remove <delmsg/prune/editmsg>', lang.get('actionlogsUsage2'), lang.get('actionlogsUsage3'), lang.get('actionlogsUsage4'), lang.get('actionlogsUsage5'), 'view'],
     example: ['defaultchannel #logs', 'set delmsg #deleted-messages', 'remove delmsg', 'ignore channel add #staff delmsg', 'ignore channel view #staff', 'ignore role remove @Mods all', 'ignore role view @Mods'],
     cooldown: 5,
     categoryID: 2,
@@ -86,7 +86,7 @@ module.exports = {
             }
             break;
             case 'remove': {
-                if(!args[1] || !message.client.configs.actions.includes(args[1]) || !message.client.configs.actions.includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!args[1] || !message.client.configs.actions.includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 let oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
                 if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [args[1]]));
                 let guildDoc = await guild.findById(message.guild.id);

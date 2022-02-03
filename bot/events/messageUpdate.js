@@ -22,7 +22,7 @@ module.exports = {
         }
         const hook = await newMessage.client.fetchWebhook(newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg').hookID || newMessage.client.guildData.get(newMessage.guild.id).defaultLogsHookID, newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg').hookToken || newMessage.client.guildData.get(newMessage.guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
-        let [oldContent, newContent] = [Util.escapeCodeBlock(oldMessage.content), Util.escapeCodeBlock(newMessage.content)];
+        let [oldContent, newContent] = [Util.escapeCodeBlock(Util.cleanContent(oldMessage.content, newMessage.channel)), Util.escapeCodeBlock(Util.cleanContent(newMessage.content, newMessage.channel))];
         if((oldContent.length > 2000) && (newContent.length > 2000)){
             if(oldContent.slice(0, 2000) === newContent.slice(0, 2000)){
                 oldContent = `[...]\`\`\`${oldContent.slice(-2000)}\`\`\``;

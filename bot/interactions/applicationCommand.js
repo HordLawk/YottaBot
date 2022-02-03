@@ -90,10 +90,15 @@ module.exports = {
         });
         command[`${subCommandName ?? 'execute'}Slash`](interaction, args).catch(error => {
             console.error(error);
-            interaction.reply({
-                content: channelLanguage.get('error', [command.name]),
-                ephemeral: true,
-            });
+            if(interaction.deferred){
+                interaction.editReply(channelLanguage.get('error', [command.name]));
+            }
+            else{
+                interaction.reply({
+                    content: channelLanguage.get('error', [command.name]),
+                    ephemeral: true,
+                });
+            }
             if(process.env.NODE_ENV === 'production') interaction.client.channels.cache.get(interaction.client.configs.errorlog).send({
                 content: `Error: *${error.message}*\nMessage Author: ${interaction.user}\nInteraction ID: ${interaction.id}`,
                 files: [

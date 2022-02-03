@@ -205,7 +205,7 @@ module.exports = {
         }
     },
     infoSlash: async (interaction, args) => {
-        if(interaction.isUserContextMenu()) args = {user: (interaction.targetUser.member = interaction.targetMember, interaction.targetUser)};
+        if(!args.user) args = {user: interaction.isUserContextMenu() ? (interaction.targetUser.member = interaction.targetMember, interaction.targetUser) : (interaction.user.member = interaction.member, interaction.user)};
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         if(!interaction.client.guildData.get(interaction.guild.id).gainExp && !interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown) return interaction.reply({
             content: channelLanguage.get('xpDisabled'),
@@ -422,7 +422,7 @@ module.exports = {
                 type: 'USER',
                 name: 'user',
                 description: 'The user you want to see the xp info of',
-                required: true,
+                required: false,
             }]
         },
         {

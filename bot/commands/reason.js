@@ -41,10 +41,10 @@ module.exports = {
         }]);
         if(current.executor) embed.addField(channelLanguage.get('reasonEmbedExecutorTitle'), channelLanguage.get('reasonEmbedExecutorValue', [current.executor]), true);
         if(current.duration){
-            let duration = current.duration.getTime() - current.timeStamp.getTime();
-            let d = Math.floor(duration / 86400000);
-            let h = Math.floor((duration % 86400000) / 3600000);
-            let m = Math.round((duration % 3600000) / 60000);
+            let duration = Math.round((current.duration.getTime() - current.timeStamp.getTime()) / 60000);
+            let d = Math.floor(duration / 1440);
+            let h = Math.floor((duration % 1440) / 60);
+            let m = Math.floor(duration % 60);
             embed.addField(channelLanguage.get('reasonEmbedDurationTitle'), channelLanguage.get('reasonEmbedDurationValue', [d, h, m, Math.floor(current.duration.getTime() / 1000)]), true);
         }
         embed.addField(channelLanguage.get('reasonEmbedReasonTitle'), reason);

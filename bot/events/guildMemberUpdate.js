@@ -34,7 +34,7 @@ module.exports = {
             const discordChannel = newMember.guild.channels.cache.get(newMember.client.guildData.get(newMember.guild.id).modlogs.mute);
             const channelLanguage = newMember.client.langs[newMember.client.guildData.get(newMember.guild.id).language];
             if(newMember.isCommunicationDisabled()){
-                const duration = newMember.communicationDisabledUntilTimestamp - audits.entries.first().createdTimestamp;
+                const duration = Math.round((newMember.communicationDisabledUntilTimestamp - audits.entries.first().createdTimestamp) / 60000);
                 const current = new log({
                     id: guildDoc.counterLogs,
                     guild: newMember.guild.id,
@@ -48,9 +48,9 @@ module.exports = {
                 });
                 await current.save();
                 if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(newMember.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(newMember.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
-                const d = Math.floor(duration / 86400000);
-                const h = Math.floor((duration % 86400000) / 3600000);
-                const m = Math.round((duration % 3600000) / 60000);
+                const d = Math.floor(duration / 1440);
+                const h = Math.floor((duration % 1440) / 60);
+                const m = Math.floor(duration % 60);
                 const embed = new MessageEmbed()
                     .setTimestamp()
                     .setColor(0xff8000)

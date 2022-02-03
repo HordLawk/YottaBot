@@ -29,7 +29,8 @@ module.exports = {
             .addField(channelLanguage.get('infoEmbedUptimeTitle'), channelLanguage.get('infoEmbedUptimeValue', [Date.now() - message.client.uptime]), true)
             .addField(channelLanguage.get('infoEmbedRAMTitle'), channelLanguage.get('infoEmbedRAMValue', [process.memoryUsage().heapUsed]), true)
             .addField(channelLanguage.get('infoEmbedSupportTitle'), channelLanguage.get('infoEmbedSupportValue', [message.client.configs.support]), true)
-            .addField(channelLanguage.get('infoEmbedRepoTitle'), channelLanguage.get('infoEmbedRepoValue'), true);
+            .addField(channelLanguage.get('infoEmbedRepoTitle'), channelLanguage.get('infoEmbedRepoValue'), true)
+            .addField(channelLanguage.get('infoEmbedPrivacyTitle'), channelLanguage.get('infoEmbedPrivacyValue'), true);
         message.reply({embeds: [embed]});
     },
     executeSlash: async interaction => {
@@ -53,7 +54,8 @@ module.exports = {
             .addField(channelLanguage.get('infoEmbedUptimeTitle'), channelLanguage.get('infoEmbedUptimeValue', [Date.now() - interaction.client.uptime]), true)
             .addField(channelLanguage.get('infoEmbedRAMTitle'), channelLanguage.get('infoEmbedRAMValue', [process.memoryUsage().heapUsed]), true)
             .addField(channelLanguage.get('infoEmbedSupportTitle'), channelLanguage.get('infoEmbedSupportValue', [interaction.client.configs.support]), true)
-            .addField(channelLanguage.get('infoEmbedRepoTitle'), channelLanguage.get('infoEmbedRepoValue'), true);
+            .addField(channelLanguage.get('infoEmbedRepoTitle'), channelLanguage.get('infoEmbedRepoValue'), true)
+            .addField(channelLanguage.get('infoEmbedPrivacyTitle'), channelLanguage.get('infoEmbedPrivacyValue'), true);
         interaction.reply({embeds: [embed]});
     },
 };

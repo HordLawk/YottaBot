@@ -11,12 +11,10 @@ const memberSchema = new Schema({
         required: true,
     },
     relevantBan: Boolean,
-    blacklisted: Boolean,
     xp: {
         type: Number,
         default: 0,
     },
-    ghostRole: Boolean,
 });
 
 module.exports = model('member', memberSchema);

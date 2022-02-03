@@ -20,6 +20,7 @@ The default permission for any command is usually the closest normal Discord per
 * [Levelling](https://github.com/HordLawk/YottaBot/wiki/Levelling)
 * [Miscellaneous](https://github.com/HordLawk/YottaBot/wiki/Miscellaneous)
 * [Premium](https://github.com/HordLawk/YottaBot/wiki/Premium)
+* [Privacy Policy](https://github.com/HordLawk/YottaBot/wiki/Privacy-Policy)
 
 ## Selfhosting
 You may selfhost (AKA run your own instance of) this bot under the following circumstances:
@@ -44,6 +45,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] `profile` command
 - [x] mass ban limiter to mitagate damage from compromised mod accounts
 - [ ] automated punishments when reaching a chosen amount of another type of punishment
+- [ ] an "opt in" global ban system
 
 ## Credits
 - [@CripBoy](https://github.com/CripBoy) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

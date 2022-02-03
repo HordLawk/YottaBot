@@ -401,6 +401,8 @@ module.exports = {
             case 'multiplierSuccess': return `O multiplicador de xp de ${vars[0]} foi definido para \`${vars[1]}\` com sucesso`;
             case 'editmsgEmbedAuthor': return 'Mensagem editada';
             case 'editmsgEmbedDescription': return `**Conteúdo anterior:**\n${vars[0] || '*Vazio*\n'}\n**Novo conteúdo:**\n${vars[1] || '*Vazio*'}`;
+            case 'atwoodDescription': return 'Cita a Lei de Atwood';
+            case 'atwoodsLaw': return '> Qualquer aplicação que possa ser escrita em JavaScript, será eventualmente escrita em JavaScript.\n- Jeff Atwood (2007)';
         }
     },
 };

@@ -401,6 +401,8 @@ module.exports = {
             case 'multiplierSuccess': return `The xp multiplier for ${vars[0]} was successfully set to \`${vars[1]}\``;
             case 'editmsgEmbedAuthor': return 'Edited message';
             case 'editmsgEmbedDescription': return `**Old content:**\n${vars[0] || '*Empty*\n'}\n**New content:**\n${vars[1] || '*Empty*'}`;
+            case 'atwoodDescription': return 'Quotes Atwood\'s Law';
+            case 'atwoodsLaw': return '> Any application that can be written in JavaScript, will eventually be written in JavaScript.\n- Jeff Atwood (2007)';
         }
     },
 };

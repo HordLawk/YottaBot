@@ -36,16 +36,14 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] add rss feeds for youtube notifications
 - [ ] `prune` command
 - [ ] command to edit slowmode
-- [ ] add actionlog for edited messages
+- [x] add actionlog for edited messages
 - [ ] command to delete cases
 - [ ] `poll` command
-- [x] `check` for moderated cases instead of issued cases
 - [x] xp multiplier for selected roles
 - [ ] command to manage emojis
 - [ ] `profile` command
-- [x] mass ban limiter to mitagate damage from compromised mod accounts
 - [ ] automated punishments when reaching a chosen amount of another type of punishment
-- [ ] an "opt in" global ban system
+- [x] an "opt in" global ban system
 
 ## Credits
 - [@CripBoy](https://github.com/CripBoy) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

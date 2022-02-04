@@ -138,7 +138,7 @@ module.exports = {
             case 'lang404': return 'Idioma não suportado';
             case 'newLang': return 'Idioma do servidor atualizado';
             case 'configsEmbedAuthor': return 'Configurações do servidor';
-            case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\nIdioma: \`${vars[1]}\`\nRegistrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\`\nCanal de registro de warn: ${vars[3].warn ? `<#${vars[3].warn}>` : '`nenhum`'}\nCanal de registro de mute: ${vars[3].mute ? `<#${vars[3].mute}>` : '`nenhum`'}\nCanal de registro de kick: ${vars[3].kick ? `<#${vars[3].kick}>` : '`nenhum`'}\nCanal de registro de ban: ${vars[3].ban ? `<#${vars[3].ban}>` : '`nenhum`'}\nNúmero de dias de mensagens deletadas em bans: \`${vars[4]}\`\nMáximo de bans por moderador por 10 segundos: \`${vars[5] ?? '∞'}\`\nFunções beta: \`${vars[6] ? 'ativadas' : 'desativadas'}\``;
+            case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\nIdioma: \`${vars[1]}\`\nRegistrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\`\nCanal de registro de warn: ${vars[3].warn ? `<#${vars[3].warn}>` : '`nenhum`'}\nCanal de registro de mute: ${vars[3].mute ? `<#${vars[3].mute}>` : '`nenhum`'}\nCanal de registro de kick: ${vars[3].kick ? `<#${vars[3].kick}>` : '`nenhum`'}\nCanal de registro de ban: ${vars[3].ban ? `<#${vars[3].ban}>` : '`nenhum`'}\nNúmero de dias de mensagens deletadas em bans: \`${vars[4]}\`\nMáximo de bans por moderador por 10 segundos: \`${vars[5] ?? '∞'}\`\nBanimentos globais: \`${vars[6] ? 'ativados' : 'desativados'}\`\nFunções beta: \`${vars[7] ? 'ativadas' : 'desativadas'}\``;
             case 'betaCommand': return 'Esse comando atualmente está disponível apenas para servidor que ativaram funcionalidade beta nas configurações do bot';
             case 'premiumCommand': return `Esse comando é uma funcionalidade premium, use \`${vars[0]}premium\` para mais informações sobre se tornar premium`;
             case 'botWebhooks': return 'Eu preciso de permissão para gerenciar webhooks nesse canal';
@@ -403,6 +403,8 @@ module.exports = {
             case 'editmsgEmbedDescription': return `**Conteúdo anterior:**\n${vars[0] || '*Vazio*\n'}\n**Novo conteúdo:**\n${vars[1] || '*Vazio*'}`;
             case 'atwoodDescription': return 'Cita a Lei de Atwood';
             case 'atwoodsLaw': return '> Qualquer aplicação que possa ser escrita em JavaScript, será eventualmente escrita em JavaScript.\n- Jeff Atwood (2007)';
+            case 'globalBanReason': return 'O usuário está banido globalmente';
+            case 'globalbanSuccess': return `Banimentos globais foram **${(vars[0] === 'on') ? '' : 'des'}ativados**`;
         }
     },
 };

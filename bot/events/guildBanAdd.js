@@ -1,12 +1,34 @@
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
+const member = require('../../schemas/member.js');
 const {MessageEmbed, Permissions, Collection, GuildAuditLogs} = require('discord.js');
 
 module.exports = {
     name: 'guildBanAdd',
     execute: async ban => {
         if(ban.partial) ban = await ban.fetch().catch(() => null);
-        if(!ban || (ban.user.id === ban.client.user.id) || !ban.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG) || !ban.client.guildData.has(ban.guild.id)) return;
+        if(!ban) return;
+        if(ban.guild.memberCount > 1000){
+            let memberDoc = await member.findOne({
+                guild: ban.guild.id,
+                userID: ban.user.id,
+            });
+            if(memberDoc){
+                if(!memberDoc.autoBanned){
+                    memberDoc.relevantBan = true;
+                    await memberDoc.save();
+                }
+            }
+            else{
+                memberDoc = new member({
+                    guild: ban.guild.id,
+                    userID: ban.user.id,
+                    relevantBan: true,
+                });
+                await memberDoc.save();
+            }
+        }
+        if((ban.user.id === ban.client.user.id) || !ban.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG) || !ban.client.guildData.has(ban.guild.id)) return;
         const audits = await ban.guild.fetchAuditLogs({
             limit: 1,
             type: GuildAuditLogs.Actions.MEMBER_BAN_ADD,

@@ -15,6 +15,7 @@ const memberSchema = new Schema({
         type: Number,
         default: 0,
     },
+    autoBanned: Boolean,
 });
 
 module.exports = model('member', memberSchema);

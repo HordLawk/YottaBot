@@ -6,8 +6,8 @@ module.exports = {
     name: 'configs',
     description: lang => lang.get('configsDescription'),
     aliases: ['config', 'settings', 'setting'],
-    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', lang.get('configsUsage3'), lang.get('configsUsage4'), 'beta <on/off>', lang.get('configsUsage5'), 'massbanprotection off'],
-    example: ['prefix !', 'language pt', 'logattachments on', 'mod logs #warn-and-mute-logs warn mute', 'massbanprotection on 20'],
+    usage: lang => [lang.get('configsUsage0'), lang.get('configsUsage1'), lang.get('configsUsage2'), 'logattachments <on/off>', lang.get('configsUsage3'), lang.get('configsUsage4'), lang.get('configsUsage5'), 'massbanprotection off', 'globalbans <on/off>', 'beta <on/off>'],
+    example: ['prefix !', 'language pt', 'logattachments on', 'mod logs #warn-and-mute-logs warn mute', 'massbanprotection on 20', 'globalbans on'],
     cooldown: 5,
     categoryID: 2,
     args: true,
@@ -111,6 +111,12 @@ module.exports = {
                 message.reply(channelLanguage.get('massBanProtectionSuccess', [args[1]]));
             }
             break;
+            case 'globalbans': {
+                if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                await guild.findByIdAndUpdate(message.guild.id, {$set: {globalBan: (message.client.guildData.get(message.guild.id).globalBan = (args[1] === 'on'))}});
+                message.reply(channelLanguage.get('globalbanSuccess', [args[1]]));
+            }
+            break;
             case 'view': {
                 if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
                 let embed = new MessageEmbed()
@@ -122,7 +128,7 @@ module.exports = {
                             dynamic: true,
                         }),
                     })
-                    .setDescription(channelLanguage.get('configsEmbedDesc', [message.client.guildData.get(message.guild.id).prefix, message.client.guildData.get(message.guild.id).language, message.client.guildData.get(message.guild.id).logAttachments, message.client.guildData.get(message.guild.id).modlogs, message.client.guildData.get(message.guild.id).pruneBan, message.client.guildData.get(message.guild.id).antiMassBan, message.client.guildData.get(message.guild.id).beta]))
+                    .setDescription(channelLanguage.get('configsEmbedDesc', [message.client.guildData.get(message.guild.id).prefix, message.client.guildData.get(message.guild.id).language, message.client.guildData.get(message.guild.id).logAttachments, message.client.guildData.get(message.guild.id).modlogs, message.client.guildData.get(message.guild.id).pruneBan, message.client.guildData.get(message.guild.id).antiMassBan, message.client.guildData.get(message.guild.id).globalBan, message.client.guildData.get(message.guild.id).beta]))
                     .setTimestamp();
                 message.reply({embeds: [embed]});
             }

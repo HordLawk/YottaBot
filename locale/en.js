@@ -138,7 +138,7 @@ module.exports = {
             case 'lang404': return 'Language not supported';
             case 'newLang': return 'Server language updated';
             case 'configsEmbedAuthor': return 'Server settings';
-            case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\nLanguage: \`${vars[1]}\`\nLog attachments: \`${vars[2] ? 'on' : 'off'}\`\nWarn log channel: ${vars[3].warn ? `<#${vars[3].warn}>` : '`none`'}\nMute log channel: ${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\nKick log channel: ${vars[3].kick ? `<#${vars[3].kick}>` : '`none`'}\nBan log channel: ${vars[3].ban ? `<#${vars[3].ban}>` : '`none`'}\nDays of messages to delete on ban: \`${vars[4]}\`\nMax bans per moderator per 10 seconds: \`${vars[5] ?? '∞'}\`\nBeta features: \`${vars[6] ? 'on' : 'off'}\``;
+            case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\nLanguage: \`${vars[1]}\`\nLog attachments: \`${vars[2] ? 'on' : 'off'}\`\nWarn log channel: ${vars[3].warn ? `<#${vars[3].warn}>` : '`none`'}\nMute log channel: ${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\nKick log channel: ${vars[3].kick ? `<#${vars[3].kick}>` : '`none`'}\nBan log channel: ${vars[3].ban ? `<#${vars[3].ban}>` : '`none`'}\nDays of messages to delete on ban: \`${vars[4]}\`\nMax bans per moderator per 10 seconds: \`${vars[5] ?? '∞'}\`\nGlobal bans: \`${vars[6] ? 'on' : 'off'}\`\nBeta features: \`${vars[7] ? 'on' : 'off'}\``;
             case 'betaCommand': return 'This command is currently only available for servers that enabled open beta features in the bot settings';
             case 'premiumCommand': return `This command is a premium feature, use \`${vars[0]}premium\` for more information on becoming premium`;
             case 'botWebhooks': return 'I need permission to manage webhooks in this channel';
@@ -403,6 +403,8 @@ module.exports = {
             case 'editmsgEmbedDescription': return `**Old content:**\n${vars[0] || '*Empty*\n'}\n**New content:**\n${vars[1] || '*Empty*'}`;
             case 'atwoodDescription': return 'Quotes Atwood\'s Law';
             case 'atwoodsLaw': return '> Any application that can be written in JavaScript, will eventually be written in JavaScript.\n- Jeff Atwood (2007)';
+            case 'globalBanReason': return 'User is globally banned';
+            case 'globalbanSuccess': return `Global bans turned **${vars[0]}**`;
         }
     },
 };

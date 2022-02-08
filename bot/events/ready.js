@@ -126,10 +126,11 @@ module.exports = {
                 for(let [id, minutes] of inVoice.intersect(guildVoiceXpCd.get(voiceGuild._id))){
                     guildVoiceXpCd.get(voiceGuild._id).set(id, ++minutes);
                     if((minutes % voiceGuild.voiceXpCooldown) != 0) continue;
+                    let multiplier = roleDocs.filter(e => e.xpMultiplier).sort((a, b) => (b.xpMultiplier - a.xpMultiplier))[0]?.xpMultiplier ?? 1;
                     let doc = await member.findOneAndUpdate({
                         guild: voiceGuild._id,
                         userID: id,
-                    }, {$inc: {xp: roleDocs.filter(e => e.xpMultiplier).sort((a, b) => (b.xpMultiplier - a.xpMultiplier))[0]?.xpMultiplier ?? 1}}, {
+                    }, {$inc: {xp: multiplier}}, {
                         new: true,
                         upsert: true,
                         setDefaultsOnInsert: true,
@@ -138,7 +139,7 @@ module.exports = {
                     let discordMember = inVoice.get(id).member;
                     if(!lowerRoles.length || discordMember.roles.cache.has(lowerRoles[0].roleID)) continue;
                     await discordMember.roles.set(discordMember.roles.cache.map(e => e.id).filter(e => !lowerRoles.some(ee => (e === ee.roleID))).concat(lowerRoles.map(e => e.roleID).slice(0, client.guildData.get(voiceGuild._id).dontStack ? 1 : undefined)));
-                    if(!client.guildData.get(voiceGuild._id).xpChannel || (doc.xp != lowerRoles[0].xp)) continue;
+                    if(!client.guildData.get(voiceGuild._id).xpChannel || (doc.xp >= (lowerRoles[0].xp + multiplier))) continue;
                     let guildLanguage = client.langs[client.guildData.get(voiceGuild._id).language];
                     if(client.guildData.get(voiceGuild._id).xpChannel === 'dm'){
                         discordMember.send(guildLanguage.get('achieveDM', [discordGuild.roles.cache.get(lowerRoles[0].roleID).name, discordGuild.name])).catch(() => null);

@@ -33,10 +33,11 @@ module.exports = {
         }
         const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
         if(message.guild && message.client.guildData.get(message.guild.id).gainExp && (!message.client.xpcds.has(message.guild.id) || !message.client.xpcds.get(message.guild.id).has(message.author.id) || ((message.client.xpcds.get(message.guild.id).get(message.author.id) + 60000) <= Date.now())) && !roleDocs.some(e => (e.ignoreXp && message.member.roles.cache.has(e.roleID))) && (!savedChannel || !savedChannel.ignoreXp)){
+            const multiplier = roleDocs.filter(e => e.xpMultiplier).sort((a, b) => (b.xpMultiplier - a.xpMultiplier))[0]?.xpMultiplier ?? 1;
             member.findOneAndUpdate({
                 guild: message.guild.id,
                 userID: message.author.id,
-            }, {$inc: {xp: roleDocs.filter(e => e.xpMultiplier).sort((a, b) => (b.xpMultiplier - a.xpMultiplier))[0]?.xpMultiplier ?? 1}}, {
+            }, {$inc: {xp: multiplier}}, {
                 new: true,
                 upsert: true,
                 setDefaultsOnInsert: true,
@@ -51,7 +52,7 @@ module.exports = {
                 const lowerRoles = roleDocs.filter(e => (message.guild.roles.cache.get(e.roleID).editable && e.xp && (e.xp <= doc.xp))).sort((a, b) => (b.xp - a.xp));
                 if(!lowerRoles.length || message.member.roles.cache.has(lowerRoles[0].roleID)) return;
                 await message.member.roles.set(message.member.roles.cache.map(e => e.id).filter(e => !lowerRoles.some(ee => (e === ee.roleID))).concat(lowerRoles.map(e => e.roleID).slice(0, message.client.guildData.get(message.guild.id).dontStack ? 1 : undefined)));
-                if(!message.client.guildData.get(message.guild.id).xpChannel || (doc.xp != lowerRoles[0].xp)) return;
+                if(!message.client.guildData.get(message.guild.id).xpChannel || (doc.xp >= (lowerRoles[0].xp + multiplier))) return;
                 switch(message.client.guildData.get(message.guild.id).xpChannel){
                     case 'default': {
                         if(message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES)) message.reply({

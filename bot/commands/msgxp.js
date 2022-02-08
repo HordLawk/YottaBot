@@ -225,16 +225,16 @@ module.exports = {
             }
             break;
             case 'multiplier': {
-                const match = message.content.toLowerCase().match(/^(?:\S+\s+){2}(.+)\s+(\d+)$/);
+                const match = message.content.toLowerCase().match(/^(?:\S+\s+){2}(.+)\s+(\d+(?:\.\d+)?)$/);
                 if(!match) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                if(isNaN(parseInt(match[2], 10)) || !isFinite(parseInt(match[2], 10)) || (parseInt(match[2], 10) < 1)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(isNaN(parseFloat(match[2], 10)) || !isFinite(parseFloat(match[2], 10)) || (parseFloat(match[2], 10) < 1)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 const roleName = match[1];
                 const discordRole = message.guild.roles.cache.get(args[1].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
                 if(!discordRole || (discordRole.id === message.guild.id)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 const roleDoc = await role.findOneAndUpdate({
                     guild: message.guild.id,
                     roleID: discordRole.id,
-                }, {$set: {xpMultiplier: parseInt(match[2], 10)}}, {
+                }, {$set: {xpMultiplier: (Math.round(parseFloat(match[2], 10) * 10)) / 10}}, {
                     upsert: true,
                     setDefaultsOnInsert: true,
                     new: true,

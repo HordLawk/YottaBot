@@ -27,12 +27,12 @@ module.exports = {
                 let memberDocs = await member.find({
                     guild: message.guild.id,
                     userID: {$in: members},
-                    xp: {$ne: 0},
+                    xp: {$gte: 1},
                 }, 'userID xp').sort({xp: -1}).limit(pageSize + 1);
                 const memberDoc = await member.findOne({
                     guild: message.guild.id,
                     userID: message.author.id,
-                    xp: {$gt: 0},
+                    xp: {$gte: 1},
                 });
                 const embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
@@ -41,7 +41,7 @@ module.exports = {
                         iconURL: message.guild.iconURL({dynamic: true}),
                     })
                     .setTimestamp()
-                    .setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${e.xp}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
+                    .setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
                 if(memberDoc){
                     let rank = await member.countDocuments({
                         guild: message.guild.id,
@@ -88,7 +88,7 @@ module.exports = {
                         memberDocs = await member.find({
                             guild: message.guild.id,
                             userID: {$in: members},
-                            xp: {$ne: 0},
+                            xp: {$gte: 1},
                         }, 'userID xp').sort({xp: -1}).skip((page + 1) * pageSize).limit(pageSize + 1);
                         page++;
                     }
@@ -97,11 +97,11 @@ module.exports = {
                         memberDocs = await member.find({
                             guild: message.guild.id,
                             userID: {$in: members},
-                            xp: {$ne: 0},
+                            xp: {$gte: 1},
                         }, 'userID xp').sort({xp: -1}).skip((page - 1) * pageSize).limit(pageSize + 1);
                         page--;
                     }
-                    embed.setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${e.xp}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
+                    embed.setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
                     await buttonInteraction.update({
                         embeds: [embed],
                         components: [{
@@ -199,7 +199,7 @@ module.exports = {
                         iconURL: discordUser?.displayAvatarURL({dynamic: true}),
                     })
                     .setTimestamp()
-                    .setDescription(channelLanguage.get('xpEmbedDescription', [current, next, user.xp]));
+                    .setDescription(channelLanguage.get('xpEmbedDescription', [current, next, Math.floor(user.xp)]));
                 message.reply({embeds: [embed]});
             }
         }
@@ -236,7 +236,7 @@ module.exports = {
                 iconURL: args.user.displayAvatarURL({dynamic: true}),
             })
             .setTimestamp()
-            .setDescription(channelLanguage.get('xpEmbedDescription', [current, next, user.xp]));
+            .setDescription(channelLanguage.get('xpEmbedDescription', [current, next, Math.floor(user.xp)]));
         interaction.reply({embeds: [embed]});
     },
     rankSlash: async interaction => {
@@ -257,12 +257,12 @@ module.exports = {
         let memberDocs = await member.find({
             guild: interaction.guild.id,
             userID: {$in: members},
-            xp: {$ne: 0},
+            xp: {$gte: 1},
         }, 'userID xp').sort({xp: -1}).limit(pageSize + 1);
         const memberDoc = await member.findOne({
             guild: interaction.guild.id,
             userID: interaction.user.id,
-            xp: {$gt: 0},
+            xp: {$gte: 1},
         });
         const embed = new MessageEmbed()
             .setColor(interaction.guild.me.displayColor || 0x8000ff)
@@ -271,7 +271,7 @@ module.exports = {
                 iconURL: interaction.guild.iconURL({dynamic: true}),
             })
             .setTimestamp()
-            .setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${e.xp}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
+            .setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
         if(memberDoc){
             const rank = await member.countDocuments({
                 guild: interaction.guild.id,
@@ -319,7 +319,7 @@ module.exports = {
                 memberDocs = await member.find({
                     guild: interaction.guild.id,
                     userID: {$in: members},
-                    xp: {$ne: 0},
+                    xp: {$gte: 1},
                 }, 'userID xp').sort({xp: -1}).skip((page + 1) * pageSize).limit(pageSize + 1);
                 page++;
             }
@@ -328,11 +328,11 @@ module.exports = {
                 memberDocs = await member.find({
                     guild: interaction.guild.id,
                     userID: {$in: members},
-                    xp: {$ne: 0},
+                    xp: {$gte: 1},
                 }, 'userID xp').sort({xp: -1}).skip((page - 1) * pageSize).limit(pageSize + 1);
                 page--;
             }
-            embed.setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${e.xp}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
+            embed.setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
             await buttonInteraction.update({
                 embeds: [embed],
                 components: [{

@@ -44,6 +44,8 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] `profile` command
 - [ ] automated punishments when reaching a chosen amount of another type of punishment
 - [x] an "opt in" global ban system
+- [ ] other streaming notifications for premium
+- [ ] float xp multipliers
 
 ## Credits
 - [@CripBoy](https://github.com/CripBoy) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

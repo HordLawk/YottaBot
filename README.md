@@ -30,21 +30,28 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - You agree to not submit any issues, features, or pull requests related to bugs exclusively related to self-hosting.
 
 ## W.I.P
-- [ ] use slash commands; context menus; buttons; and stuff (on hold until Discord improves slash permissions)
-- [ ] apply for messages priviledge intent
+- [ ] use slash commands; context menus; buttons; and stuff *
+- [x] apply for messages priviledge intent
 - [ ] setup a patreon
-- [ ] add rss feeds for youtube notifications
-- [ ] `prune` command
-- [ ] command to edit slowmode
-- [x] add actionlog for edited messages
-- [ ] command to delete cases
-- [ ] `poll` command
-- [ ] command to manage emojis
+- [ ] add rss feeds for youtube notifications *
+- [ ] `prune` command *
+- [ ] command to edit slowmode *
+- [ ] command to delete cases *
+- [ ] `poll` command ** ***
+- [ ] command to manage emojis *
 - [ ] `profile` command
-- [ ] automated punishments when reaching a chosen amount of another type of punishment
+- [ ] automated punishments when reaching a chosen amount of another type of punishment *
 - [x] an "opt in" global ban system
-- [ ] other streaming notifications for premium
+- [ ] other streaming notifications for premium *
 - [x] float xp multipliers
+- [ ] create and edit role menus with built in forms ***
+- [ ] button to edit action reason in the command reply ***
+
+\* on hold until Discord improves slash permissions
+
+** on hold until Discord adds the date and time option type
+
+*** on hold until discord.js adds support for modal interactions
 
 ## Credits
 - [@CripBoy](https://github.com/CripBoy) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

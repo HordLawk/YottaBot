@@ -21,7 +21,7 @@ module.exports = {
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
         const member = id && await message.guild.members.fetch(id).catch(() => null);
         if(!member) return message.reply(channelLanguage.get('invMember'));
-        if((message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return message.reply(channelLanguage.get('youCantMute'));
+        if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return message.reply(channelLanguage.get('youCantMute'));
         if(!member.moderatable) return message.reply(channelLanguage.get('iCantMute'));
         const duration = args[1] && (((parseInt(args[1].match(/(\d+)d/)?.[1], 10) * 86400000) || 0) + ((parseInt(args[1].match(/(\d+)h/)?.[1], 10) * 3600000) || 0) + ((parseInt(args[1].match(/(\d+)m/)?.[1], 10) * 60000) || 0));
         const timeStamp = Date.now();

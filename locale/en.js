@@ -405,6 +405,10 @@ module.exports = {
             case 'atwoodsLaw': return '> Any application that can be written in JavaScript, will eventually be written in JavaScript.\n- Jeff Atwood (2007)';
             case 'globalBanReason': return 'User is globally banned';
             case 'globalbanSuccess': return `Global bans turned **${vars[0]}**`;
+            case 'undo': return 'Undo';
+            case 'banUndone': return 'Ban undone';
+            case 'muteMemberUndone': return '~~Member muted~~ *undone*';
+            case 'muteUndone': return 'Mute undone';
         }
     },
 };

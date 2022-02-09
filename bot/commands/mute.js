@@ -47,31 +47,73 @@ module.exports = {
         await member.timeout(duration, current.reason);
         current.duration = member.communicationDisabledUntil;
         await current.save();
-        await message.reply(channelLanguage.get('muteMemberSuccess', [current.id]));
+        const reply = await message.reply(channelLanguage.get('muteMemberSuccess', [current.id]));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.mute);
-        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
-        const d = Math.floor(duration / 86400000);
-        const h = Math.floor((duration % 86400000) / 3600000);
-        const m = Math.floor((duration % 3600000) / 60000);
-        const embed = new MessageEmbed()
-            .setTimestamp()
-            .setColor(0xff8000)
-            .setAuthor({
-                name: channelLanguage.get('muteEmbedAuthor', [message.author.tag, member.user.tag]),
-                iconURL: member.user.displayAvatarURL({dynamic: true}),
-            })
-            .setDescription(channelLanguage.get('muteEmbedDescription', [message.url]))
-            .addField(channelLanguage.get('muteEmbedTargetTitle'), channelLanguage.get('muteEmbedTargetValue', [member]), true)
-            .addField(channelLanguage.get('muteEmbedExecutorTitle'), message.author.toString(), true)
-            .addField(channelLanguage.get('muteEmbedDurationTitle'), channelLanguage.get('muteEmbedDurationValue', [d, h, m, Math.floor(current.duration.getTime() / 1000)]), true)
-            .setFooter({
-                text: channelLanguage.get('muteEmbedFooter', [current.id]),
-                iconURL: message.guild.iconURL({dynamic: true}),
-            });
-        if(reason) embed.addField(channelLanguage.get('muteEmbedReasonTitle'), reason);
-        if(current.image) embed.setImage(current.image);
-        const msg = await discordChannel.send({embeds: [embed]});
-        current.logMessage = msg.id;
-        await current.save();
+        let msg;
+        if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) && discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
+            const d = Math.floor(duration / 86400000);
+            const h = Math.floor((duration % 86400000) / 3600000);
+            const m = Math.floor((duration % 3600000) / 60000);
+            const embed = new MessageEmbed()
+                .setTimestamp()
+                .setColor(0xff8000)
+                .setAuthor({
+                    name: channelLanguage.get('muteEmbedAuthor', [message.author.tag, member.user.tag]),
+                    iconURL: member.user.displayAvatarURL({dynamic: true}),
+                })
+                .setDescription(channelLanguage.get('muteEmbedDescription', [message.url]))
+                .addField(channelLanguage.get('muteEmbedTargetTitle'), channelLanguage.get('muteEmbedTargetValue', [member]), true)
+                .addField(channelLanguage.get('muteEmbedExecutorTitle'), message.author.toString(), true)
+                .addField(channelLanguage.get('muteEmbedDurationTitle'), channelLanguage.get('muteEmbedDurationValue', [d, h, m, Math.floor(current.duration.getTime() / 1000)]), true)
+                .setFooter({
+                    text: channelLanguage.get('muteEmbedFooter', [current.id]),
+                    iconURL: message.guild.iconURL({dynamic: true}),
+                });
+            if(reason) embed.addField(channelLanguage.get('muteEmbedReasonTitle'), reason);
+            if(current.image) embed.setImage(current.image);
+            msg = await discordChannel.send({embeds: [embed]});
+            current.logMessage = msg.id;
+            await current.save();
+        }
+        await reply.edit({components: [{
+            type: 'ACTION_ROW',
+            components: [{
+                type: 'BUTTON',
+                label: channelLanguage.get('undo'),
+                customId: 'undo',
+                style: 'DANGER',
+                emoji: '↩️',
+            }],
+        }]});
+        const collector = reply.createMessageComponentCollector({
+            filter: componentInteraction => (componentInteraction.user.id === message.author.id),
+            idle: 10000,
+            max: 1,
+            componentType: 'BUTTON',
+        });
+        collector.on('end', async collected => {
+            reply.edit({components: [{
+                type: 'ACTION_ROW',
+                components: [{
+                    type: 'BUTTON',
+                    label: channelLanguage.get('undo'),
+                    customId: 'undo',
+                    style: 'DANGER',
+                    emoji: '↩️',
+                    disabled: true,
+                }],
+            }]});
+            if(!collected.size) return;
+            if(collected.first().customId === 'undo'){
+                if(!member.isCommunicationDisabled()) return;
+                await log.findByIdAndDelete(current._id);
+                await member.timeout(null, channelLanguage.get('muteUndone'));
+                await collected.first().update({
+                    content: channelLanguage.get('muteMemberUndone'),
+                    components: [],
+                });
+                if(msg) await msg.delete();
+            }
+        });
     },
 };

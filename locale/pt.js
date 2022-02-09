@@ -405,6 +405,10 @@ module.exports = {
             case 'atwoodsLaw': return '> Qualquer aplicação que possa ser escrita em JavaScript, será eventualmente escrita em JavaScript.\n- Jeff Atwood (2007)';
             case 'globalBanReason': return 'O usuário está banido globalmente';
             case 'globalbanSuccess': return `Banimentos globais foram **${(vars[0] === 'on') ? '' : 'des'}ativados**`;
+            case 'undo': return 'Desfazer';
+            case 'banUndone': return 'Ban desfeito';
+            case 'muteMemberUndone': return '~~Membro mutado~~ *desfeito*';
+            case 'muteUndone': return 'Mute desfeito';
         }
     },
 };

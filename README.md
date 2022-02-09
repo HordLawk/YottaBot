@@ -39,13 +39,12 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [x] add actionlog for edited messages
 - [ ] command to delete cases
 - [ ] `poll` command
-- [x] xp multiplier for selected roles
 - [ ] command to manage emojis
 - [ ] `profile` command
 - [ ] automated punishments when reaching a chosen amount of another type of punishment
 - [x] an "opt in" global ban system
 - [ ] other streaming notifications for premium
-- [ ] float xp multipliers
+- [x] float xp multipliers
 
 ## Credits
 - [@CripBoy](https://github.com/CripBoy) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

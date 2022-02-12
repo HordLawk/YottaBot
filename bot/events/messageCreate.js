@@ -8,7 +8,7 @@ const {Collection, Permissions} = require('discord.js');
 module.exports = {
     name: 'messageCreate',
     execute: async message => {
-        if(message.author.bot || (message.type != 'DEFAULT') || (message.guild && !message.guild.available)) return;
+        if(message.author.bot || (!['DEFAULT', 'REPLY'].includes(message.type)) || (message.guild && !message.guild.available)) return;
         var prefix = message.client.configs.defaultPrefix;
         var roleDocs;
         var savedChannel;

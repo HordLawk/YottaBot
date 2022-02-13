@@ -1,5 +1,7 @@
 module.exports = {
     lang: 'pt',
+    name: 'Português',
+    flag: '🇧🇷',
     get: (line, vars = []) => {
         switch(line){
             case 'mentionHelp': return `Use \`${vars[0]}help\` para ver todos os meus comandos!`;
@@ -333,7 +335,7 @@ module.exports = {
             case 'xpEmbedAuthor': return 'Xp';
             case 'xpEmbedDescription': return `${vars[0] ? `Nível atual: <@&${vars[0].roleID}>\n` : ''}${vars[1] ? `Proximo nível: <@&${vars[1].roleID}>\n` : ''}Progresso: **${vars[2]}${vars[1] ? `/${vars[1].xp}` : ''}**`;
             case 'xpEmbedFooter': return `#${vars[0]}`;
-            case 'dmBotAdder': return `Saudações ${vars[0]}! Obrigado por me adicionar a **${vars[1]}**. Como eu sou um bot muito customizavel recomendo que comece dando uma olhada em \`${vars[2]}help configs\` e configurando as permissões dos comandos com \`${vars[2]}help perm\`, senão alguns deles podem ter permissões padrão muito restritivas, como o comando \`mute\`, que por padrão só é permitido para usuários com a permissão Gerenciar Cargos\n\nSe precisar de ajuda, não hesite em **[entrar no servidor de suporte](https://discord.gg/${vars[3]})**, você também pode ler a **[documentação completa](https://github.com/HordLawk/YottaBot#get-started)** para informações mais detalhadas`;
+            case 'dmBotAdder': return `Saudações ${vars[0]}! Obrigado por me adicionar a **${vars[1]}**. Como eu sou um bot muito customizavel recomendo que comece dando uma olhada em \`${vars[2]}help configs\` e configurando as permissões dos comandos com \`${vars[2]}help perm\`, senão alguns deles podem ter permissões padrão muito restritivas, como o comando \`rolemenu\`, que por padrão só é permitido para usuários com a permissão Gerenciar Cargos\n\nSe precisar de ajuda, não hesite em **[entrar no servidor de suporte](https://discord.gg/${vars[3]})**, você também pode ler a **[documentação completa](https://github.com/HordLawk/YottaBot#get-started)** para informações mais detalhadas`;
             case 'autoUnmuteEmbedAuthorMember': return `${vars[0]} foi desmutado`;
             case 'autoUnmuteEmbedAuthorNoMember': return 'Unmute';
             case 'autoUnmuteEmbedTargetTitle': return 'Alvo';
@@ -409,6 +411,7 @@ module.exports = {
             case 'banUndone': return 'Ban desfeito';
             case 'muteMemberUndone': return '~~Membro mutado~~ *desfeito*';
             case 'muteUndone': return 'Mute desfeito';
+            case 'language': return 'Idioma do servidor';
         }
     },
 };

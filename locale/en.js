@@ -1,5 +1,7 @@
 module.exports = {
     lang: 'en',
+    name: 'English',
+    flag: '🇬🇧',
     get: (line, vars = []) => {
         switch(line){
             case 'mentionHelp': return `Use \`${vars[0]}help\` to see all my commands!`;
@@ -333,7 +335,7 @@ module.exports = {
             case 'xpEmbedAuthor': return 'Xp';
             case 'xpEmbedDescription': return `${vars[0] ? `Current level: <@&${vars[0].roleID}>\n` : ''}${vars[1] ? `Next level: <@&${vars[1].roleID}>\n` : ''}Progress: **${vars[2]}${vars[1] ? `/${vars[1].xp}` : ''}**`;
             case 'xpEmbedFooter': return `#${vars[0]}`;
-            case 'dmBotAdder': return `Greetings ${vars[0]}! Thank you for adding me to **${vars[1]}**. Since I am a highly customizable bot, I recommend that you start by having a look at \`${vars[2]}help configs\` and setting up command permissions with \`${vars[2]}help perm\`, otherwise, some of them might have too restrictive default permissions, like the \`mute\` command, which by default is only allowed to users with the Manage Roles permission\n\nIf you need any help, don\'t hesitate to **[join my support server](https://discord.gg/${vars[3]})**, you can also read the **[full documentation](https://github.com/HordLawk/YottaBot#get-started)** for more detailed information`;
+            case 'dmBotAdder': return `Greetings ${vars[0]}! Thank you for adding me to **${vars[1]}**. Since I am a highly customizable bot, I recommend that you start by having a look at \`${vars[2]}help configs\` and setting up command permissions with \`${vars[2]}help perm\`, otherwise, some of them might have too restrictive default permissions, like the \`rolemenu\` command, which by default is only allowed to users with the Manage Roles permission\n\nIf you need any help, don\'t hesitate to **[join my support server](https://discord.gg/${vars[3]})**, you can also read the **[full documentation](https://github.com/HordLawk/YottaBot#get-started)** for more detailed information`;
             case 'autoUnmuteEmbedAuthorMember': return `${vars[0]} was unmuted`;
             case 'autoUnmuteEmbedAuthorNoMember': return 'Unmute';
             case 'autoUnmuteEmbedTargetTitle': return 'Target';
@@ -409,6 +411,7 @@ module.exports = {
             case 'banUndone': return 'Ban undone';
             case 'muteMemberUndone': return '~~Member muted~~ *undone*';
             case 'muteUndone': return 'Mute undone';
+            case 'language': return 'Server language';
         }
     },
 };

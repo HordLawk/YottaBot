@@ -33,7 +33,17 @@ module.exports = {
                 }).then(dm => {
                     const collector = dm.createMessageComponentCollector({time: 600000});
                     collector.on('collect', async i => {
-                        await guildModel.findByIdAndUpdate(guild.id, {$set: {language: (guild.client.guildData.get(guild.id).language = i.values[0])}});
+                        if(guild.client.guildData.has(guild.id)){
+                            await guildModel.findByIdAndUpdate(guild.id, {$set: {language: (guild.client.guildData.get(guild.id).language = i.values[0])}});
+                        }
+                        else{
+                            const guildData = new guildModel({
+                                _id: guild.id,
+                                language: i.values[0],
+                            });
+                            await guildData.save();
+                            guild.client.guildData.set(guildData._id, guildData);
+                        }
                         guildLanguage = guild.client.langs[i.values[0]];
                         dmEmbed.setDescription(guildLanguage.get('dmBotAdder', [adder, guild.name, guild.client.guildData.get(guild.id)?.prefix ?? 'y!', guild.client.configs.support]));
                         await i.update({

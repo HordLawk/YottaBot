@@ -205,7 +205,7 @@ module.exports = {
             case 'premiumDescription': return 'Information on becoming premium';
             case 'alreadyPremium': return 'This server already has access to premium features';
             case 'premiumEmbedDesc': return `Buying premium status is not ready yet, if you wish to apply for partnership or pay for premium directly **[join the support server](https://discord.gg/${vars[0]})** and contact the developers`;
-            case 'banDescription': return 'Bans an user\nAlso accepts a media attachment';
+            case 'banDescription': return 'Bans an user';
             case 'banUsage': return '(user) [(reason)]';
             case 'invUser': return 'Invalid user';
             case 'cantBan': return 'I can\'t ban this member';
@@ -237,7 +237,7 @@ module.exports = {
             case 'autoSetupMuteSetSuccess': return `Auto setup mute mode turned **${vars[0]}**`;
             case 'inviteDescription': return 'Gives you an url to add the bot to your server';
             case 'inviteEmbedDescription': return `**[Invite](${vars[0]})** me to your server!`;
-            case 'muteDescription': return 'Mutes a member\nAlso accepts a media attachment';
+            case 'muteDescription': return 'Mutes a member';
             case 'muteUsage': return '(member) (duration) [(reason)]';
             case 'invMember': return 'Member not found';
             case 'youCantMute': return 'You can\'t mute this member';
@@ -343,7 +343,7 @@ module.exports = {
             case 'autoUnmuteEmbedReasonTitle': return 'Reason';
             case 'autoUnmuteEmbedReasonValue': return 'End of mute';
             case 'autoUnmuteEmbedDescription': return `[\`Referred mute\`](${vars[0]})`;
-            case 'kickDescription': return 'Kicks a member from a server\nAlso accepts a media attachment';
+            case 'kickDescription': return 'Kicks a member from a server';
             case 'kickUsage': return '(user) [(reason)]';
             case 'cantKick': return 'I can\'t kick this member';
             case 'youCantKick': return 'You can\'t kick this member';

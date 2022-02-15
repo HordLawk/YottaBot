@@ -8,7 +8,7 @@ module.exports = {
     description: lang => lang.get('voicexpDescription'),
     aliases: ['vcxp'],
     usage: lang => [lang.get('voicexpUsage0'), 'disable', lang.get('voicexpUsage1'), 'view'],
-    example: ['enable 10', 'ignore channel add #!AFK'],
+    example: ['enable 10', 'ignore add #!AFK'],
     cooldown: 5,
     categoryID: 4,
     args: true,
@@ -65,4 +65,88 @@ module.exports = {
             default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         }
     },
+    enableSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        await guild.findByIdAndUpdate(interaction.guild.id, {$set: {voiceXpCooldown: (interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown = args.minutes)}});
+        interaction.reply(channelLanguage.get('voicexpEnableSuccess', [interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown]));
+    },
+    disableSlash: async interaction => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        await guild.findByIdAndUpdate(interaction.guild.id, {$unset: {voiceXpCooldown: (interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown = null)}});
+        interaction.reply(channelLanguage.get('voicexpDisableSuccess'));
+    },
+    ignoreSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        await channel.findOneAndUpdate({
+            _id: args.channel.id,
+            guild: interaction.guild.id,
+        }, {$set: {ignoreXp: args.add}}, {
+            upsert: true,
+            setDefaultsOnInsert: true,
+        });
+        interaction.reply(channelLanguage.get('xpIgnoreChannel', [args.add, args.channel]));
+    },
+    infoSlash: async interaction => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const embed = new MessageEmbed()
+            .setColor(interaction.guild.me.displayColor ?? 0x8000ff)
+            .setAuthor({
+                name: channelLanguage.get('voiceXpEmbedAuthor'),
+                iconURL: interaction.guild.iconURL({dynamic: true}),
+            })
+            .setDescription(channelLanguage.get('voiceXpEmbedDesc', [interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown]))
+            .setTimestamp();
+        const channels = await channel.find({
+            _id: {$in: interaction.guild.channels.cache.filter(e => (e.type === 'GUILD_VOICE')).map(e => e.id)},
+            guild: interaction.guild.id,
+            ignoreXp: true,
+        });
+        if(channels.length) embed.addField(channelLanguage.get('voiceXpIgnoredChannels'), channels.map(e => `<#${e._id}>`).join(' '));
+        interaction.reply({embeds: [embed]});
+    },
+    slashOptions: [
+        {
+            type: 'SUB_COMMAND',
+            name: 'enable',
+            description: 'Enables xp earnings in voice channels',
+            options: [{
+                type: 'INTEGER',
+                name: 'minutes',
+                description: 'How many minutes an user should stay in a voice channel to earn 1 xp',
+                required: true,
+                minValue: 1,
+                maxValue: 59,
+            }],
+        },
+        {
+            type: 'SUB_COMMAND',
+            name: 'disable',
+            description: 'Disables xp earnings in voice channels',
+        },
+        {
+            type: 'SUB_COMMAND',
+            name: 'ignore',
+            description: 'Users won\'t earn xp in these voice channels',
+            options: [
+                {
+                    type: 'BOOLEAN',
+                    name: 'add',
+                    description: 'Whether to add or remove a channel from the ignored list',
+                    required: true,
+                },
+                {
+                    type: 'CHANNEL',
+                    name: 'channel',
+                    description: 'The channel to be added or removed from the ignored list',
+                    required: true,
+                    channelTypes: ['GUILD_VOICE'],
+                },
+            ],
+        },
+        {
+            type: 'SUB_COMMAND',
+            name: 'info',
+            description: 'Shows details about the xp earning in voice channels system',
+        },
+    ],
 };

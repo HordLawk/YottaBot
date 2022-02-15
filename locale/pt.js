@@ -205,7 +205,7 @@ module.exports = {
             case 'premiumDescription': return 'Informações sobre se tornar premium';
             case 'alreadyPremium': return 'Esse servidor já tem acesso a funções premium';
             case 'premiumEmbedDesc': return `Ainda não é possível comprar o modo premium, se você deseja solicitar parceria ou pagar pelo premium diretamente **[entre no servidor de suporte](https://discord.gg/${vars[0]})** e contate os desenvolvedores`;
-            case 'banDescription': return 'Bane um usuário\nTambém aceita uma mídia em anexo';
+            case 'banDescription': return 'Bane um usuário';
             case 'banUsage': return '(usuário) [(motivo)]';
             case 'invUser': return 'Usuário inválido';
             case 'cantBan': return 'Eu não consigo banir esse membro';
@@ -237,7 +237,7 @@ module.exports = {
             case 'autoSetupMuteSetSuccess': return `Modo de configuração automática de mute foi **${(vars[0] === 'on') ? '' : 'des'}ativado**`;
             case 'inviteDescription': return 'Envia um link para adicionar o bot ao seu servidor';
             case 'inviteEmbedDescription': return `**[Me convide](${vars[0]})** para o seu servidor!`;
-            case 'muteDescription': return 'Muta um membro\nTambém aceita uma mídia em anexo';
+            case 'muteDescription': return 'Muta um membro';
             case 'muteUsage': return '(membro) (duração) [(motivo)]';
             case 'invMember': return 'Membro não encontrado';
             case 'youCantMute': return 'Você não pode mutar esse membro';
@@ -343,7 +343,7 @@ module.exports = {
             case 'autoUnmuteEmbedReasonTitle': return 'Motivo';
             case 'autoUnmuteEmbedReasonValue': return 'Fim do mute';
             case 'autoUnmuteEmbedDescription': return `[\`Mute referido\`](${vars[0]})`;
-            case 'kickDescription': return 'Expulsa um membro de um servidor\nTambém aceita uma mídia em anexo';
+            case 'kickDescription': return 'Expulsa um membro de um servidor';
             case 'kickUsage': return '(usuário) [(motivo)]';
             case 'cantKick': return 'Eu não consigo expulsar esse membro';
             case 'youCantKick': return 'Você não pode expulsar esse membro';

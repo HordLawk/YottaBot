@@ -12,7 +12,8 @@ router.post('/pledges', async (req, res) => {
         }
         break;
     }
-    console.log(req);
+    console.log(req.body);
+    res.sendStatus(200);
 });
 
 module.exports = router;

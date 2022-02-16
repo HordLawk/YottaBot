@@ -8,22 +8,7 @@ const port = 8080;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-// app.use('/api', apiRouter);
-
-app.post('/api/pledges', (req, res) => {
-    switch(req.header('X-Patreon-Event')){
-        case 'members:pledge:create': {
-            console.log('created pledge');
-        }
-        break;
-        case 'members:pledge:delete': {
-            console.log('deleted pledge')
-        }
-        break;
-    }
-    console.log(req.body);
-    res.sendStatus(201);
-});
+app.use('/api', apiRouter);
 
 app.get('/docs', (req, res) => res.redirect('https://github.com/HordLawk/YottaBot#get-started'));
 

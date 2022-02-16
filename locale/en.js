@@ -7,7 +7,7 @@ module.exports = {
             case 'mentionHelp': return `Use \`${vars[0]}help\` to see all my commands!`;
             case 'blacklisted': return 'You are blacklisted from using me!';
             case 'noArgs': return `You didn't provide any arguments, ${vars[0]}!\nThe proper usage would be:\n${vars[3].map(e => `\`${vars[1]}${vars[2]} ${e}\``).join('\n')}`;
-            case 'cooldown': return `Please wait ${vars[0]} more second(s) before reusing the \`${vars[1]}\` command${vars[3] ? '' : `\nTip: Premium servers have half the cooldown for all commands\nTo get premium use \`${vars[2]}premium\``}`;
+            case 'cooldown': return `Please wait ${vars[0]} more second(s) before reusing the \`${vars[1]}\` command${vars[3] ? '' : `\nTip: Premium servers have half the cooldown for all commands\nTo get premium [join Patreon](<https://www.patreon.com/YottaBot>)`}`;
             case 'error': return `There was an error trying to execute the command \`${vars[0]}\`\nThe issue was sent to the support team and will be fixed in the near future`;
             case 'helpDescription': return 'Lists all commands or gives info about a specific one';
             case 'helpUsage': return '[(command)]';
@@ -91,7 +91,7 @@ module.exports = {
             case 'xpStack': return `Role stacking successfully ${(vars[0] === 'on') ? 'enabled': 'disabled'}`
             case 'manageRole': return 'I need permissions to manage this role';
             case 'sameXp': return 'There is another role being rewarded at this amount of xp';
-            case 'maxXpRoles': return `The maximum amount of xp roles for non premium servers is 10, but you can add more with premium! To understand how, use \`${vars[0]}premium\``;
+            case 'maxXpRoles': return 'The maximum amount of xp roles for non premium servers is 10, but you can add more with premium! To get premium [join Patreon](<https://www.patreon.com/YottaBot>)';
             case 'setXpRole': return `**${vars[0]}** is now achieveable at **${vars[1]}** xp\nbe aware that members will only get this role when they send new messages`;
             case 'resetXpRoles': return `All xp roles were removed\nbe aware that these roles won't be automatically removed from members, if you want this, it's recommended that you delete the roles from the server so no member can have it`;
             case 'removeXpRole': return `**${vars[0]}** was removed from the xp rewards\nbe aware that this role won't be automatically removed from members, if you want this, it's recommended that you delete the role from the server so no member can have it`;
@@ -121,7 +121,7 @@ module.exports = {
             case 'rolemenuUsage1': return 'edit (menu ID) <(role mention)/(role ID)/"(role name)"> (emoji) [(list of roles and emojis)] [toggle]';
             case 'maxRolesMenu': return 'The maximum amount of roles per menu is 20';
             case 'botReactions': return 'I need permission to add reactions in this channel';
-            case 'maxRolemenus': return `The maximum amount of menus for non premium servers is 10, but you can add more with premium! To understand how, use \`${vars[0]}premium\``;
+            case 'maxRolemenus': return 'The maximum amount of menus for non premium servers is 10, but you can add more with premium! To get premium [join Patreon](<https://www.patreon.com/YottaBot>)';
             case 'uniqueEmoji': return 'Each emoji can only be used once per menu';
             case 'loading': return 'Loading...';
             case 'rolemenuEmbedAuthor': return 'React to claim a role';
@@ -142,7 +142,7 @@ module.exports = {
             case 'configsEmbedAuthor': return 'Server settings';
             case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\nLanguage: \`${vars[1]}\`\nLog attachments: \`${vars[2] ? 'on' : 'off'}\`\nWarn log channel: ${vars[3].warn ? `<#${vars[3].warn}>` : '`none`'}\nMute log channel: ${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\nKick log channel: ${vars[3].kick ? `<#${vars[3].kick}>` : '`none`'}\nBan log channel: ${vars[3].ban ? `<#${vars[3].ban}>` : '`none`'}\nDays of messages to delete on ban: \`${vars[4]}\`\nMax bans per moderator per 10 seconds: \`${vars[5] ?? '∞'}\`\nGlobal bans: \`${vars[6] ? 'on' : 'off'}\`\nBeta features: \`${vars[7] ? 'on' : 'off'}\``;
             case 'betaCommand': return 'This command is currently only available for servers that enabled open beta features in the bot settings';
-            case 'premiumCommand': return `This command is a premium feature, use \`${vars[0]}premium\` for more information on becoming premium`;
+            case 'premiumCommand': return `This command is a premium feature, to get premium [join Patreon](<https://www.patreon.com/YottaBot>)`;
             case 'botWebhooks': return 'I need permission to manage webhooks in this channel';
             case 'executor': return `\nExecutor: ${vars[0]}`;
             case 'delmsgEmbedAuthor': return 'Deleted message';
@@ -202,7 +202,7 @@ module.exports = {
             case 'logattachmentsNoNSFW': return 'To use this settings your deleted messages log channel needs to be set to NSFW';
             case 'logattachmentsOnSuccess': return 'Attachments will be logged';
             case 'logattachmentsOffSuccess': return 'Attachments will not be logged';
-            case 'premiumDescription': return 'Information on becoming premium';
+            case 'premiumDescription': return 'Manage server premium';
             case 'alreadyPremium': return 'This server already has access to premium features';
             case 'premiumEmbedDesc': return `Buying premium status is not ready yet, if you wish to apply for partnership or pay for premium directly **[join the support server](https://discord.gg/${vars[0]})** and contact the developers`;
             case 'banDescription': return 'Bans an user';
@@ -260,7 +260,7 @@ module.exports = {
             case 'muteEmbedDurationValue': return `${vars[0] ? `${vars[0]}d` : ''}${vars[1] ? `${vars[1]}h` : ''}${vars[2] ? `${vars[2]}m` : ''}\n<t:${vars[3]}:R>`;
             case 'muteEmbedFooter': return `Case ${vars[0]}`;
             case 'muteEmbedReasonTitle': return 'Reason';
-            case 'activatePremium': return `You have **${vars[0]}** premium keys remaining\nDo you want to activate premium features for this server? This action cannot be undone`;
+            case 'activatePremium': return `You have **${vars[0] ?? 0}** premium keys remaining`;
             case 'confirm': return 'Confirm';
             case 'cancel': return 'Cancel';
             case 'previous': return 'Previous';
@@ -359,8 +359,8 @@ module.exports = {
             case 'massbanDescription': return 'Bans many users at the same time';
             case 'massbanUsage': return '(user) [(list of users)] [(reason)]';
             case 'massbanSuccess': return `${vars[0] ? `${vars[0]} users banned\n` : ''}${vars[1] ? `${vars[1]} invalid users\n` : ''}${vars[2] ? `${vars[2]} users could not be banned\n` : ''}${vars[3] ? `${vars[3]} users were already banned` : ''}`;
-            case 'firstBoost': return `Congratulations ${vars[0]}, you boosted **${vars[1]}** and was rewarded with a premium key, use the \`premium\` commannd in any server to activate its premium features`;
-            case 'renewBoost': return `Thank you for boosting **${vars[0]}** for another month! You got a premium key as a reward, use the \`premium\` commannd in any server to activate its premium features`;
+            case 'firstBoost': return `Congratulations ${vars[0]}, you boosted **${vars[1]}** and was rewarded with a premium key, use the \`/premium activate\` commannd in any server to activate its premium features`;
+            case 'renewBoost': return `Thank you for boosting **${vars[0]}** for another month! You got a premium key as a reward, use the \`/premium activate\` commannd in any server to activate its premium features`;
             case 'recommendMinLevels': return 'You can\'t ask for recommendations for less than 2 levels';
             case 'recommendMinXp': return 'Highest level xp has to be at least 13';
             case 'recommendXpNotEnough': return `**${vars[0]}** is not enough xp for **${vars[1]}** levels`;
@@ -412,6 +412,19 @@ module.exports = {
             case 'muteMemberUndone': return '~~Member muted~~ *undone*';
             case 'muteUndone': return 'Mute undone';
             case 'language': return 'Server language';
+            case 'premiumKeysLabel': return 'Use key';
+            case 'premiumPatreonLabel': return 'Use Patreon reward';
+            case 'pledgeNotFound': return 'Your patreon membership was not found\nIf you think this is a mistake make sure your Discord account is connected to your patreon account\n[This article](https://support.patreon.com/hc/en-us/articles/212052266) will guide you through doing so\nIf you are not yet a YottaBot patron [join Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'noRewardsRemaining': return 'You have already used all your Patreon rewards, wait until one of the premiums you claimed expires to use it on this server';
+            case 'patreonRewardClaimed': return 'You successfully activated premium features in this server using your Patreon rewards\nDo you wish for this to be automatically renewed monthly?';
+            case 'enableRenew': return 'Renew monthly';
+            case 'renewEnabled': return 'The premium features for this server will be automatically renewed';
+            case 'notPatron': return 'You are not currently using Patreon rewards in any server\nIf you are not yet a YottaBot patron [join Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'unknownGuild': return 'Unknown server';
+            case 'premiumInfoFieldValue': return `**Expires:** <t:${vars[0]}>\n**Monthly renew:** ${vars[1] ? '`on`' : '`off`'}`;
+            case 'invGuild': return 'Invalid server';
+            case 'renewChangeSuccess': return `Premium status for **${vars[0]}** ${vars[1] ? 'will' : 'won\'t'} automatically renew monthly`;
+            case 'premiumUsage0': return 'renew <on/off> (server)';
         }
     },
 };

@@ -7,7 +7,7 @@ module.exports = {
             case 'mentionHelp': return `Use \`${vars[0]}help\` para ver todos os meus comandos!`;
             case 'blacklisted': return `Você está proibido de usar este bot!`;
             case 'noArgs': return `Você não forneceu nenhum argumento, ${vars[0]}!\nO uso correto seria:\n${vars[3].map(e => `\`${vars[1]}${vars[2]} ${e}\``).join('\n')}`;
-            case 'cooldown': return `Por favor espere mais ${vars[0]} segundo(s) antes de usar o comando \`${vars[1]}\` novamente${vars[3] ? '' : `\nDica: Servidores premium tem metade do cooldown para todos os comandos\nPara adquirir premium use \`${vars[2]}premium\``}`;
+            case 'cooldown': return `Por favor espere mais ${vars[0]} segundo(s) antes de usar o comando \`${vars[1]}\` novamente${vars[3] ? '' : `\nDica: Servidores premium tem metade do cooldown para todos os comandos\nPara adquirir premium [se junte ao Patreon](<https://www.patreon.com/YottaBot>)`}`;
             case 'error': return `Houve um erro ao tentar executar o comando \`${vars[0]}\`\nO problema foi enviado à equipe de suporte e será corrigido no futuro proximo`;
             case 'helpDescription': return 'Lista todos os comandos ou mostra informações sobre um específico';
             case 'helpUsage': return '[(comando)]';
@@ -91,7 +91,7 @@ module.exports = {
             case 'xpStack': return `Acumulo de cargos de xp ${(vars[0] === 'on') ? 'ativado': 'desativao'}`
             case 'manageRole': return 'Eu preciso de permissão para gerenciar esse cargo';
             case 'sameXp': return 'Já existe outro cargo definido para essa quantidade de xp';
-            case 'maxXpRoles': return `O número maximo de cargos de xp para servidores não premium é 10, mas você pode adicionar mais com premium! Para entender como, use \`${vars[0]}premium\``;
+            case 'maxXpRoles': return 'O número maximo de cargos de xp para servidores não premium é 10, mas você pode adicionar mais com premium! Para adquirir premium [se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
             case 'setXpRole': return `**${vars[0]}** definido como recompensa para **${vars[1]}** xp\nesteja ciente que membros apenas receberão esse cargo ao enviar novas mensagens`;
             case 'resetXpRoles': return `Todos os cargos de xp foram removidos\nesteja ciente que esses cargos não serão removidos automaticamente dos membros, se você quiser isso, é recomendado deletar os cargos do servidor para que nenhum membro continue com eles`;
             case 'removeXpRole': return `**${vars[0]}** foi removido das recompensas de xp\nesteja ciente que esse cargo não será removido automaticamente dos membros, se você quiser isso, é recomendado deletar o cargo do servidor para que nenhum membro continue com ele`;
@@ -121,7 +121,7 @@ module.exports = {
             case 'rolemenuUsage1': return 'edit (ID de menu) <(menção de cargo)/(ID de cargo)/"(nome de cargo)"> (emoji) [(lista de cargos e emojis)] [toggle]';
             case 'maxRolesMenu': return 'O número máximo de cargos por menu é 20';
             case 'botReactions': return 'Eu preciso de permissão para adicionar reações nesse canal';
-            case 'maxRolemenus': return `O número máximo de menus para servidores não premium é 10, mas você pode adicionar mais com premium! Para entender como, use \`${vars[0]}premium\``;
+            case 'maxRolemenus': return 'O número máximo de menus para servidores não premium é 10, mas você pode adicionar mais com premium! Para adquirir premium [se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
             case 'uniqueEmoji': return 'Cada emoji só pode ser usado uma vez por menu';
             case 'loading': return 'Carregando...';
             case 'rolemenuEmbedAuthor': return 'Reaja para reivindicar um cargo';
@@ -142,7 +142,7 @@ module.exports = {
             case 'configsEmbedAuthor': return 'Configurações do servidor';
             case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\nIdioma: \`${vars[1]}\`\nRegistrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\`\nCanal de registro de warn: ${vars[3].warn ? `<#${vars[3].warn}>` : '`nenhum`'}\nCanal de registro de mute: ${vars[3].mute ? `<#${vars[3].mute}>` : '`nenhum`'}\nCanal de registro de kick: ${vars[3].kick ? `<#${vars[3].kick}>` : '`nenhum`'}\nCanal de registro de ban: ${vars[3].ban ? `<#${vars[3].ban}>` : '`nenhum`'}\nNúmero de dias de mensagens deletadas em bans: \`${vars[4]}\`\nMáximo de bans por moderador por 10 segundos: \`${vars[5] ?? '∞'}\`\nBanimentos globais: \`${vars[6] ? 'ativados' : 'desativados'}\`\nFunções beta: \`${vars[7] ? 'ativadas' : 'desativadas'}\``;
             case 'betaCommand': return 'Esse comando atualmente está disponível apenas para servidor que ativaram funcionalidade beta nas configurações do bot';
-            case 'premiumCommand': return `Esse comando é uma funcionalidade premium, use \`${vars[0]}premium\` para mais informações sobre se tornar premium`;
+            case 'premiumCommand': return `Esse comando é uma funcionalidade premium, para adquirir premium [se junte ao Patreon](<https://www.patreon.com/YottaBot>)`;
             case 'botWebhooks': return 'Eu preciso de permissão para gerenciar webhooks nesse canal';
             case 'executor': return `\nExecutor: ${vars[0]}`;
             case 'delmsgEmbedAuthor': return 'Mensagem deletada';
@@ -202,7 +202,7 @@ module.exports = {
             case 'logattachmentsNoNSFW': return 'Para usar essa configuração o canal de registros de mensagens deletadas precisa estar definido como NSFW';
             case 'logattachmentsOnSuccess': return 'Anexos serão registrados';
             case 'logattachmentsOffSuccess': return 'Anexos não serão registrados';
-            case 'premiumDescription': return 'Informações sobre se tornar premium';
+            case 'premiumDescription': return 'Gerencia o premium de servidores';
             case 'alreadyPremium': return 'Esse servidor já tem acesso a funções premium';
             case 'premiumEmbedDesc': return `Ainda não é possível comprar o modo premium, se você deseja solicitar parceria ou pagar pelo premium diretamente **[entre no servidor de suporte](https://discord.gg/${vars[0]})** e contate os desenvolvedores`;
             case 'banDescription': return 'Bane um usuário';
@@ -260,7 +260,7 @@ module.exports = {
             case 'muteEmbedDurationValue': return `${vars[0] ? `${vars[0]}d` : ''}${vars[1] ? `${vars[1]}h` : ''}${vars[2] ? `${vars[2]}m` : ''}\n<t:${vars[3]}:R>`;
             case 'muteEmbedFooter': return `Caso ${vars[0]}`;
             case 'muteEmbedReasonTitle': return 'Motivo';
-            case 'activatePremium': return `Você tem **${vars[0]}** chaves premium restantes\nVocê quer ativar funções premium nesse servidor? Essa ação não pode ser revertida`;
+            case 'activatePremium': return `Você tem **${vars[0] ?? 0}** chaves premium restantes`;
             case 'confirm': return 'Confirmar';
             case 'cancel': return 'Cancelar';
             case 'previous': return 'Anterior';
@@ -359,8 +359,8 @@ module.exports = {
             case 'massbanDescription': return 'Bane varios usuários ao mesmo tempo';
             case 'massbanUsage': return '(usuário) [(lista de usuários)] [(motivo)]';
             case 'massbanSuccess': return `${vars[0] ? `${vars[0]} usuários banidos\n` : ''}${vars[1] ? `${vars[1]} usuários inválidos\n` : ''}${vars[2] ? `${vars[2]} usuários não puderam ser banidos\n` : ''}${vars[3] ? `${vars[3]} usuários já estavam banidos` : ''}`;
-            case 'firstBoost': return `Parabéns ${vars[0]}, você impulsionou **${vars[1]}** e foi recompensado com uma chave premium, use o comando \`premium\` em qualquer servidor para ativar as funções premium`;
-            case 'renewBoost': return `Obrigado por impulsionar **${vars[0]}** por mais um mês! Você recebeu uma chave premium como recompensa, use o comando \`premium\` em qualquer servidor para ativar as funções premium`;
+            case 'firstBoost': return `Parabéns ${vars[0]}, você impulsionou **${vars[1]}** e foi recompensado com uma chave premium, use o comando \`/premium activate\` em qualquer servidor para ativar as funções premium`;
+            case 'renewBoost': return `Obrigado por impulsionar **${vars[0]}** por mais um mês! Você recebeu uma chave premium como recompensa, use o comando \`/premium activate\` em qualquer servidor para ativar as funções premium`;
             case 'recommendMinLevels': return 'Você não pode pedir por recomendações para menos de 2 níveis';
             case 'recommendMinXp': return 'O xp do nível máximo deve ser no mínimo 13';
             case 'recommendXpNotEnough': return `**${vars[0]}** não é xp suficiente para **${vars[1]}** níveis`;
@@ -412,6 +412,19 @@ module.exports = {
             case 'muteMemberUndone': return '~~Membro mutado~~ *desfeito*';
             case 'muteUndone': return 'Mute desfeito';
             case 'language': return 'Idioma do servidor';
+            case 'premiumKeysLabel': return 'Usar chave';
+            case 'premiumPatreonLabel': return 'Usar recompensa Patreon';
+            case 'pledgeNotFound': return `Você não parece fazer parte do meu Patreon\nSe você acha que isso é um erro, se certifique que a sua conta Discord está conectada à sua conta Patreon\n[Esse artigo](https://support.patreon.com/hc/en-us/articles/212052266) vai te guiar por esse processo\nSe você ainda não é um patrão de YottaBot [se junte ao Patreon](<https://www.patreon.com/YottaBot>)`;
+            case 'noRewardsRemaining': return 'Você já usou todas as suas recompensas Patreon, espere até que um dos premiums que você reivindicou expire para reivindicar nesse servidor';
+            case 'patreonRewardClaimed': return 'Você ativou funções premium nesse servidor com sucesso usando as suas recompensas Patreon\nVocê deseja que isso seja automaticamente renovado mensalmente?';
+            case 'enableRenew': return 'Renovar mensalmente';
+            case 'renewEnabled': return 'As funções premium serão automaticamente renovadas para esse servidor';
+            case 'notPatron': return 'Você não está atualmente usando recompensas Patreon em nenhum servidor\nSe você ainda não é um patrão de YottaBot [se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'unknownGuild': return 'Servidor desconhecido';
+            case 'premiumInfoFieldValue': return `**Expira:** <t:${vars[0]}>\n**Renovar mensalmente:** ${vars[1] ? '`ativado`' : '`desativado`'}`;
+            case 'invGuild': return 'Servidor inválido';
+            case 'renewChangeSuccess': return `O premium de **${vars[0]}** ${vars[1] ? 'irá' : 'não irá'} ser renovado automaticamente`;
+            case 'premiumUsage0': return 'renew <on/off> (servidor)';
         }
     },
 };

@@ -91,7 +91,7 @@ module.exports = {
             }
             embed.setFields(logDocs.slice(page * pageSize, (page + 1) * pageSize).map(e => ({
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
-                value: channelLanguage.get('checkEmbedCaseValueTarget', [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
+                value: channelLanguage.get('checkEmbedCaseValueTarget', [e, e.duration && formatDuration(Math.floor((e.duration.getTime() - e.timeStamp.getTime()) / 60000))]),
             })));
             await button.update({
                 embeds: [embed],

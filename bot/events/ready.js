@@ -79,11 +79,51 @@ module.exports = {
                 };
             }
         }
+        const removePremium = async currentGuild => {
+            currentGuild.premiumUntil = null;
+            currentGuild.patron = null;
+            currentGuild.renewPremium = false;
+            await currentGuild.save();
+            client.guildData.set(currentGuild._id, currentGuild);
+        }
+        const searchPledge = async (url, patron) => {
+            const pledges = await axios({
+                method: 'GET',
+                url: url,
+                headers: {Authorization: `Bearer ${process.env.PATREON_TOKEN}`},
+            }).then(res => res.data);
+            const patreonUser = pledges.included.find(e => ((e.type === 'user') && (e.attributes.social_connections.discord?.user_id === patron)));
+            if(!patreonUser){
+                if(!pledges.links.next) return null;
+                return await searchPledge(pledges.links.next, patron);
+            }
+            return pledges.data.find(e => ((e.type === 'pledge') && (e.relationships.patron.data.id === patreonUser.id)));
+        }
         const unpremiumTimer = async () => {
             const endedPremium = await guildModel.find({premiumUntil: {$lt: Date.now()}});
             if(!endedPremium.length) return;
-            await guildModel.updateMany({premiumUntil: {$lt: Date.now()}}, {$set: {premiumUntil: null}});
-            endedPremium.forEach(e => client.guildData.get(e._id).premiumUntil = null);
+            const rewardTotal = {
+                '8304182': 1,
+                '8307567': 2,
+                '8307569': 3,
+            };
+            for(guildDoc of endedPremium){
+                if(!guildDoc.patron || !guildDoc.renewPremium || !client.guilds.cache.has(guildDoc._id)){
+                    await removePremium(guildDoc);
+                    continue;
+                }
+                const pledge = await searchPledge('https://www.patreon.com/api/oauth2/api/campaigns/8230487/pledges', guildDoc.patron);
+                if(!pledge){
+                    await removePremium(guildDoc);
+                    continue;
+                }
+                if(client.guildData.filter(e => (e.patron === guildDoc.patron)).size > rewardTotal[pledge.relationships.reward.data.id]){
+                    await removePremium(guildDoc);
+                    continue;
+                }
+                guildDoc.premiumUntil = new Date(Date.now() + 2764800000);
+                await guildDoc.save();
+            }
         }
         const renewBoost = async () => {
             const endedBoost = await user.find({boostUntil: {$lt: Date.now()}});
@@ -151,7 +191,7 @@ module.exports = {
                 guildVoiceXpCd.set(voiceGuild._id, inVoice.mapValues(() => 0).concat(guildVoiceXpCd.get(voiceGuild._id)));
             }
         }
-        const tick = (i) => {
+        const tick = i => {
             setTimeout(() => {
                 unmuteTimer();
                 unpremiumTimer();

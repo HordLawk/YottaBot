@@ -10,7 +10,7 @@ module.exports = {
     cooldown: 5,
     categoryID: 5,
     args: true,
-    usage: ['activate', 'info', lang.get('premiumUsage0')],
+    usage: lang => ['activate', 'info', lang.get('premiumUsage0')],
     example: ['renew on 476244157245947904'],
     // execute: async message => {
     //     const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];

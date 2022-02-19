@@ -128,17 +128,17 @@ module.exports = {
         },
     ],
     addAutocomplete: {
-        name: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => e.name.startsWith(value)).first(25).map(e => ({
+        name: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => e.name.startsWith(value.toLowerCase())).first(25).map(e => ({
             name: e.name,
             value: e.name,
         }))),
     },
     editAutocomplete: {
-        slash_name: (interaction, value) => interaction.respond(((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.filter(e => e.name.startsWith(value) && (e.type === interaction.options.data[0].options.find(ee => (ee.name === 'type')).value)).first(25).map(e => ({
+        slash_name: (interaction, value) => interaction.respond(((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.filter(e => e.name.toLowerCase().startsWith(value.toLowerCase()) && (e.type === interaction.options.data[0].options.find(ee => (ee.name === 'type')).value)).first(25).map(e => ({
             name: e.name,
             value: e.id,
         }))),
-        command_name: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => e.name.startsWith(value)).first(25).map(e => ({
+        command_name: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => e.name.startsWith(value.toLowerCase())).first(25).map(e => ({
             name: e.name,
             value: e.name,
         }))),

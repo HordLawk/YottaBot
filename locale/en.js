@@ -72,8 +72,8 @@ module.exports = {
             case 'disabledEmbedAuthor': return 'Channel specific commands';
             case 'disabledEmbedDesc': return `Channel: ${vars[0]}`;
             case 'disabledField': return 'Disabled';
-            case 'achieveGuild': return `Congratulations ${vars[0]}! You just achieved the role **${vars[1]}**`;
-            case 'achieveDM': return `Congratulations! You just achieved the role **${vars[0]}** in the server **${vars[1]}**`;
+            case 'achieveGuild': return `Congratulations ${vars[0]}! You just achieved the role ${vars[1]}`;
+            case 'achieveDM': return `Congratulations! You just achieved the role ${vars[0]} in the server **${vars[1]}**`;
             case 'msgxpDescription': return 'Manages this server\'s xp system';
             case 'msgxpUsage0': return 'enable <on/off>';
             case 'msgxpUsage1': return 'roles set (role) (xp)';
@@ -425,6 +425,11 @@ module.exports = {
             case 'invGuild': return 'Invalid server';
             case 'renewChangeSuccess': return `Premium status for **${vars[0]}** ${vars[1] ? 'will' : 'won\'t'} automatically renew monthly`;
             case 'premiumUsage0': return 'renew <on/off> (server)';
+            case 'delmsgActionName': return 'Deleted messages';
+            case 'editmsgActionName': return 'Edited messages';
+            case 'pruneActionName': return 'Pruned messages';
+            case 'cantIgnoreEveryone': return 'Actions can\'t be ignored from @everyone\nIf you don\'t want this action to be logged use \`/actionlogs actions remove (action)\`';
+            case 'invAction': return 'Invalid action';
         }
     },
 };

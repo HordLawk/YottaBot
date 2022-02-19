@@ -35,6 +35,7 @@ module.exports = {
             ephemeral: true,
         });
         const {commandName} = interaction;
+        const subCommandGroupName = interaction.options.getSubcommandGroup(false);
         const subCommandName = interaction.options.getSubcommand(false);
         const command = interaction.isContextMenu() ? interaction.client.commands.find(cmd => (cmd.contextName === commandName)) : interaction.client.commands.get(commandName);
         if(!command) throw new Error('Invalid command.');
@@ -83,12 +84,13 @@ module.exports = {
         timestamps.set(interaction.user.id, now);
         setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
         const args = {};
-        const options = subCommandName ? interaction.options.data[0].options : interaction.options.data;
+        let options = interaction.options.data;
+        if(subCommandName) options = subCommandGroupName ? interaction.options.data[0].options[0].options : interaction.options.data[0].options;
         if(options?.length > 0) options.forEach(opt => {
             args[opt.name] = opt[opt.type.toLowerCase()] ? opt[opt.type.toLowerCase()] : opt.value;
             if(opt.type === 'USER' && opt.member) args[opt.name].member = opt.member;
         });
-        command[`${subCommandName ?? 'execute'}Slash`](interaction, args).catch(error => {
+        command[`${subCommandName ? `${(subCommandGroupName ?? '')}${subCommandName}` : 'execute'}Slash`](interaction, args).catch(error => {
             console.error(error);
             if(interaction.deferred){
                 interaction.editReply(channelLanguage.get('error', [command.name]));

@@ -32,16 +32,14 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 ## W.I.P
 - [ ] use slash commands; context menus; buttons; and stuff *
 - [x] apply for messages priviledge intent
-- [ ] setup a patreon
+- [x] setup a patreon
 - [ ] add rss feeds for youtube notifications *
 - [ ] `prune` command *
 - [ ] command to edit slowmode *
 - [ ] command to delete cases *
 - [ ] `poll` command ** \*** \****
 - [ ] command to manage emojis *
-- [ ] `profile` command
 - [ ] automated punishments when reaching a chosen amount of another type of punishment *
-- [x] an "opt in" global ban system
 - [ ] other streaming notifications for premium *
 - [x] float xp multipliers
 - [ ] create and edit role menus with built in forms \*** \****

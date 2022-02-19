@@ -348,7 +348,7 @@ module.exports = {
         },
     ],
     renewAutocomplete: {
-        guild: (interaction, value) => interaction.respond(interaction.client.guilds.cache.filter(e => ((interaction.client.guildData.get(e.id).patron === interaction.user.id) && e.name.startsWith(value))).map(e => ({
+        guild: (interaction, value) => interaction.respond(interaction.client.guilds.cache.filter(e => ((interaction.client.guildData.get(e.id).patron === interaction.user.id) && e.name.toLowerCase().startsWith(value.toLowerCase()))).first(25).map(e => ({
             name: e.name,
             value: e.id,
         }))),

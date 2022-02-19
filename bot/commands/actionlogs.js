@@ -3,6 +3,11 @@ const channel = require('../../schemas/channel.js');
 const role = require('../../schemas/role.js');
 const guild = require('../../schemas/guild.js');
 
+const action = (interaction, value) => interaction.respond(interaction.client.configs.actions.map(e => ({
+    name: interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'].get(`${e}ActionName`),
+    value: e,
+})).filter(e => e.name.toLowerCase().startsWith(value.toLowerCase())));
+
 module.exports = {
     active: true,
     name: 'actionlogs',
@@ -120,7 +125,7 @@ module.exports = {
                                 .setDescription(channelLanguage.get('ignoredActionsChannelEmbedDesc', [discordChannel]))
                                 .setTimestamp()
                                 .setFooter({text: channelLanguage.get('ignoredActionsEmbedFooter', [channelDoc.ignoreActions.length])})
-                                .addField(channelLanguage.get('ignoredActionsEmbedActionsTitle'), channelDoc.ignoreActions.map(e => channelLanguage.get(`action${e}`)).join(', '));
+                                .addField(channelLanguage.get('ignoredActionsEmbedActionsTitle'), channelDoc.ignoreActions.map(e => channelLanguage.get(`${e}ActionName`)).join('\n'));
                             message.reply({embeds: [embed]});
                         }
                         else{
@@ -145,7 +150,7 @@ module.exports = {
                                 .setDescription(channelLanguage.get('ignoredActionsRoleEmbedDesc', [discordRole]))
                                 .setTimestamp()
                                 .setFooter({text: channelLanguage.get('ignoredActionsEmbedFooter', [roleDoc.ignoreActions.length])})
-                                .addField(channelLanguage.get('ignoredActionsEmbedActionsTitle'), roleDoc.ignoreActions.map(e => channelLanguage.get(`action${e}`)).join(', '));
+                                .addField(channelLanguage.get('ignoredActionsEmbedActionsTitle'), roleDoc.ignoreActions.map(e => channelLanguage.get(`${e}ActionName`)).join('\n'));
                             message.reply({embeds: [embed]});
                         }
                     }
@@ -291,4 +296,457 @@ module.exports = {
             default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         }
     },
+    defaultSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(!interaction.guild.me.permissionsIn(args.channel).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) return interaction.reply({
+            content: channelLanguage.get('botWebhooks'),
+            ephemeral: true,
+        });
+        const hook = await args.channel.createWebhook(interaction.client.user.username, {
+            avatar: interaction.client.user.avatarURL(),
+            reason: channelLanguage.get('newDefaultHookReason'),
+        });
+        const oldHook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
+        if(oldHook && interaction.guild.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldDefaultHookReason'));
+        const guildDoc = await guild.findByIdAndUpdate(interaction.guild.id, {$set: {
+            defaultLogsHookID: hook.id,
+            defaultLogsHookToken: hook.token,
+        }}, {new: true});
+        interaction.client.guildData.set(interaction.guild.id, guildDoc);
+        interaction.reply(channelLanguage.get('newDefaultLog', [args.channel]));
+    },
+    actionssetSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(!interaction.client.configs.actions.includes(args.action)) return interaction.reply({
+            content: channelLanguage.get('invAction'),
+            ephemeral: true,
+        });
+        if(args.log_channel){
+            if(!interaction.guild.me.permissionsIn(args.log_channel).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) return interaction.reply({
+                content: channelLanguage.get('botWebhooks'),
+                ephemeral: true,
+            });
+            const hook = await args.log_channel.createWebhook(interaction.client.user.username, {
+                avatar: interaction.client.user.avatarURL(),
+                reason: channelLanguage.get('newHookReason', [channelLanguage.get(`action${args.action}`)]),
+            });
+            const oldHook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookToken).catch(() => null);
+            if(oldHook && interaction.guild.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [args.action]));
+            const guildDoc = await guild.findById(interaction.guild.id);
+            if(!guildDoc.actionlogs.id(args.action)){
+                guildDoc.actionlogs.push({
+                    _id: args.action,
+                    hookID: hook.id,
+                    hookToken: hook.token,
+                });
+            }
+            else{
+                guildDoc.actionlogs.id(args.action).hookID = hook.id;
+                guildDoc.actionlogs.id(args.action).hookToken = hook.token;
+            }
+            await guildDoc.save();
+            interaction.client.guildData.get(interaction.guild.id).actionlogs = guildDoc.actionlogs;
+            interaction.reply(channelLanguage.get('newLogSuccess', [args.log_channel]));
+        }
+        else{
+            const hook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
+            if(!hook) return interaction.reply({
+                content: channelLanguage.get('noDefaultLog'),
+                ephemeral: true,
+            });
+            const oldHook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookToken).catch(() => null);
+            if(oldHook && interaction.guild.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [channelLanguage.get(`action${args.action}`)]));
+            const guildDoc = await guild.findById(interaction.guild.id);
+            if(!guildDoc.actionlogs.id(args.action)){
+                guildDoc.actionlogs.push({_id: args.action});
+            }
+            else{
+                guildDoc.actionlogs.id(args.action).hookID = null;
+                guildDoc.actionlogs.id(args.action).hookToken = null;
+            }
+            await guildDoc.save();
+            interaction.client.guildData.get(interaction.guild.id).actionlogs = guildDoc.actionlogs;
+            interaction.reply(channelLanguage.get('newDefaultLogSuccess'));
+        }
+    },
+    actionsremoveSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(!interaction.client.configs.actions.includes(args.action)) return interaction.reply({
+            content: channelLanguage.get('invAction'),
+            ephemeral: true,
+        });
+        const oldHook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookToken).catch(() => null);
+        if(oldHook && interaction.guild.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [args.action]));
+        const guildDoc = await guild.findById(interaction.guild.id);
+        if(guildDoc.actionlogs.id(args.action)){
+            guildDoc.actionlogs.id(args.action).remove();
+            await guildDoc.save();
+            interaction.client.guildData.get(interaction.guild.id).actionlogs = guildDoc.actionlogs;
+        }
+        interaction.reply(channelLanguage.get('removeLogSuccess'));
+    },
+    ignoredchannelsaddSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(args.action){
+            if(!interaction.client.configs.actions.includes(args.action)) return interaction.reply({
+                content: channelLanguage.get('invAction'),
+                ephemeral: true,
+            });
+            await channel.findOneAndUpdate({
+                _id: args.channel.id,
+                guild: interaction.guild.id,
+            }, {$addToSet: {ignoreActions: args.action}}, {
+                upsert: true,
+                setDefaultsOnInsert: true,
+            });
+            interaction.reply(channelLanguage.get('actionIgnoredChannelSuccess', [channelLanguage.get(`action${args.action}`), args.channel]));
+        }
+        else{
+            await channel.findOneAndUpdate({
+                _id: args.channel.id,
+                guild: interaction.guild.id,
+            }, {$set: {ignoreActions: interaction.client.configs.actions}}, {
+                upsert: true,
+                setDefaultsOnInsert: true,
+            });
+            interaction.reply(channelLanguage.get('allActionsIgnoredChannelSuccess', [args.channel]));
+        }
+    },
+    ignoredchannelsremoveSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(args.action){
+            if(!interaction.client.configs.actions.includes(args.action)) return interaction.reply({
+                content: channelLanguage.get('invAction'),
+                ephemeral: true,
+            });
+            await channel.findByIdAndUpdate(args.channel.id, {$pull: {ignoreActions: args.action}});
+            interaction.reply(channelLanguage.get('actionNotIgnoredChannelSuccess', [channelLanguage.get(`action${args.action}`), args.channel]));
+        }
+        else{
+            await channel.findByIdAndUpdate(args.channel.id, {$set: {ignoreActions: []}});
+            interaction.reply(channelLanguage.get('noActionsIgnoredChannelSuccess', [args.channel]));
+        }
+    },
+    ignoredchannelsinfoSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const channelDoc = await channel.findById(args.channel.id);
+        if(!channelDoc || !channelDoc.ignoreActions.length) return interaction.reply({
+            content: channelLanguage.get('noIgnoredActionsChannel'),
+            ephemeral: true,
+        });
+        const embed = new MessageEmbed()
+            .setColor(interaction.guild.me.displayColor || 0x8000ff)
+            .setAuthor({
+                name: channelLanguage.get('ignoredActionsChannelEmbedAuthor'),
+                iconURL: interaction.guild.iconURL({dynamic: true}),
+            })
+            .setDescription(channelLanguage.get('ignoredActionsChannelEmbedDesc', [args.channel]))
+            .setTimestamp()
+            .setFooter({text: channelLanguage.get('ignoredActionsEmbedFooter', [channelDoc.ignoreActions.length])})
+            .addField(channelLanguage.get('ignoredActionsEmbedActionsTitle'), channelDoc.ignoreActions.map(e => channelLanguage.get(`${e}ActionName`)).join('\n'));
+            interaction.reply({embeds: [embed]});
+    },
+    ignoredrolesaddSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(args.role.id === interaction.guild.id) return interaction.reply({
+            content: channelLanguage.get('cantIgnoreEveryone'),
+            ephemeral: true,
+        });
+        if(args.action){
+            if(!interaction.client.configs.actions.includes(args.action)) return interaction.reply({
+                content: channelLanguage.get('invAction'),
+                ephemeral: true,
+            });
+            await role.findOneAndUpdate({
+                roleID: args.role.id,
+                guild: interaction.guild.id,
+            }, {$addToSet: {ignoreActions: args.action}}, {
+                upsert: true,
+                setDefaultsOnInsert: true,
+            });
+            interaction.reply(channelLanguage.get('actionIgnoredRoleSuccess', [channelLanguage.get(`action${args.action}`), args.role.name]));
+        }
+        else{
+            await role.findOneAndUpdate({
+                roleID: args.role.id,
+                guild: interaction.guild.id,
+            }, {$set: {ignoreActions: interaction.client.configs.actions}}, {
+                upsert: true,
+                setDefaultsOnInsert: true,
+            });
+            interaction.reply(channelLanguage.get('allActionsIgnoredRoleSuccess', [args.role.name]));
+        }
+    },
+    ignoredrolesremoveSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(args.role.id === interaction.guild.id) return interaction.reply({
+            content: channelLanguage.get('cantIgnoreEveryone'),
+            ephemeral: true,
+        });
+        if(args.action){
+            if(!interaction.client.configs.actions.includes(args.action)) return interaction.reply({
+                content: channelLanguage.get('invAction'),
+                ephemeral: true,
+            });
+            await role.findOneAndUpdate({
+                roleID: args.role.id,
+                guild: interaction.guild.id,
+            }, {$pull: {ignoreActions: args.action}});
+            interaction.reply(channelLanguage.get('actionNotIgnoredRoleSuccess', [channelLanguage.get(`action${args.action}`), args.role.name]));
+        }
+        else{
+            await role.findOneAndUpdate({
+                roleID: args.role.id,
+                guild: interaction.guild.id,
+            }, {$set: {ignoreActions: []}});
+            interaction.reply(channelLanguage.get('noActionsIgnoredRoleSuccess', [args.role.name]));
+        }
+    },
+    ignoredrolesinfoSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const roleDoc = await role.findOne({
+            guild: interaction.guild.id,
+            roleID: args.role.id,
+            ignoreActions: {$ne: []},
+        });
+        if(!roleDoc) return interaction.reply({
+            content: channelLanguage.get('noIgnoredActionsRole'),
+            ephemeral: true,
+        });
+        const embed = new MessageEmbed()
+            .setColor(interaction.guild.me.displayColor || 0x8000ff)
+            .setAuthor({
+                name: channelLanguage.get('ignoredActionsRoleEmbedAuthor'),
+                iconURL: interaction.guild.iconURL({dynamic: true}),
+            })
+            .setDescription(channelLanguage.get('ignoredActionsRoleEmbedDesc', [args.role]))
+            .setTimestamp()
+            .setFooter({text: channelLanguage.get('ignoredActionsEmbedFooter', [roleDoc.ignoreActions.length])})
+            .addField(channelLanguage.get('ignoredActionsEmbedActionsTitle'), roleDoc.ignoreActions.map(e => channelLanguage.get(`${e}ActionName`)).join('\n'));
+        interaction.reply({embeds: [embed]});
+    },
+    infoSlash: async interaction => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const hook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
+        const embed = new MessageEmbed()
+            .setColor(interaction.guild.me.displayColor || 0x8000ff)
+            .setAuthor({
+                name: channelLanguage.get('logsViewEmbedAuthor'),
+                iconURL: interaction.guild.iconURL({dynamic: true}),
+            })
+            .setDescription(channelLanguage.get('logsViewEmbedDesc', [hook?.channelId]))
+            .setTimestamp();
+        const activeLogs = [];
+        for(let actionlog of interaction.client.guildData.get(interaction.guild.id).actionlogs){
+            if(!actionlog.hookID){
+                activeLogs.push({id: actionlog._id});
+                continue;
+            }
+            let actionHook = await interaction.client.fetchWebhook(actionlog.hookID, actionlog.hookToken).catch(() => null);
+            if(actionHook) activeLogs.push({
+                id: actionlog._id,
+                channelID: actionHook.channelId,
+            });
+        }
+        if(activeLogs.length){
+            embed.addField(channelLanguage.get('logsViewEmbedActionsTitle'), activeLogs.map(e => channelLanguage.get('logsViewEmbedActions', [channelLanguage.get(`action${e.id}`), e.channelID])).join('\n'));
+        }
+        const channels = await channel.find({
+            _id: {$in: interaction.client.channels.cache.map(e => e.id)},
+            guild: interaction.guild.id,
+            ignoreActions: {$ne: []},
+        });
+        if(channels.length) embed.addField(channelLanguage.get('logsViewEmbedIgnoredChannelsTitle'), channels.map(e => `<#${e._id}> - \`${(e.ignoreActions.length === interaction.client.configs.actions.length) ? channelLanguage.get('logsViewEmbedIgnoredAll') : channelLanguage.get('logsViewEmbedIgnoredSome')}\``).join('\n'));
+        const roles = await role.find({
+            guild: interaction.guild.id,
+            roleID: {$in: interaction.guild.roles.cache.map(e => e.id)},
+            ignoreActions: {$ne: []},
+        });
+        if(roles.length) embed.addField(channelLanguage.get('logsViewEmbedIgnoredRolesTitle'), roles.map(e => `<@&${e.roleID}> - \`${(e.ignoreActions.length === interaction.client.configs.actions.length) ? channelLanguage.get('logsViewEmbedIgnoredAll') : channelLanguage.get('logsViewEmbedIgnoredSome')}\``).join('\n'));
+        interaction.reply({embeds: [embed]});
+    },
+    slashOptions: [
+        {
+            type: 'SUB_COMMAND',
+            name: 'default',
+            description: 'Sets the default channel for logging actions',
+            options: [{
+                type: 'CHANNEL',
+                name: 'channel',
+                description: 'The channel to be set as the default log channel',
+                required: true,
+                channelTypes: ['GUILD_TEXT'],
+            }],
+        },
+        {
+            type: 'SUB_COMMAND_GROUP',
+            name: 'actions',
+            description: 'Manages action logs',
+            options: [
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'set',
+                    description: 'Sets actions to be logged',
+                    options: [
+                        {
+                            type: 'STRING',
+                            name: 'action',
+                            description: 'The action to be logged',
+                            required: true,
+                            autocomplete: true,
+                        },
+                        {
+                            type: 'CHANNEL',
+                            name: 'log_channel',
+                            description: 'The channel to log the selected action (if not specified uses the default channel)',
+                            required: false,
+                            channelTypes: ['GUILD_TEXT'],
+                        },
+                    ],
+                },
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'remove',
+                    description: 'Removes actions from being logged',
+                    options: [{
+                        type: 'STRING',
+                        name: 'action',
+                        description: 'The action to be removed from being logged',
+                        required: true,
+                        autocomplete: true,
+                    }],
+                },
+            ],
+        },
+        {
+            type: 'SUB_COMMAND_GROUP',
+            name: 'ignoredchannels',
+            description: 'Ignores actions from certain channels from being logged',
+            options: [
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'add',
+                    description: 'Adds to the list of channels in which actions will be ignored from being logged',
+                    options: [
+                        {
+                            type: 'CHANNEL',
+                            name: 'channel',
+                            description: 'The channel to be added to the list',
+                            required: true,
+                            channelTypes: ['GUILD_TEXT', 'GUILD_NEWS', 'GUILD_NEWS_THREAD', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'],
+                        },
+                        {
+                            type: 'STRING',
+                            name: 'action',
+                            description: 'The action to be ignored',
+                            required: false,
+                            autocomplete: true,
+                        },
+                    ],
+                },
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'remove',
+                    description: 'Removes from the list of channels in which actions will be ignored from being logged',
+                    options: [
+                        {
+                            type: 'CHANNEL',
+                            name: 'channel',
+                            description: 'The channel to be removed from the list',
+                            required: true,
+                            channelTypes: ['GUILD_TEXT', 'GUILD_NEWS', 'GUILD_NEWS_THREAD', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'],
+                        },
+                        {
+                            type: 'STRING',
+                            name: 'action',
+                            description: 'The action to start being logged again',
+                            required: false,
+                            autocomplete: true,
+                        },
+                    ],
+                },
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'info',
+                    description: 'Shows which actions are being ignored in a certain channel',
+                    options: [{
+                        type: 'CHANNEL',
+                        name: 'channel',
+                        description: 'The channel to show info of',
+                        required: true,
+                        channelTypes: ['GUILD_TEXT', 'GUILD_NEWS', 'GUILD_NEWS_THREAD', 'GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD'],
+                    }],
+                },
+            ],
+        },
+        {
+            type: 'SUB_COMMAND_GROUP',
+            name: 'ignoredroles',
+            description: 'Ignores actions from certain roles from being logged',
+            options: [
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'add',
+                    description: 'Adds to the list of roles from which actions will be ignored from being logged',
+                    options: [
+                        {
+                            type: 'ROLE',
+                            name: 'role',
+                            description: 'The role to be added to the list',
+                            required: true,
+                        },
+                        {
+                            type: 'STRING',
+                            name: 'action',
+                            description: 'The action to be ignored',
+                            required: false,
+                            autocomplete: true,
+                        },
+                    ],
+                },
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'remove',
+                    description: 'Removes from the list of roles from which actions will be ignored from being logged',
+                    options: [
+                        {
+                            type: 'ROLE',
+                            name: 'role',
+                            description: 'The role to be removed from the list',
+                            required: true,
+                        },
+                        {
+                            type: 'STRING',
+                            name: 'action',
+                            description: 'The action to start being logged again',
+                            required: false,
+                            autocomplete: true,
+                        },
+                    ],
+                },
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'info',
+                    description: 'Shows which actions are being ignored from a certain role',
+                    options: [{
+                        type: 'ROLE',
+                        name: 'role',
+                        description: 'The role to show info of',
+                        required: true,
+                    }],
+                },
+            ],
+        },
+        {
+            type: 'SUB_COMMAND',
+            name: 'info',
+            description: 'Shows you general information about which actions are being logged and where from and to',
+        },
+    ],
+    actionssetAutocomplete: {action},
+    actionsremoveAutocomplete: {action},
+    ignoredchannelsaddAutocomplete: {action},
+    ignoredchannelsremoveAutocomplete: {action},
+    ignoredrolesaddAutocomplete: {action},
+    ignoredrolesremoveAutocomplete: {action},
 };

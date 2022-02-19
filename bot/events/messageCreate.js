@@ -56,19 +56,19 @@ module.exports = {
                 switch(message.client.guildData.get(message.guild.id).xpChannel){
                     case 'default': {
                         if(message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES)) message.reply({
-                            content: channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]),
+                            content: channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID)]),
                             allowedMentions: {repliedUser: true},
                         });
                     }
                     break;
                     case 'dm': {
-                        message.author.send(channelLanguage.get('achieveDM', [message.guild.roles.cache.get(lowerRoles[0].roleID).name, message.guild.name])).catch(() => null);
+                        message.author.send(channelLanguage.get('achieveDM', [message.guild.roles.cache.get(lowerRoles[0].roleID), message.guild.name])).catch(() => null);
                     }
                     break;
                     default: {
                         const notifChannel = message.client.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel);
                         if(notifChannel && message.guild.me.permissionsIn(notifChannel).has(Permissions.FLAGS.SEND_MESSAGES)) notifChannel.send({
-                            content: channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID).name]),
+                            content: channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID)]),
                             allowedMentions: {users: [message.author.id]},
                         });
                     }

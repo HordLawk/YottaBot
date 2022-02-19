@@ -113,7 +113,7 @@ module.exports = {
         required: false,
         autocomplete: true,
     }],
-    commandAutocomplete: {command: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => (e.name.startsWith(value) && !e.dev)).first(25).map(e => ({
+    commandAutocomplete: {command: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => (e.name.startsWith(value.toLowerCase()) && !e.dev)).first(25).map(e => ({
         name: e.name,
         value: e.name,
     })))},

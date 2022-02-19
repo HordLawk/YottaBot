@@ -72,8 +72,8 @@ module.exports = {
             case 'disabledEmbedAuthor': return 'Comandos de canais específicos';
             case 'disabledEmbedDesc': return `Canal: ${vars[0]}`;
             case 'disabledField': return 'Bloqueado';
-            case 'achieveGuild': return `Parabéns ${vars[0]}! Você conquistou o cargo **${vars[1]}**`;
-            case 'achieveDM': return `Parabéns! Você conquistou o cargo **${vars[0]}** no servidor **${vars[1]}**`;
+            case 'achieveGuild': return `Parabéns ${vars[0]}! Você conquistou o cargo ${vars[1]}`;
+            case 'achieveDM': return `Parabéns! Você conquistou o cargo ${vars[0]} no servidor **${vars[1]}**`;
             case 'msgxpDescription': return 'Gerencia o sistema de xp desse servidor';
             case 'msgxpUsage0': return 'enable <on/off>';
             case 'msgxpUsage1': return 'roles set (cargo) (xp)';
@@ -425,6 +425,11 @@ module.exports = {
             case 'invGuild': return 'Servidor inválido';
             case 'renewChangeSuccess': return `O premium de **${vars[0]}** ${vars[1] ? 'irá' : 'não irá'} ser renovado automaticamente`;
             case 'premiumUsage0': return 'renew <on/off> (servidor)';
+            case 'delmsgActionName': return 'Mensagens deletadas';
+            case 'editmsgActionName': return 'Mensagens editadas';
+            case 'pruneActionName': return 'Mensagens limpas';
+            case 'cantIgnoreEveryone': return 'Ações não podem ser ignoradas de @everyone\nSe você não quer que essa ação seja registrada use \`/actionlogs actions remove (ação)\`';
+            case 'invAction': return 'Ação inválida';
         }
     },
 };

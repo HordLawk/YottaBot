@@ -182,11 +182,11 @@ module.exports = {
                     if(!client.guildData.get(voiceGuild._id).xpChannel || (doc.xp >= (lowerRoles[0].xp + multiplier))) continue;
                     let guildLanguage = client.langs[client.guildData.get(voiceGuild._id).language];
                     if(client.guildData.get(voiceGuild._id).xpChannel === 'dm'){
-                        discordMember.send(guildLanguage.get('achieveDM', [discordGuild.roles.cache.get(lowerRoles[0].roleID).name, discordGuild.name])).catch(() => null);
+                        discordMember.send(guildLanguage.get('achieveDM', [discordGuild.roles.cache.get(lowerRoles[0].roleID), discordGuild.name])).catch(() => null);
                         continue;
                     }
                     let notifChannel = discordGuild.channels.cache.get(client.guildData.get(voiceGuild._id).xpChannel);
-                    if(notifChannel) notifChannel.send(guildLanguage.get('achieveGuild', [discordMember, discordGuild.roles.cache.get(lowerRoles[0].roleID).name]));
+                    if(notifChannel) notifChannel.send(guildLanguage.get('achieveGuild', [discordMember, discordGuild.roles.cache.get(lowerRoles[0].roleID)]));
                 }
                 guildVoiceXpCd.set(voiceGuild._id, inVoice.mapValues(() => 0).concat(guildVoiceXpCd.get(voiceGuild._id)));
             }

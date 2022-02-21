@@ -92,7 +92,7 @@ module.exports = {
         });
         command[`${subCommandName ? `${(subCommandGroupName ?? '')}${subCommandName}` : 'execute'}Slash`](interaction, args).catch(error => {
             console.error(error);
-            if(interaction.deferred){
+            if(interaction.deferred || interaction.replied){
                 interaction.editReply(channelLanguage.get('error', [command.name]));
             }
             else{
@@ -106,7 +106,7 @@ module.exports = {
                 files: [
                     {
                         name: 'args.json',
-                        attachment: Buffer.from(JSON.parse(interaction.options.data)),
+                        attachment: Buffer.from(JSON.stringify(interaction.options.data, null, 4)),
                     },
                     {
                         name: 'stack.log',

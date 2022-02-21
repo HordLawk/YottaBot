@@ -444,7 +444,7 @@ module.exports = {
             .setTimestamp()
             .setFooter({text: channelLanguage.get('ignoredActionsEmbedFooter', [channelDoc.ignoreActions.length])})
             .addField(channelLanguage.get('ignoredActionsEmbedActionsTitle'), channelDoc.ignoreActions.map(e => channelLanguage.get(`${e}ActionName`)).join('\n'));
-            interaction.reply({embeds: [embed]});
+        interaction.reply({embeds: [embed]});
     },
     ignoredrolesaddSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];

@@ -151,7 +151,7 @@ module.exports = {
         });
         const userDoc = await user.findById(interaction.user.id);
         if(!interaction.guild) return interaction.reply(channelLanguage.get('activatePremium', [userDoc?.premiumKeys]));
-        let reply = await interaction.reply({
+        const reply = await interaction.reply({
             content: channelLanguage.get('activatePremium', [userDoc?.premiumKeys]),
             components: [{
                 type: 'ACTION_ROW',
@@ -176,14 +176,14 @@ module.exports = {
             ephemeral: true,
             fetchReply: true,
         });
-        let collector = reply.createMessageComponentCollector({
+        const collector = reply.createMessageComponentCollector({
             filter: componentInteraction => (componentInteraction.user.id === interaction.user.id),
             idle: 10000,
             max: 1,
             componentType: 'BUTTON',
         });
         collector.on('end', async c => {
-            if(!c.size) return reply.edit({
+            if(!c.size) return interaction.editReply({
                 content: channelLanguage.get('timedOut'),
                 components: [],
             });
@@ -235,7 +235,7 @@ module.exports = {
                         patron: interaction.user.id,
                     }}, {new: true});
                     interaction.client.guildData.set(interaction.guild.id, guildData);
-                    let reply = await c.first().editReply({
+                    const reply2 = await c.first().editReply({
                         content: channelLanguage.get('patreonRewardClaimed'),
                         components: [{
                             type: 'ACTION_ROW',
@@ -249,14 +249,14 @@ module.exports = {
                         }],
                         fetchReply: true,
                     });
-                    collector = reply.createMessageComponentCollector({
+                    const collector2 = reply2.createMessageComponentCollector({
                         filter: componentInteraction => (componentInteraction.user.id === interaction.user.id),
                         idle: 10000,
                         max: 1,
                         componentType: 'BUTTON',
                     });
-                    collector.on('end', async collected => {
-                        if(!collected.size) return reply.edit({
+                    collector2.on('end', async collected => {
+                        if(!collected.size) return c.first().editReply({
                             components: [{
                                 type: 'ACTION_ROW',
                                 components: [{

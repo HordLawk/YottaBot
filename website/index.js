@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use('/api', apiRouter);
 
 app.get('/docs', (req, res) => res.redirect('https://github.com/HordLawk/YottaBot#get-started'));
-
+Permissions.ALL-8
 app.get('/topgg', (req, res) => res.redirect('https://top.gg/bot/371902120561082368'));
 
 app.get('/privacy', (req, res) => res.redirect('https://github.com/HordLawk/YottaBot/wiki/Privacy-Policy'));

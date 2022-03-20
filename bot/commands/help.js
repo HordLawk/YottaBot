@@ -17,7 +17,7 @@ module.exports = {
         if(!args.length){
             let perms = await message.client.generateInvite({
                 scopes: ['bot', 'applications.commands'],
-                permissions: Permissions.ALL,
+                permissions: Permissions.ALL-8,
             });
             embed = new MessageEmbed()
                 .setColor(message.guild ? (message.guild.me.displayColor || 0x8000ff) : 0x8000ff)
@@ -64,7 +64,7 @@ module.exports = {
         if(!args.command){
             let perms = await interaction.client.generateInvite({
                 scopes: ['bot', 'applications.commands'],
-                permissions: Permissions.ALL,
+                permissions: Permissions.ALL-8,
             });
             embed = new MessageEmbed()
                 .setColor(interaction.guild ? (interaction.guild.me.displayColor || 0x8000ff) : 0x8000ff)

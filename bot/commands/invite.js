@@ -11,7 +11,7 @@ module.exports = {
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         const url = await message.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
-            permissions: Permissions.ALL,
+            permissions: Permissions.ALL-8,
         });
         const embed = new MessageEmbed()
             .setColor(message.guild?.me.displayColor || 0x8000ff)

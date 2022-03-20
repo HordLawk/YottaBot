@@ -22,7 +22,7 @@ module.exports = {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         const url = await interaction.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
-            permissions: Permissions.ALL,
+            permissions: Permissions.ALL-554084860160,
         });
         const embed = new MessageEmbed()
             .setColor(interaction.guild?.me.displayColor || 0x8000ff)

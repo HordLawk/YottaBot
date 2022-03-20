@@ -12,7 +12,7 @@ module.exports = {
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         const invite = await message.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
-            permissions: Permissions.ALL-Permissions.FLAGS.STREAM,
+            permissions: Permissions.ALL-554084860160,
         });
         const embed = new MessageEmbed()
             .setColor(message.guild?.me.displayColor || 0x8000ff)
@@ -36,8 +36,8 @@ module.exports = {
     executeSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         const invite = await interaction.client.generateInvite({
-            scopes: ['botPermissions.ALL-Permissions.FLAGS.STREAMs.commands'],
-            permissions: Permissions.ALL,
+            scopes: ['bot', 'applications.commands'],
+            permissions: Permissions.ALL-554084860160,
         });
         const embed = new MessageEmbed()
             .setColor(interaction.guild?.me.displayColor || 0x8000ff)

@@ -53,6 +53,14 @@ module.exports = {
         if(executor) embed.addField('\u200B', '\u200B', true).addField(channelLanguage.get('delmsgEmbedExecutorTitle'), executor.toString(), true);
         embed.addField(channelLanguage.get('delmsgEmbedSentTitle'), channelLanguage.get('delmsgEmbedSentValue', [Math.floor(message.createdTimestamp / 1000)]), true);
         if(executor) embed.addField('\u200B', '\u200B', true);
+        if(message.stickers.size){
+            if(message.stickers.first().format === 'LOTTIE'){
+                embed.addField(channelLanguage.get('delmsgEmbedStickerTitle'), `[${message.stickers.first().name}](${message.stickers.first().url})`);
+            }
+            else{
+                embed.setThumbnail(message.stickers.first().url);
+            }
+        }
         var files = [];
         if(message.attachments.size){
             if(message.client.guildData.get(message.guild.id).logAttachments){

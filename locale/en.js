@@ -430,6 +430,13 @@ module.exports = {
             case 'pruneActionName': return 'Pruned messages';
             case 'cantIgnoreEveryone': return 'Actions can\'t be ignored from @everyone\nIf you don\'t want this action to be logged use \`/actionlogs actions remove (action)\`';
             case 'invAction': return 'Invalid action';
+            case 'delmsgEmbedStickerTitle': return 'Sticker';
+            case 'noStickerFound': return 'This is not a sticker!';
+            case 'getstickerContent': return '**Sticker file:**';
+            case 'add': return 'Add';
+            case 'stickerCreator': return `Added by ${vars[0]} (${vars[1]})`;
+            case 'stickerAdded': return 'Sticker successfully added';
+            case 'maxStickersReached': return 'Maximum number of stickers reached';
         }
     },
 };

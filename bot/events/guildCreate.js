@@ -7,7 +7,7 @@ module.exports = {
         var content = '';
         if(guild.me.permissions.has(Permissions.FLAGS.MANAGE_GUILD)){
             const integrations = await guild.fetchIntegrations({includeApplications: true});
-            const adder = integrations.find(e => (e.application.id === guild.client.application.id))?.user;
+            const adder = integrations.find(e => (e.application?.id === guild.client.application.id))?.user;
             if(adder){
                 content = `Added by: ${adder} (${adder.tag})\n`;
                 let guildLanguage = guild.client.langs[guild.client.guildData.get(guild.id)?.language ?? ((guild.preferredLocale === 'pt-BR') ? 'pt' : 'en')];

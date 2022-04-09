@@ -21,6 +21,7 @@ The default permission for any command is usually the closest normal Discord per
 * [Miscellaneous](https://github.com/HordLawk/YottaBot/wiki/Miscellaneous)
 * [Premium](https://github.com/HordLawk/YottaBot/wiki/Premium)
 * [Privacy Policy](https://github.com/HordLawk/YottaBot/wiki/Privacy-Policy)
+* [Terms of Service](https://github.com/HordLawk/YottaBot/wiki/Terms-of-Service)
 
 ## Selfhosting
 You may selfhost (AKA run your own instance of) this bot under the following circumstances:
@@ -31,27 +32,27 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 
 ## W.I.P
 - [ ] use slash commands; context menus; buttons; and stuff *
-- [x] apply for messages priviledge intent
+- [ ] apply for messages priviledge intent
 - [x] setup a patreon
 - [ ] add rss feeds for youtube notifications *
 - [ ] `prune` command *
 - [ ] command to edit slowmode *
 - [ ] command to delete cases *
-- [ ] `poll` command ** \*** \****
+- [ ] `poll` command ** \***
 - [ ] command to manage emojis *
 - [ ] automated punishments when reaching a chosen amount of another type of punishment *
 - [ ] other streaming notifications for premium *
-- [x] float xp multipliers
-- [ ] create and edit role menus with built in forms \*** \****
-- [ ] button to edit action reason in the command reply ***
+- [ ] create and edit role menus with built in forms \***
+- [ ] button to edit action reason in the command reply
+- [ ] logs for newly joined member with a button to ban them
+- [x] show stickers in deleted messages logs
+- [x] command to extract an image from a sticker with a button to add them
 
 \* on hold until Discord improves slash permissions
 
 ** on hold until Discord adds the date and time option type
 
-*** on hold until discord.js adds support for modal interactions
-
-\**** on hold until Discord adds select menus for modals
+\*** on hold until Discord adds select menus for modals
 
 ## Credits
 - [@CripBoy](https://github.com/CripBoy) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

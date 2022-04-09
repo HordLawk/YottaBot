@@ -126,6 +126,7 @@ module.exports = {
             }
         }
         const renewBoost = async () => {
+            if(process.env.NODE_ENV != 'production') return;
             const endedBoost = await user.find({boostUntil: {$lt: Date.now()}});
             if(!endedBoost.length) return;
             for(userDoc of endedBoost){

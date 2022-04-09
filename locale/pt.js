@@ -2,6 +2,7 @@ module.exports = {
     lang: 'pt',
     name: 'Português',
     flag: '🇧🇷',
+    code: 'pt-BR',
     get: (line, vars = []) => {
         switch(line){
             case 'mentionHelp': return `Use \`${vars[0]}help\` para ver todos os meus comandos!`;
@@ -430,6 +431,19 @@ module.exports = {
             case 'pruneActionName': return 'Mensagens limpas';
             case 'cantIgnoreEveryone': return 'Ações não podem ser ignoradas de @everyone\nSe você não quer que essa ação seja registrada use \`/actionlogs actions remove (ação)\`';
             case 'invAction': return 'Ação inválida';
+            case 'delmsgEmbedStickerTitle': return 'Figurinha';
+            case 'getstickerContextName': return 'Extrair imagem da figurinha';
+            case 'noStickerFound': return 'Isso não é uma figurinha!';
+            case 'getstickerContent': return '**Arquivo da figurinha:**';
+            case 'add': return 'Adicionar';
+            case 'getstickerLocalizedName': return 'pegarsticker'
+            case 'checkContextName': return 'Checar casos';
+            case 'checkLocalizedName': return 'checar';
+            case 'xpContextName': return 'Informações de xp';
+            case 'xpLocalizedName': return 'xp';
+            case 'stickerCreator': return `Adicionado por ${vars[0]} (${vars[1]})`;
+            case 'stickerAdded': return 'Figurinha adicionada com sucesso';
+            case 'maxStickersReached': return 'Número máximo de figurinhas alcançado';
         }
     },
 };

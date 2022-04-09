@@ -36,7 +36,7 @@ module.exports = {
             componentType: 'BUTTON',
         });
         collector.on('end', async collected => {
-            reply.edit({components: [{
+            interaction.editReply({components: [{
                 type: 'ACTION_ROW',
                 components: [{
                     type: 'BUTTON',

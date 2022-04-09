@@ -432,7 +432,7 @@ module.exports = {
             case 'cantIgnoreEveryone': return 'Ações não podem ser ignoradas de @everyone\nSe você não quer que essa ação seja registrada use \`/actionlogs actions remove (ação)\`';
             case 'invAction': return 'Ação inválida';
             case 'delmsgEmbedStickerTitle': return 'Figurinha';
-            case 'getstickerContextName': return 'Extrair imagem da figurinha';
+            case 'getstickerContextName': return 'Extrair arquivo da figurinha';
             case 'noStickerFound': return 'Isso não é uma figurinha!';
             case 'getstickerContent': return '**Arquivo da figurinha:**';
             case 'add': return 'Adicionar';

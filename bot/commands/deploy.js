@@ -43,7 +43,6 @@ module.exports = {
             ephemeral: true,
         });
         try{
-            console.log(Object.values(interaction.client.langs).filter(e => (e.lang != 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}ContextName`)}), {}));
             await slash.edit((slash.type === 'CHAT_INPUT') ? {
                 name: command.name,
                 name_localizations: Object.entries(interaction.client.langs).filter(e => (e[0] != 'en')).reduce((acc, e) => ({...acc, [e[0]]: e[1].get(`${command.name}LocalizedName`)}), {}),

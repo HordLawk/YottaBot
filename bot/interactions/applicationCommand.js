@@ -111,7 +111,7 @@ module.exports = {
                 files: [
                     {
                         name: 'args.json',
-                        attachment: Buffer.from(JSON.stringify(interaction.options.data, null, 4)),
+                        attachment: Buffer.from(JSON.stringify(interaction.options.data, (key, value) => ((typeof value === 'bigint') ? `${value}n` : value), 4)),
                     },
                     {
                         name: 'stack.log',

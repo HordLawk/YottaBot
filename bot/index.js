@@ -42,7 +42,7 @@ fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js
         files: [
             {
                 name: 'args.json',
-                attachment: Buffer.from(JSON.stringify(args, null, 4)),
+                attachment: Buffer.from(JSON.stringify(args, (key, value) => ((typeof value === "bigint") ? `${value}n` : value), 4)),
             },
             {
                 name: 'stack.log',

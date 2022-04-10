@@ -7,7 +7,7 @@ module.exports = {
             case 'mentionHelp': return `Use \`${vars[0]}help\` to see all my commands!`;
             case 'blacklisted': return 'You are blacklisted from using me!';
             case 'noArgs': return `You didn't provide any arguments, ${vars[0]}!\nThe proper usage would be:\n${vars[3].map(e => `\`${vars[1]}${vars[2]} ${e}\``).join('\n')}`;
-            case 'cooldown': return `Please wait ${vars[0]} more second(s) before reusing the \`${vars[1]}\` command${vars[3] ? '' : `\nTip: Premium servers have half the cooldown for all commands\nTo get premium [join Patreon](<https://www.patreon.com/YottaBot>)`}`;
+            case 'cooldown': return `Please wait ${vars[0]} more second(s) before reusing the \`${vars[1]}\` command${vars[2] ? '' : `\nTip: Premium servers have half the cooldown for all commands\nTo get premium [join Patreon](<https://www.patreon.com/YottaBot>)`}`;
             case 'error': return `There was an error trying to execute the command \`${vars[0]}\`\nThe issue was sent to the support team and will be fixed in the near future`;
             case 'helpDescription': return 'Lists all commands or gives info about a specific one';
             case 'helpUsage': return '[(command)]';

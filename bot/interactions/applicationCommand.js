@@ -76,7 +76,7 @@ module.exports = {
             if(now < expirationTime){
                 const timeLeft = (expirationTime - now) / 1000;
                 return interaction.reply({
-                    content: channelLanguage.get('cooldown', [timeLeft.toFixed(1), command.name, prefix, (interaction.client.guildData.get(interaction.guild.id).premiumUntil || interaction.client.guildData.get(interaction.guild.id).partner)]),
+                    content: channelLanguage.get('cooldown', [timeLeft.toFixed(1), command.name, (interaction.client.guildData.get(interaction.guild.id).premiumUntil || interaction.client.guildData.get(interaction.guild.id).partner)]),
                     ephemeral: true,
                 });
             }

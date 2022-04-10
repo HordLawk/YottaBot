@@ -8,7 +8,7 @@ module.exports = {
             case 'mentionHelp': return `Use \`${vars[0]}help\` para ver todos os meus comandos!`;
             case 'blacklisted': return `Você está proibido de usar este bot!`;
             case 'noArgs': return `Você não forneceu nenhum argumento, ${vars[0]}!\nO uso correto seria:\n${vars[3].map(e => `\`${vars[1]}${vars[2]} ${e}\``).join('\n')}`;
-            case 'cooldown': return `Por favor espere mais ${vars[0]} segundo(s) antes de usar o comando \`${vars[1]}\` novamente${vars[3] ? '' : `\nDica: Servidores premium tem metade do cooldown para todos os comandos\nPara adquirir premium [se junte ao Patreon](<https://www.patreon.com/YottaBot>)`}`;
+            case 'cooldown': return `Por favor espere mais ${vars[0]} segundo(s) antes de usar o comando \`${vars[1]}\` novamente${vars[2] ? '' : `\nDica: Servidores premium tem metade do cooldown para todos os comandos\nPara adquirir premium [se junte ao Patreon](<https://www.patreon.com/YottaBot>)`}`;
             case 'error': return `Houve um erro ao tentar executar o comando \`${vars[0]}\`\nO problema foi enviado à equipe de suporte e será corrigido no futuro proximo`;
             case 'helpDescription': return 'Lista todos os comandos ou mostra informações sobre um específico';
             case 'helpUsage': return '[(comando)]';

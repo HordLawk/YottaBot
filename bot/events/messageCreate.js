@@ -102,7 +102,7 @@ module.exports = {
             const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
             if(now < expirationTime){
                 const timeLeft = (expirationTime - now) / 1000;
-                return message.reply(channelLanguage.get('cooldown', [timeLeft.toFixed(1), command.name, prefix, (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner)]));
+                return message.reply(channelLanguage.get('cooldown', [timeLeft.toFixed(1), command.name, (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner)]));
             }
         }
         timestamps.set(message.author.id, now);

@@ -76,75 +76,86 @@ module.exports = {
             current.logMessage = msg.id;
             await current.save();
         }
+        const buttonUndo = {
+            type: 'BUTTON',
+            label: channelLanguage.get('undo'),
+            customId: 'undo',
+            style: 'DANGER',
+            emoji: '↩️',
+        };
+        // const buttonEdit = {
+        //     type: 'BUTTON',
+        //     label: channelLanguage.get('editReason'),
+        //     customId: 'edit',
+        //     style: 'PRIMARY',
+        //     emoji: '✏️',
+        // };
         await reply.edit({components: [{
             type: 'ACTION_ROW',
-            components: [{
-                type: 'BUTTON',
-                label: channelLanguage.get('undo'),
-                customId: 'undo',
-                style: 'DANGER',
-                emoji: '↩️',
-            }],
+            // components: [buttonEdit, buttonUndo],
+            components: [buttonUndo],
         }]});
-        const collector = reply.createMessageComponentCollector({
-            filter: componentInteraction => (componentInteraction.user.id === message.author.id),
+        const collectorUndo = reply.createMessageComponentCollector({
+            filter: componentInteraction => ((componentInteraction.user.id === message.author.id) && (componentInteraction.customId === 'undo')),
             idle: 10000,
             max: 1,
             componentType: 'BUTTON',
         });
-        collector.on('end', async collected => {
-            reply.edit({components: [{
-                type: 'ACTION_ROW',
-                components: [{
-                    type: 'BUTTON',
-                    label: channelLanguage.get('undo'),
-                    customId: 'undo',
-                    style: 'DANGER',
-                    emoji: '↩️',
-                    disabled: true,
-                }],
-            }]});
+        collectorUndo.on('end', async collected => {
+            buttonUndo.disabled = true;
+            // reply.edit({components: [buttonEdit, buttonUndo]});
+            reply.edit({components: [buttonUndo]});
             if(!collected.size) return;
-            if(collected.first().customId === 'undo'){
-                const unban = await message.guild.members.unban(user.id, channelLanguage.get('unbanAuditReason', [message.author.tag])).catch(() => {});
-                if(!unban) return;
-                const guildDocUnban = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
-                message.client.guildData.get(message.guild.id).counterLogs = guildDocUnban.counterLogs + 1;
-                const currentUnban = new log({
-                    id: guildDocUnban.counterLogs,
-                    guild: message.guild.id,
-                    type: 'ban',
-                    target: user.id,
-                    executor: message.author.id,
-                    timeStamp: Date.now(),
-                    removal: true,
+            const unban = await message.guild.members.unban(user.id, channelLanguage.get('unbanAuditReason', [message.author.tag])).catch(() => {});
+            if(!unban) return;
+            const guildDocUnban = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
+            message.client.guildData.get(message.guild.id).counterLogs = guildDocUnban.counterLogs + 1;
+            const currentUnban = new log({
+                id: guildDocUnban.counterLogs,
+                guild: message.guild.id,
+                type: 'ban',
+                target: user.id,
+                executor: message.author.id,
+                timeStamp: Date.now(),
+                removal: true,
+            });
+            await currentUnban.save();
+            const action = await collected.first().reply({
+                content: channelLanguage.get('unbanSuccess', [currentUnban.id]),
+                fetchReply: true,
+            });
+            currentUnban.actionMessage = action.url;
+            await currentUnban.save();
+            if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
+            const embedUnban = new MessageEmbed()
+                .setColor(0x00ff00)
+                .setAuthor({
+                    name: channelLanguage.get('unbanEmbedAuthor', [message.author.tag, user.tag]),
+                    iconURL: user.displayAvatarURL({dynamic: true}),
+                })
+                .setDescription(channelLanguage.get('unbanEmbedDescription', [action.url]))
+                .addField(channelLanguage.get('unbanEmbedTargetTitle'), channelLanguage.get('unbanEmbedTargetValue', [user]), true)
+                .addField(channelLanguage.get('unbanEmbedExecutorTitle'), message.author.toString(), true)
+                .setTimestamp()
+                .setFooter({
+                    text: channelLanguage.get('unbanEmbedFooter', [currentUnban.id]),
+                    iconURL: message.guild.iconURL({dynamic: true}),
                 });
-                await currentUnban.save();
-                const action = await collected.first().reply({
-                    content: channelLanguage.get('unbanSuccess', [currentUnban.id]),
-                    fetchReply: true,
-                });
-                currentUnban.actionMessage = action.url;
-                await currentUnban.save();
-                if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
-                const embedUnban = new MessageEmbed()
-                    .setColor(0x00ff00)
-                    .setAuthor({
-                        name: channelLanguage.get('unbanEmbedAuthor', [message.author.tag, user.tag]),
-                        iconURL: user.displayAvatarURL({dynamic: true}),
-                    })
-                    .setDescription(channelLanguage.get('unbanEmbedDescription', [action.url]))
-                    .addField(channelLanguage.get('unbanEmbedTargetTitle'), channelLanguage.get('unbanEmbedTargetValue', [user]), true)
-                    .addField(channelLanguage.get('unbanEmbedExecutorTitle'), message.author.toString(), true)
-                    .setTimestamp()
-                    .setFooter({
-                        text: channelLanguage.get('unbanEmbedFooter', [currentUnban.id]),
-                        iconURL: message.guild.iconURL({dynamic: true}),
-                    });
-                const msgUnban = await discordChannel.send({embeds: [embedUnban]});
-                currentUnban.logMessage = msgUnban.id;
-                await currentUnban.save();
-            }
+            const msgUnban = await discordChannel.send({embeds: [embedUnban]});
+            currentUnban.logMessage = msgUnban.id;
+            await currentUnban.save();
         });
+        // const collectorEdit = reply.createMessageComponentCollector({
+        //     filter: componentInteraction => ((componentInteraction.user.id === message.author.id) && (componentInteraction.customId === 'edit')),
+        //     time: 60000,
+        //     componentType: 'BUTTON',
+        // });
+        // collectorEdit.on('collect', i => {
+            
+        // });
+        // collectorEdit.end('end', collected => {
+        //     buttonEdit.disabled = true;
+        //     reply.edit({components: [buttonEdit, buttonUndo]});
+        // })
     },
 };

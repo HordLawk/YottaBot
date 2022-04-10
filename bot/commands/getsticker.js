@@ -35,7 +35,30 @@ module.exports = {
                 max: 1,
                 componentType: 'BUTTON',
             });
-            collector.on('end', async collected => {
+            const collect = async i => {
+                await interaction.guild.stickers.fetch();
+                const maxStickers = {
+                    NONE: 0,
+                    TIER_1: 15,
+                    TIER_2: 30,
+                    TIER_3: 60,
+                };
+                if(interaction.guild.stickers.cache.size >= maxStickers[interaction.guild.premiumTier]) return i.reply({
+                    content: channelLanguage.get('maxStickersReached'),
+                    ephemeral: true,
+                });
+                await interaction.targetMessage.stickers.first().fetch();
+                await interaction.guild.stickers.create(interaction.targetMessage.stickers.first().url, interaction.targetMessage.stickers.first().name, interaction.targetMessage.stickers.first().tags[0], {
+                    description: interaction.targetMessage.stickers.first().description,
+                    reason: channelLanguage.get('stickerCreator', [interaction.user.tag, interaction.user.id]),
+                });
+                await i.reply({
+                    content: channelLanguage.get('stickerAdded'),
+                    ephemeral: true,
+                });
+            }
+            collector.on('collect', i => collect(i).catch(err => interaction.client.handlers.button(err, i)));
+            collector.on('end', () => {
                 interaction.editReply({components: [{
                     type: 'ACTION_ROW',
                     components: [{
@@ -47,28 +70,6 @@ module.exports = {
                         disabled: true,
                     }],
                 }]});
-                if(!collected.size) return;
-                await interaction.guild.stickers.fetch();
-                const maxStickers = {
-                    NONE: 0,
-                    TIER_1: 15,
-                    TIER_2: 30,
-                    TIER_3: 60,
-                };
-                if(interaction.guild.stickers.cache.size >= maxStickers[interaction.guild.premiumTier]) return collected.first().reply({
-                    content: channelLanguage.get('maxStickersReached'),
-                    ephemeral: true,
-                });
-                await interaction.targetMessage.stickers.first().fetch();
-                const sticker = await interaction.guild.stickers.create(interaction.targetMessage.stickers.first().url, interaction.targetMessage.stickers.first().name, interaction.targetMessage.stickers.first().tags[0], {
-                    description: interaction.targetMessage.stickers.first().description,
-                    reason: channelLanguage.get('stickerCreator', [interaction.user.tag, interaction.user.id]),
-                });
-                collected.first().reply({
-                    content: channelLanguage.get('stickerAdded'),
-                    ephemeral: true,
-                    stickers: [sticker],
-                });
             });
         }
         else{

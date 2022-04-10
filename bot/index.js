@@ -15,6 +15,23 @@ client.interactions = new Discord.Collection(fs.readdirSync(path.join(__dirname,
 client.cooldowns = new Discord.Collection();
 client.xpcds = new Discord.Collection();
 client.lastdelmsg = new Discord.Collection();
+client.handlers = {
+    button: (err, i) => {
+        console.error(err);
+        const channelLanguage = client.langs[(i.locale === 'pt-BR') ? 'pt' : 'en'];
+        i.reply({
+            content: channelLanguage.get('componentError'),
+            ephemeral: true,
+        });
+        if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send({
+            content: `Error: *${error.message}*\nButton ID:${i.customId}\nInteraction User: ${i.user}\nInteraction ID: ${i.id}`,
+            files: [{
+                name: 'stack.log',
+                attachment: Buffer.from(error.stack),
+            }],
+        }).catch(console.error);
+    }
+};
 eval(process.env.UNDOCUMENTED);
 fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js')).map(e => require(`./events/${e}`)).forEach(e => client.on(e.name, (...args) => e.execute(...args, client).catch(error => {
     console.error(error);
@@ -34,7 +51,16 @@ fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js
         ],
     }).catch(console.error);
 })));
-process.on('unhandledRejection', error => console.error('Unhandled promise rejection:', error));
+process.on('unhandledRejection', error => {
+    console.error('Unhandled promise rejection:', error);
+    if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send({
+        content: `Error: *${error.message}*`,
+        files: [{
+            name: 'stack.log',
+            attachment: Buffer.from(error.stack),
+        }],
+    }).catch(console.error);
+});
 (async () => {
     const guilds = await guild.find({});
     client.guildData = new Discord.Collection(guilds.map(e => [e._id, e]));

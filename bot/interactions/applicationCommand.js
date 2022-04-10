@@ -93,7 +93,12 @@ module.exports = {
         command[`${subCommandName ? `${(subCommandGroupName ?? '')}${subCommandName}` : 'execute'}Slash`](interaction, args).catch(error => {
             console.error(error);
             if(interaction.deferred || interaction.replied){
-                interaction.editReply(channelLanguage.get('error', [command.name]));
+                interaction.editReply({
+                    content: channelLanguage.get('error', [command.name]),
+                    files: [],
+                    embeds: [],
+                    components: [],
+                });
             }
             else{
                 interaction.reply({
@@ -102,7 +107,7 @@ module.exports = {
                 });
             }
             if(process.env.NODE_ENV === 'production') interaction.client.channels.cache.get(interaction.client.configs.errorlog).send({
-                content: `Error: *${error.message}*\nMessage Author: ${interaction.user}\nInteraction ID: ${interaction.id}`,
+                content: `Error: *${error.message}*\nInteraction User: ${interaction.user}\nInteraction ID: ${interaction.id}`,
                 files: [
                     {
                         name: 'args.json',

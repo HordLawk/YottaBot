@@ -437,6 +437,7 @@ module.exports = {
             case 'stickerCreator': return `Added by ${vars[0]} (${vars[1]})`;
             case 'stickerAdded': return 'Sticker successfully added';
             case 'maxStickersReached': return 'Maximum number of stickers reached';
+            case 'componentError': return 'There was an error!\nThe issue was sent to the support team and will be fixed in the near future';
         }
     },
 };

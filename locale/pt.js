@@ -444,6 +444,7 @@ module.exports = {
             case 'stickerCreator': return `Adicionado por ${vars[0]} (${vars[1]})`;
             case 'stickerAdded': return 'Figurinha adicionada com sucesso';
             case 'maxStickersReached': return 'Número máximo de figurinhas alcançado';
+            case 'componentError': return 'Houve um erro!\nO problema foi enviado à equipe de suporte e será corrigido no futuro proximo';
         }
     },
 };

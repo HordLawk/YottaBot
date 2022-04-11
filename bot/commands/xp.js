@@ -163,14 +163,20 @@ module.exports = {
                     },
                 }).sort({xp: -1});
                 if(!roles.length) return message.reply(channelLanguage.get('noXpRoles'));
+                const replyData = {};
+                if((roles.length > message.client.configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) replyData.content = channelLanguage.get('disabledPremiumXpRolesNoHL');
                 let embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor({
                         name: channelLanguage.get('xpRolesEmbedAuthor'),
                         iconURL: message.guild.iconURL({dynamic: true}),
                     })
-                    .setDescription(roles.map(e => `\`${(new Array(roles[0].xp.toString().length - e.xp.toString().length)).fill(' ').join('')}${e.xp}\` **-** <@&${e.roleID}>`).join('\n'));
-                message.reply({embeds: [embed]});
+                    .setDescription(roles.map((e, i) => {
+                        const roleStr = `\`${(new Array(roles[0].xp.toString().length - e.xp.toString().length)).fill(' ').join('')}${e.xp}\` **-** <@&${e.roleID}>`;
+                        return (((roles.length - i) > message.client.configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) ? `~~${roleStr}~~` : roleStr;
+                    }).join('\n'));
+                replyData.embeds = [embed];
+                message.reply(replyData);
             }
             break;
             default: {
@@ -188,8 +194,9 @@ module.exports = {
                         $ne: null,
                     },
                 }).sort({xp: -1});
-                let current = roleDocs.find(e => (e.xp <= user.xp));
-                let next = roleDocs.reverse().find(e => (e.xp > user.xp));
+                const availableRoles = ((roleDocs.length > message.client.configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) ? roleDocs.slice(-interaction.client.configs.xpRolesLimit) : roleDocs;
+                let current = availableRoles.find(e => (e.xp <= user.xp));
+                let next = availableRoles.reverse().find(e => (e.xp > user.xp));
                 let discordMember = await message.guild.members.fetch(user.userID).catch(() => null);
                 let discordUser = discordMember?.user ?? await message.client.users.fetch(id).catch(() => null);
                 let embed = new MessageEmbed()
@@ -227,8 +234,9 @@ module.exports = {
                 $ne: null,
             },
         }).sort({xp: -1});
-        const current = roleDocs.find(e => (e.xp <= user.xp));
-        const next = roleDocs.reverse().find(e => (e.xp > user.xp));
+        const availableRoles = ((roleDocs.length > interaction.client.configs.xpRolesLimit) && !interaction.client.guildData.get(interaction.guild.id).premiumUntil && !interaction.client.guildData.get(interaction.guild.id).partner) ? roleDocs.slice(-interaction.client.configs.xpRolesLimit) : roleDocs;
+        const current = availableRoles.find(e => (e.xp <= user.xp));
+        const next = availableRoles.reverse().find(e => (e.xp > user.xp));
         let embed = new MessageEmbed()
             .setColor(args.user.member?.displayColor ?? interaction.guild.me.displayColor ?? 0x8000ff)
             .setAuthor({
@@ -401,14 +409,21 @@ module.exports = {
             content: channelLanguage.get('noXpRoles'),
             ephemeral: true,
         });
+        const replyData = {};
+        if((roles.length > interaction.client.configs.xpRolesLimit) && !interaction.client.guildData.get(interaction.guild.id).premiumUntil && !interaction.client.guildData.get(interaction.guild.id).partner) replyData.content = channelLanguage.get('disabledPremiumXpRoles');
         let embed = new MessageEmbed()
             .setColor(interaction.guild.me.displayColor || 0x8000ff)
             .setAuthor({
                 name: channelLanguage.get('xpRolesEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true}),
             })
-            .setDescription(roles.map(e => `\`${(new Array(roles[0].xp.toString().length - e.xp.toString().length)).fill(' ').join('')}${e.xp}\` **-** <@&${e.roleID}>`).join('\n'));
-        interaction.reply({embeds: [embed]});
+            .setDescription(roles.map((e, i) => {
+                const roleStr = `\`${(new Array(roles[0].xp.toString().length - e.xp.toString().length)).fill(' ').join('')}${e.xp}\` **-** <@&${e.roleID}>`;
+                return (((roles.length - i) > interaction.client.configs.xpRolesLimit) && !interaction.client.guildData.get(interaction.guild.id).premiumUntil && !interaction.client.guildData.get(interaction.guild.id).partner) ? `~~${roleStr}~~` : roleStr;
+            }).join('\n'))
+            .setTimestamp();
+        replyData.embeds = [embed];
+        interaction.reply(replyData);
     },
     executeSlash: async function(...args){
         this.infoSlash(...args);

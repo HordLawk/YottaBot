@@ -7,7 +7,7 @@ const {Collection, Permissions} = require('discord.js');
 
 module.exports = {
     name: 'messageCreate',
-    execute: async message => {
+    execute: async function(message){
         if(message.author.bot || (!['DEFAULT', 'REPLY'].includes(message.type)) || (message.guild && !message.guild.available)) return;
         var prefix = message.client.configs.defaultPrefix;
         var roleDocs;
@@ -41,7 +41,7 @@ module.exports = {
                 new: true,
                 upsert: true,
                 setDefaultsOnInsert: true,
-            }, async (err, doc) => {
+            }, (err, doc) => (async (err, doc) => {
                 if(err) throw err;
                 if(message.client.xpcds.has(message.guild.id)){
                     message.client.xpcds.get(message.guild.id).set(message.author.id, Date.now());
@@ -49,8 +49,8 @@ module.exports = {
                 else{
                     message.client.xpcds.set(message.guild.id, new Collection([[message.author.id, Date.now()]]));
                 }
-                const lowerRoles = roleDocs.filter(e => (message.guild.roles.cache.get(e.roleID).editable && e.xp && (e.xp <= doc.xp))).sort((a, b) => (b.xp - a.xp));
-                if(!lowerRoles.length || message.member.roles.cache.has(lowerRoles[0].roleID)) return;
+                const lowerRoles = roleDocs.filter(e => (e.xp && (e.xp <= doc.xp))).sort((a, b) => (b.xp - a.xp));
+                if(!lowerRoles.length || message.member.roles.cache.has(lowerRoles[0].roleID) || !message.guild.roles.cache.get(lowerRoles[0].roleID).editable || ((lowerRoles.length > message.client.configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner)) return;
                 await message.member.roles.set(message.member.roles.cache.map(e => e.id).filter(e => !lowerRoles.some(ee => (e === ee.roleID))).concat(lowerRoles.map(e => e.roleID).slice(0, message.client.guildData.get(message.guild.id).dontStack ? 1 : undefined)));
                 if(!message.client.guildData.get(message.guild.id).xpChannel || (doc.xp >= (lowerRoles[0].xp + multiplier))) return;
                 switch(message.client.guildData.get(message.guild.id).xpChannel){
@@ -73,7 +73,7 @@ module.exports = {
                         });
                     }
                 }
-            });
+            })(err, doc).catch(err => message.client.handlers.event(err, this, [message])));
         }
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES)) return;
         if((new RegExp(`<@!?${message.client.user.id}>`)).test(message.content)) return message.reply(channelLanguage.get('mentionHelp', [prefix]));

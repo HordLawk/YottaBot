@@ -10,4 +10,5 @@ module.exports = {
     support: 'eNcsvsy',
     supportID: '476244157245947904',
     permissions: Permissions.ALL - (Permissions.FLAGS.START_EMBEDDED_ACTIVITIES + Permissions.FLAGS.VIEW_GUILD_INSIGHTS + Permissions.FLAGS.USE_APPLICATION_COMMANDS + Permissions.FLAGS.STREAM),
+    xpRolesLimit: 10,
 };

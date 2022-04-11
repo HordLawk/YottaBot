@@ -267,7 +267,14 @@ module.exports = {
                     guild: message.guild.id,
                     roleID: {$in: message.guild.roles.cache.map(e => e.id)},
                 }).sort({xp: -1});
-                if(roles.filter(e => e.xp).length) embed.addField(channelLanguage.get('xpViewRoles'), roles.filter(e => e.xp).map(e => `\`${(new Array(roles[0].xp.toString().length - e.xp.toString().length)).fill(' ').join('')}${e.xp}\` **-** <@&${e.roleID}>`).join('\n'));
+                const replyData = {};
+                if(roles.filter(e => e.xp).length){
+                    if((roles.filter(e => e.xp).length > message.client.configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) replyData.content = channelLanguage.get('disabledPremiumXpRolesNoHL');
+                    embed.addField(channelLanguage.get('xpViewRoles'), roles.filter(e => e.xp).map((e, i) => {
+                        const roleStr = `\`${(new Array(roles.filter(e => e.xp)[0].xp.toString().length - e.xp.toString().length)).fill(' ').join('')}${e.xp}\` **-** <@&${e.roleID}>`;
+                        return (((roles.filter(e => e.xp).length - i) > message.client.configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) ? `~~${roleStr}~~` : roleStr;
+                    }).join('\n'));
+                }
                 if(roles.filter(e => (e.xpMultiplier && (e.xpMultiplier > 1))).length) embed.addField(channelLanguage.get('xpViewMultipliedRoles'), roles.filter(e => (e.xpMultiplier && (e.xpMultiplier > 1))).map(e => `<@&${e.roleID}> **-** \`${e.xpMultiplier}x\``).join('\n'));
                 if(roles.filter(e => e.ignoreXp).length) embed.addField(channelLanguage.get('xpViewIgnoredRoles'), roles.filter(e => e.ignoreXp).map(e => `<@&${e.roleID}>`).join(' '));
                 let channels = await channel.find({
@@ -276,7 +283,8 @@ module.exports = {
                     ignoreXp: true,
                 });
                 if(channels.length) embed.addField(channelLanguage.get('xpViewIgnoredChannels'), channels.map(e => `<#${e._id}>`).join(' '));
-                message.reply({embeds: [embed]});
+                replyData.embeds = [embed];
+                message.reply(replyData);
             }
             break;
             case 'reset': {

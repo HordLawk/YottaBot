@@ -35,7 +35,7 @@ module.exports = {
                 max: 1,
                 componentType: 'BUTTON',
             });
-            const collect = async i => {
+            collector.on('collect', i => (async i => {
                 await interaction.guild.stickers.fetch();
                 const maxStickers = {
                     NONE: 0,
@@ -56,8 +56,7 @@ module.exports = {
                     content: channelLanguage.get('stickerAdded'),
                     ephemeral: true,
                 });
-            }
-            collector.on('collect', i => collect(i).catch(err => interaction.client.handlers.button(err, i)));
+            })(i).catch(err => interaction.client.handlers.button(err, i)));
             collector.on('end', () => {
                 interaction.editReply({components: [{
                     type: 'ACTION_ROW',

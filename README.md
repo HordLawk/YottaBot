@@ -46,6 +46,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] logs for newly joined member with a button to ban them
 - [x] show stickers in deleted messages logs
 - [x] command to extract an image from a sticker with a button to add them
+- [ ] command to add a sticker from an attachment * \*\****
 
 \* on hold until Discord improves slash permissions
 
@@ -54,6 +55,8 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 *** on hold until discord.js adds support for modal interactions
 
 \**** on hold until Discord adds select menus for modals
+
+\*\**** on hold until Discord adds the file option type
 
 ## Credits
 - [@CripBoy](https://github.com/CripBoy) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

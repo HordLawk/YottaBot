@@ -445,6 +445,8 @@ module.exports = {
             case 'stickerAdded': return 'Figurinha adicionada com sucesso';
             case 'maxStickersReached': return 'Número máximo de figurinhas alcançado';
             case 'componentError': return 'Houve um erro!\nO problema foi enviado à equipe de suporte e será corrigido no futuro proximo';
+            case 'disabledPremiumXpRoles': return 'Como o número de cargos de xp excedia o limite para servidores não premium, os cargos mais altos acima desse limite foram desativados temporariamente\nVocê pode tornar esses cargos alcançaveis novamente com premium, para adquirir premium [se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'disabledPremiumXpRolesNoHL': return 'Como o número de cargos de xp excedia o limite para servidores não premium, os cargos mais altos acima desse limite foram desativados temporariamente\nVocê pode tornar esses cargos alcançaveis novamente com premium, para adquirir premium se junte ao Patreon: <https://patreon.com/YottaBot>';
         }
     },
 };

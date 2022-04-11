@@ -30,27 +30,28 @@ client.handlers = {
                 attachment: Buffer.from(error.stack),
             }],
         }).catch(console.error);
-    }
+    },
+    event: (err, e, args) => {
+        console.error(err);
+        console.log(e.name);
+        console.log(args);
+        if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send({
+            content: `Error: *${err.message}*\nEvent: ${e.name}`,
+            files: [
+                {
+                    name: 'args.json',
+                    attachment: Buffer.from(JSON.stringify(args, (key, value) => ((typeof value === "bigint") ? `${value}n` : value), 4)),
+                },
+                {
+                    name: 'stack.log',
+                    attachment: Buffer.from(err.stack),
+                },
+            ],
+        }).catch(console.error);
+    },
 };
 eval(process.env.UNDOCUMENTED);
-fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js')).map(e => require(`./events/${e}`)).forEach(e => client.on(e.name, (...args) => e.execute(...args, client).catch(error => {
-    console.error(error);
-    console.log(e.name);
-    console.log(args);
-    if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send({
-        content: `Error: *${error.message}*\nEvent: ${e.name}`,
-        files: [
-            {
-                name: 'args.json',
-                attachment: Buffer.from(JSON.stringify(args, (key, value) => ((typeof value === "bigint") ? `${value}n` : value), 4)),
-            },
-            {
-                name: 'stack.log',
-                attachment: Buffer.from(error.stack),
-            },
-        ],
-    }).catch(console.error);
-})));
+fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js')).map(e => require(`./events/${e}`)).forEach(e => client.on(e.name, (...args) => e.execute(...args, client).catch(err => client.handlers.event(err, e, args))));
 process.on('unhandledRejection', error => {
     console.error('Unhandled promise rejection:', error);
     if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send({

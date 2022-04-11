@@ -24,10 +24,10 @@ client.handlers = {
             ephemeral: true,
         });
         if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send({
-            content: `Error: *${error.message}*\nButton ID:${i.customId}\nInteraction User: ${i.user}\nInteraction ID: ${i.id}`,
+            content: `Error: *${err.message}*\nButton ID:${i.customId}\nInteraction User: ${i.user}\nInteraction ID: ${i.id}`,
             files: [{
                 name: 'stack.log',
-                attachment: Buffer.from(error.stack),
+                attachment: Buffer.from(err.stack),
             }],
         }).catch(console.error);
     },

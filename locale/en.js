@@ -440,6 +440,7 @@ module.exports = {
             case 'componentError': return 'There was an error!\nThe issue was sent to the support team and will be fixed in the near future';
             case 'disabledPremiumXpRoles': return 'Since the number of xp roles exceeded the limit for non premium servers, the highest roles over this limit were temporarily disabled\nYou can make these roles achievable again with premium, to get premium [join Patreon](<https://www.patreon.com/YottaBot>)';
             case 'disabledPremiumXpRolesNoHL': return 'Since the number of xp roles exceeded the limit for non premium servers, the highest roles over this limit were temporarily disabled\nYou can make these roles achievable again with premium, to get premium join Patreon: <https://patreon.com/YottaBot>';
+            case 'getstickerDescription': return 'Replies with the file for the first sticker in the target message\nIf you have permission to add stickers it will also show a button to upload the file as a sticker in the current server\n(Only as message context menu)';
         }
     },
 };

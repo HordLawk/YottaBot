@@ -47,6 +47,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [x] show stickers in deleted messages logs
 - [x] command to extract an image from a sticker with a button to add them
 - [ ] command to add a sticker from an attachment * \*\****
+- [ ] message context menu that shows previous versions of the target message *
 
 \* on hold until Discord improves slash permissions
 

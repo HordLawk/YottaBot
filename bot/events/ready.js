@@ -149,23 +149,30 @@ module.exports = {
                 voiceXpCooldown: {$ne: null},
             });
             for(let voiceGuild of voiceGuilds){
+                if(voiceGuild._id === '845387758586953749') console.log('testing in production 0');
                 let discordGuild = client.guilds.cache.get(voiceGuild._id);
                 let ignoredChannels = await channel.find({
                     _id: {$in: discordGuild.channels.cache.filter(e => (e.type === 'GUILD_VOICE')).map(e => e.id)},
                     ignoreXp: true,
                 });
+                if(voiceGuild._id === '845387758586953749') console.log(ignoredChannels.map(e => e._id));
                 let roleDocs = await role.find({
                     guild: voiceGuild._id,
                     roleID: {$in: discordGuild.roles.cache.map(e => e.id)},
                 });
+                if(voiceGuild._id === '845387758586953749') console.log(roleDocs.filter(e => e.ignoreXp).map(e => e._id));
                 await discordGuild.members.fetch({user: discordGuild.voiceStates.cache.map(e => e.id)});
                 let inVoice = discordGuild.voiceStates.cache.filter(e => e.channel && !e.deaf && !e.mute && !e.member.user.bot && (e.channel.members.filter(ee => !ee.voice.deaf && !ee.voice.mute && !ee.user.bot).size > 1) && !ignoredChannels.some(ee => (ee._id === e.channel.id)) && !roleDocs.some(ee => e.member.roles.cache.has(ee.roleID) && ee.ignoreXp));
+                if(voiceGuild._id === '845387758586953749') console.log(inVoice);
                 if(!guildVoiceXpCd.has(voiceGuild._id)){
+                    if(voiceGuild._id === '845387758586953749') console.log('so e pra passar 1 vez');
                     guildVoiceXpCd.set(voiceGuild._id, inVoice.mapValues(() => 0));
                     continue;
                 }
+                if(voiceGuild._id === '845387758586953749') console.log(inVoice.intersect(guildVoiceXpCd.get(voiceGuild._id)));
                 for(let [id, minutes] of inVoice.intersect(guildVoiceXpCd.get(voiceGuild._id))){
                     guildVoiceXpCd.get(voiceGuild._id).set(id, ++minutes);
+                    if(voiceGuild._id === '845387758586953749') console.log(minutes);
                     if((minutes % voiceGuild.voiceXpCooldown) != 0) continue;
                     let discordMember = inVoice.get(id).member;
                     let multiplier = roleDocs.filter(e => (e.xpMultiplier && discordMember.roles.cache.has(e.roleID))).sort((a, b) => (b.xpMultiplier - a.xpMultiplier))[0]?.xpMultiplier ?? 1;

@@ -103,8 +103,14 @@ module.exports = {
         });
         collectorUndo.on('end', async collected => {
             buttonUndo.disabled = true;
-            // reply.edit({components: [buttonEdit, buttonUndo]});
-            reply.edit({components: [buttonUndo]});
+            // reply.edit({components: [{
+            //     type: 'ACTION_ROW',
+            //     components: [buttonEdit, buttonUndo],
+            // }]});
+            reply.edit({components: [{
+                type: 'ACTION_ROW',
+                components: [buttonUndo],
+            }]});
             if(!collected.size) return;
             const unban = await message.guild.members.unban(user.id, channelLanguage.get('unbanAuditReason', [message.author.tag])).catch(() => {});
             if(!unban) return;
@@ -155,7 +161,10 @@ module.exports = {
         // });
         // collectorEdit.end('end', collected => {
         //     buttonEdit.disabled = true;
-        //     reply.edit({components: [buttonEdit, buttonUndo]});
+        //     reply.edit({components: [{
+            //     type: 'ACTION_ROW',
+            //     components: [buttonEdit, buttonUndo],
+            // }]});
         // })
     },
 };

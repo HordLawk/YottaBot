@@ -1,6 +1,6 @@
 {
   "name": "yottabot",
-  "version": "2.21.12",
+  "version": "2.21.13",
   "description": "A levelling and moderation focused Discord bot",
   "main": "index.js",
   "engines": {

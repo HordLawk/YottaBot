@@ -31,13 +31,13 @@ module.exports = {
                 .setDescription(channelLanguage.get('helpEmbedDescription', [message.client.configs.support, perms, prefix, message.client.user.id]))
                 .setFooter({text: channelLanguage.get('helpEmbedFooter', [message.client.commands.filter(command => !command.dev).size])})
                 .setTimestamp();
-            const categories = message.client.commands.filter(cmd => !cmd.dev).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
+            const categories = message.client.commands.filter(cmd => (!cmd.dev && (cmd.execute || (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === cmd.name))?.type === 'CHAT_INPUT')))).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
             categories.forEach((e, i) => embed.addField(channelLanguage.get(`category${i}`), e.map(cmd => `\`${cmd.name}\``).join(' ')));
             return message.reply({embeds: [embed]});
         }
         const name = args[0];
         const command = message.client.commands.get(name) || message.client.commands.find(c => (c.aliases && c.aliases.includes(name)));
-        if(!command || command.dev) return message.reply(channelLanguage.get('invalidCommand'));
+        if(!command || command.dev || (!command.execute && (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === command.name))?.type != 'CHAT_INPUT'))) return message.reply(channelLanguage.get('invalidCommand'));
         embed = new MessageEmbed()
             .setColor(message.guild ? (message.guild.me.displayColor || 0x8000ff) : 0x8000ff)
             .setAuthor({
@@ -78,12 +78,12 @@ module.exports = {
                 .setDescription(channelLanguage.get('helpEmbedDescription', [interaction.client.configs.support, perms, prefix, interaction.client.user.id]))
                 .setFooter({text: channelLanguage.get('helpEmbedFooter', [interaction.client.commands.filter(command => !command.dev).size])})
                 .setTimestamp();
-            const categories = interaction.client.commands.filter(cmd => !cmd.dev).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
+            const categories = interaction.client.commands.filter(cmd => (!cmd.dev && (cmd.execute || (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === cmd.name))?.type === 'CHAT_INPUT')))).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
             categories.forEach((e, i) => embed.addField(channelLanguage.get(`category${i}`), e.map(cmd => `\`${cmd.name}\``).join(' ')));
             return interaction.reply({embeds: [embed]});
         }
         const command = interaction.client.commands.get(args.command);
-        if(!command || command.dev) return interaction.reply({
+        if(!command || command.dev || (!command.execute && (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === command.name))?.type != 'CHAT_INPUT'))) return interaction.reply({
             content: channelLanguage.get('invalidCommand'),
             ephemeral: true,
         });
@@ -113,7 +113,7 @@ module.exports = {
         required: false,
         autocomplete: true,
     }],
-    commandAutocomplete: {command: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => (e.name.startsWith(value.toLowerCase()) && !e.dev)).first(25).map(e => ({
+    commandAutocomplete: {command: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => (e.name.startsWith(value.toLowerCase()) && !e.dev && (e.execute || (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(cmd => (e.name === cmd.name))?.type === 'CHAT_INPUT')))).first(25).map(e => ({
         name: e.name,
         value: e.name,
     })))},

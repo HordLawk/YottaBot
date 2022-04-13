@@ -194,7 +194,7 @@ module.exports = {
                         $ne: null,
                     },
                 }).sort({xp: -1});
-                const availableRoles = ((roleDocs.length > message.client.configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) ? roleDocs.slice(-interaction.client.configs.xpRolesLimit) : roleDocs;
+                const availableRoles = ((roleDocs.length > message.client.configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) ? roleDocs.slice(-message.client.configs.xpRolesLimit) : roleDocs;
                 let current = availableRoles.find(e => (e.xp <= user.xp));
                 let next = availableRoles.reverse().find(e => (e.xp > user.xp));
                 let discordMember = await message.guild.members.fetch(user.userID).catch(() => null);

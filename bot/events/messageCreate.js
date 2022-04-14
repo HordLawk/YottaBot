@@ -49,6 +49,7 @@ module.exports = {
                 else{
                     message.client.xpcds.set(message.guild.id, new Collection([[message.author.id, Date.now()]]));
                 }
+                if(!message.member) return;
                 const lowerRoles = roleDocs.filter(e => (e.xp && (e.xp <= doc.xp))).sort((a, b) => (b.xp - a.xp));
                 if(!lowerRoles.length || message.member.roles.cache.has(lowerRoles[0].roleID) || !message.guild.roles.cache.get(lowerRoles[0].roleID).editable || ((lowerRoles.length > message.client.configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner)) return;
                 await message.member.roles.set(message.member.roles.cache.map(e => e.id).filter(e => !lowerRoles.some(ee => (e === ee.roleID))).concat(lowerRoles.map(e => e.roleID).filter(e => message.guild.roles.cache.get(e).editable).slice(0, message.client.guildData.get(message.guild.id).dontStack ? 1 : undefined)));

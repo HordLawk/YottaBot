@@ -23,8 +23,10 @@ module.exports = {
                 let parcialMemberDocs = await member.find({
                     guild: message.guild.id,
                     xp: {$gte: 1},
-                }, 'userID xp').sort({xp: -1}).limit(1000);
+                }, 'userID xp').sort({xp: -1}).limit(500);
+                console.log(parcialMemberDocs.slice(0, 100).map(e => e.userID))
                 const members = await message.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
+                console.log(members.slice(0, 100));
                 parcialMemberDocs = parcialMemberDocs.filter(e => members.includes(e.userID));
                 const pageSize = 20;
                 let memberDocs = parcialMemberDocs.slice(0, pageSize + 1);
@@ -33,6 +35,7 @@ module.exports = {
                     userID: message.author.id,
                     xp: {$gte: 1},
                 });
+                console.log(memberDoc);
                 const embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor({
@@ -48,6 +51,7 @@ module.exports = {
                     };
                     if(members.includes(message.author.id)) queryFilter.userID = {$in: members};
                     const rank = await member.countDocuments(queryFilter);
+                    console.log(rank);
                     embed.setFooter({text: channelLanguage.get('xpRankEmbedFooter', [rank + 1])});
                 }
                 message.client.guildData.get(message.guild.id).processing = false;

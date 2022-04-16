@@ -20,15 +20,29 @@ module.exports = {
             case 'rank': {
                 if(message.client.guildData.get(message.guild.id).processing) return message.reply(channelLanguage.get('processing'));
                 message.client.guildData.get(message.guild.id).processing = true;
+                let cachePage = 0;
+                const cachePageSize = 500;
                 let parcialMemberDocs = await member.find({
                     guild: message.guild.id,
                     xp: {$gte: 1},
-                }, 'userID xp').sort({xp: -1}).limit(500);
+                }, 'userID xp').sort({xp: -1}).limit(cachePageSize);
                 console.log(parcialMemberDocs.slice(0, 100).map(e => e.userID))
                 const members = await message.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
                 console.log(members.slice(0, 100));
                 parcialMemberDocs = parcialMemberDocs.filter(e => members.includes(e.userID));
+                let page = 0;
                 const pageSize = 20;
+                const memberDocsSize = await member.countDocuments({});
+                const fetchMore = async () => {
+                    const auxParcialMemberDocs = await member.find({
+                        guild: message.guild.id,
+                        xp: {$gte: 1},
+                    }, 'userID xp').sort({xp: -1}).skip((cachePage++ + 1) * cachePageSize).limit(cachePageSize);
+                    const auxMembers = await message.guild.members.fetch({user: auxParcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
+                    parcialMemberDocs = parcialMemberDocs.concat(auxParcialMemberDocs.filter(e => auxMembers.includes(e.userID)));
+                    if(((((page + 1) * pageSize) + 1) > parcialMemberDocs.length) && (((cachePage + 1) * cachePageSize) < memberDocsSize)) await fetchMore();
+                }
+                if((pageSize + 1) > parcialMemberDocs.length) await fetchMore();
                 let memberDocs = parcialMemberDocs.slice(0, pageSize + 1);
                 const memberDoc = await member.findOne({
                     guild: message.guild.id,
@@ -85,12 +99,12 @@ module.exports = {
                     time: 600000,
                     componentType: 'BUTTON',
                 });
-                let page = 0;
                 col.on('collect', async buttonInteraction => {
                     if(buttonInteraction.customId === 'next'){
                         if(memberDocs.length <= pageSize) return;
-                        memberDocs = parcialMemberDocs.slice((page + 1) * pageSize, ((page + 1) * pageSize) + pageSize + 1);
                         page++;
+                        if((((page + 1) * pageSize) + 1) > parcialMemberDocs.length) await fetchMore();
+                        memberDocs = parcialMemberDocs.slice(page * pageSize, ((page + 1) * pageSize) + 1);
                     }
                     else{
                         if(!page) return;
@@ -255,13 +269,27 @@ module.exports = {
         });
         interaction.client.guildData.get(interaction.guild.id).processing = true;
         await interaction.deferReply();
+        let cachePage = 0;
+        const cachePageSize = 500;
         let parcialMemberDocs = await member.find({
             guild: interaction.guild.id,
             xp: {$gte: 1},
-        }, 'userID xp').sort({xp: -1}).limit(1000);
+        }, 'userID xp').sort({xp: -1}).limit(cachePageSize);
         const members = await interaction.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
         parcialMemberDocs = parcialMemberDocs.filter(e => members.includes(e.userID));
-        const pageSize = 3;
+        let page = 0;
+        const pageSize = 20;
+        const memberDocsSize = await member.countDocuments({});
+        const fetchMore = async () => {
+            const auxParcialMemberDocs = await member.find({
+                guild: interaction.guild.id,
+                xp: {$gte: 1},
+            }, 'userID xp').sort({xp: -1}).skip((cachePage++ + 1) * cachePageSize).limit(cachePageSize);
+            const auxMembers = await interaction.guild.members.fetch({user: auxParcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
+            parcialMemberDocs = parcialMemberDocs.concat(auxParcialMemberDocs.filter(e => auxMembers.includes(e.userID)));
+            if(((((page + 1) * pageSize) + 1) > parcialMemberDocs.length) && (((cachePage + 1) * cachePageSize) < memberDocsSize)) await fetchMore();
+        }
+        if((pageSize + 1) > parcialMemberDocs.length) await fetchMore();
         let memberDocs = parcialMemberDocs.slice(0, pageSize + 1);
         const memberDoc = await member.findOne({
             guild: interaction.guild.id,
@@ -317,12 +345,12 @@ module.exports = {
             time: 600000,
             componentType: 'BUTTON',
         });
-        let page = 0;
         col.on('collect', async buttonInteraction => {
             if(buttonInteraction.customId === 'next'){
                 if(memberDocs.length <= pageSize) return;
-                memberDocs = parcialMemberDocs.slice((page + 1) * pageSize, ((page + 1) * pageSize) + pageSize + 1);
                 page++;
+                if((((page + 1) * pageSize) + 1) > parcialMemberDocs.length) await fetchMore();
+                memberDocs = parcialMemberDocs.slice(page * pageSize, ((page + 1) * pageSize) + 1);
             }
             else{
                 if(!page) return;

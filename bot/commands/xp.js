@@ -26,9 +26,7 @@ module.exports = {
                     guild: message.guild.id,
                     xp: {$gte: 1},
                 }, 'userID xp').sort({xp: -1}).limit(cachePageSize);
-                console.log(parcialMemberDocs.slice(0, 100).map(e => e.userID))
                 const members = await message.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
-                console.log(members.slice(0, 100));
                 parcialMemberDocs = parcialMemberDocs.filter(e => members.includes(e.userID));
                 let page = 0;
                 const pageSize = 20;
@@ -49,7 +47,6 @@ module.exports = {
                     userID: message.author.id,
                     xp: {$gte: 1},
                 });
-                console.log(memberDoc);
                 const embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor({
@@ -65,7 +62,6 @@ module.exports = {
                     };
                     if(members.includes(message.author.id)) queryFilter.userID = {$in: members};
                     const rank = await member.countDocuments(queryFilter);
-                    console.log(rank);
                     embed.setFooter({text: channelLanguage.get('xpRankEmbedFooter', [rank + 1])});
                 }
                 message.client.guildData.get(message.guild.id).processing = false;
@@ -103,7 +99,10 @@ module.exports = {
                     if(buttonInteraction.customId === 'next'){
                         if(memberDocs.length <= pageSize) return;
                         page++;
-                        if((((page + 1) * pageSize) + 1) > parcialMemberDocs.length) await fetchMore();
+                        if((((page + 1) * pageSize) + 1) > parcialMemberDocs.length){
+                            await buttonInteraction.deferUpdate();
+                            await fetchMore();
+                        }
                         memberDocs = parcialMemberDocs.slice(page * pageSize, ((page + 1) * pageSize) + 1);
                     }
                     else{
@@ -112,7 +111,7 @@ module.exports = {
                         page--;
                     }
                     embed.setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
-                    await buttonInteraction.update({
+                    await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({
                         embeds: [embed],
                         components: [{
                             type: 'ACTION_ROW',
@@ -349,7 +348,10 @@ module.exports = {
             if(buttonInteraction.customId === 'next'){
                 if(memberDocs.length <= pageSize) return;
                 page++;
-                if((((page + 1) * pageSize) + 1) > parcialMemberDocs.length) await fetchMore();
+                if((((page + 1) * pageSize) + 1) > parcialMemberDocs.length){
+                    await buttonInteraction.deferUpdate();
+                    await fetchMore();
+                }
                 memberDocs = parcialMemberDocs.slice(page * pageSize, ((page + 1) * pageSize) + 1);
             }
             else{
@@ -358,7 +360,7 @@ module.exports = {
                 page--;
             }
             embed.setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
-            await buttonInteraction.update({
+            await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({
                 embeds: [embed],
                 components: [{
                     type: 'ACTION_ROW',

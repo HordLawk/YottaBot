@@ -18,18 +18,16 @@ module.exports = {
         if(!message.client.guildData.get(message.guild.id).gainExp && !message.client.guildData.get(message.guild.id).voiceXpCooldown) return message.reply(channelLanguage.get('xpDisabled'));
         switch(args[0]){
             case 'rank': {
-                return message.reply('Command temporarily disabled');
-                if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.reply(channelLanguage.get('botReactions'));
                 if(message.client.guildData.get(message.guild.id).processing) return message.reply(channelLanguage.get('processing'));
                 message.client.guildData.get(message.guild.id).processing = true;
-                const members = await message.guild.members.fetch().then(res => res.map(e => e.id));
-                message.guild.members.cache.sweep(e => ((e.id != message.client.user.id) || message.guild.voiceStates.cache.has(e.id)));
-                const pageSize = 20;
-                let memberDocs = await member.find({
+                let parcialMemberDocs = await member.find({
                     guild: message.guild.id,
-                    userID: {$in: members},
                     xp: {$gte: 1},
-                }, 'userID xp').sort({xp: -1}).limit(pageSize + 1);
+                }, 'userID xp').sort({xp: -1}).limit(1000);
+                const members = await message.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
+                parcialMemberDocs = parcialMemberDocs.filter(e => members.includes(e.userID));
+                const pageSize = 20;
+                let memberDocs = parcialMemberDocs.slice(0, pageSize + 1);
                 const memberDoc = await member.findOne({
                     guild: message.guild.id,
                     userID: message.author.id,
@@ -44,11 +42,12 @@ module.exports = {
                     .setTimestamp()
                     .setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
                 if(memberDoc){
-                    let rank = await member.countDocuments({
+                    const queryFilter = {
                         guild: message.guild.id,
-                        userID: {$in: members},
                         xp: {$gt: memberDoc.xp},
-                    });
+                    };
+                    if(members.includes(message.author.id)) queryFilter.userID = {$in: members};
+                    const rank = await member.countDocuments(queryFilter);
                     embed.setFooter({text: channelLanguage.get('xpRankEmbedFooter', [rank + 1])});
                 }
                 message.client.guildData.get(message.guild.id).processing = false;
@@ -86,20 +85,12 @@ module.exports = {
                 col.on('collect', async buttonInteraction => {
                     if(buttonInteraction.customId === 'next'){
                         if(memberDocs.length <= pageSize) return;
-                        memberDocs = await member.find({
-                            guild: message.guild.id,
-                            userID: {$in: members},
-                            xp: {$gte: 1},
-                        }, 'userID xp').sort({xp: -1}).skip((page + 1) * pageSize).limit(pageSize + 1);
+                        memberDocs = parcialMemberDocs.slice((page + 1) * pageSize, ((page + 1) * pageSize) + pageSize + 1);
                         page++;
                     }
                     else{
                         if(!page) return;
-                        memberDocs = await member.find({
-                            guild: message.guild.id,
-                            userID: {$in: members},
-                            xp: {$gte: 1},
-                        }, 'userID xp').sort({xp: -1}).skip((page - 1) * pageSize).limit(pageSize + 1);
+                        memberDocs = parcialMemberDocs.slice((page - 1) * pageSize, ((page - 1) * pageSize) + pageSize + 1);
                         page--;
                     }
                     embed.setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
@@ -249,10 +240,6 @@ module.exports = {
         interaction.reply({embeds: [embed]});
     },
     rankSlash: async interaction => {
-        return interaction.reply({
-            content: 'Command temporarily disabled',
-            ephemeral: true,
-        });
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         if(!interaction.client.guildData.get(interaction.guild.id).gainExp && !interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown) return interaction.reply({
             content: channelLanguage.get('xpDisabled'),
@@ -264,14 +251,14 @@ module.exports = {
         });
         interaction.client.guildData.get(interaction.guild.id).processing = true;
         await interaction.deferReply();
-        const members = await interaction.guild.members.fetch().then(res => res.map(e => e.id));
-        interaction.guild.members.cache.sweep(e => ((e.id != interaction.client.user.id) || interaction.guild.voiceStates.cache.has(e.id)));
-        const pageSize = 20;
-        let memberDocs = await member.find({
+        let parcialMemberDocs = await member.find({
             guild: interaction.guild.id,
-            userID: {$in: members},
             xp: {$gte: 1},
-        }, 'userID xp').sort({xp: -1}).limit(pageSize + 1);
+        }, 'userID xp').sort({xp: -1}).limit(1000);
+        const members = await interaction.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
+        parcialMemberDocs = parcialMemberDocs.filter(e => members.includes(e.userID));
+        const pageSize = 3;
+        let memberDocs = parcialMemberDocs.slice(0, pageSize + 1);
         const memberDoc = await member.findOne({
             guild: interaction.guild.id,
             userID: interaction.user.id,
@@ -286,11 +273,12 @@ module.exports = {
             .setTimestamp()
             .setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
         if(memberDoc){
-            const rank = await member.countDocuments({
+            const queryFilter = {
                 guild: interaction.guild.id,
-                userID: {$in: members},
                 xp: {$gt: memberDoc.xp},
-            });
+            };
+            if(members.includes(interaction.user.id)) queryFilter.userID = {$in: members};
+            const rank = await member.countDocuments(queryFilter);
             embed.setFooter({text: channelLanguage.get('xpRankEmbedFooter', [rank + 1])});
         }
         interaction.client.guildData.get(interaction.guild.id).processing = false;
@@ -329,20 +317,12 @@ module.exports = {
         col.on('collect', async buttonInteraction => {
             if(buttonInteraction.customId === 'next'){
                 if(memberDocs.length <= pageSize) return;
-                memberDocs = await member.find({
-                    guild: interaction.guild.id,
-                    userID: {$in: members},
-                    xp: {$gte: 1},
-                }, 'userID xp').sort({xp: -1}).skip((page + 1) * pageSize).limit(pageSize + 1);
+                memberDocs = parcialMemberDocs.slice((page + 1) * pageSize, ((page + 1) * pageSize) + pageSize + 1);
                 page++;
             }
             else{
                 if(!page) return;
-                memberDocs = await member.find({
-                    guild: interaction.guild.id,
-                    userID: {$in: members},
-                    xp: {$gte: 1},
-                }, 'userID xp').sort({xp: -1}).skip((page - 1) * pageSize).limit(pageSize + 1);
+                memberDocs = parcialMemberDocs.slice((page - 1) * pageSize, ((page - 1) * pageSize) + pageSize + 1);
                 page--;
             }
             embed.setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));

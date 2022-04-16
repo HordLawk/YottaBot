@@ -30,7 +30,10 @@ module.exports = {
                 parcialMemberDocs = parcialMemberDocs.filter(e => members.includes(e.userID));
                 let page = 0;
                 const pageSize = 20;
-                const memberDocsSize = await member.countDocuments({});
+                const memberDocsSize = await member.countDocuments({
+                    guild: message.guild.id,
+                    xp: {$gte: 1},
+                });
                 const fetchMore = async () => {
                     const auxParcialMemberDocs = await member.find({
                         guild: message.guild.id,
@@ -278,7 +281,10 @@ module.exports = {
         parcialMemberDocs = parcialMemberDocs.filter(e => members.includes(e.userID));
         let page = 0;
         const pageSize = 20;
-        const memberDocsSize = await member.countDocuments({});
+        const memberDocsSize = await member.countDocuments({
+            guild: interaction.guild.id,
+            xp: {$gte: 1},
+        });
         const fetchMore = async () => {
             const auxParcialMemberDocs = await member.find({
                 guild: interaction.guild.id,

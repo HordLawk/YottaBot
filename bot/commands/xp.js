@@ -18,6 +18,7 @@ module.exports = {
         if(!message.client.guildData.get(message.guild.id).gainExp && !message.client.guildData.get(message.guild.id).voiceXpCooldown) return message.reply(channelLanguage.get('xpDisabled'));
         switch(args[0]){
             case 'rank': {
+                return message.reply('Command temporarily disabled');
                 if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.reply(channelLanguage.get('botReactions'));
                 if(message.client.guildData.get(message.guild.id).processing) return message.reply(channelLanguage.get('processing'));
                 message.client.guildData.get(message.guild.id).processing = true;
@@ -248,6 +249,10 @@ module.exports = {
         interaction.reply({embeds: [embed]});
     },
     rankSlash: async interaction => {
+        return interaction.reply({
+            content: 'Command temporarily disabled',
+            ephemeral: true,
+        });
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         if(!interaction.client.guildData.get(interaction.guild.id).gainExp && !interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown) return interaction.reply({
             content: channelLanguage.get('xpDisabled'),

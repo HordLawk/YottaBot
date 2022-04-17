@@ -8,8 +8,9 @@ module.exports = {
     name: 'guildMemberAdd',
     execute: async member => {
         if(member.partial) await member.fetch();
+        if(!member.client.guildData.has(member.guild.id)) return;
         const channelLanguage = member.client.langs[member.client.guildData.get(member.guild.id).language];
-        if(member.client.guildData.has(member.guild.id) && member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin') && (member.client.guildData.get(member.guild.id).actionlogs.id('delmsg').hookID || member.client.guildData.get(member.guild.id).defaultLogsHookID)){
+        if(member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin') && (member.client.guildData.get(member.guild.id).actionlogs.id('delmsg').hookID || member.client.guildData.get(member.guild.id).defaultLogsHookID)){
             const hook = await member.client.fetchWebhook(member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin').hookID || member.client.guildData.get(member.guild.id).defaultLogsHookID, member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin').hookToken || member.client.guildData.get(member.guild.id).defaultLogsHookToken).catch(() => null);
             if(hook){
                 const embed = new MessageEmbed()
@@ -224,7 +225,7 @@ module.exports = {
                 });
             }
         }
-        if(!member.client.guildData.get(member.guild.id)?.globalBan) return;
+        if(!member.client.guildData.get(member.guild.id).globalBan) return;
         let memberDoc = await memberModel.findOne({
             guild: member.guild.id,
             userID: member.id,

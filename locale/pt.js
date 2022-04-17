@@ -450,7 +450,7 @@ module.exports = {
             case 'disabledPremiumXpRolesNoHL': return 'Como o número de cargos de xp excedia o limite para servidores não premium, os cargos mais altos acima desse limite foram desativados temporariamente\nVocê pode tornar esses cargos alcançaveis novamente com premium, para adquirir premium se junte ao Patreon: <https://patreon.com/YottaBot>';
             case 'getstickerDescription': return 'Responde com o arquivo do primeiro sticker da mensagem selecionada\nSe o autor tiver permissão para adicionar sticker, também mostrará um botão para upar o arquivo como sticker no servidor\n(Apenas em menu de mensagem)';
             case 'memberjoinActionName': return 'Novos membros';
-            case 'memberjoinEmbedAuthor': return 'Novo membro';
+            case 'memberjoinEmbedAuthor': return `${vars[0]} entrou no servidor`;
             case 'memberjoinEmbedCreationTitle': return 'Conta criada em';
             case 'memberjoinEmbedCreationValue': return `<t:${vars[0]}> (<t:${vars[0]}:R>)`;
             case 'banButton': return 'Banir';

@@ -70,7 +70,7 @@ module.exports = {
                     if(!message.guild.me.permissionsIn(discordChannel).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) return message.reply(channelLanguage.get('botWebhooks'));
                     let hook = await discordChannel.createWebhook(message.client.user.username, {
                         avatar: message.client.user.avatarURL({size: 4096}),
-                        reason: channelLanguage.get('newHookReason', [channelLanguage.get(`action${args[1]}`)]),
+                        reason: channelLanguage.get('newHookReason', [channelLanguage.get(`${args[1]}ActionName`)]),
                     });
                     let oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
                     if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [args[1]]));
@@ -331,7 +331,7 @@ module.exports = {
             });
             const hook = await args.log_channel.createWebhook(interaction.client.user.username, {
                 avatar: interaction.client.user.avatarURL(),
-                reason: channelLanguage.get('newHookReason', [channelLanguage.get(`action${args.action}`)]),
+                reason: channelLanguage.get('newHookReason', [channelLanguage.get(`${args[1]}ActionName`)]),
             });
             const oldHook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookToken).catch(() => null);
             if(oldHook && interaction.guild.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [args.action]));

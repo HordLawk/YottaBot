@@ -18,7 +18,7 @@ module.exports = {
                     .setFooter({text: member.id})
                     .setTimestamp()
                     .setAuthor({
-                        name: channelLanguage.get('memberjoinEmbedAuthor'),
+                        name: channelLanguage.get('memberjoinEmbedAuthor', [member.user.tag]),
                         iconURL: member.user.displayAvatarURL({dynamic: true}),
                     })
                     .setThumbnail(member.user.displayAvatarURL({dynamic: true}))

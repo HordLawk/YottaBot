@@ -107,7 +107,7 @@ module.exports = {
             //     type: 'ACTION_ROW',
             //     components: [buttonEdit, buttonUndo],
             // }]});
-            reply.edit({components: [{
+            await reply.edit({components: [{
                 type: 'ACTION_ROW',
                 components: [buttonUndo],
             }]});

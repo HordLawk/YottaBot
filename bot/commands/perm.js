@@ -42,7 +42,7 @@ module.exports = {
                     roleDoc.commandPermissions.id(command.name).allow = (args[0] === 'allow');
                 });
                 await roleDoc.save();
-                message.reply(channelLanguage.get('permSuccess', [discordRole.name, args[0]]));
+                message.reply(channelLanguage.get('permSuccess', [discordRole, args[0]]));
             }
             break;
             case 'default': {
@@ -61,7 +61,7 @@ module.exports = {
                     item.remove();
                 });
                 await roleDoc.save();
-                message.reply(channelLanguage.get('defaultPermsSuccess', [discordRole.name]));
+                message.reply(channelLanguage.get('defaultPermsSuccess', [discordRole]));
             }
             break;
             case 'view': {

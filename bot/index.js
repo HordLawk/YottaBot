@@ -19,10 +19,24 @@ client.handlers = {
     button: (err, i) => {
         console.error(err);
         const channelLanguage = client.langs[(i.locale === 'pt-BR') ? 'pt' : 'en'];
-        i.reply({
+        const msgData = {
             content: channelLanguage.get('componentError'),
             ephemeral: true,
-        });
+        };
+        if(i.deferred){
+            i.editReply({
+                content: channelLanguage.get('componentError'),
+                files: [],
+                embeds: [],
+                components: [],
+            });
+        }
+        else if(i.replied){
+            i.followUp(msgData);
+        }
+        else{
+            i.reply(msgData);
+        }
         if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send({
             content: `Error: *${err.message}*\nButton ID: ${i.customId}\nInteraction User: ${i.user}\nInteraction ID: ${i.id}`,
             files: [{

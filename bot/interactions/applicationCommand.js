@@ -92,7 +92,11 @@ module.exports = {
         });
         command[`${subCommandName ? `${(subCommandGroupName ?? '')}${subCommandName}` : 'execute'}Slash`](interaction, args).catch(error => {
             console.error(error);
-            if(interaction.deferred || interaction.replied){
+            const msgData = {
+                content: channelLanguage.get('error', [command.name]),
+                ephemeral: true,
+            }
+            if(interaction.deferred){
                 interaction.editReply({
                     content: channelLanguage.get('error', [command.name]),
                     files: [],
@@ -100,11 +104,11 @@ module.exports = {
                     components: [],
                 });
             }
+            else if(interaction.replied){
+                interaction.followUp(msgData);
+            }
             else{
-                interaction.reply({
-                    content: channelLanguage.get('error', [command.name]),
-                    ephemeral: true,
-                });
+                interaction.reply(msgData);
             }
             if(process.env.NODE_ENV === 'production') interaction.client.channels.cache.get(interaction.client.configs.errorlog).send({
                 content: `Error: *${error.message}*\nInteraction User: ${interaction.user}\nInteraction ID: ${interaction.id}`,

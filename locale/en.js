@@ -156,7 +156,7 @@ module.exports = {
             case 'delmsgEmbedAttachmentsFile': return `[\`Attachment-${vars[0]}-File\`](${vars[1]})`;
             case 'actionlogsDescription': return 'Manages action logs for the server';
             case 'actionlogsUsage0': return 'defaultchannel (channel)';
-            case 'actionlogsUsage1': return 'set <delmsg/prune/editmsg> <(channel)/default>';
+            case 'actionlogsUsage1': return 'set <delmsg/prune/editmsg/memberjoin> <(channel)/default>';
             case 'actionlogsUsage2': return 'ignore channel <add/remove> (channel) <delmsg/prune/editmsg/all>';
             case 'actionlogsUsage3': return 'ignore channel view (channel)';
             case 'actionlogsUsage4': return 'ignore role <add/remove> (role) <delmsg/prune/editmsg/all>';
@@ -178,6 +178,7 @@ module.exports = {
             case 'actiondelmsg': return '**deleted messages**';
             case 'actionprune': return '**pruned messages**';
             case 'actioneditmsg': return '**edited messages**';
+            case 'actionmemberjoin': return '**joined members**';
             case 'noIgnoredActionsRole': return 'No actions are being ignored for this role';
             case 'ignoredActionsRoleEmbedAuthor': return 'Ignored role';
             case 'ignoredActionsRoleEmbedDesc': return `Role: ${vars[0]}`;
@@ -441,6 +442,11 @@ module.exports = {
             case 'disabledPremiumXpRoles': return 'Since the number of xp roles exceeded the limit for non premium servers, the highest roles over this limit were temporarily disabled\nYou can make these roles achievable again with premium, to get premium [join Patreon](<https://www.patreon.com/YottaBot>)';
             case 'disabledPremiumXpRolesNoHL': return 'Since the number of xp roles exceeded the limit for non premium servers, the highest roles over this limit were temporarily disabled\nYou can make these roles achievable again with premium, to get premium join Patreon: <https://patreon.com/YottaBot>';
             case 'getstickerDescription': return 'Replies with the file for the first sticker in the target message\nIf you have permission to add stickers it will also show a button to upload the file as a sticker in the current server\n(Only as message context menu)';
+            case 'memberjoinActionName': return 'Joined members';
+            case 'memberjoinEmbedAuthor': return 'Member joined';
+            case 'memberjoinEmbedCreationTitle': return 'Account creation';
+            case 'memberjoinEmbedCreationValue': return `<t:${vars[0]}> (<t:${vars[0]}:R>)`;
+            case 'banButton': return 'Ban';
         }
     },
 };

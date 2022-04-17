@@ -157,7 +157,7 @@ module.exports = {
             case 'delmsgEmbedAttachmentsFile': return `[\`Anexo-${vars[0]}-Arquivo\`](${vars[1]})`;
             case 'actionlogsDescription': return 'Gerencia registros de ações no servidor';
             case 'actionlogsUsage0': return 'defaultchannel (canal)';
-            case 'actionlogsUsage1': return 'set <delmsg/prune/editmsg> <(canal)/default>';
+            case 'actionlogsUsage1': return 'set <delmsg/prune/editmsg/memberjoin> <(canal)/default>';
             case 'actionlogsUsage2': return 'ignore channel <add/remove> (canal) <delmsg/prune/editmsg/all>';
             case 'actionlogsUsage3': return 'ignore channel view (canal)';
             case 'actionlogsUsage4': return 'ignore role <add/remove> (cargo) <delmsg/prune/editmsg/all>';
@@ -179,6 +179,7 @@ module.exports = {
             case 'actiondelmsg': return '**mensagens deletadas**';
             case 'actionprune': return '**mensagens limpas**';
             case 'actioneditmsg': return '**mensagens editadas**';
+            case 'actionmemberjoin': return '**novos membros**';
             case 'noIgnoredActionsRole': return 'Nenhuma ação está sendo ignorada para esse cargo';
             case 'ignoredActionsRoleEmbedAuthor': return 'Cargo ignorado';
             case 'ignoredActionsRoleEmbedDesc': return `Cargo: ${vars[0]}`;
@@ -448,6 +449,11 @@ module.exports = {
             case 'disabledPremiumXpRoles': return 'Como o número de cargos de xp excedia o limite para servidores não premium, os cargos mais altos acima desse limite foram desativados temporariamente\nVocê pode tornar esses cargos alcançaveis novamente com premium, para adquirir premium [se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
             case 'disabledPremiumXpRolesNoHL': return 'Como o número de cargos de xp excedia o limite para servidores não premium, os cargos mais altos acima desse limite foram desativados temporariamente\nVocê pode tornar esses cargos alcançaveis novamente com premium, para adquirir premium se junte ao Patreon: <https://patreon.com/YottaBot>';
             case 'getstickerDescription': return 'Responde com o arquivo do primeiro sticker da mensagem selecionada\nSe o autor tiver permissão para adicionar sticker, também mostrará um botão para upar o arquivo como sticker no servidor\n(Apenas em menu de mensagem)';
+            case 'memberjoinActionName': return 'Novos membros';
+            case 'memberjoinEmbedAuthor': return 'Novo membro';
+            case 'memberjoinEmbedCreationTitle': return 'Conta criada em';
+            case 'memberjoinEmbedCreationValue': return `<t:${vars[0]}> (<t:${vars[0]}:R>)`;
+            case 'banButton': return 'Banir';
         }
     },
 };

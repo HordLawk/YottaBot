@@ -14,7 +14,7 @@ module.exports = {
                 limit: 1,
             });
             if(audits.entries.first()){
-                if(message.client.lastdelmsg.has(message.guild.id) && (audits.entries.first().target.id === message.author.id) && ((audits.entries.first().extra.count != message.client.lastdelmsg.get(message.guild.id).count) || (audits.entries.first().id != message.client.lastdelmsg.get(message.guild.id).id))) executor = audits.entries.first().executor;
+                if(message.client.lastdelmsg.has(message.guild.id) && (audits.entries.first().target?.id === message.author.id) && ((audits.entries.first().extra.count != message.client.lastdelmsg.get(message.guild.id).count) || (audits.entries.first().id != message.client.lastdelmsg.get(message.guild.id).id))) executor = audits.entries.first().executor;
                 message.client.lastdelmsg.set(message.guild.id, {
                     count: audits.entries.first().extra.count,
                     id: audits.entries.first().id,

@@ -32,7 +32,6 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 
 ## W.I.P
 - [ ] use slash commands; context menus; buttons; and stuff *
-- [x] setup a patreon
 - [ ] add rss feeds for youtube notifications *
 - [ ] `prune` command *
 - [ ] command to edit slowmode *
@@ -43,7 +42,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] other streaming notifications for premium *
 - [ ] create and edit role menus with built in forms \*** \****
 - [ ] button to edit action reason in the command reply ***
-- [ ] logs for newly joined member with a button to ban them
+- [x] logs for newly joined member with a button to ban them
 - [x] show stickers in deleted messages logs
 - [x] command to extract an image from a sticker with a button to add them
 - [ ] command to add a sticker from an attachment * \*\****

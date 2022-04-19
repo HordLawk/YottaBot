@@ -464,6 +464,7 @@ module.exports = {
             case 'pruneSuccess': return `Todas ${vars[0]} mensagens foram deletadas com sucesso`;
             case 'prunePartial': return `Apenas **${vars[0]}** das **${vars[1]}** mensagens foram deletadas\nNote que mensagens mais velhas que 2 semanas ou enviadas antes das ultimas 1000 mensagens desse canal não podem ser deletadas\nMensagens fixadas propositalmente também não são deletadas`;
             case 'invalidPruneAmount': return 'A quantidade de mensagens para deletar precisa estar entre 2 e 999';
+            case 'slowValueTooHigh': return 'O cooldown do slowmode não pode ser maior que 6 horas';
         }
     },
 };

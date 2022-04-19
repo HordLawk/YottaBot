@@ -457,6 +457,7 @@ module.exports = {
             case 'pruneSuccess': return `All **${vars[0]}** messages were successfully deleted`;
             case 'prunePartial': return `Only **${vars[0]}** out of **${vars[1]}** messages deleted\nNote that messages older than 2 weeks or sent before the last 1000 messages in this channel cannot be deleted\nPinned messages are purposely also not deleted`;
             case 'invalidPruneAmount': return 'Number of messages to delete must be between 2 and 999';
+            case 'slowValueTooHigh': return 'Slowmode cooldown cannot be over 6 hours';
         }
     },
 };

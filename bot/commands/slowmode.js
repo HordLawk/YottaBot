@@ -16,6 +16,7 @@ module.exports = {
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
         const discordChannel = message.guild.channels.cache.get(args[1]?.match(/^(?:<#)?(\d{17,19})>?$/)?.[1]) ?? message.channel;
         const seconds = (((parseInt(args[0].match(/(\d+)h/)?.[1], 10) * 3600) || 0) + ((parseInt(args[0].match(/(\d+)m/)?.[1], 10) * 60) || 0) + (parseInt(args[0].match(/(\d+)(?:s|$)/)?.[1], 10) || 0));
+        if(seconds > 21600) return message.reply(channelLanguage.get('slowValueTooHigh'));
         if(!message.member.permissionsIn(discordChannel).has(Permissions.FLAGS.MANAGE_CHANNELS)) return message.reply(channelLanguage.get('cantEditSlowmode', [discordChannel]));
         if(!message.guild.me.permissionsIn(discordChannel).has(Permissions.FLAGS.MANAGE_CHANNELS)) return message.reply(channelLanguage.get('botCantEditSlowmode'));
         await discordChannel.setRateLimitPerUser(seconds, channelLanguage.get('executor', [message.author]));

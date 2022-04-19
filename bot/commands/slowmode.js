@@ -1,0 +1,27 @@
+const {Permissions} = require('discord.js');
+
+module.exports = {
+    active: true,
+    name: 'slowmode',
+    description: lang => lang.get('slowmodeDescription'),
+    aliases: ['sm', 'slow'],
+    usage: lang => [lang.get('slowmodeUsage')],
+    example: '3h7m3s #general',
+    cooldown: 3,
+    categoryID: 3,
+    args: true,
+    perm: Permissions.FLAGS.MANAGE_CHANNELS,
+    guildOnly: true,
+    execute: async (message, args) => {
+        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const discordChannel = message.guild.channels.cache.get(args[1]?.match(/^(?:<#)?(\d{17,19})>?$/)?.[1]) ?? message.channel;
+        const seconds = (((parseInt(args[0].match(/(\d+)h/)?.[1], 10) * 3600) || 0) + ((parseInt(args[0].match(/(\d+)m/)?.[1], 10) * 60) || 0) + (parseInt(args[0].match(/(\d+)(?:s|$)/)?.[1], 10) || 0));
+        if(!message.member.permissionsIn(discordChannel).has(Permissions.FLAGS.MANAGE_CHANNELS)) return message.reply(channelLanguage.get('cantEditSlowmode', [discordChannel]));
+        if(!message.guild.me.permissionsIn(discordChannel).has(Permissions.FLAGS.MANAGE_CHANNELS)) return message.reply(channelLanguage.get('botCantEditSlowmode'));
+        await discordChannel.setRateLimitPerUser(seconds, channelLanguage.get('executor', [message.author]));
+        const h = Math.floor((seconds % 86400) / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = Math.floor(seconds % 60);
+        await message.reply(seconds ? channelLanguage.get('slowmodeEdited', [h, m, s, discordChannel]) : channelLanguage.get('slowmodeRemoved', [discordChannel]));
+    },
+}

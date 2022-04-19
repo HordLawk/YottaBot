@@ -454,6 +454,15 @@ module.exports = {
             case 'memberjoinEmbedCreationTitle': return 'Conta criada em';
             case 'memberjoinEmbedCreationValue': return `<t:${vars[0]}> (<t:${vars[0]}:R>)`;
             case 'banButton': return 'Banir';
+            case 'cantEditSlowmode': return `Você não tem permissão para editar o slowmode em ${vars[0]}`;
+            case 'botCantEditSlowmode': return `Eu preciso de permissão para gerenciar ${vars[0]} para editar seu slowmode`;
+            case 'slowmodeEdited': return `O slowmode em ${vars[3]} foi alterado para **${vars[0] ? `${vars[0]}h` : ''}${vars[1] ? `${vars[1]}m` : ''}${vars[2] ? `${vars[2]}s` : ''}** com sucesso`;
+            case 'slowmodeRemoved': return `O slowmode em ${vars[0]} foi removido com sucesso`;
+            case 'slowmodeUsage': return '(cooldown) [(canal)]';
+            case 'slowmodeDescription': return 'Edita o cooldown de slowmode no canal escolhido';
+            case 'pruneSuccess': return `Todas ${vars[0]} mensagens foram deletadas com sucesso`;
+            case 'prunePartial': return `Apenas **${vars[0]}** das **${vars[1]}** mensagens foram deletadas\nNote que mensagens mais velhas que 2 semanas ou enviadas antes das ultimas 1000 mensagens desse canal não podem ser deletadas`;
+            case 'invalidPruneAmount': return 'A quantidade de mensagens para deletar precisa estar entre 2 e 999';
         }
     },
 };

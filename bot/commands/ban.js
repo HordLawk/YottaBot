@@ -101,19 +101,8 @@ module.exports = {
             max: 1,
             componentType: 'BUTTON',
         });
-        collectorUndo.on('end', async collected => {
-            buttonUndo.disabled = true;
-            // reply.edit({components: [{
-            //     type: 'ACTION_ROW',
-            //     components: [buttonEdit, buttonUndo],
-            // }]});
-            await reply.edit({components: [{
-                type: 'ACTION_ROW',
-                components: [buttonUndo],
-            }]});
-            if(!collected.size) return;
-            const unban = await message.guild.members.unban(user.id, channelLanguage.get('unbanAuditReason', [message.author.tag])).catch(() => {});
-            if(!unban) return;
+        collectorUndo.on('collect', i => (async i => {
+            await message.guild.members.unban(user.id, channelLanguage.get('unbanAuditReason', [message.author.tag]))
             const guildDocUnban = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
             message.client.guildData.get(message.guild.id).counterLogs = guildDocUnban.counterLogs + 1;
             const currentUnban = new log({
@@ -126,7 +115,7 @@ module.exports = {
                 removal: true,
             });
             await currentUnban.save();
-            const action = await collected.first().reply({
+            const action = await i.reply({
                 content: channelLanguage.get('unbanSuccess', [currentUnban.id]),
                 fetchReply: true,
             });
@@ -150,16 +139,27 @@ module.exports = {
             const msgUnban = await discordChannel.send({embeds: [embedUnban]});
             currentUnban.logMessage = msgUnban.id;
             await currentUnban.save();
+        })(i).catch(err => message.client.handlers.button(err, i)))
+        collectorUndo.on('end', async () => {
+            buttonUndo.disabled = true;
+            // reply.edit({components: [{
+            //     type: 'ACTION_ROW',
+            //     components: [buttonEdit, buttonUndo],
+            // }]});
+            await reply.edit({components: [{
+                type: 'ACTION_ROW',
+                components: [buttonUndo],
+            }]});
         });
         // const collectorEdit = reply.createMessageComponentCollector({
         //     filter: componentInteraction => ((componentInteraction.user.id === message.author.id) && (componentInteraction.customId === 'edit')),
         //     time: 60000,
         //     componentType: 'BUTTON',
         // });
-        // collectorEdit.on('collect', i => {
+        // collectorEdit.on('collect', i => (async i => {
             
-        // });
-        // collectorEdit.end('end', collected => {
+        // })(i).catch(err => message.client.handlers.button(err, i)));
+        // collectorEdit.end('end', () => {
         //     buttonEdit.disabled = true;
         //     reply.edit({components: [{
             //     type: 'ACTION_ROW',

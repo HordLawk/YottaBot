@@ -36,7 +36,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] `prune` command *
 - [ ] command to edit slowmode *
 - [ ] command to delete cases *
-- [ ] `poll` command ** \*** \**** 
+- [ ] `poll` command ** \*** \****
 - [ ] command to manage emojis *
 - [ ] automated punishments when reaching a chosen amount of another type of punishment *
 - [ ] other streaming notifications for premium *

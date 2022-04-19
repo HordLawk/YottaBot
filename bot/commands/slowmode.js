@@ -6,7 +6,7 @@ module.exports = {
     description: lang => lang.get('slowmodeDescription'),
     aliases: ['sm', 'slow'],
     usage: lang => [lang.get('slowmodeUsage')],
-    example: '3h7m3s #general',
+    example: ['3h7m3s #general'],
     cooldown: 3,
     categoryID: 3,
     args: true,

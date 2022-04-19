@@ -5,8 +5,8 @@ module.exports = {
     name: 'prune',
     description: lang => lang.get('pruneDescription'),
     aliases: ['clear', 'purge'],
-    usage: lang => lang.get('pruneUsage'),
-    example: ['20 [(user)]'],
+    usage: lang => [lang.get('pruneUsage')],
+    example: ['20 @LordHawk#0001'],
     cooldown: 10,
     categoryID: 3,
     args: true,
@@ -33,12 +33,16 @@ module.exports = {
                 const deleted = await message.channel.bulkDelete(msgsLeft.slice(0, 100), true);
                 if(deleted.size === 100) await chunkDelete(msgsLeft.slice(100));
             }
-            await chunkDelete(msgs);
+            await chunkDelete(msgs.filter(e => !e.pinned));
         }
         else{
             const chunkDelete = async count => {
-                if(count <= 100) return await message.channel.bulkDelete(count, true);
-                const deleted = await message.channel.bulkDelete(100, true);
+                if(count <= 100){
+                    const msgs = await message.channel.messages.fetch({limit: count});
+                    return await message.channel.bulkDelete(msgs.filter(e => !e.pinned), true);
+                }
+                const msgs = await message.channel.messages.fetch({limit: 100});
+                const deleted = await message.channel.bulkDelete(msgs.filter(e => !e.pinned), true);
                 if(deleted.size === 100) await chunkDelete(count - 100);
             }
             await chunkDelete(amount);
@@ -66,12 +70,16 @@ module.exports = {
                 if(deleted.size < 100) return deletedCount + deleted.size;
                 return await chunkDelete(msgsLeft.slice(100), deletedCount + 100);
             }
-            deletedAmount = await chunkDelete(msgs);
+            deletedAmount = await chunkDelete(msgs.filter(e => !e.pinned));
         }
         else{
             const chunkDelete = async (count, deletedCount = 0) => {
-                if(count <= 100) return await interaction.channel.bulkDelete(count, true).then(dels => deletedCount + dels.size);
-                const deleted = await interaction.channel.bulkDelete(100, true);
+                if(count <= 100){
+                    const msgs = await interaction.channel.messages.fetch({limit: count});
+                    return await interaction.channel.bulkDelete(msgs.filter(e => !e.pinned), true).then(dels => deletedCount + dels.size);
+                }
+                const msgs = await interaction.channel.messages.fetch({limit: 100});
+                const deleted = await interaction.channel.bulkDelete(msgs.filter(e => !e.pinned), true);
                 if(deleted.size < 100) return deletedCount + deleted.size;
                 return await chunkDelete(count - 100, deletedCount + 100);
             }

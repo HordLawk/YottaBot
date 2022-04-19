@@ -13,8 +13,8 @@ module.exports = {
             case 'helpDescription': return 'Lista todos os comandos ou mostra informações sobre um específico';
             case 'helpUsage': return '[(comando)]';
             case 'pingDescription': return 'Ping!';
-            case 'pruneDescription': return 'Deleta uma quantidade escolhida de mensagens';
-            case 'pruneUsage': return '(quantidade)';
+            case 'pruneDescription': return 'Deleta uma quantidade escolhida de mensagens de qualquer usuário ou de um específico no canal atual';
+            case 'pruneUsage': return '(quantidade) [(usuário)]';
             case 'botEmbed': return 'Eu preciso de permissão para enviar links nesse canal';
             case 'botManageMessages': return 'Eu preciso de permissão para gerenciar mensagens nesse canal';
             case 'helpEmbedTitle': return 'Ajuda de comandos';
@@ -56,6 +56,7 @@ module.exports = {
             case 'permission4': return 'Banir Membros';
             case 'permission2': return 'Expulsar Membros';
             case 'permission1099511627776': return 'Moderar Membros';
+            case 'permission16': return 'Gerenciar Canais';
             case 'invArgs': return `Argumentos inválidos!\nO uso correto seria:\n${vars[2].map(e => `\`${vars[0]}${vars[1]} ${e}\``).join('\n')}`;
             case 'permSuccess': return `**${vars[0]}** foi ${(vars[1] === 'allow') ? 'permitido a' : 'proibido de'} usar esses comandos`;
             case 'noSpecialPerms': return 'Não há nenhuma permissão especial definida para esse cargo';
@@ -74,7 +75,7 @@ module.exports = {
             case 'disabledEmbedDesc': return `Canal: ${vars[0]}`;
             case 'disabledField': return 'Bloqueado';
             case 'achieveGuild': return `Parabéns ${vars[0]}! Você conquistou o cargo ${vars[1]}`;
-            case 'achieveDM': return `Parabéns! Você conquistou o cargo ${vars[0]} no servidor **${vars[1]}**`;
+            case 'achieveDM': return `Parabéns! Você conquistou o cargo **${vars[0]}** no servidor **${vars[1]}**`;
             case 'msgxpDescription': return 'Gerencia o sistema de xp desse servidor';
             case 'msgxpUsage0': return 'enable <on/off>';
             case 'msgxpUsage1': return 'roles set (cargo) (xp)';
@@ -461,7 +462,7 @@ module.exports = {
             case 'slowmodeUsage': return '(cooldown) [(canal)]';
             case 'slowmodeDescription': return 'Edita o cooldown de slowmode no canal escolhido';
             case 'pruneSuccess': return `Todas ${vars[0]} mensagens foram deletadas com sucesso`;
-            case 'prunePartial': return `Apenas **${vars[0]}** das **${vars[1]}** mensagens foram deletadas\nNote que mensagens mais velhas que 2 semanas ou enviadas antes das ultimas 1000 mensagens desse canal não podem ser deletadas`;
+            case 'prunePartial': return `Apenas **${vars[0]}** das **${vars[1]}** mensagens foram deletadas\nNote que mensagens mais velhas que 2 semanas ou enviadas antes das ultimas 1000 mensagens desse canal não podem ser deletadas\nMensagens fixadas propositalmente também não são deletadas`;
             case 'invalidPruneAmount': return 'A quantidade de mensagens para deletar precisa estar entre 2 e 999';
         }
     },

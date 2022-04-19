@@ -63,7 +63,7 @@ module.exports = {
                     }
                     break;
                     case 'dm': {
-                        message.author.send(channelLanguage.get('achieveDM', [message.guild.roles.cache.get(lowerRoles[0].roleID), message.guild.name])).catch(() => null);
+                        message.author.send(channelLanguage.get('achieveDM', [message.guild.roles.cache.get(lowerRoles[0].roleID).name, message.guild.name])).catch(() => null);
                     }
                     break;
                     default: {

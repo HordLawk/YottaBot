@@ -438,11 +438,11 @@ module.exports = {
             case 'noStickerFound': return 'Isso não é uma figurinha!';
             case 'getstickerContent': return '**Arquivo da figurinha:**';
             case 'add': return 'Adicionar';
-            case 'getstickerLocalizedName': return 'pegarsticker'
+            case 'getstickerLocalisedName': return 'pegarsticker'
             case 'checkContextName': return 'Checar casos';
-            case 'checkLocalizedName': return 'checar';
+            case 'checkLocalisedName': return 'checar';
             case 'xpContextName': return 'Informações de xp';
-            case 'xpLocalizedName': return 'xp';
+            case 'xpLocalisedName': return 'xp';
             case 'stickerCreator': return `Adicionado por ${vars[0]} (${vars[1]})`;
             case 'stickerAdded': return 'Figurinha adicionada com sucesso';
             case 'maxStickersReached': return 'Número máximo de figurinhas alcançado';
@@ -465,6 +465,17 @@ module.exports = {
             case 'prunePartial': return `Apenas **${vars[0]}** das **${vars[1]}** mensagens foram deletadas\nNote que mensagens mais velhas que 2 semanas ou enviadas antes das ultimas 1000 mensagens desse canal não podem ser deletadas\nMensagens fixadas propositalmente também não são deletadas`;
             case 'invalidPruneAmount': return 'A quantidade de mensagens para deletar precisa estar entre 2 e 999';
             case 'slowValueTooHigh': return 'O cooldown do slowmode não pode ser maior que 6 horas';
+            case 'pruneLocalisedName': return 'limpar';
+            case 'delcasesLocalisedName': return 'delcasos';
+            case 'delcasesDescription': return 'Deleta um ou mais casos registrados do servidor atual';
+            case 'delcasesUsage0': return 'user (usuário)';
+            case 'delcasesUsage1': return 'case (ID)';
+            case 'resetServerCasesConfirm': return 'Tem certeza que deseja apagar todos os casos registrados desse servidor?\nEssa ação não pode ser desfeita';
+            case 'resetServerCasesSuccess': return 'Todos os casos registrados do servidor foram deletadas com sucesso';
+            case 'resetUserCasesConfirm': return `Tem certeza que deseja deletar todos os casos registrados que tiveram ${vars[0]} como alvo?\nEssa ação não pode ser desfeita`;
+            case 'resetUserCasesSuccess': return `Todos os casos registrados que tiveram ${vars[0]} como alvo foram deletados com sucesso`;
+            case 'caseNotFound': return `Nenhum caso foi encontrado com ID **${vars[0]}**`;
+            case 'caseDeletedSuccess': return `Caso **${vars[0]}** foi deletado com sucesso`;
         }
     },
 };

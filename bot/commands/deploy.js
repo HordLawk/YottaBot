@@ -17,7 +17,7 @@ module.exports = {
                 type: args.type,
                 ...((args.type === 'CHAT_INPUT') ? {
                     name: command.name,
-                    name_localizations: Object.entries(interaction.client.langs).filter(e => (e[0] != 'en')).reduce((acc, e) => ({...acc, [e[0]]: e[1].get(`${command.name}LocalizedName`)}), {}),
+                    name_localizations: Object.entries(interaction.client.langs).filter(e => (e[0] != 'en')).reduce((acc, e) => ({...acc, [e[0]]: e[1].get(`${command.name}LocalisedName`)}), {}),
                     description: command.description(interaction.client.langs['en']),
                     description_localizations: Object.values(interaction.client.langs).filter(e => (e.lang != 'en')).reduce((acc, e) => ({...acc, [e.code]: command.description(e)}), {}),
                     options: command.slashOptions,
@@ -45,7 +45,7 @@ module.exports = {
         try{
             await slash.edit((slash.type === 'CHAT_INPUT') ? {
                 name: command.name,
-                name_localizations: Object.entries(interaction.client.langs).filter(e => (e[0] != 'en')).reduce((acc, e) => ({...acc, [e[0]]: e[1].get(`${command.name}LocalizedName`)}), {}),
+                name_localizations: Object.entries(interaction.client.langs).filter(e => (e[0] != 'en')).reduce((acc, e) => ({...acc, [e[0]]: e[1].get(`${command.name}LocalisedName`)}), {}),
                 description: command.description(interaction.client.langs['en']),
                 description_localizations: Object.values(interaction.client.langs).filter(e => (e.lang != 'en')).reduce((acc, e) => ({...acc, [e.code]: command.description(e)}), {}),
                 options: command.slashOptions,

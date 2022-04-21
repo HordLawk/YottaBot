@@ -458,6 +458,15 @@ module.exports = {
             case 'prunePartial': return `Only **${vars[0]}** out of **${vars[1]}** messages deleted\nNote that messages older than 2 weeks or sent before the last 1000 messages in this channel cannot be deleted\nPinned messages are purposely also not deleted`;
             case 'invalidPruneAmount': return 'Number of messages to delete must be between 2 and 999';
             case 'slowValueTooHigh': return 'Slowmode cooldown cannot be over 6 hours';
+            case 'delcasesDescription': return 'Deletes one or more logged cases from the current server';
+            case 'delcasesUsage0': return 'user (user)';
+            case 'delcasesUsage1': return 'case (ID)';
+            case 'resetServerCasesConfirm': return 'Are you sure you want to deleted all of this server\'s logged cases?\nThis action cannot be undone';
+            case 'resetServerCasesSuccess': return 'All server logged cases were successfully deleted';
+            case 'resetUserCasesConfirm': return `Are you sure you want to delete all logged cases targetting ${vars[0]}?\nThis action cannot be undone`;
+            case 'resetUserCasesSuccess': return `All logged cases targetting ${vars[0]} were successfully deleted`;
+            case 'caseNotFound': return `No cases were found with ID **${vars[0]}**`;
+            case 'caseDeletedSuccess': return `Case **${vars[0]}** was successfully deleted`;
         }
     },
 };

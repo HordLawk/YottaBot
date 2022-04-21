@@ -75,45 +75,37 @@ module.exports = {
             current.logMessage = msg.id;
             await current.save();
         }
-        await reply.edit({components: [{
+        const buttonUndo = {
+            type: 'BUTTON',
+            label: channelLanguage.get('undo'),
+            customId: 'undo',
+            style: 'DANGER',
+            emoji: '↩️',
+        };
+        const components = [{
             type: 'ACTION_ROW',
-            components: [{
-                type: 'BUTTON',
-                label: channelLanguage.get('undo'),
-                customId: 'undo',
-                style: 'DANGER',
-                emoji: '↩️',
-            }],
-        }]});
-        const collector = reply.createMessageComponentCollector({
-            filter: componentInteraction => (componentInteraction.user.id === message.author.id),
+            components: [buttonUndo],
+        }];
+        await reply.edit({components});
+        const collectorUndo = reply.createMessageComponentCollector({
+            filter: componentInteraction => ((componentInteraction.user.id === message.author.id) && (componentInteraction.customId === 'undo')),
             idle: 10000,
             max: 1,
             componentType: 'BUTTON',
         });
-        collector.on('end', async collected => {
-            reply.edit({components: [{
-                type: 'ACTION_ROW',
-                components: [{
-                    type: 'BUTTON',
-                    label: channelLanguage.get('undo'),
-                    customId: 'undo',
-                    style: 'DANGER',
-                    emoji: '↩️',
-                    disabled: true,
-                }],
-            }]});
-            if(!collected.size) return;
-            if(collected.first().customId === 'undo'){
-                if(!member.isCommunicationDisabled()) return;
-                await log.findByIdAndDelete(current._id);
-                await member.timeout(null, channelLanguage.get('muteUndone'));
-                await collected.first().update({
-                    content: channelLanguage.get('muteMemberUndone'),
-                    components: [],
-                });
-                if(msg) await msg.delete();
-            }
+        collectorUndo.on('collect', i => (async i => {
+            if(!member.isCommunicationDisabled()) return;
+            await log.findByIdAndDelete(current._id);
+            await member.timeout(null, channelLanguage.get('muteUndone'));
+            await i.update({
+                content: channelLanguage.get('muteMemberUndone'),
+                components: [],
+            });
+            if(msg) await msg.delete();
+        })(i).catch(err => message.client.handlers.button(err, i)));
+        collectorUndo.on('end', async () => {
+            buttonUndo.disabled = true;
+            await reply.edit({components});
         });
     },
 };

@@ -35,14 +35,13 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] add rss feeds for youtube notifications *
 - [x] `prune` command *
 - [x] command to edit slowmode *
-- [ ] command to delete cases *
+- [x] command to delete cases *
 - [ ] `poll` command ** \*** \****
 - [ ] command to manage emojis *
 - [ ] automated punishments when reaching a chosen amount of another type of punishment *
 - [ ] other streaming notifications for premium *
 - [ ] create and edit role menus with built in forms \*** \****
 - [ ] button to edit action reason in the command reply ***
-- [x] logs for newly joined member with a button to ban them
 - [ ] command to add a sticker from an attachment * \*\****
 - [ ] message context menu that shows previous versions of the target message *
 

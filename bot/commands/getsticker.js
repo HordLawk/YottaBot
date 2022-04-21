@@ -13,21 +13,23 @@ module.exports = {
             ephemeral: true,
         });
         if(interaction.member.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS)){
+            const buttonAdd = {
+                type: 'BUTTON',
+                label: channelLanguage.get('add'),
+                customId: 'add',
+                style: 'SUCCESS',
+                emoji: '📥',
+            };
+            const components = [{
+                type: 'ACTION_ROW',
+                components: [buttonAdd],
+            }];
             const reply = await interaction.reply({
                 content: channelLanguage.get('getstickerContent'),
                 files: [interaction.targetMessage.stickers.first().url],
                 ephemeral: true,
                 fetchReply: true,
-                components: [{
-                    type: 'ACTION_ROW',
-                    components: [{
-                        type: 'BUTTON',
-                        label: channelLanguage.get('add'),
-                        customId: 'add',
-                        style: 'SUCCESS',
-                        emoji: '📥',
-                    }],
-                }],
+                components,
             });
             const collector = reply.createMessageComponentCollector({
                 filter: componentInteraction => (componentInteraction.user.id === interaction.user.id),
@@ -57,18 +59,9 @@ module.exports = {
                     ephemeral: true,
                 });
             })(i).catch(err => interaction.client.handlers.button(err, i)));
-            collector.on('end', () => {
-                interaction.editReply({components: [{
-                    type: 'ACTION_ROW',
-                    components: [{
-                        type: 'BUTTON',
-                        label: channelLanguage.get('add'),
-                        customId: 'add',
-                        style: 'SUCCESS',
-                        emoji: '📥',
-                        disabled: true,
-                    }],
-                }]});
+            collector.on('end', async () => {
+                buttonAdd.disabled = true;
+                await interaction.editReply({components});
             });
         }
         else{

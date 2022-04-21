@@ -68,101 +68,61 @@ module.exports = {
                     embed.setFooter({text: channelLanguage.get('xpRankEmbedFooter', [rank + 1])});
                 }
                 message.client.guildData.get(message.guild.id).processing = false;
-                const msg = await message.reply({
-                    embeds: [embed],
-                    components: [{
-                        type: 'ACTION_ROW',
-                        components: [
-                            {
-                                type: 'BUTTON',
-                                label: channelLanguage.get('previous'),
-                                style: 'PRIMARY',
-                                emoji: '⬅',
-                                customId: 'previous',
-                                disabled: true,
-                            },
-                            {
-                                type: 'BUTTON',
-                                label: channelLanguage.get('next'),
-                                style: 'PRIMARY',
-                                emoji: '➡',
-                                customId: 'next',
-                                disabled: (memberDocs.length <= pageSize),
-                            },
-                        ],
-                    }],
-                });
+                const buttonPrevious = {
+                    type: 'BUTTON',
+                    label: channelLanguage.get('previous'),
+                    style: 'PRIMARY',
+                    emoji: '⬅',
+                    customId: 'previous',
+                    disabled: true,
+                };
+                const buttonNext = {
+                    type: 'BUTTON',
+                    label: channelLanguage.get('next'),
+                    style: 'PRIMARY',
+                    emoji: '➡',
+                    customId: 'next',
+                    disabled: (memberDocs.length <= pageSize),
+                };
+                const components = [{
+                    type: 'ACTION_ROW',
+                    components: [buttonPrevious, buttonNext],
+                }];
+                const reply = await message.reply({embeds: [embed], components});
                 if(memberDocs.length <= pageSize) return;
-                const col = msg.createMessageComponentCollector({
+                const collector = reply.createMessageComponentCollector({
                     filter: componentInteraction => (componentInteraction.user.id === message.author.id),
                     time: 600000,
                     componentType: 'BUTTON',
                 });
-                col.on('collect', async buttonInteraction => {
-                    if(buttonInteraction.customId === 'next'){
-                        if(memberDocs.length <= pageSize) return;
-                        page++;
-                        if((((page + 1) * pageSize) + 1) > parcialMemberDocs.length){
-                            await buttonInteraction.deferUpdate();
-                            await fetchMore();
+                collector.on('collect', buttonInteraction => (async buttonInteraction => {
+                    switch(buttonInteraction.customId){
+                        case 'next': {
+                            if(memberDocs.length <= pageSize) return;
+                            page++;
+                            if((((page + 1) * pageSize) + 1) > parcialMemberDocs.length){
+                                await buttonInteraction.deferUpdate();
+                                await fetchMore();
+                            }
+                            memberDocs = parcialMemberDocs.slice(page * pageSize, ((page + 1) * pageSize) + 1);
                         }
-                        memberDocs = parcialMemberDocs.slice(page * pageSize, ((page + 1) * pageSize) + 1);
-                    }
-                    else{
-                        if(!page) return;
-                        memberDocs = parcialMemberDocs.slice((page - 1) * pageSize, ((page - 1) * pageSize) + pageSize + 1);
-                        page--;
+                        break;
+                        case 'previous': {
+                            if(!page) return;
+                            memberDocs = parcialMemberDocs.slice((page - 1) * pageSize, ((page - 1) * pageSize) + pageSize + 1);
+                            page--;
+                        }
+                        break;
                     }
                     embed.setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
-                    await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({
-                        embeds: [embed],
-                        components: [{
-                            type: 'ACTION_ROW',
-                            components: [
-                                {
-                                    type: 'BUTTON',
-                                    label: channelLanguage.get('previous'),
-                                    style: 'PRIMARY',
-                                    emoji: '⬅',
-                                    customId: 'previous',
-                                    disabled: !page,
-                                },
-                                {
-                                    type: 'BUTTON',
-                                    label: channelLanguage.get('next'),
-                                    style: 'PRIMARY',
-                                    emoji: '➡',
-                                    customId: 'next',
-                                    disabled: (memberDocs.length <= pageSize),
-                                },
-                            ],
-                        }],
-                    });
+                    buttonPrevious.disabled = !page;
+                    buttonNext.disabled = (memberDocs.length <= pageSize);
+                    await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({embeds: [embed], components});
+                })(buttonInteraction).catch(err => message.client.handlers.button(err, buttonInteraction)));
+                collector.on('end', async () => {
+                    buttonNext.disabled = buttonPrevious.disabled = true;
+                    await reply.edit({embeds: [embed], components});
                 });
-                col.on('end', () => msg.edit({
-                    embeds: [embed],
-                    components: [{
-                        type: 'ACTION_ROW',
-                        components: [
-                            {
-                                type: 'BUTTON',
-                                label: channelLanguage.get('previous'),
-                                style: 'PRIMARY',
-                                emoji: '⬅',
-                                customId: 'previous',
-                                disabled: true,
-                            },
-                            {
-                                type: 'BUTTON',
-                                label: channelLanguage.get('next'),
-                                style: 'PRIMARY',
-                                emoji: '➡',
-                                customId: 'next',
-                                disabled: true,
-                            },
-                        ],
-                    }],
-                }));
             }
             break;
             case 'roles': {
@@ -319,102 +279,65 @@ module.exports = {
             embed.setFooter({text: channelLanguage.get('xpRankEmbedFooter', [rank + 1])});
         }
         interaction.client.guildData.get(interaction.guild.id).processing = false;
-        const msg = await interaction.editReply({
+        const buttonPrevious = {
+            type: 'BUTTON',
+            label: channelLanguage.get('previous'),
+            style: 'PRIMARY',
+            emoji: '⬅',
+            customId: 'previous',
+            disabled: true,
+        };
+        const buttonNext = {
+            type: 'BUTTON',
+            label: channelLanguage.get('next'),
+            style: 'PRIMARY',
+            emoji: '➡',
+            customId: 'next',
+            disabled: (memberDocs.length <= pageSize),
+        };
+        const components = [{
+            type: 'ACTION_ROW',
+            components: [buttonPrevious, buttonNext],
+        }];
+        const reply = await interaction.editReply({
             embeds: [embed],
-            components: [{
-                type: 'ACTION_ROW',
-                components: [
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('previous'),
-                        style: 'PRIMARY',
-                        emoji: '⬅',
-                        customId: 'previous',
-                        disabled: true,
-                    },
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('next'),
-                        style: 'PRIMARY',
-                        emoji: '➡',
-                        customId: 'next',
-                        disabled: (memberDocs.length <= pageSize),
-                    },
-                ],
-            }],
+            components,
             fetchReply: true,
         });
         if(memberDocs.length <= pageSize) return;
-        const col = msg.createMessageComponentCollector({
+        const collector = reply.createMessageComponentCollector({
             filter: componentInteraction => (componentInteraction.user.id === interaction.user.id),
             time: 600000,
             componentType: 'BUTTON',
         });
-        col.on('collect', async buttonInteraction => {
-            if(buttonInteraction.customId === 'next'){
-                if(memberDocs.length <= pageSize) return;
-                page++;
-                if((((page + 1) * pageSize) + 1) > parcialMemberDocs.length){
-                    await buttonInteraction.deferUpdate();
-                    await fetchMore();
+        collector.on('collect', buttonInteraction => (async buttonInteraction => {
+            switch(buttonInteraction.customId){
+                case 'next': {
+                    if(memberDocs.length <= pageSize) return;
+                    page++;
+                    if((((page + 1) * pageSize) + 1) > parcialMemberDocs.length){
+                        await buttonInteraction.deferUpdate();
+                        await fetchMore();
+                    }
+                    memberDocs = parcialMemberDocs.slice(page * pageSize, ((page + 1) * pageSize) + 1);
                 }
-                memberDocs = parcialMemberDocs.slice(page * pageSize, ((page + 1) * pageSize) + 1);
-            }
-            else{
-                if(!page) return;
-                memberDocs = parcialMemberDocs.slice((page - 1) * pageSize, ((page - 1) * pageSize) + pageSize + 1);
-                page--;
+                break;
+                case 'previous': {
+                    if(!page) return;
+                    memberDocs = parcialMemberDocs.slice((page - 1) * pageSize, ((page - 1) * pageSize) + pageSize + 1);
+                    page--;
+                }
+                break;
             }
             embed.setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
-            await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({
-                embeds: [embed],
-                components: [{
-                    type: 'ACTION_ROW',
-                    components: [
-                        {
-                            type: 'BUTTON',
-                            label: channelLanguage.get('previous'),
-                            style: 'PRIMARY',
-                            emoji: '⬅',
-                            customId: 'previous',
-                            disabled: !page,
-                        },
-                        {
-                            type: 'BUTTON',
-                            label: channelLanguage.get('next'),
-                            style: 'PRIMARY',
-                            emoji: '➡',
-                            customId: 'next',
-                            disabled: (memberDocs.length <= pageSize),
-                        },
-                    ],
-                }],
-            });
-        });
-        col.on('end', () => msg.edit({
-            embeds: [embed],
-            components: [{
-                type: 'ACTION_ROW',
-                components: [
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('previous'),
-                        style: 'PRIMARY',
-                        emoji: '⬅',
-                        customId: 'previous',
-                        disabled: true,
-                    },
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('next'),
-                        style: 'PRIMARY',
-                        emoji: '➡',
-                        customId: 'next',
-                        disabled: true,
-                    },
-                ],
-            }],
-        }));
+            buttonPrevious.disabled = !page;
+            buttonNext.disabled = (memberDocs.length <= pageSize);
+            await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({embeds: [embed], components});
+        })(buttonInteraction).catch(err => interaction.client.handlers.button(err, buttonInteraction)));
+        collector.on('end', async () => {
+            buttonNext.disabled = buttonPrevious.disabled = true;
+            await interaction.editReply({embeds: [embed], components});
+        })
     },
     rolesSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];

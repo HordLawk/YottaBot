@@ -49,30 +49,27 @@ module.exports = {
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get('checkEmbedCaseValueTarget', [e, e.duration && formatDuration(Math.round((e.duration.getTime() - e.timeStamp.getTime()) / 60000))]),
             })));
-        const msg = await message.reply({
-            embeds: [embed],
-            components: [{
-                type: 'ACTION_ROW',
-                components: [
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('previous'),
-                        style: 'PRIMARY',
-                        emoji: '⬅',
-                        customId: 'previous',
-                        disabled: true,
-                    },
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('next'),
-                        style: 'PRIMARY',
-                        emoji: '➡',
-                        customId: 'next',
-                        disabled: (logDocs.length <= pageSize),
-                    },
-                ],
-            }],
-        });
+        const buttonPrevious = {
+            type: 'BUTTON',
+            label: channelLanguage.get('previous'),
+            style: 'PRIMARY',
+            emoji: '⬅',
+            customId: 'previous',
+            disabled: true,
+        };
+        const buttonNext = {
+            type: 'BUTTON',
+            label: channelLanguage.get('next'),
+            style: 'PRIMARY',
+            emoji: '➡',
+            customId: 'next',
+            disabled: (logDocs.length <= pageSize),
+        };
+        const components = [{
+            type: 'ACTION_ROW',
+            components: [buttonPrevious, buttonNext],
+        }];
+        const msg = await message.reply({embeds: [embed], components});
         if(logDocs.length <= pageSize) return;
         const col = msg.createMessageComponentCollector({
             filter: componentInteraction => (componentInteraction.user.id === message.author.id),
@@ -80,7 +77,7 @@ module.exports = {
             componentType: 'BUTTON',
         });
         let page = 0;
-        col.on('collect', async button => {
+        col.on('collect', button => (async button => {
             if(button.customId === 'next'){
                 if(!logDocs.slice((page + 1) * pageSize).length) return;
                 page++;
@@ -93,55 +90,14 @@ module.exports = {
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get('checkEmbedCaseValueTarget', [e, e.duration && formatDuration(Math.floor((e.duration.getTime() - e.timeStamp.getTime()) / 60000))]),
             })));
-            await button.update({
-                embeds: [embed],
-                components: [{
-                    type: 'ACTION_ROW',
-                    components: [
-                        {
-                            type: 'BUTTON',
-                            label: channelLanguage.get('previous'),
-                            style: 'PRIMARY',
-                            emoji: '⬅',
-                            customId: 'previous',
-                            disabled: !page,
-                        },
-                        {
-                            type: 'BUTTON',
-                            label: channelLanguage.get('next'),
-                            style: 'PRIMARY',
-                            emoji: '➡',
-                            customId: 'next',
-                            disabled: (!logDocs.slice((page + 1) * pageSize).length),
-                        },
-                    ],
-                }],
-            });
+            buttonPrevious.disabled = !page;
+            buttonNext.disabled = !logDocs.slice((page + 1) * pageSize).length;
+            await button.update({embeds: [embed], components});
+        })(button).catch(err => message.client.handlers.button(err, button)));
+        col.on('end', async () => {
+            buttonNext.disabled = buttonPrevious.disabled = true;
+            await msg.edit({embeds: [embed], components});
         });
-        col.on('end', () => msg.edit({
-            embeds: [embed],
-            components: [{
-                type: 'ACTION_ROW',
-                components: [
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('previous'),
-                        style: 'PRIMARY',
-                        emoji: '⬅',
-                        customId: 'previous',
-                        disabled: true,
-                    },
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('next'),
-                        style: 'PRIMARY',
-                        emoji: '➡',
-                        customId: 'next',
-                        disabled: true,
-                    },
-                ],
-            }]
-        }));
     },
     executeSlash: async (interaction, args) => {
         if(interaction.isUserContextMenu()) args = {
@@ -182,29 +138,29 @@ module.exports = {
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get(fieldString, [e, e.duration && formatDuration(Math.round((e.duration.getTime() - e.timeStamp.getTime()) / 60000))]),
             })));
+        const buttonPrevious = {
+            type: 'BUTTON',
+            label: channelLanguage.get('previous'),
+            style: 'PRIMARY',
+            emoji: '⬅',
+            customId: 'previous',
+            disabled: true,
+        };
+        const buttonNext = {
+            type: 'BUTTON',
+            label: channelLanguage.get('next'),
+            style: 'PRIMARY',
+            emoji: '➡',
+            customId: 'next',
+            disabled: (logDocs.length <= pageSize),
+        };
+        const components = [{
+            type: 'ACTION_ROW',
+            components: [buttonPrevious, buttonNext],
+        }];
         const msg = await interaction.reply({
             embeds: [embed],
-            components: [{
-                type: 'ACTION_ROW',
-                components: [
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('previous'),
-                        style: 'PRIMARY',
-                        emoji: '⬅',
-                        customId: 'previous',
-                        disabled: true,
-                    },
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('next'),
-                        style: 'PRIMARY',
-                        emoji: '➡',
-                        customId: 'next',
-                        disabled: (logDocs.length <= pageSize),
-                    },
-                ],
-            }],
+            components,
             fetchReply: true,
             ephemeral: true,
         });
@@ -215,7 +171,7 @@ module.exports = {
             componentType: 'BUTTON',
         });
         let page = 0;
-        col.on('collect', async button => {
+        col.on('collect', button => (async button => {
             if(button.customId === 'next'){
                 if(!logDocs.slice((page + 1) * pageSize).length) return;
                 page++;
@@ -228,55 +184,14 @@ module.exports = {
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get(fieldString, [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
             })));
-            await button.update({
-                embeds: [embed],
-                components: [{
-                    type: 'ACTION_ROW',
-                    components: [
-                        {
-                            type: 'BUTTON',
-                            label: channelLanguage.get('previous'),
-                            style: 'PRIMARY',
-                            emoji: '⬅',
-                            customId: 'previous',
-                            disabled: !page,
-                        },
-                        {
-                            type: 'BUTTON',
-                            label: channelLanguage.get('next'),
-                            style: 'PRIMARY',
-                            emoji: '➡',
-                            customId: 'next',
-                            disabled: (!logDocs.slice((page + 1) * pageSize).length),
-                        },
-                    ],
-                }],
-            });
+            buttonPrevious.disabled = !page;
+            buttonNext.disabled = (!logDocs.slice((page + 1) * pageSize).length);
+            await button.update({embeds: [embed], components});
+        })(button).catch(err => interaction.client.handlers.button(err, button)));
+        col.on('end', () => {
+            buttonNext.disabled = buttonPrevious.disabled = true;
+            interaction.editReply({embeds: [embed], components});
         });
-        col.on('end', () => msg.edit({
-            embeds: [embed],
-            components: [{
-                type: 'ACTION_ROW',
-                components: [
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('previous'),
-                        style: 'PRIMARY',
-                        emoji: '⬅',
-                        customId: 'previous',
-                        disabled: true,
-                    },
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('next'),
-                        style: 'PRIMARY',
-                        emoji: '➡',
-                        customId: 'next',
-                        disabled: true,
-                    },
-                ],
-            }]
-        }));
     },
     slashOptions: [
         {

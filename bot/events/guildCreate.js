@@ -14,25 +14,24 @@ module.exports = {
                 let dmEmbed = new MessageEmbed()
                     .setColor(0x8000ff)
                     .setDescription(guildLanguage.get('dmBotAdder', [adder, guild.name, guild.client.guildData.get(guild.id)?.prefix ?? 'y!', guild.client.configs.support]));
-                await adder.send({
-                    embeds: [dmEmbed],
-                    components: [{
-                        type: 'ACTION_ROW',
-                        components: [{
-                            type: 'SELECT_MENU',
-                            customId: 'locale',
-                            placeholder: guildLanguage.get('language'),
-                            options: Object.values(guild.client.langs).map(e => ({
-                                label: e.name,
-                                value: e.lang,
-                                emoji: e.flag,
-                                default: (e.lang === guildLanguage.lang),
-                            })),
-                        }],
-                    }],
-                }).then(dm => {
+                const buttonLocale = {
+                    type: 'SELECT_MENU',
+                    customId: 'locale',
+                    placeholder: guildLanguage.get('language'),
+                    options: Object.values(guild.client.langs).map(e => ({
+                        label: e.name,
+                        value: e.lang,
+                        emoji: e.flag,
+                        default: (e.lang === guildLanguage.lang),
+                    })),
+                };
+                const components = [{
+                    type: 'ACTION_ROW',
+                    components: [buttonLocale],
+                }];
+                adder.send({embeds: [dmEmbed], components}).then(dm => {
                     const collector = dm.createMessageComponentCollector({time: 600000});
-                    collector.on('collect', async i => {
+                    collector.on('collect', i => (async i => {
                         if(guild.client.guildData.has(guild.id)){
                             await guildModel.findByIdAndUpdate(guild.id, {$set: {language: (guild.client.guildData.get(guild.id).language = i.values[0])}});
                         }
@@ -46,39 +45,19 @@ module.exports = {
                         }
                         guildLanguage = guild.client.langs[i.values[0]];
                         dmEmbed.setDescription(guildLanguage.get('dmBotAdder', [adder, guild.name, guild.client.guildData.get(guild.id)?.prefix ?? 'y!', guild.client.configs.support]));
-                        await i.update({
-                            embeds: [dmEmbed],
-                            components: [{
-                                type: 'ACTION_ROW',
-                                components: [{
-                                    type: 'SELECT_MENU',
-                                    customId: 'locale',
-                                    placeholder: guildLanguage.get('language'),
-                                    options: Object.values(guild.client.langs).map(e => ({
-                                        label: e.name,
-                                        value: e.lang,
-                                        emoji: e.flag,
-                                        default: (e.lang === guildLanguage.lang),
-                                    })),
-                                }],
-                            }],
-                        });
+                        buttonLocale.placeholder = guildLanguage.get('language');
+                        buttonLocale.options = Object.values(guild.client.langs).map(e => ({
+                            label: e.name,
+                            value: e.lang,
+                            emoji: e.flag,
+                            default: (e.lang === guildLanguage.lang),
+                        }));
+                        await i.update({embeds: [dmEmbed], components});
+                    })(i).catch(err => guild.client.handlers.button(err, i)));
+                    collector.on('end', async () => {
+                        buttonLocale.disabled = true;
+                        await dm.edit({components});
                     });
-                    collector.on('end', async () => await dm.edit({components: [{
-                        type: 'ACTION_ROW',
-                        components: [{
-                            type: 'SELECT_MENU',
-                            customId: 'locale',
-                            placeholder: guildLanguage.get('language'),
-                            options: Object.values(guild.client.langs).map(e => ({
-                                label: e.name,
-                                value: e.lang,
-                                emoji: e.flag,
-                                default: (e.lang === guildLanguage.lang),
-                            })),
-                            disabled: true,
-                        }],
-                    }]}));
                 }).catch(() => null);
             }
         }

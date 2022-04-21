@@ -288,52 +288,55 @@ module.exports = {
             }
             break;
             case 'reset': {
-                if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.reply(channelLanguage.get('botReactions'));
-                const msg = await message.reply({
+                const buttonConfirm = {
+                    type: 'BUTTON',
+                    label: channelLanguage.get('confirm'),
+                    style: 'SUCCESS',
+                    emoji: '✅',
+                    customId: 'confirm',
+                };
+                const buttonCancel = {
+                    type: 'BUTTON',
+                    label: channelLanguage.get('cancel'),
+                    style: 'DANGER',
+                    emoji: '❌',
+                    customId: 'cancel',
+                };
+                const components = [{
+                    type: 'ACTION_ROW',
+                    components: [buttonConfirm, buttonCancel],
+                }];
+                const reply = await message.reply({
                     content: channelLanguage.get('resetXpConfirm'),
-                    components: [{
-                        type: 'ACTION_ROW',
-                        components: [
-                            {
-                                type: 'BUTTON',
-                                label: channelLanguage.get('confirm'),
-                                style: 'SUCCESS',
-                                emoji: '✅',
-                                customId: 'confirm',
-                            },
-                            {
-                                type: 'BUTTON',
-                                label: channelLanguage.get('cancel'),
-                                style: 'DANGER',
-                                emoji: '❌',
-                                customId: 'cancel',
-                            },
-                        ],
-                    }],
+                    components,
                 });
-                const col = msg.createMessageComponentCollector({
+                const collector = reply.createMessageComponentCollector({
                     filter: componentInteraction => (componentInteraction.user.id === message.author.id),
                     idle: 10000,
                     max: 1,
                     componentType: 'BUTTON',
                 });
-                col.on('end', async c => {
-                    if(!c.size) return msg.edit({
-                        content: channelLanguage.get('timedOut'),
-                        components: [],
-                    });
-                    if(c.first().customId === 'cancel') return c.first().update({
-                        content: channelLanguage.get('cancelled'),
-                        components: [],
-                    });
-                    await member.updateMany({
-                        guild: message.guild.id,
-                        xp: {$ne: 0},
-                    }, {$set: {xp: 0}});
-                    c.first().update({
-                        content: channelLanguage.get('resetXp'),
-                        components: [],
-                    });
+                collector.on('collect', i => (async i => {
+                    switch(i.customId){
+                        case 'cancel': {
+                            await i.reply({content: channelLanguage.get('cancelled')});
+                        }
+                        break;
+                        case 'confirm': {
+                            await member.updateMany({
+                                guild: message.guild.id,
+                                xp: {$ne: 0},
+                            }, {$set: {xp: 0}});
+                            await i.reply({content: channelLanguage.get('resetXp')});
+                        }
+                        break;
+                    }
+                })(i).catch(err => message.client.handlers.button(err, i)));
+                collector.on('end', async collected => {
+                    buttonCancel.disabled = buttonConfirm.disabled = true;
+                    const msgData = {components};
+                    if(!collected.size) msgData.content = channelLanguage.get('timedOut');
+                    await reply.edit(msgData);
                 });
             }
             break;

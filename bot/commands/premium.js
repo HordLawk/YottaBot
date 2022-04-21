@@ -151,28 +151,28 @@ module.exports = {
         });
         const userDoc = await user.findById(interaction.user.id);
         if(!interaction.guild) return interaction.reply(channelLanguage.get('activatePremium', [userDoc?.premiumKeys]));
+        const buttonKey = {
+            type: 'BUTTON',
+            label: channelLanguage.get('premiumKeysLabel'),
+            style: 'PRIMARY',
+            emoji: '🔑',
+            customId: 'useKey',
+            disabled: !userDoc?.premiumKeys
+        };
+        const buttonReward = {
+            type: 'BUTTON',
+            label: channelLanguage.get('premiumPatreonLabel'),
+            style: 'SECONDARY',
+            emoji: '943405711243739176',
+            customId: 'useReward',
+        };
+        const components = [{
+            type: 'ACTION_ROW',
+            components: [buttonKey, buttonReward],
+        }];
         const reply = await interaction.reply({
             content: channelLanguage.get('activatePremium', [userDoc?.premiumKeys]),
-            components: [{
-                type: 'ACTION_ROW',
-                components: [
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('premiumKeysLabel'),
-                        style: 'PRIMARY',
-                        emoji: '🔑',
-                        customId: 'useKey',
-                        disabled: !userDoc?.premiumKeys
-                    },
-                    {
-                        type: 'BUTTON',
-                        label: channelLanguage.get('premiumPatreonLabel'),
-                        style: 'SECONDARY',
-                        emoji: '943405711243739176',
-                        customId: 'useReward',
-                    },
-                ],
-            }],
+            components,
             ephemeral: true,
             fetchReply: true,
         });
@@ -182,12 +182,8 @@ module.exports = {
             max: 1,
             componentType: 'BUTTON',
         });
-        collector.on('end', async c => {
-            if(!c.size) return interaction.editReply({
-                content: channelLanguage.get('timedOut'),
-                components: [],
-            });
-            switch(c.first().customId){
+        collector.on('collect', i => (async i => {
+            switch(i.customId){
                 case 'useKey': {
                     if(!userDoc?.premiumKeys) return;
                     userDoc.premiumKeys--;
@@ -195,14 +191,14 @@ module.exports = {
                     const premiumUntil = new Date(Date.now() + 2592000000);
                     await guild.findByIdAndUpdate(interaction.guild.id, {$set: {premiumUntil: premiumUntil}});
                     interaction.client.guildData.get(interaction.guild.id).premiumUntil = premiumUntil;
-                    await c.first().update({
+                    await i.update({
                         content: channelLanguage.get('activatePremiumSuccess'),
                         components: [],
                     });
                 }
                 break;
                 case 'useReward': {
-                    await c.first().deferUpdate();
+                    await i.deferUpdate();
                     const searchPledge = async url => {
                         const pledges = await axios({
                             method: 'GET',
@@ -217,7 +213,7 @@ module.exports = {
                         return pledges.data.find(e => ((e.type === 'pledge') && (e.relationships.patron.data.id === user.id)));
                     }
                     const pledge = await searchPledge('https://www.patreon.com/api/oauth2/api/campaigns/8230487/pledges');
-                    if(!pledge) return c.first().editReply(({
+                    if(!pledge) return i.editReply(({
                         content: channelLanguage.get('pledgeNotFound'),
                         components: [],
                     }));
@@ -226,7 +222,7 @@ module.exports = {
                         '8307567': 2,
                         '8307569': 3,
                     };
-                    if(interaction.client.guildData.filter(e => (e.patron === interaction.user.id)).size >= rewardTotal[pledge.relationships.reward.data.id]) return c.first().editReply({
+                    if(interaction.client.guildData.filter(e => (e.patron === interaction.user.id)).size >= rewardTotal[pledge.relationships.reward.data.id]) return i.editReply({
                         content: channelLanguage.get('noRewardsRemaining'),
                         components: [],
                     });
@@ -235,18 +231,20 @@ module.exports = {
                         patron: interaction.user.id,
                     }}, {new: true});
                     interaction.client.guildData.set(interaction.guild.id, guildData);
-                    const reply2 = await c.first().editReply({
+                    const buttonRenew = {
+                        type: 'BUTTON',
+                        label: channelLanguage.get('enableRenew'),
+                        style: 'PRIMARY',
+                        emoji: '♻️',
+                        customId: 'renew',
+                    };
+                    const components = [{
+                        type: 'ACTION_ROW',
+                        components: [buttonRenew],
+                    }];
+                    const reply2 = await i.editReply({
                         content: channelLanguage.get('patreonRewardClaimed'),
-                        components: [{
-                            type: 'ACTION_ROW',
-                            components: [{
-                                type: 'BUTTON',
-                                label: channelLanguage.get('enableRenew'),
-                                style: 'PRIMARY',
-                                emoji: '♻️',
-                                customId: 'renew',
-                            }],
-                        }],
+                        components,
                         fetchReply: true,
                     });
                     const collector2 = reply2.createMessageComponentCollector({
@@ -255,29 +253,26 @@ module.exports = {
                         max: 1,
                         componentType: 'BUTTON',
                     });
-                    collector2.on('end', async collected => {
-                        if(!collected.size) return c.first().editReply({
-                            components: [{
-                                type: 'ACTION_ROW',
-                                components: [{
-                                    type: 'BUTTON',
-                                    label: channelLanguage.get('enableRenew'),
-                                    style: 'PRIMARY',
-                                    emoji: '♻️',
-                                    customId: 'renew',
-                                    disabled: true,
-                                }],
-                            }],
-                        });
+                    collector2.on('collect', i2 => (async i2 => {
                         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {renewPremium: (interaction.client.guildData.get(interaction.guild.id).renewPremium = true)}});
-                        await collected.first().update({
+                        await i2.update({
                             content: channelLanguage.get('renewEnabled'),
                             components: [],
                         });
+                    })(i2).catch(err => interaction.client.handlers.button(err, i2)));
+                    collector2.on('end', async collected => {
+                        if(collected.size) return;
+                        buttonRenew.disabled = true;
+                        await i.editReply({components});
                     });
                 }
                 break;
             }
+        })(i).catch(err => interaction.client.handlers.button(err, i)));
+        collector.on('end', async collected => {
+            if(collected.size) return;
+            buttonReward.disabled = buttonKey.disabled = true;
+            await interaction.editReply({content: channelLanguage.get('timedOut'), components});
         });
     },
     infoSlash: async interaction => {

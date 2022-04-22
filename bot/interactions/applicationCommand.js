@@ -102,13 +102,13 @@ module.exports = {
                     files: [],
                     embeds: [],
                     components: [],
-                });
+                }).catch(console.error);
             }
             else if(interaction.replied){
-                interaction.followUp(msgData);
+                interaction.followUp(msgData).catch(console.error);
             }
             else{
-                interaction.reply(msgData);
+                interaction.reply(msgData).catch(console.error);
             }
             if(process.env.NODE_ENV === 'production') interaction.client.channels.cache.get(interaction.client.configs.errorlog).send({
                 content: `Error: *${error.message}*\nInteraction User: ${interaction.user}\nInteraction ID: ${interaction.id}`,

@@ -70,7 +70,7 @@ module.exports = {
             newMenu.messageID = msg.id;
             await newMenu.save();
             for(let emoji of emojis) await msg.react(emoji);
-            loadmsg.edit(channelLanguage.get('rolemenuCreated'));
+            await loadmsg.edit(channelLanguage.get('rolemenuCreated'));
         }
         else{
             if(isNaN(parseInt(args[1], 10)) || !isFinite(parseInt(args[1], 10))) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
@@ -116,7 +116,7 @@ module.exports = {
             await msg.edit({embeds: [embed]});
             for(let emoji of emojis) await msg.react(emoji);
             await menuDoc.save();
-            loadmsg.edit(channelLanguage.get('rolemenuEdited'));
+            await loadmsg.edit(channelLanguage.get('rolemenuEdited'));
         }
     },
 };

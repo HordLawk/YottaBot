@@ -85,8 +85,8 @@ module.exports = {
             }
             deletedAmount = await chunkDelete(args.amount);
         }
-        if(deletedAmount === args.amount) return interaction.editReply(channelLanguage.get('pruneSuccess', [args.amount]));
-        interaction.editReply(channelLanguage.get('prunePartial', [deletedAmount, args.amount]));
+        if(deletedAmount === args.amount) return await interaction.editReply(channelLanguage.get('pruneSuccess', [args.amount]));
+        await interaction.editReply(channelLanguage.get('prunePartial', [deletedAmount, args.amount]));
     },
     slashOptions: [
         {

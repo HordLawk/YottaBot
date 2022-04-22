@@ -188,9 +188,9 @@ module.exports = {
             buttonNext.disabled = (!logDocs.slice((page + 1) * pageSize).length);
             await button.update({embeds: [embed], components});
         })(button).catch(err => interaction.client.handlers.button(err, button)));
-        col.on('end', () => {
+        col.on('end', async () => {
             buttonNext.disabled = buttonPrevious.disabled = true;
-            interaction.editReply({embeds: [embed], components});
+            await interaction.editReply({embeds: [embed], components});
         });
     },
     slashOptions: [

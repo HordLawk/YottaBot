@@ -213,7 +213,7 @@ module.exports = {
                         return pledges.data.find(e => ((e.type === 'pledge') && (e.relationships.patron.data.id === user.id)));
                     }
                     const pledge = await searchPledge('https://www.patreon.com/api/oauth2/api/campaigns/8230487/pledges');
-                    if(!pledge) return i.editReply(({
+                    if(!pledge) return await i.editReply(({
                         content: channelLanguage.get('pledgeNotFound'),
                         components: [],
                     }));
@@ -222,7 +222,7 @@ module.exports = {
                         '8307567': 2,
                         '8307569': 3,
                     };
-                    if(interaction.client.guildData.filter(e => (e.patron === interaction.user.id)).size >= rewardTotal[pledge.relationships.reward.data.id]) return i.editReply({
+                    if(interaction.client.guildData.filter(e => (e.patron === interaction.user.id)).size >= rewardTotal[pledge.relationships.reward.data.id]) return await i.editReply({
                         content: channelLanguage.get('noRewardsRemaining'),
                         components: [],
                     });

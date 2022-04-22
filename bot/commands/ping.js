@@ -31,7 +31,7 @@ module.exports = {
         const msg = await message.reply({embeds: [embed]});
         const current = msg.createdTimestamp - message.createdTimestamp;
         embed.setColor(hex(current)).setFooter({text: foot(current)}).addField(channelLanguage.get('current'), `${current}ms`, true);
-        msg.edit({embeds: [embed]});
+        await msg.edit({embeds: [embed]});
     },
     executeSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
@@ -60,6 +60,6 @@ module.exports = {
         });
         const current = inter.createdTimestamp - interaction.createdTimestamp;
         embed.setColor(hex(current)).setFooter({text: foot(current)}).addField(channelLanguage.get('current'), `${current}ms`, true);
-        interaction.editReply({embeds: [embed]});
+        await interaction.editReply({embeds: [embed]});
     },
 };

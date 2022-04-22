@@ -48,6 +48,6 @@ module.exports = {
             embed.addField(channelLanguage.get('reasonEmbedDurationTitle'), channelLanguage.get('reasonEmbedDurationValue', [d, h, m, Math.floor(current.duration.getTime() / 1000)]), true);
         }
         embed.addField(channelLanguage.get('reasonEmbedReasonTitle'), reason);
-        msg.edit({embeds: [embed]});
+        await msg.edit({embeds: [embed]});
     },
 };

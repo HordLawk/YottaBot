@@ -143,7 +143,6 @@ module.exports = {
         })(i).catch(err => message.client.handlers.button(err, i)))
         collectorUndo.on('end', async () => {
             buttonUndo.disabled = true;
-            // reply.edit({components});
             await reply.edit({components});
         });
         // const collectorEdit = reply.createMessageComponentCollector({
@@ -156,7 +155,7 @@ module.exports = {
         // })(i).catch(err => message.client.handlers.button(err, i)));
         // collectorEdit.end('end', () => {
         //     buttonEdit.disabled = true;
-        //     reply.edit({components});
+        //     await reply.edit({components});
         // })
     },
 };

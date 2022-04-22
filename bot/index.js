@@ -37,13 +37,13 @@ client.handlers = {
                 files: [],
                 embeds: [],
                 components: [],
-            });
+            }).catch(console.error);
         }
         else if(i.replied){
-            i.followUp(msgData);
+            i.followUp(msgData).catch(console.error);
         }
         else{
-            i.reply(msgData);
+            i.reply(msgData).catch(console.error);
         }
         if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send({
             content: `Error: *${err.message}*\nButton ID: ${i.customId}\nInteraction User: ${i.user}\nInteraction ID: ${i.id}`,

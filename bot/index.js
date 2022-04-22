@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const Discord = require('discord.js');
 const client = new Discord.Client({
-    partials: ['REACTION', 'MESSAGE', 'CHANNEL'],
+    partials: ['REACTION', 'MESSAGE', 'CHANNEL', 'GUILD_MEMBER'],
     intents: [
         Discord.Intents.FLAGS.GUILDS,
         Discord.Intents.FLAGS.GUILD_MEMBERS,

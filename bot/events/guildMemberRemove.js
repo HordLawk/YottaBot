@@ -6,8 +6,8 @@ const role = require('../../schemas/role.js');
 module.exports = {
     name: 'guildMemberRemove',
     execute: async member => {
-        if(member.partial) member = await member.fetch().catch(() => null);
-        if(!member || (member.id === member.client.user.id) || !member.client.guildData.has(member.guild.id)) return;
+        if(member.partial) member.user = await member.client.users.fetch(member.id).catch(() => null);
+        if(!member || !member.user || (member.id === member.client.user.id) || !member.client.guildData.has(member.guild.id)) return;
         const channelLanguage = member.client.langs[member.client.guildData.get(member.guild.id).language];
         if(member.client.guildData.get(member.guild.id).actionlogs.id('memberleave') && (member.client.guildData.get(member.guild.id).actionlogs.id('memberleave').hookID || member.client.guildData.get(member.guild.id).defaultLogsHookID)){
             const roleDoc = await role.findOne({
@@ -30,7 +30,7 @@ module.exports = {
                         .setDescription(member.toString());
                     if(member.nickname) embed.addField(channelLanguage.get('memberleaveEmbedNickTitle'), member.nickname, true);
                     if(member.guild.features.includes('MEMBER_VERIFICATION_GATE_ENABLED')) embed.addField(channelLanguage.get('memberleaveEmbedMembershipTitle'), channelLanguage.get('memberleaveEmbedMembershipValue', [member.pending]), true);
-                    if(member.user.flags.bitfield || member.user.bot){
+                    if((member.user.flags.bitfield || member.user.bot) && member.guild.roles.everyone.permissionsIn(hook.channelId).has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)){
                         const badges = {
                             DISCORD_EMPLOYEE: '<:staff:967043602012315658>',
                             PARTNERED_SERVER_OWNER: '<:partner:967043547561852978>',
@@ -49,7 +49,7 @@ module.exports = {
                         if(!member.user.flags.has('VERIFIED_BOT') && member.user.bot) userBadges.push('<:bot:967062591190995004>');
                         embed.addField(channelLanguage.get('memberjoinEmbedBadgesTitle'), userBadges.join(' '), true);
                     }
-                    embed.addField(channelLanguage.get('memberleaveEmbedJoinedTitle'), channelLanguage.get('memberleaveEmbedJoinedValue', [Math.round(member.joinedTimestamp / 1000)]));
+                    if(member.joinedTimestamp) embed.addField(channelLanguage.get('memberleaveEmbedJoinedTitle'), channelLanguage.get('memberleaveEmbedJoinedValue', [Math.round(member.joinedTimestamp / 1000)]));
                     if(member.communicationDisabledUntilTimestamp > Date.now()) embed.addField(channelLanguage.get('memberleaveEmbedTimeoutTitle'), channelLanguage.get('memberleaveEmbedTimeoutValue', [Math.round(member.communicationDisabledUntilTimestamp / 1000)]));
                     if(member.premiumSince) embed.addField(channelLanguage.get('memberleaveEmbedBoostTitle'), channelLanguage.get('memberleaveEmbedBoostValue', [Math.round(member.premiumSinceTimestamp) / 1000]));
                     const memberRoles = member.roles.cache.filter(e => (e.id != member.guild.id));

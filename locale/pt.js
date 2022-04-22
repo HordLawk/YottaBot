@@ -158,10 +158,10 @@ module.exports = {
             case 'delmsgEmbedAttachmentsFile': return `[\`Anexo-${vars[0]}-Arquivo\`](${vars[1]})`;
             case 'actionlogsDescription': return 'Gerencia registros de ações no servidor';
             case 'actionlogsUsage0': return 'defaultchannel (canal)';
-            case 'actionlogsUsage1': return 'set <delmsg/prune/editmsg/memberjoin> <(canal)/default>';
+            case 'actionlogsUsage1': return 'set <delmsg/prune/editmsg/memberjoin/memberleave> <(canal)/default>';
             case 'actionlogsUsage2': return 'ignore channel <add/remove> (canal) <delmsg/prune/editmsg/all>';
             case 'actionlogsUsage3': return 'ignore channel view (canal)';
-            case 'actionlogsUsage4': return 'ignore role <add/remove> (cargo) <delmsg/prune/editmsg/all>';
+            case 'actionlogsUsage4': return 'ignore role <add/remove> (cargo) <delmsg/prune/editmsg/memberleave/all>';
             case 'actionlogsUsage5': return 'ignore role view (cargo)';
             case 'newDefaultHookReason': return 'Webhook do canal de registros padrão';
             case 'oldDefaultHookReason': return 'Webhook do canal antigo de registros padrão';
@@ -181,6 +181,7 @@ module.exports = {
             case 'actionprune': return '**mensagens limpas**';
             case 'actioneditmsg': return '**mensagens editadas**';
             case 'actionmemberjoin': return '**novos membros**';
+            case 'actionmemberleave': return '**saida de membros**';
             case 'noIgnoredActionsRole': return 'Nenhuma ação está sendo ignorada para esse cargo';
             case 'ignoredActionsRoleEmbedAuthor': return 'Cargo ignorado';
             case 'ignoredActionsRoleEmbedDesc': return `Cargo: ${vars[0]}`;
@@ -476,6 +477,20 @@ module.exports = {
             case 'resetUserCasesSuccess': return `Todos os casos registrados que tiveram ${vars[0]} como alvo foram deletados com sucesso`;
             case 'caseNotFound': return `Nenhum caso foi encontrado com ID **${vars[0]}**`;
             case 'caseDeletedSuccess': return `Caso **${vars[0]}** foi deletado com sucesso`;
+            case 'memberleaveActionName': return 'Saida de membros';
+            case 'memberleaveEmbedAuthor': return `${vars[0]} saiu do servidor`;
+            case 'memberleaveEmbedJoinedTitle': return 'Membro desde';
+            case 'memberleaveEmbedJoinedValue': return `<t:${vars[0]}> (<t:${vars[0]}:R>)`;
+            case 'memberleaveEmbedMembershipTitle': return 'Passou pela avaliação de associação';
+            case 'memberleaveEmbedMembershipValue': return `\`${vars[0] ? 'não' : 'sim'}\``;
+            case 'memberleaveEmbedTimeoutTitle': return 'Mutado até';
+            case 'memberleaveEmbedTimeoutValue': return `<t:${vars[0]}> (<t:${vars[0]}:R>)`;
+            case 'memberleaveEmbedNickTitle': return 'Nick';
+            case 'memberleaveEmbedBoostTitle': return 'Booster desde';
+            case 'memberleaveEmbedBoostValue': return `<t:${vars[0]}> (<t:${vars[0]}:R>)`;
+            case 'memberleaveEmbedRolesTitle': return 'Cargos';
+            case 'memberleaveEmbedRolesValue': return `${[...vars[0].first(42).values()].join(' ')}${(vars[0].size > 42) ? `*+${vars[0].size - 42}*` : ''}`;
+            case 'memberjoinEmbedBadgesTitle': return 'Insígnias';
         }
     },
 };

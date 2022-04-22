@@ -20,6 +20,7 @@ module.exports = {
             ignorableRoles: true,
         }],
         ['memberjoin', {}],
+        ['memberleave', {ignorableRoles: true}],
     ]),
     support: 'eNcsvsy',
     supportID: '476244157245947904',

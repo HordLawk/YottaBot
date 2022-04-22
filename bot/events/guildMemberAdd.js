@@ -1,8 +1,5 @@
 const memberModel = require('../../schemas/member.js');
-const guild = require('../../schemas/guild.js');
-const log = require('../../schemas/log.js');
-const role = require('../../schemas/role.js');
-const {MessageEmbed, Permissions} = require('discord.js');
+const {MessageEmbed} = require('discord.js');
 
 module.exports = {
     name: 'guildMemberAdd',
@@ -10,7 +7,7 @@ module.exports = {
         if(member.partial) await member.fetch();
         if(!member.client.guildData.has(member.guild.id)) return;
         const channelLanguage = member.client.langs[member.client.guildData.get(member.guild.id).language];
-        if(member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin') && (member.client.guildData.get(member.guild.id).actionlogs.id('delmsg').hookID || member.client.guildData.get(member.guild.id).defaultLogsHookID)){
+        if(member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin') && (member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin').hookID || member.client.guildData.get(member.guild.id).defaultLogsHookID)){
             const hook = await member.client.fetchWebhook(member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin').hookID || member.client.guildData.get(member.guild.id).defaultLogsHookID, member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin').hookToken || member.client.guildData.get(member.guild.id).defaultLogsHookToken).catch(() => null);
             if(hook){
                 const embed = new MessageEmbed()
@@ -22,8 +19,27 @@ module.exports = {
                         iconURL: member.user.displayAvatarURL({dynamic: true}),
                     })
                     .setThumbnail(member.user.displayAvatarURL({dynamic: true}))
-                    .setDescription(member.toString())
-                    .addField(channelLanguage.get('memberjoinEmbedCreationTitle'), channelLanguage.get('memberjoinEmbedCreationValue', [Math.round(member.user.createdTimestamp / 1000)]), true);
+                    .setDescription(member.toString());
+                if(member.user.flags.bitfield || member.user.bot){
+                    const badges = {
+                        DISCORD_EMPLOYEE: '<:staff:967043602012315658>',
+                        PARTNERED_SERVER_OWNER: '<:partner:967043547561852978>',
+                        HYPESQUAD_EVENTS: '<:hs:967048946612572160>',
+                        BUGHUNTER_LEVEL_1: '<:bughunter:967043119407329311>',
+                        HOUSE_BRAVERY: '<:bravery:967043119780610058>',
+                        HOUSE_BRILLIANCE: '<:brilliance:967043119780597860>',
+                        HOUSE_BALANCE: '<:balance:967043119809974272>',
+                        EARLY_SUPPORTER: '<:earlysupporter:967043119717699665>',
+                        BUGHUNTER_LEVEL_2: '<:bughunter2:967043119759642694>',
+                        EARLY_VERIFIED_BOT_DEVELOPER: '<:botdev:967043120984391752>',
+                        DISCORD_CERTIFIED_MODERATOR: '<:mod:967043119788994610>',
+                        VERIFIED_BOT: '<:verifiedbot:967049829568090143>',
+                    };
+                    const userBadges = member.user.flags.toArray().map(e => badges[e]);
+                    if(!member.user.flags.has('VERIFIED_BOT') && member.user.bot) userBadges.push('<:bot:967062591190995004>');
+                    embed.addField(channelLanguage.get('memberjoinEmbedBadgesTitle'), userBadges.join(' '));
+                }
+                embed.addField(channelLanguage.get('memberjoinEmbedCreationTitle'), channelLanguage.get('memberjoinEmbedCreationValue', [Math.round(member.user.createdTimestamp / 1000)]));
                 await hook.send({
                     embeds: [embed],
                     username: member.client.user.username,
@@ -36,8 +52,8 @@ module.exports = {
                             customId: `banjoined${member.id}`,
                             style: 'DANGER',
                             emoji: '🔨',
-                        }]
-                    }]
+                        }],
+                    }],
                 });
             }
         }

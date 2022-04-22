@@ -3,12 +3,10 @@ const channel = require('../../schemas/channel.js');
 const role = require('../../schemas/role.js');
 const guild = require('../../schemas/guild.js');
 
-const actionOptionMapper = filter => {
-    return (interaction, value) => interaction.respond((filter ? interaction.client.configs.actions.filter(filter) : interaction.client.configs.actions).map((e, i) => ({
-        name: interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'].get(`${i}ActionName`),
-        value: i,
-    })).filter(e => e.name.toLowerCase().startsWith(value.toLowerCase())));
-}
+const actionOptionMapper = filter => ((interaction, value) => interaction.respond((filter ? interaction.client.configs.actions.filter(filter) : interaction.client.configs.actions).map((_, i) => ({
+    name: interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'].get(`${i}ActionName`),
+    value: i,
+})).filter(e => e.name.toLowerCase().startsWith(value.toLowerCase()))));
 
 module.exports = {
     active: true,

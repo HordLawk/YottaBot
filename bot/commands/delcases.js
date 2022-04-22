@@ -1,6 +1,43 @@
 const {Permissions} = require('discord.js');
 const log = require('../../schemas/log.js');
 
+const buildButtons = (channelLanguage, author) => {
+    const buttonConfirm = {
+        type: 'BUTTON',
+        label: channelLanguage.get('confirm'),
+        style: 'SUCCESS',
+        emoji: '✅',
+        customId: 'confirm',
+    };
+    const buttonCancel = {
+        type: 'BUTTON',
+        label: channelLanguage.get('cancel'),
+        style: 'DANGER',
+        emoji: '❌',
+        customId: 'cancel',
+    };
+    return {
+        buttonConfirm,
+        buttonCancel,
+        components: [{
+            type: 'ACTION_ROW',
+            components: [buttonConfirm, buttonCancel],
+        }],
+        collectorOptions: {
+            filter: componentInteraction => (componentInteraction.user.id === author.id),
+            idle: 10000,
+            max: 1,
+            componentType: 'BUTTON',
+        },
+    };
+}
+const slashCollectorEnd = (buttonConfirm, buttonCancel, components, channelLanguage, interaction) => (async collected => {
+    buttonCancel.disabled = buttonConfirm.disabled = true;
+    const msgData = {components};
+    if(!collected.size) msgData.content = channelLanguage.get('timedOut');
+    await interaction.editReply(msgData);
+});
+
 module.exports = {
     active: true,
     name: 'delcases',
@@ -15,36 +52,17 @@ module.exports = {
     guildOnly: true,
     execute: async function(message, args){
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const {buttonConfirm, buttonCancel, components, collectorOptions} = buildButtons(channelLanguage, message.author);
+        const collectorEnd = reply => (async collected => {
+            buttonCancel.disabled = buttonConfirm.disabled = true;
+            const msgData = {components};
+            if(!collected.size) msgData.content = channelLanguage.get('timedOut');
+            await reply.edit(msgData);
+        });
         switch(args[0]){
             case 'server': {
-                const buttonConfirm = {
-                    type: 'BUTTON',
-                    label: channelLanguage.get('confirm'),
-                    style: 'SUCCESS',
-                    emoji: '✅',
-                    customId: 'confirm',
-                };
-                const buttonCancel = {
-                    type: 'BUTTON',
-                    label: channelLanguage.get('cancel'),
-                    style: 'DANGER',
-                    emoji: '❌',
-                    customId: 'cancel',
-                };
-                const components = [{
-                    type: 'ACTION_ROW',
-                    components: [buttonConfirm, buttonCancel],
-                }];
-                const reply = await message.reply({
-                    content: channelLanguage.get('resetServerCasesConfirm'),
-                    components,
-                });
-                const collector = reply.createMessageComponentCollector({
-                    filter: componentInteraction => (componentInteraction.user.id === message.author.id),
-                    idle: 10000,
-                    max: 1,
-                    componentType: 'BUTTON',
-                });
+                const reply = await message.reply({content: channelLanguage.get('resetServerCasesConfirm'), components});
+                const collector = reply.createMessageComponentCollector(collectorOptions);
                 collector.on('collect', i => (async i => {
                     switch(i.customId){
                         case 'cancel': {
@@ -58,12 +76,7 @@ module.exports = {
                         break;
                     }
                 })(i).catch(err => message.client.handlers.button(err, i)));
-                collector.on('end', async collected => {
-                    buttonCancel.disabled = buttonConfirm.disabled = true;
-                    const msgData = {components};
-                    if(!collected.size) msgData.content = channelLanguage.get('timedOut');
-                    await reply.edit(msgData);
-                });
+                collector.on('end', collectorEnd(reply));
             }
             break;
             case 'user': {
@@ -72,31 +85,8 @@ module.exports = {
                 if(!id) return message.reply(channelLanguage.get('invUser'));
                 const user = await message.client.users.fetch(id).catch(() => null);
                 if(!user) return message.reply(channelLanguage.get('invUser'));
-                const buttonConfirm = {
-                    type: 'BUTTON',
-                    label: channelLanguage.get('confirm'),
-                    style: 'SUCCESS',
-                    emoji: '✅',
-                    customId: 'confirm',
-                };
-                const buttonCancel = {
-                    type: 'BUTTON',
-                    label: channelLanguage.get('cancel'),
-                    style: 'DANGER',
-                    emoji: '❌',
-                    customId: 'cancel',
-                };
-                const components = [{
-                    type: 'ACTION_ROW',
-                    components: [buttonConfirm, buttonCancel],
-                }];
                 const reply = await message.reply({content: channelLanguage.get('resetUserCasesConfirm', [user]), components});
-                const collector = reply.createMessageComponentCollector({
-                    filter: componentInteraction => (componentInteraction.user.id === message.author.id),
-                    idle: 10000,
-                    max: 1,
-                    componentType: 'BUTTON',
-                });
+                const collector = reply.createMessageComponentCollector(collectorOptions);
                 collector.on('collect', i => (async i => {
                     switch(i.customId){
                         case 'cancel': {
@@ -113,12 +103,7 @@ module.exports = {
                         break;
                     }
                 })(i).catch(err => message.client.handlers.button(err, i)));
-                collector.on('end', async collected => {
-                    buttonCancel.disabled = buttonConfirm.disabled = true;
-                    const msgData = {components};
-                    if(!collected.size) msgData.content = channelLanguage.get('timedOut');
-                    await reply.edit(msgData);
-                });
+                collector.on('end', collectorEnd(reply));
             }
             break;
             case 'case': {
@@ -137,35 +122,13 @@ module.exports = {
     },
     serverSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
-        const buttonConfirm = {
-            type: 'BUTTON',
-            label: channelLanguage.get('confirm'),
-            style: 'SUCCESS',
-            emoji: '✅',
-            customId: 'confirm',
-        };
-        const buttonCancel = {
-            type: 'BUTTON',
-            label: channelLanguage.get('cancel'),
-            style: 'DANGER',
-            emoji: '❌',
-            customId: 'cancel',
-        };
-        const components = [{
-            type: 'ACTION_ROW',
-            components: [buttonConfirm, buttonCancel],
-        }];
+        const {buttonConfirm, buttonCancel, components, collectorOptions} = buildButtons(channelLanguage, interaction.user);
         const reply = await interaction.reply({
             content: channelLanguage.get('resetServerCasesConfirm'),
             components,
             fetchReply: true,
         });
-        const collector = reply.createMessageComponentCollector({
-            filter: componentInteraction => (componentInteraction.user.id === message.author.id),
-            idle: 10000,
-            max: 1,
-            componentType: 'BUTTON',
-        });
+        const collector = reply.createMessageComponentCollector(collectorOptions);
         collector.on('collect', i => (async i => {
             switch(i.customId){
                 case 'cancel': {
@@ -179,44 +142,17 @@ module.exports = {
                 break;
             }
         })(i).catch(err => interaction.client.handlers.button(err, i)));
-        collector.on('end', async collected => {
-            buttonCancel.disabled = buttonConfirm.disabled = true;
-            const msgData = {components};
-            if(!collected.size) msgData.content = channelLanguage.get('timedOut');
-            await interaction.editReply(msgData);
-        });
+        collector.on('end', slashCollectorEnd(buttonConfirm, buttonCancel, components, channelLanguage, interaction));
     },
     userSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
-        const buttonConfirm = {
-            type: 'BUTTON',
-            label: channelLanguage.get('confirm'),
-            style: 'SUCCESS',
-            emoji: '✅',
-            customId: 'confirm',
-        };
-        const buttonCancel = {
-            type: 'BUTTON',
-            label: channelLanguage.get('cancel'),
-            style: 'DANGER',
-            emoji: '❌',
-            customId: 'cancel',
-        };
-        const components = [{
-            type: 'ACTION_ROW',
-            components: [buttonConfirm, buttonCancel],
-        }];
+        const {buttonConfirm, buttonCancel, components, collectorOptions} = buildButtons(channelLanguage, interaction.user);
         const reply = await interaction.reply({
             content: channelLanguage.get('resetUserCasesConfirm', [args.target]),
             components,
             fetchReply: true,
         });
-        const collector = reply.createMessageComponentCollector({
-            filter: componentInteraction => (componentInteraction.user.id === interaction.user.id),
-            idle: 10000,
-            max: 1,
-            componentType: 'BUTTON',
-        });
+        const collector = reply.createMessageComponentCollector(collectorOptions);
         collector.on('collect', i => (async i => {
             switch(i.customId){
                 case 'cancel': {
@@ -233,12 +169,7 @@ module.exports = {
                 break;
             }
         })(i).catch(err => interaction.client.handlers.button(err, i)));
-        collector.on('end', async collected => {
-            buttonCancel.disabled = buttonConfirm.disabled = true;
-            const msgData = {components};
-            if(!collected.size) msgData.content = channelLanguage.get('timedOut');
-            await interaction.editReply(msgData);
-        });
+        collector.on('end', slashCollectorEnd(buttonConfirm, buttonCancel, components, channelLanguage, interaction));
     },
     caseSlash: async function(interaction, args){
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
@@ -282,6 +213,7 @@ module.exports = {
                 name: 'id',
                 description: 'The ID of the case to be deleted',
                 required: true,
+                minValue: 0,
             }],
         },
     ],

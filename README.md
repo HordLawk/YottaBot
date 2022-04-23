@@ -45,6 +45,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] command to add a sticker from an attachment * \*\****
 - [ ] message context menu that shows previous versions of the target message *
 - [ ] message context menu to prune after the target *
+- [ ] voice channels join and leave logs
 
 \* on hold until Discord improves slash permissions
 

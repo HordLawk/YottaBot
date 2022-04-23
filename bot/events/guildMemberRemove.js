@@ -30,7 +30,7 @@ module.exports = {
                         .setDescription(member.toString());
                     if(member.nickname) embed.addField(channelLanguage.get('memberleaveEmbedNickTitle'), member.nickname, true);
                     if(member.guild.features.includes('MEMBER_VERIFICATION_GATE_ENABLED') && !member.partial) embed.addField(channelLanguage.get('memberleaveEmbedMembershipTitle'), channelLanguage.get('memberleaveEmbedMembershipValue', [member.pending]), true);
-                    if((member.user.flags.bitfield || member.user.bot) && member.guild.roles.everyone.permissionsIn(hook.channelId).has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)){
+                    if((member.user.flags?.bitfield || member.user.bot) && member.guild.roles.everyone.permissionsIn(hook.channelId).has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)){
                         const badges = {
                             DISCORD_EMPLOYEE: '<:staff:967043602012315658>',
                             PARTNERED_SERVER_OWNER: '<:partner:967043547561852978>',

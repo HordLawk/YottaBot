@@ -129,6 +129,7 @@ module.exports = {
                 await currentUnban.save();
                 const action = await i.reply({
                     content: channelLanguage.get('unbanSuccess', [currentUnban.id]),
+                    ephemeral: true,
                     fetchReply: true,
                 });
                 currentUnban.actionMessage = action.url;

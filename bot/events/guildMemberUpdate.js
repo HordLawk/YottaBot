@@ -6,7 +6,8 @@ const {MessageEmbed, Permissions, GuildAuditLogs} = require('discord.js');
 module.exports = {
     name: 'guildMemberUpdate',
     execute: async (oldMember, newMember) => {
-        if(!newMember.guild.available) return;
+        if(!newMember.guild.available || oldMember.partial) return;
+        if(newMember.partial) await newMember.fetch();
         if(oldMember.premiumSinceTimestamp != newMember.premiumSinceTimestamp){
             if((newMember.guild.id != newMember.client.configs.supportID) || oldMember.premiumSince || !newMember.premiumSince) return;
             const userDoc = await user.findById(newMember.id);

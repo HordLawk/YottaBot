@@ -1,6 +1,6 @@
 {
   "name": "yottabot",
-  "version": "2.25.4",
+  "version": "2.25.5",
   "description": "A levelling and moderation focused Discord bot",
   "main": "index.js",
   "engines": {
@@ -16,7 +16,7 @@
     "url": "git+https://github.com/HordLawk/YottaBot.git"
   },
   "author": "LordHawk#0001",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/HordLawk/YottaBot/issues"
   },

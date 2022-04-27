@@ -56,17 +56,17 @@ module.exports = {
             content: channelLanguage.get('betaCommand'),
             ephemeral: true,
         });
-        if(interaction.guild && !interaction.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
-            const roles = roleDocs.filter(e => (e.commandPermissions.id(command.name) && interaction.member.roles.cache.has(e.roleID)));
-            if((!roles.length && command.perm && !interaction.member.permissions.has(command.perm)) || (roles.length && roles.some(e => !e.commandPermissions.id(command.name).allow) && !roles.some(e => e.commandPermissions.id(command.name).allow))) return interaction.reply({
-                content: channelLanguage.get('forbidden'),
-                ephemeral: true,
-            });
-            if(savedChannel && savedChannel.ignoreCommands.includes(command.name) && interaction.guild.me.permissionsIn(interaction.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return interaction.reply({
-                content: channelLanguage.get('disabled'),
-                ephemeral: true,
-            });
-        }
+        // if(interaction.guild && !interaction.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
+        //     const roles = roleDocs.filter(e => (e.commandPermissions.id(command.name) && interaction.member.roles.cache.has(e.roleID)));
+        //     if((!roles.length && command.perm && !interaction.member.permissions.has(command.perm)) || (roles.length && roles.some(e => !e.commandPermissions.id(command.name).allow) && !roles.some(e => e.commandPermissions.id(command.name).allow))) return interaction.reply({
+        //         content: channelLanguage.get('forbidden'),
+        //         ephemeral: true,
+        //     });
+        //     if(savedChannel && savedChannel.ignoreCommands.includes(command.name) && interaction.guild.me.permissionsIn(interaction.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return interaction.reply({
+        //         content: channelLanguage.get('disabled'),
+        //         ephemeral: true,
+        //     });
+        // }
         if(!interaction.client.cooldowns.has(command.name)) interaction.client.cooldowns.set(command.name, new Collection());
         const now = Date.now();
         const timestamps = interaction.client.cooldowns.get(command.name);

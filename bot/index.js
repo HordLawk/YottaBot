@@ -16,6 +16,14 @@ const client = new Discord.Client({
     failIfNotExists: false,
 });
 const guild = require('../schemas/guild.js');
+const _transformCommand = Discord.ApplicationCommandManager.transformCommand;
+Discord.ApplicationCommandManager.transformCommand = command => ({
+    ..._transformCommand(command),
+    name_localizations: command.name_localizations,
+    description_localizations: command.description_localizations,
+    default_member_permissions: command.default_member_permissions?.toString(),
+    dm_permission: command.dm_permission,
+});
 client.configs = require('./configs.js');
 client.langs = fs.readdirSync(path.join(__dirname, '..', 'locale')).filter(file => file.endsWith('.js')).map(e => require(`../locale/${e}`)).reduce((obj, e) => ({...obj, [e.lang]: e}), {});
 client.commands = new Discord.Collection(fs.readdirSync(path.join(__dirname, 'commands')).filter(file => file.endsWith('.js')).map(e => require(`./commands/${e}`)).filter(e => e.active).map(e => [e.name, e]));

@@ -48,7 +48,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] voice channels join and leave logs
 - [ ] rolemenus with select menus
 
-* on hold until Discord adds the date and time option type
+\* on hold until Discord adds the date and time option type
 
 ** on hold until discord.js adds support for modal interactions
 

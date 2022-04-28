@@ -63,7 +63,7 @@ module.exports = {
             .addField(channelLanguage.get('delmsgEmbedAuthorTitle'), newMessage.author.toString(), true)
             .addField(channelLanguage.get('delmsgEmbedChannelTitle'), newMessage.channel.toString(), true)
             .addField(channelLanguage.get('delmsgEmbedSentTitle'), channelLanguage.get('delmsgEmbedSentValue', [Math.floor(newMessage.createdTimestamp / 1000)]), true);
-        hook.send({
+        await hook.send({
             embeds: [embed],
             username: newMessage.client.user.username,
             avatarURL: newMessage.client.user.avatarURL({size: 4096}),

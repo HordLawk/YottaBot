@@ -70,7 +70,7 @@ module.exports = {
                 embed.addField(channelLanguage.get('delmsgEmbedAttachmentsTitle'), [...message.attachments.values()].map((e, i) => e.height ? channelLanguage.get('delmsgEmbedAttachmentsMedia', [(i + 1), e.url.replace('cdn', 'media').replace('com', 'net')]) : channelLanguage.get('delmsgEmbedAttachmentsFile', [(i + 1), e.url])).join('\n').concat('\n').slice(0, 1024).split(/\n/g).slice(0, -1).join('\n'));
             }
         }
-        hook.send({
+        await hook.send({
             embeds: [embed],
             username: message.client.user.username,
             avatarURL: message.client.user.avatarURL({size: 4096}),

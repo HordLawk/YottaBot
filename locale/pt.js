@@ -491,6 +491,11 @@ module.exports = {
             case 'memberleaveEmbedRolesTitle': return 'Cargos';
             case 'memberleaveEmbedRolesValue': return `${[...vars[0].first(42).values()].join(' ')}${(vars[0].size > 42) ? `*+${vars[0].size - 42}*` : ''}`;
             case 'memberjoinEmbedBadgesTitle': return 'Insígnias';
+            case 'configsLocalisedName': return 'configs';
+            case 'warnChoiceLocalisedName': return 'Warns';
+            case 'muteChoiceLocalisedName': return 'Mutes';
+            case 'kickChoiceLocalisedName': return 'Kicks';
+            case 'banChoiceLocalisedName': return 'Bans';
         }
     },
 };

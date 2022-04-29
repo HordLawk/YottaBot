@@ -1,5 +1,10 @@
 const guild = require('../../schemas/guild.js');
 const {MessageEmbed, Permissions} = require('discord.js');
+const fs = require('fs');
+const path = require('path');
+
+const locales = fs.readdirSync(path.join(__dirname, '..', '..', 'locale')).filter(file => file.endsWith('.js')).map(e => require(`../../locale/${e}`)).filter(e => (e.lang != 'en'));
+const getLocalisedName = name => locales.reduce((acc, e) => ({...acc, [e.code]: e.get(`${name}LocalisedName`)}), {});
 
 module.exports = {
     active: true,
@@ -70,30 +75,6 @@ module.exports = {
                         message.reply(channelLanguage.get('clearOnBanDaysSetSuccess', [message.client.guildData.get(message.guild.id).pruneBan]));
                     }
                     break;
-                    // case 'mute': {
-                    //     switch(args[2]){
-                    //         case 'role': {
-                    //             if(!args[3]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                    //             let roleName = message.content.toLowerCase().replace(/^(?:\S+\s+){4}/, '');
-                    //             let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
-                    //             if(!discordRole || (discordRole.id === message.guild.id)) return message.reply(channelLanguage.get('invRole'));
-                    //             if(!discordRole.editable || discordRole.managed) return message.reply(channelLanguage.get('manageRole'));
-                    //             await guild.findByIdAndUpdate(message.guild.id, {$set: {muteRoleID: discordRole.id}});
-                    //             message.client.guildData.get(message.guild.id).muteRoleID = discordRole.id;
-                    //             message.reply(channelLanguage.get('muteRoleSetSuccess', [discordRole.name]));
-                    //         }
-                    //         break;
-                    //         case 'autosetup': {
-                    //             if(!['on', 'off'].includes(args[3])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                    //             await guild.findByIdAndUpdate(message.guild.id, {$set: {autoSetupMute: (args[3] === 'on')}});
-                    //             message.client.guildData.get(message.guild.id).autoSetupMute = (args[3] === 'on');
-                    //             message.reply(channelLanguage.get('autoSetupMuteSetSuccess', [args[3]]));
-                    //         }
-                    //         break;
-                    //         default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                    //     }
-                    // }
-                    // break;
                     default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 }
             }
@@ -135,5 +116,222 @@ module.exports = {
             break;
             default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         }
+    },
+    languageSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(!interaction.client.langs[args.language]) return interaction.reply({
+            content: channelLanguage.get('lang404'),
+            ephemeral: true,
+        });
+        await guild.findByIdAndUpdate(interaction.guild.id, {$set: {language: args.language}});
+        interaction.client.guildData.get(interaction.guild.id).language = args.language;
+        interaction.reply(channelLanguage.get('newLang'));
+    },
+    logattachmentsSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(args.enable){
+            if(!interaction.client.guildData.get(interaction.guild.id).actionlogs.id('delmsg')) return interaction.reply({
+                content: channelLanguage.get('logattachmentsNoHook'),
+                ephemeral: true,
+            });
+            const hook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id('delmsg').hookID || interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id('delmsg').hookToken || interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
+            if(!hook) return interaction.reply({
+                content: channelLanguage.get('logattachmentsNoHook'),
+                ephemeral: true,
+            });
+            interaction.reply(channelLanguage.get('logattachmentsOnSuccess'));
+        }
+        else{
+            interaction.reply(channelLanguage.get('logattachmentsOffSuccess'));
+        }
+        await guild.findByIdAndUpdate(interaction.guild.id, {$set: {logAttachments: args.enable}});
+        interaction.client.guildData.get(interaction.guild.id).logAttachments = args.enable;
+    },
+    moderationlogsSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(!interaction.guild.me.permissionsIn(args.modlog_channel).has(Permissions.FLAGS.SEND_MESSAGES) || !args.modlog_channel.viewable) return interaction.reply({
+            content: channelLanguage.get('sendMessages'),
+            ephemeral: true,
+        });
+        if(!interaction.guild.me.permissionsIn(args.modlog_channel).has(Permissions.FLAGS.EMBED_LINKS)) return interaction.reply({
+            content: channelLanguage.get('botEmbed'),
+            ephemeral: true,
+        });
+        const guildDoc = await guild.findByIdAndUpdate(interaction.guild.id, {$set: {[`modlogs.${args.action_type}`]: args.modlog_channel.id}}, {new: true});
+        interaction.client.guildData.get(interaction.guild.id).modlogs = guildDoc.modlogs;
+        interaction.reply(channelLanguage.get('modLogsSetSuccess', [[args.action_type], args.modlog_channel]));
+    },
+    moderationclearonbanSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        await guild.findByIdAndUpdate(interaction.guild.id, {$set: {pruneBan: args.days}});
+        interaction.client.guildData.get(interaction.guild.id).pruneBan = args.days;
+        interaction.reply(channelLanguage.get('clearOnBanDaysSetSuccess', [args.days]));
+    },
+    moderationmassbanprotectionSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        await guild.findByIdAndUpdate(interaction.guild.id, {$set: {antiMassBan: (interaction.client.guildData.get(interaction.guild.id).antiMassBan = (args.enable ? (args.max_bans || 15) : null))}});
+        interaction.reply(channelLanguage.get('massBanProtectionSuccess', [args.enable]));
+    },
+    moderationglobalbansSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        await guild.findByIdAndUpdate(interaction.guild.id, {$set: {globalBan: (interaction.client.guildData.get(interaction.guild.id).globalBan = args.enable)}});
+        interaction.reply(channelLanguage.get('globalbanSuccess', [args.enable]));
+    },
+    betaSlash: async (interaction, args) => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        await guild.findByIdAndUpdate(interaction.guild.id, {$set: {beta: (interaction.client.guildData.get(interaction.guild.id).beta = args.enable)}});
+        interaction.reply(channelLanguage.get('betaSuccess', [args.enable]));
+    },
+    infoSlash: async interaction => {
+        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const embed = new MessageEmbed()
+            .setColor(interaction.guild.me.displayColor || 0x8000ff)
+            .setAuthor({
+                name: channelLanguage.get('configsEmbedAuthor'),
+                iconURL: interaction.guild.iconURL({dynamic: true}),
+            })
+            .setDescription(channelLanguage.get('configsEmbedDesc', [interaction.client.guildData.get(interaction.guild.id).prefix, interaction.client.guildData.get(interaction.guild.id).language, interaction.client.guildData.get(interaction.guild.id).logAttachments, interaction.client.guildData.get(interaction.guild.id).modlogs, interaction.client.guildData.get(interaction.guild.id).pruneBan, interaction.client.guildData.get(interaction.guild.id).antiMassBan, interaction.client.guildData.get(interaction.guild.id).globalBan, interaction.client.guildData.get(interaction.guild.id).beta]))
+            .setTimestamp();
+        interaction.reply({embeds: [embed]});
+    },
+    slashOptions: [
+        {
+            type: 'SUB_COMMAND',
+            name: 'language',
+            description: 'Sets the server default language',
+            options: [{
+                type: 'STRING',
+                name: 'language',
+                description: 'The language to set as default',
+                required: true,
+                autocomplete: true,
+            }],
+        },
+        {
+            type: 'SUB_COMMAND',
+            name: 'logattachments',
+            description: 'Sets whether deleted messages attachments should be attached to the log message or not',
+            options: [{
+                type: 'BOOLEAN',
+                name: 'enable',
+                description: 'Whether to enable deleted messages attachments being attached to the log messages',
+                required: true,
+            }]
+        },
+        {
+            type: 'SUB_COMMAND_GROUP',
+            name: 'moderation',
+            description: 'Manages moderation settings',
+            options: [
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'logs',
+                    description: 'Manages logs for moderation actions',
+                    options: [
+                        {
+                            type: 'CHANNEL',
+                            name: 'modlog_channel',
+                            description: 'The channel to log moderation actions in',
+                            required: true,
+                            channelTypes: ['GUILD_TEXT'],
+                        },
+                        {
+                            type: 'STRING',
+                            name: 'action_type',
+                            description: 'The type of moderation action to be logged in the chosen channel',
+                            required: true,
+                            choices: [
+                                {
+                                    name: 'Warns',
+                                    name_localizations: getLocalisedName('warnChoice'),
+                                    value: 'warn',
+                                },
+                                {
+                                    name: 'Mutes',
+                                    name_localizations: getLocalisedName('muteChoice'),
+                                    value: 'mute',
+                                },
+                                {
+                                    name: 'Kicks',
+                                    name_localizations: getLocalisedName('kickChoice'),
+                                    value: 'kick',
+                                },
+                                {
+                                    name: 'Bans',
+                                    name_localizations: getLocalisedName('banChoice'),
+                                    value: 'ban',
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'clearonban',
+                    description: 'Manages message pruning on bans issued through YottaBot',
+                    options: [{
+                        type: 'INTEGER',
+                        name: 'days',
+                        description: 'How many days of messages to clear when banning an user or 0 if no messages should be cleared',
+                        minValue: 0,
+                        maxValue: 7,
+                        required: true,
+                    }],
+                },
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'massbanprotection',
+                    description: 'Manages the mass ban protection system',
+                    options: [
+                        {
+                            type: 'BOOLEAN',
+                            name: 'enable',
+                            description: 'Whether to enable the mass ban protection',
+                            required: true,
+                        },
+                        {
+                            type: 'INTEGER',
+                            name: 'max_bans',
+                            description: 'The maximum amount of bans allowed per moderator per 10 seconds',
+                            required: false,
+                            minValue: 1,
+                        },
+                    ],
+                },
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'globalbans',
+                    description: 'Manages the global ban system',
+                    options: [{
+                        type: 'BOOLEAN',
+                        name: 'enable',
+                        description: 'Whether to enable the global ban system',
+                        required: true,
+                    }],
+                },
+            ],
+        },
+        {
+            type: 'SUB_COMMAND',
+            name: 'beta',
+            description: 'Sets the server beta status',
+            options: [{
+                type: 'BOOLEAN',
+                name: 'enable',
+                description: 'Whether enable beta features in the current server',
+                required: true,
+            }],
+        },
+        {
+            type: 'SUB_COMMAND',
+            name: 'info',
+            description: 'Lists the current server bot configs',
+        },
+    ],
+    languageAutocomplete: {
+        language: (interaction, value) => interaction.respond(Object.values(interaction.client.langs).filter(e => e.name.startsWith(value)).map(e => ({
+            name: e.name,
+            value: e.lang,
+        }))),
     },
 };

@@ -63,8 +63,8 @@ module.exports = {
             }
         }
         if(!member.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)) return;
-        const audits = await member.guild.fetchAuditLogs({limit: 1});
-        if((audits.entries.first()?.action != GuildAuditLogs.Actions.MEMBER_KICK) || (audits.entries.first()?.target.id != member.id) || audits.entries.first()?.executor.bot) return;
+        const audits = await member.guild.fetchAuditLogs({limit: 1}).catch(() => null);
+        if(!audits || (audits.entries.first()?.action != GuildAuditLogs.Actions.MEMBER_KICK) || (audits.entries.first()?.target.id != member.id) || audits.entries.first()?.executor.bot) return;
         const reason = audits.entries.first().reason?.slice(0, 500);
         const guildDoc = await guild.findByIdAndUpdate(member.guild.id, {$inc: {counterLogs: 1}});
         member.client.guildData.get(member.guild.id).counterLogs = guildDoc.counterLogs + 1;

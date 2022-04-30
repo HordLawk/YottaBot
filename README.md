@@ -31,7 +31,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - You agree to not submit any issues, features, or pull requests related to bugs exclusively related to self-hosting.
 
 ## W.I.P
-- [ ] use slash commands; context menus; buttons; and stuff
+- [ ] use slash commands; context menus; buttons; and stuff * ** ***
 - [ ] add rss feeds for youtube notifications
 - [x] `prune` command
 - [x] command to edit slowmode
@@ -46,7 +46,6 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] message context menu that shows previous versions of the target message
 - [ ] message context menu to prune after the target
 - [ ] voice channels join and leave logs
-- [ ] rolemenus with select menus
 
 \* on hold until Discord adds the date and time option type
 

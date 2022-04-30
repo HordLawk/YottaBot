@@ -482,6 +482,12 @@ module.exports = {
             case 'memberleaveEmbedRolesTitle': return 'Roles';
             case 'memberleaveEmbedRolesValue': return `${[...vars[0].first(42).values()]}${(vars[0].size > 42) ? `*+${vars[0].size - 42}*` : ''}`;
             case 'memberjoinEmbedBadgesTitle': return 'Badges';
+            case 'cantPruneMessages': return 'You don\'t have permission to prune messages in this channel';
+            case 'BotCantPruneMessages': return 'I need permission to manage messages in this channel in order to prune them';
+            case 'pruneafterSuccess': return `**${vars[0]}** messages were pruned from this channel`;
+            case 'pruneafterDescription': return 'Prunes all messages which were sent after a chosen target message';
+            case 'pruneEmbedAuthor': return 'Pruned messages';
+            case 'pruneEmbedAmountTitle': return 'Amount of messages';
         }
     },
 };

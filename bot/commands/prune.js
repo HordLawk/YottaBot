@@ -1,4 +1,4 @@
-const {Permissions, Collection} = require('discord.js');
+const {Permissions, Collection, MessageEmbed} = require('discord.js');
 const channelModel = require('../../schemas/channel.js');
 const roleModel = require('../../schemas/role.js');
 
@@ -38,6 +38,8 @@ module.exports = {
     guildOnly: true,
     execute: async (message, args) => {
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        if(!message.member.permissionsIn(message.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return message.reply(channelLanguage.get('cantPruneMessages'));
+        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return message.reply(channelLanguage.get('botCantPruneMessages'));
         const amount = parseInt(args[0]) + 1;
         if(isNaN(amount) || !isFinite(amount) || (amount < 2) || (amount > 999)) return message.reply(channelLanguage.get('invalidPruneAmount'));
         let messages;
@@ -65,13 +67,20 @@ module.exports = {
         if(roleDoc) return;
         const hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id('prune')?.hookID ?? message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).actionlogs.id('prune').hookToken ?? message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
+        const embed = new MessageEmbed()
+            .setColor(0xff0000)
+            .setTimestamp()
+            .setAuthor({
+                name: channelLanguage.get('pruneEmbedAuthor'),
+                iconURL: message.guild.iconURL({dynamic: true})
+            })
+            .addField(channelLanguage.get('pruneEmbedAmountTitle'), relevantMessages.size.toString(), true)
+            .addField(channelLanguage.get('delmsgEmbedChannelTitle'), message.channel.toString(), true)
+            .addField(channelLanguage.get('delmsgEmbedExecutorTitle'), message.author.toString(), true);
         await hook.send({
             username: message.client.user.username,
             avatarURL: message.client.user.avatarURL(),
-            content: `\
-${channelLanguage.get('delmsgEmbedChannelTitle')}: ${message.channel}
-${channelLanguage.get('delmsgEmbedExecutorTitle')}: ${message.author}\
-            `,
+            embeds: [embed],
             files: [{
                 name: 'bulkDeletedMessages.log',
                 attachment: Buffer.from(`\
@@ -89,6 +98,10 @@ ${e.content}
     },
     executeSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        if(!interaction.guild.me.permissionsIn(interaction.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return interaction.reply({
+            content: channelLanguage.get('botCantPruneMessages'),
+            ephemeral: true,
+        });
         if(isNaN(args.amount) || !isFinite(args.amount) || (args.amount < 2) || (args.amount > 1000)) return interaction.reply({
             content: channelLanguage.get('invalidPruneAmount'),
             ephemeral: true,
@@ -108,6 +121,7 @@ ${e.content}
         else{
             await interaction.editReply(channelLanguage.get('prunePartial', [messages.size, args.amount]));
         }
+        if(!interaction.client.guildData.get(interaction.guild.id).actionlogs.id('prune')) return;
         const relevantMessages = messages.filter(e => (!e.partial && !e.author.bot && !e.system));
         if(!relevantMessages.size) return;
         const channelDoc = await channelModel.findById(interaction.channel.id);
@@ -120,13 +134,20 @@ ${e.content}
         if(roleDoc) return;
         const hook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id('prune')?.hookID ?? interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id('prune').hookToken ?? interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
+        const embed = new MessageEmbed()
+            .setColor(0xff0000)
+            .setTimestamp()
+            .setAuthor({
+                name: channelLanguage.get('pruneEmbedAuthor'),
+                iconURL: interaction.guild.iconURL({dynamic: true})
+            })
+            .addField(channelLanguage.get('pruneEmbedAmountTitle'), relevantMessages.size.toString(), true)
+            .addField(channelLanguage.get('delmsgEmbedChannelTitle'), interaction.channel.toString(), true)
+            .addField(channelLanguage.get('delmsgEmbedExecutorTitle'), interaction.user.toString(), true);
         await hook.send({
             username: interaction.client.user.username,
             avatarURL: interaction.client.user.avatarURL(),
-            content: `\
-${channelLanguage.get('delmsgEmbedChannelTitle')}: ${interaction.channel}
-${channelLanguage.get('delmsgEmbedExecutorTitle')}: ${interaction.user}\
-            `,
+            embeds: [embed],
             files: [{
                 name: 'bulkDeletedMessages.log',
                 attachment: Buffer.from(`\

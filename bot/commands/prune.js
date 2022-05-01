@@ -83,7 +83,8 @@ module.exports = {
             embeds: [embed],
             files: [{
                 name: 'bulkDeletedMessages.log',
-                attachment: Buffer.from(`\
+                attachment: Buffer.from(
+`\
 ${relevantMessages.reverse().map(e => `\
 ${channelLanguage.get('delmsgEmbedAuthorTitle')}: ${e.author.tag} (${e.author.id})
 ${channelLanguage.get('delmsgEmbedSentTitle')}: ${e.createdAt.toUTCString()}${e.content ? `
@@ -92,7 +93,8 @@ ${e.content}
 ================================================\
 ` : ''}${[...e.attachments.values()].map((ee, i) => `\nAttachment-${i + 1}-${ee.height ? `Media: ${ee.proxyURL}` : `File: ${ee.url}`}`).join('')}\
 `).join('\n\n')}\
-                `),
+`
+                ),
             }],
         });
     },
@@ -151,7 +153,8 @@ ${e.content}
             embeds: [embed],
             files: [{
                 name: 'bulkDeletedMessages.log',
-                attachment: Buffer.from(`\
+                attachment: Buffer.from(
+`\
 ${relevantMessages.reverse().map(e => `\
 ${logsLanguage.get('delmsgEmbedAuthorTitle')}: ${e.author.tag} (${e.author.id})
 ${logsLanguage.get('delmsgEmbedSentTitle')}: ${e.createdAt.toUTCString()}${e.content ? `
@@ -160,7 +163,8 @@ ${e.content}
 ================================================\
 ` : ''}${[...e.attachments.values()].map((ee, i) => `\nAttachment-${i + 1}-${ee.height ? `Media: ${ee.proxyURL}` : `File: ${ee.url}`}`).join('')}\
 `).join('\n\n')}\
-                `),
+`
+                ),
             }],
         });
     },

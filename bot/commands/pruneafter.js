@@ -41,16 +41,17 @@ module.exports = {
         if(roleDoc) return;
         const hook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id('prune')?.hookID ?? interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id('prune').hookToken ?? interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
+        const logsLanguage = interaction.client.langs[interaction.client.guildData.get(interaction.guild.id).language];
         const embed = new MessageEmbed()
             .setColor(0xff0000)
             .setTimestamp()
             .setAuthor({
-                name: channelLanguage.get('pruneEmbedAuthor'),
+                name: logsLanguage.get('pruneEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true})
             })
-            .addField(channelLanguage.get('pruneEmbedAmountTitle'), relevantMessages.size.toString(), true)
-            .addField(channelLanguage.get('delmsgEmbedChannelTitle'), interaction.channel.toString(), true)
-            .addField(channelLanguage.get('delmsgEmbedExecutorTitle'), interaction.user.toString(), true);
+            .addField(logsLanguage.get('pruneEmbedAmountTitle'), relevantMessages.size.toString(), true)
+            .addField(logsLanguage.get('delmsgEmbedChannelTitle'), interaction.channel.toString(), true)
+            .addField(logsLanguage.get('delmsgEmbedExecutorTitle'), interaction.user.toString(), true);
         await hook.send({
             username: interaction.client.user.username,
             avatarURL: interaction.client.user.avatarURL(),
@@ -59,8 +60,8 @@ module.exports = {
                 name: 'bulkDeletedMessages.log',
                 attachment: Buffer.from(`\
 ${relevantMessages.reverse().map(e => `\
-${channelLanguage.get('delmsgEmbedAuthorTitle')}: ${e.author.tag} (${e.author.id})
-${channelLanguage.get('delmsgEmbedSentTitle')}: ${e.createdAt.toUTCString()}${e.content ? `
+${logsLanguage.get('delmsgEmbedAuthorTitle')}: ${e.author.tag} (${e.author.id})
+${logsLanguage.get('delmsgEmbedSentTitle')}: ${e.createdAt.toUTCString()}${e.content ? `
 ================================================
 ${e.content}
 ================================================\

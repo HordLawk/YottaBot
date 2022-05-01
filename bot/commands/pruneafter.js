@@ -18,10 +18,16 @@ module.exports = {
         const chunkDeleteAmount = async (after, count = 0, deletedMessages = new Collection()) => {
             console.log(`after ${count} messages`);
             if(count >= 900){
-                const msgs = await interaction.channel.messages.fetch({limit: 1000 - count, after});
+                const msgs = await interaction.channel.messages.fetch({limit: 1000 - count, after}, {
+                    cache: false,
+                    force: true,
+                });
                 return await interaction.channel.bulkDelete(msgs.filter(e => !e.pinned), true).then(dels => deletedMessages.concat(dels));
             }
-            const msgs = await interaction.channel.messages.fetch({limit: 100, after});
+            const msgs = await interaction.channel.messages.fetch({limit: 100, after}, {
+                cache: false,
+                force: true,
+            });
             console.log(`fetched ${msgs.size} and ${msgs.filter(e => e.partial).size} are partial`);
             const deleted = await interaction.channel.bulkDelete(msgs.filter(e => !e.pinned), true);
             deletedMessages = deletedMessages.concat(msgs.intersect(deleted));

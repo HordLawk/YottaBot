@@ -12,7 +12,7 @@ module.exports = {
         const channelLanguage = client.langs[client.guildData.get(guild.id).language];
         const audits = await guild.fetchAuditLogs({limit: 1});
         const executor = (() => {
-            if(audits.entries.size && [GuildAuditLogs.Actions.MESSAGE_BULK_DELETE, GuildAuditLogs.Actions.MEMBER_BAN_ADD].includes(audits.entries.first().action)) return audits.entries.first().executor;
+            if(audits.entries.size && ['MESSAGE_BULK_DELETE', 'MEMBER_BAN_ADD'].includes(audits.entries.first().action)) return audits.entries.first().executor;
         })();
         if(executor?.id === client.user.id) return;
         const channelDoc = await channelModel.findById(channel.id);

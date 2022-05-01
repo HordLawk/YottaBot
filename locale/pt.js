@@ -498,7 +498,7 @@ module.exports = {
             case 'banChoiceLocalisedName': return 'Bans';
             case 'cantPruneMessages': return 'Você não tem permissão para limpar mensagens nesse canal';
             case 'botCantPruneMessages': return 'Eu preciso de permissão para gerenciar mensagens nesse canal para limpar elas';
-            case 'pruneafterSuccess': return `**${args[0]}** mensagens foram limpas desse canal`;
+            case 'pruneafterSuccess': return `**${vars[0]}** mensagens foram limpas desse canal`;
             case 'pruneafterDescription': return 'Limpa todas as mensagens que foram enviadas depois de uma mensagem alvo selecionada';
             case 'pruneafterContextName': return 'Limpar abaixo disso';
             case 'pruneEmbedAuthor': return 'Mensagens limpas';

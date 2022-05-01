@@ -29,6 +29,7 @@ module.exports = {
         await interaction.editReply(channelLanguage.get('pruneafterSuccess', [messages.size]));
         if(!interaction.client.guildData.get(interaction.guild.id).actionlogs.id('prune')) return;
         const relevantMessages = messages.filter(e => (!e.partial && !e.author.bot && !e.system));
+        console.log(messages.filter(e => e.partial).size);
         if(!relevantMessages.size) return;
         const channelDoc = await channelModel.findById(interaction.channel.id);
         if(channelDoc && channelDoc.ignoreActions.includes('prune')) return;

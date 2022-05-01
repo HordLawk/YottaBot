@@ -16,16 +16,13 @@ module.exports = {
         });
         await interaction.deferReply({ephemeral: true});
         const chunkDeleteAmount = async (after, count = 0, deletedMessages = new Collection()) => {
-            console.log(`after ${count} messages`);
             if(count >= 900){
                 const msgs = await interaction.channel.messages.fetch({limit: 1000 - count, after});
                 return await interaction.channel.bulkDelete(msgs.filter(e => !e.pinned), true).then(dels => deletedMessages.concat(dels));
             }
             const msgs = await interaction.channel.messages.fetch({limit: 100, after});
-            console.log(`fetched ${msgs.size} and ${msgs.filter(e => e.partial).size} are partial`);
             const deleted = await interaction.channel.bulkDelete(msgs.filter(e => !e.pinned), true);
             deletedMessages = msgs.intersect(deleted).concat(deletedMessages);
-            console.log(`the total collection now has ${deletedMessages.size} messages and ${deletedMessages.filter(e => e.partial).size} are partial`);
             if(msgs.size < 100) return deletedMessages;
             return await chunkDeleteAmount(msgs.last().id, count + 100, deletedMessages);
         }
@@ -33,7 +30,6 @@ module.exports = {
         await interaction.editReply(channelLanguage.get('pruneafterSuccess', [messages.size]));
         if(!interaction.client.guildData.get(interaction.guild.id).actionlogs.id('prune')) return;
         const relevantMessages = messages.filter(e => (!e.partial && !e.author.bot && !e.system));
-        console.log(messages.filter(e => e.partial).size);
         if(!relevantMessages.size) return;
         const channelDoc = await channelModel.findById(interaction.channel.id);
         if(channelDoc && channelDoc.ignoreActions.includes('prune')) return;

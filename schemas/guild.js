@@ -60,6 +60,7 @@ const guildSchema = new Schema({
     antiMassBan: Number,
     patron: String,
     renewPremium: Boolean,
+    storeEditions: Boolean,
 });
 
 module.exports = model("guild", guildSchema);

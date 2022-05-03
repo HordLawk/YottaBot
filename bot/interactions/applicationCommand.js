@@ -51,7 +51,7 @@ module.exports = {
             content: channelLanguage.get('guildOnly'),
             ephemeral: true,
         });
-        if(command.premium && !interaction.client.guildData.get(interaction.guild.id).premiumUntil && !interaction.client.guildData.get(interaction.guild.id).partner) return interaction.reply(channelLanguage.get('premiumCommand', [prefix]));
+        if(command.premium && !interaction.client.guildData.get(interaction.guild.id).premiumUntil && !interaction.client.guildData.get(interaction.guild.id).partner) return interaction.reply(channelLanguage.get('premiumCommand', ['/']));
         if(command.beta && !interaction.client.guildData.get(interaction.guild.id).beta) return interaction.reply({
             content: channelLanguage.get('betaCommand'),
             ephemeral: true,

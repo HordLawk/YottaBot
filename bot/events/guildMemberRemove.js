@@ -29,7 +29,6 @@ module.exports = {
                         .setThumbnail(member.user.displayAvatarURL({dynamic: true}))
                         .setDescription(member.toString());
                     if(member.nickname) embed.addField(channelLanguage.get('memberleaveEmbedNickTitle'), member.nickname, true);
-                    if(member.guild.features.includes('MEMBER_VERIFICATION_GATE_ENABLED') && !member.partial) embed.addField(channelLanguage.get('memberleaveEmbedMembershipTitle'), channelLanguage.get('memberleaveEmbedMembershipValue', [member.pending]), true);
                     if((member.user.flags?.toArray().length || member.user.bot) && member.guild.roles.everyone.permissionsIn(hook.channelId).has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)){
                         const badges = {
                             DISCORD_EMPLOYEE: '<:staff:967043602012315658>',
@@ -49,6 +48,7 @@ module.exports = {
                         if(!member.user.flags.has('VERIFIED_BOT') && member.user.bot) userBadges.push('<:bot:967062591190995004>');
                         embed.addField(channelLanguage.get('memberjoinEmbedBadgesTitle'), userBadges.join(' '), true);
                     }
+                    if(member.guild.features.includes('MEMBER_VERIFICATION_GATE_ENABLED') && !member.partial) embed.addField(channelLanguage.get('memberleaveEmbedMembershipTitle'), channelLanguage.get('memberleaveEmbedMembershipValue', [member.pending]), true);
                     if(member.joinedTimestamp) embed.addField(channelLanguage.get('memberleaveEmbedJoinedTitle'), channelLanguage.get('memberleaveEmbedJoinedValue', [Math.round(member.joinedTimestamp / 1000)]));
                     if(member.communicationDisabledUntilTimestamp > Date.now()) embed.addField(channelLanguage.get('memberleaveEmbedTimeoutTitle'), channelLanguage.get('memberleaveEmbedTimeoutValue', [Math.round(member.communicationDisabledUntilTimestamp / 1000)]));
                     if(member.premiumSince) embed.addField(channelLanguage.get('memberleaveEmbedBoostTitle'), channelLanguage.get('memberleaveEmbedBoostValue', [Math.round(member.premiumSinceTimestamp) / 1000]));

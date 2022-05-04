@@ -8,7 +8,7 @@ module.exports = {
     name: 'listedits',
     description: lang => lang.get('listeditsDescription'),
     cooldown: 5,
-    perm: Permissions.FLAGS.MODERATE_MEMBERS,
+    perm: Permissions.FLAGS.MANAGE_MESSAGES,
     guildOnly: true,
     premium: true,
     contextName: 'List previous edits',

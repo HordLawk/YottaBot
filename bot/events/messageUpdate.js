@@ -1,13 +1,31 @@
 const channel = require('../../schemas/channel.js');
 const role = require('../../schemas/role.js');
+const edition = require('../../schemas/edition.js');
 const {MessageEmbed, Util} = require('discord.js');
+const {sha256} = require('js-sha256');
+const aesjs = require('aes-js');
 
 module.exports = {
     name: 'messageUpdate',
     execute: async (oldMessage, newMessage) => {
-        if(oldMessage.partial) return;
+        if(oldMessage.partial || !oldMessage.guild || !oldMessage.guild.available || oldMessage.system || !oldMessage.client.guildData.has(oldMessage.guild.id) || oldMessage.author.bot) return;
+        if(oldMessage.client.guildData.get(oldMessage.guild.id).storeEditions && oldMessage.content){
+            const aesCtr = new aesjs.ModeOfOperation.ctr(sha256.array(process.env.CRYPT_PASSWD));
+            const editionDoc = new edition({
+                messageID: oldMessage.id,
+                channelID: oldMessage.channel.id,
+                guild: oldMessage.guild.id,
+                content: Buffer.from(aesCtr.encrypt(aesjs.utils.utf8.toBytes(oldMessage.content))),
+                timestamp: oldMessage.editedAt ?? oldMessage.createdAt,
+            });
+            await editionDoc.save();
+            if(!oldMessage.client.guildData.get(oldMessage.guild.id).premiumUntil && !oldMessage.client.guildData.get(oldMessage.guild.id).partner){
+                const editAmount = await edition.countDocuments({guild: oldMessage.guild.id});
+                if(editAmount > 100) await edition.findOneAndDelete({guild: oldMessage.guild.id}, {sort: {timestamp: 1}});
+            }
+        }
         if(newMessage.partial) await newMessage.fetch();
-        if(!newMessage.guild || !newMessage.guild.available || newMessage.system || !newMessage.client.guildData.has(newMessage.guild.id) || !newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg') || (!newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg').hookID && !newMessage.client.guildData.get(newMessage.guild.id).defaultLogsHookID) || newMessage.author.bot || (oldMessage.content === newMessage.content)) return;
+        if(!newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg') || (!newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg').hookID && !newMessage.client.guildData.get(newMessage.guild.id).defaultLogsHookID) || (oldMessage.content === newMessage.content)) return;
         const channelLanguage = newMessage.client.langs[newMessage.client.guildData.get(newMessage.guild.id).language];
         const channelDoc = await channel.findById(newMessage.channel.id);
         if(channelDoc && channelDoc.ignoreActions.includes('editmsg')) return;

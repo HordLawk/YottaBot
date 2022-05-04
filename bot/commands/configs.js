@@ -82,7 +82,7 @@ module.exports = {
             case 'beta': {
                 if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {beta: (message.client.guildData.get(message.guild.id).beta = (args[1] === 'on'))}});
-                message.reply(channelLanguage.get('betaSuccess', [args[1]]));
+                message.reply(channelLanguage.get('betaSuccess', [args[1] === 'on']));
             }
             break;
             case 'massbanprotection': {

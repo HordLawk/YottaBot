@@ -14,11 +14,14 @@ const editionSchema = new Schema({
         required: true,
         ref: 'guild',
     },
-    content: String,
+    content: {
+        type: Buffer,
+        required: true,
+    },
     timestamp: {
         type: Date,
         required: true,
-    }
-})
+    },
+});
 
 module.exports = model('edition', editionSchema);

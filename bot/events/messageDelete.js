@@ -1,11 +1,14 @@
 const channel = require('../../schemas/channel.js');
 const role = require('../../schemas/role.js');
+const edition = require('../../schemas/edition.js');
 const {MessageEmbed, Permissions, GuildAuditLogs} = require('discord.js');
 
 module.exports = {
     name: 'messageDelete',
     execute: async message => {
-        if(message.partial || !message.guild || !message.guild.available || message.system || !message.client.guildData.has(message.guild.id) || !message.client.guildData.get(message.guild.id).actionlogs.id('delmsg') || (!message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookID && !message.client.guildData.get(message.guild.id).defaultLogsHookID)) return;
+        if(!message.guild || message.system || !message.client.guildData.has(message.guild.id)) return;
+        await edition.deleteMany({messageID: message.id});
+        if(message.partial || !message.guild.available || !message.client.guildData.get(message.guild.id).actionlogs.id('delmsg') || (!message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookID && !message.client.guildData.get(message.guild.id).defaultLogsHookID)) return;
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
         let executor = null;
         if(message.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)){

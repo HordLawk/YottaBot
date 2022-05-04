@@ -393,7 +393,7 @@ module.exports = {
             case 'voiceXpEmbedAuthor': return 'Configurações do sistema de xp por voz';
             case 'voiceXpEmbedDesc': return `Ativado: ${vars[0] ? `\`sim\`\nCooldown: \`${vars[0]} minutos\``: '`não`'}`;
             case 'voiceXpIgnoredChannels': return 'Canais de voz ignorados';
-            case 'betaSuccess': return `Funções beta foram **${(vars[0] === 'on') ? '' : 'des'}ativadas**`;
+            case 'betaSuccess': return `Funções beta foram **${vars[0] ? 'ativadas' : 'desativadas'}**`;
             case 'voicexpDescription': return 'Gerencia o ganho de xp em canais de voz';
             case 'voicexpUsage0': return 'enable (cooldown em minutos)';
             case 'voicexpUsage1': return 'ignore <add/remove> (canal)';
@@ -503,6 +503,22 @@ module.exports = {
             case 'pruneafterContextName': return 'Limpar abaixo disso';
             case 'pruneEmbedAuthor': return 'Mensagens limpas';
             case 'pruneEmbedAmountTitle': return 'Número de mensagens';
+            case 'editionsDescription': return 'Gerencia o armazenamento e listagem de versões anteriores de mensagens editadas.';
+            case 'storageSuccess': return `Armazenamento de mensagens editadas **${vars[0] ? 'ativado' : 'desativado'}**`;
+            case 'listeditsEmbedAuthor': return 'Edições da mensagem';
+            case 'listeditsEmbedVersionTitle': return `Versão ${vars[0]}`;
+            case 'listeditsEmbedVersionValue': return `\`\`\`${(vars[0].slice(0, 1014 - vars[1].toString().length))}\`\`\`<t:${vars[1]}>`;
+            case 'listeditsDescription': return 'Lista edições anteriores de uma mensagem selecionada';
+            case 'listeditContextName': return 'Listar edições';
+            case 'editionsinfoEmbedAuthor': return 'Informações sobre o armazenamento de edições';
+            case 'editionsinfoEmbedDescription': return `Ativado: \`${vars[0] ? 'on' : 'off'}\`\n` +
+                                                        `Edições armazenadas: \`${vars[1]}${vars[2] ? '' : '/100'}\``;
+            case 'nonPremiumStorage': return 'Servidores não premium tem um limite de apenas 100 edições armazenadas\n' +
+                                             'Para se tornar premium e desbloquear armazenamento ilimitado além de varias outras funções incríveis [se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'wipeEditionsConfirm': return 'Você tem certeza que deseja deletar todas as edições armazenadas de mensagens desse servidor?\n' +
+                                               'Essa ação não pode ser desfeita';
+            case 'wipeEditionsSuccess': return 'Armazenamento de edições foi limpo com sucesso';
+            case 'noEditsFound': return 'Não há nenhuma versão anterior dessa mensagem armazenada';
         }
     },
 };

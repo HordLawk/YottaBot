@@ -1,12 +1,15 @@
 const channelModel = require('../../schemas/channel.js');
 const role = require('../../schemas/role.js');
+const edition = require('../../schemas/edition.js');
 const {Permissions, GuildAuditLogs, MessageEmbed} = require('discord.js');
 
 module.exports = {
     name: 'messageDeleteBulk',
     execute: async messages => {
         const {guild, client, channel} = messages.first();
-        if(!guild || !guild.available || !client.guildData.get(guild.id)?.actionlogs.id('prune') || (!client.guildData.get(guild.id)?.actionlogs.id('prune').hookID && !client.guildData.get(guild.id)?.defaultLogsHookID) || !guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)) return;
+        if(!guild) return;
+        await edition.deleteMany({messageID: {$in: messages.map(e => e.id)}});
+        if(!guild.available || !client.guildData.get(guild.id)?.actionlogs.id('prune') || (!client.guildData.get(guild.id)?.actionlogs.id('prune').hookID && !client.guildData.get(guild.id)?.defaultLogsHookID) || !guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)) return;
         const relevantMessages = messages.filter(e => (!e.partial && !e.author.bot && !e.system));
         if(!relevantMessages.size) return;
         const channelLanguage = client.langs[client.guildData.get(guild.id).language];

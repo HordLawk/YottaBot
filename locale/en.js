@@ -392,7 +392,7 @@ module.exports = {
             case 'voiceXpEmbedAuthor': return 'Voice xp system settings';
             case 'voiceXpEmbedDesc': return `Enabled: ${vars[0] ? `\`on\`\nCooldown: \`${vars[0]} minutes\``: '`off`'}`;
             case 'voiceXpIgnoredChannels': return 'Ignored voice channels';
-            case 'betaSuccess': return `Beta features turned **${vars[0]}**`;
+            case 'betaSuccess': return `Beta features turned **${vars[0] ? 'on' : 'off'}**`;
             case 'voicexpDescription': return 'Manages xp earnings in voice channels';
             case 'voicexpUsage0': return 'enable (cooldown minutes)';
             case 'voicexpUsage1': return 'ignore <add/remove> (channel)';
@@ -488,6 +488,21 @@ module.exports = {
             case 'pruneafterDescription': return 'Prunes all messages which were sent after a chosen target message';
             case 'pruneEmbedAuthor': return 'Pruned messages';
             case 'pruneEmbedAmountTitle': return 'Amount of messages';
+            case 'editionsDescription': return 'Manages the storage of listing of previous versions of edited messages';
+            case 'storageSuccess': return `Edited messages storage turned **${vars[0] ? 'on' : 'off'}**`;
+            case 'listeditsEmbedAuthor': return 'Message editions';
+            case 'listeditsEmbedVersionTitle': return `Version ${vars[0]}`;
+            case 'listeditsEmbedVersionValue': return `\`\`\`${(vars[0].slice(0, 1014 - vars[1].toString().length))}\`\`\`<t:${vars[1]}>`;
+            case 'listeditsDescription': return 'Lists previous edits of a selected message';
+            case 'editionsinfoEmbedAuthor': return 'Editions storage info';
+            case 'editionsinfoEmbedDescription': return `Enabled: \`${vars[0] ? 'on' : 'off'}\`\n` +
+                                                        `Editions stored: \`${vars[1]}${vars[2] ? '' : '/100'}\``;
+            case 'nonPremiumStorage': return 'Non premium servers have a limit of only 100 stored editions\n' +
+                                             'To get premium and unlock unlimited storage along with many other amazing features [join Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'wipeEditionsConfirm': return 'Are you sure you want to delete all stored editions of messages from this server?\n' +
+                                               'This action cannot be undone';
+            case 'wipeEditionsSuccess': return 'Editions storage was succesffully wiped out';
+            case 'noEditsFound': return 'There are no stored previous versions of this message';
         }
     },
 };

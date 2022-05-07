@@ -439,7 +439,6 @@ module.exports = {
             case 'noStickerFound': return 'Isso não é uma figurinha!';
             case 'getstickerContent': return '**Arquivo da figurinha:**';
             case 'add': return 'Adicionar';
-            case 'getstickerLocalisedName': return 'pegarsticker'
             case 'checkContextName': return 'Checar casos';
             case 'checkLocalisedName': return 'checar';
             case 'xpContextName': return 'Informações de xp';
@@ -509,7 +508,7 @@ module.exports = {
             case 'listeditsEmbedVersionTitle': return `Versão ${vars[0]}`;
             case 'listeditsEmbedVersionValue': return `\`\`\`${(vars[0].slice(0, 1014 - vars[1].toString().length))}\`\`\`<t:${vars[1]}>`;
             case 'listeditsDescription': return 'Lista edições anteriores de uma mensagem selecionada';
-            case 'listeditContextName': return 'Listar edições';
+            case 'listeditsContextName': return 'Listar edições';
             case 'editionsinfoEmbedAuthor': return 'Informações sobre o armazenamento de edições';
             case 'editionsinfoEmbedDescription': return `Ativado: \`${vars[0] ? 'on' : 'off'}\`\n` +
                                                         `Edições armazenadas: \`${vars[1]}${vars[2] ? '' : '/100'}\``;
@@ -519,6 +518,12 @@ module.exports = {
                                                'Essa ação não pode ser desfeita';
             case 'wipeEditionsSuccess': return 'Armazenamento de edições foi limpo com sucesso';
             case 'noEditsFound': return 'Não há nenhuma versão anterior dessa mensagem armazenada';
+            case 'editionsLocalisedName': return 'edicoes';
+            case 'actionlogsLocalisedName': return 'logacoes';
+            case 'helpLocalisedName': return 'ajuda';
+            case 'inviteLocalisedName': return 'convidar';
+            case 'supportLocalisedName': return 'suporte';
+            case 'voicexpLocalisedName': return 'xpvoz';
         }
     },
 };

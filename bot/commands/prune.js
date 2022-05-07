@@ -11,7 +11,7 @@ const chunkFetch = async (maxAmount, channel, authorId, fetched = (new Collectio
 const chunkDeleteMessages = async (channel, msgsLeft, deletedMessages = new Collection()) => {
     if(msgsLeft.length <= 100) return await channel.bulkDelete(msgsLeft, true).then(dels => deletedMessages.concat(dels));
     const deleted = await channel.bulkDelete(msgsLeft.slice(0, 100), true);
-    return await chunkDeleteMessages(msgsLeft.slice(100), deletedMessages.concat(deleted));
+    return await chunkDeleteMessages(channel, msgsLeft.slice(100), deletedMessages.concat(deleted));
 }
 const chunkDeleteAmount = async (channel, count, deletedMessages = new Collection()) => {
     if(count <= 100){
@@ -21,7 +21,7 @@ const chunkDeleteAmount = async (channel, count, deletedMessages = new Collectio
     const msgs = await channel.messages.fetch({limit: 100});
     const deleted = await channel.bulkDelete(msgs.filter(e => !e.pinned), true);
     if((deleted.size < 100) || (count < 101)) return deletedMessages.concat(deleted);
-    return await chunkDeleteAmount(count - 100, deletedMessages.concat(deleted));
+    return await chunkDeleteAmount(channel, count - 100, deletedMessages.concat(deleted));
 }
 
 module.exports = {

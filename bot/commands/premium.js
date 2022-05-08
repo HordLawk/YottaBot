@@ -305,7 +305,7 @@ module.exports = {
             ephemeral: true,
         });
         interaction.client.guildData.get(guildDoc._id).renewPremium = guildDoc.renewPremium;
-        interaction.reply({
+        await interaction.reply({
             content: channelLanguage.get('renewChangeSuccess', [interaction.client.guilds.cache.get(args.guild).name, guildDoc.renewPremium]),
             ephemeral: true,
         });

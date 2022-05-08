@@ -3,7 +3,7 @@ const role = require('../../schemas/role.js');
 const channel = require('../../schemas/channel.js');
 const member = require('../../schemas/member.js');
 const user = require('../../schemas/user.js');
-const {Collection, Permissions} = require('discord.js');
+const {Collection, Permissions, MessageEmbed} = require('discord.js');
 
 module.exports = {
     name: 'messageCreate',
@@ -109,7 +109,13 @@ module.exports = {
         timestamps.set(message.author.id, now);
         setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
         message.channel.sendTyping();
-        command.execute(message, args).catch(error => {
+        command.execute(message, args).then(async () => {
+            if(message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner || Math.floor(Math.random() * 1000)) return;
+            const embed = new MessageEmbed()
+                .setColor(0x2f3136)
+                .setDescription(channelLanguage.get(`premiumAd${Math.floor(Math.random() * 3)}`, [command.name]));
+            await message.channel.send({embeds: [embed]});
+        }).catch(error => {
             console.error(error);
             message.reply(channelLanguage.get('error', [command.name]));
             if(process.env.NODE_ENV === 'production') message.client.channels.cache.get(message.client.configs.errorlog).send({

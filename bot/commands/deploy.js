@@ -28,11 +28,11 @@ module.exports = {
                     name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang != 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}ContextName`)}), {}),
                 }),
             });
-            interaction.reply(channelLanguage.get('deploySuccess', [slash.name, slash.type]));
+            await interaction.reply(channelLanguage.get('deploySuccess', [slash.name, slash.type]));
         }
         catch(e){
             console.error(e);
-            interaction.reply(channelLanguage.get('deployFail', [command.name, args.type]));
+            await interaction.reply(channelLanguage.get('deployFail', [command.name, args.type]));
         }
     },
     editSlash: async (interaction, args) => {
@@ -59,11 +59,11 @@ module.exports = {
                     name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang != 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}ContextName`)}), {}),
                 })
             });
-            interaction.reply(channelLanguage.get('deploySuccess', [slash.name, slash.type]));
+            await interaction.reply(channelLanguage.get('deploySuccess', [slash.name, slash.type]));
         }
         catch(e){
             console.error(e);
-            interaction.reply(channelLanguage.get('deployFail', [slash.name, slash.type]));
+            await interaction.reply(channelLanguage.get('deployFail', [slash.name, slash.type]));
         }
     },
     slashOptions: [

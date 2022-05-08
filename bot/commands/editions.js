@@ -13,7 +13,7 @@ module.exports = {
     storageSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         await guildModel.findByIdAndUpdate(interaction.guild.id, {$set: {storeEditions: (interaction.client.guildData.get(interaction.guild.id).storeEditions = args.enable)}});
-        interaction.reply(channelLanguage.get('storageSuccess', [args.enable]));
+        await interaction.reply(channelLanguage.get('storageSuccess', [args.enable]));
     },
     wipeSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];

@@ -20,6 +20,6 @@ module.exports = {
         const embed = new MessageEmbed()
             .setColor(interaction.guild?.me.displayColor || 0x8000ff)
             .setDescription(channelLanguage.get('upvoteEmbedDescription', [interaction.client.user.id]));
-        interaction.reply({embeds: [embed]});
+        await interaction.reply({embeds: [embed]});
     },
 }

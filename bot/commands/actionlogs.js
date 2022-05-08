@@ -40,7 +40,7 @@ module.exports = {
                 }});
                 message.client.guildData.get(message.guild.id).defaultLogsHookID = hook.id;
                 message.client.guildData.get(message.guild.id).defaultLogsHookToken = hook.token;
-                message.reply(channelLanguage.get('newDefaultLog', [discordChannel]));
+                await message.reply(channelLanguage.get('newDefaultLog', [discordChannel]));
             }
             break;
             case 'set': {
@@ -314,7 +314,7 @@ module.exports = {
             defaultLogsHookToken: hook.token,
         }}, {new: true});
         interaction.client.guildData.set(interaction.guild.id, guildDoc);
-        interaction.reply(channelLanguage.get('newDefaultLog', [args.channel]));
+        await interaction.reply(channelLanguage.get('newDefaultLog', [args.channel]));
     },
     actionssetSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
@@ -347,7 +347,7 @@ module.exports = {
             }
             await guildDoc.save();
             interaction.client.guildData.get(interaction.guild.id).actionlogs = guildDoc.actionlogs;
-            interaction.reply(channelLanguage.get('newLogSuccess', [args.log_channel]));
+            await interaction.reply(channelLanguage.get('newLogSuccess', [args.log_channel]));
         }
         else{
             const hook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
@@ -367,7 +367,7 @@ module.exports = {
             }
             await guildDoc.save();
             interaction.client.guildData.get(interaction.guild.id).actionlogs = guildDoc.actionlogs;
-            interaction.reply(channelLanguage.get('newDefaultLogSuccess'));
+            await interaction.reply(channelLanguage.get('newDefaultLogSuccess'));
         }
     },
     actionsremoveSlash: async (interaction, args) => {
@@ -384,7 +384,7 @@ module.exports = {
             await guildDoc.save();
             interaction.client.guildData.get(interaction.guild.id).actionlogs = guildDoc.actionlogs;
         }
-        interaction.reply(channelLanguage.get('removeLogSuccess'));
+        await interaction.reply(channelLanguage.get('removeLogSuccess'));
     },
     ignoredchannelsaddSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
@@ -400,7 +400,7 @@ module.exports = {
                 upsert: true,
                 setDefaultsOnInsert: true,
             });
-            interaction.reply(channelLanguage.get('actionIgnoredChannelSuccess', [channelLanguage.get(`action${args.action}`), args.channel]));
+            await interaction.reply(channelLanguage.get('actionIgnoredChannelSuccess', [channelLanguage.get(`action${args.action}`), args.channel]));
         }
         else{
             await channel.findOneAndUpdate({
@@ -410,7 +410,7 @@ module.exports = {
                 upsert: true,
                 setDefaultsOnInsert: true,
             });
-            interaction.reply(channelLanguage.get('allActionsIgnoredChannelSuccess', [args.channel]));
+            await interaction.reply(channelLanguage.get('allActionsIgnoredChannelSuccess', [args.channel]));
         }
     },
     ignoredchannelsremoveSlash: async (interaction, args) => {
@@ -421,11 +421,11 @@ module.exports = {
                 ephemeral: true,
             });
             await channel.findByIdAndUpdate(args.channel.id, {$pull: {ignoreActions: args.action}});
-            interaction.reply(channelLanguage.get('actionNotIgnoredChannelSuccess', [channelLanguage.get(`action${args.action}`), args.channel]));
+            await interaction.reply(channelLanguage.get('actionNotIgnoredChannelSuccess', [channelLanguage.get(`action${args.action}`), args.channel]));
         }
         else{
             await channel.findByIdAndUpdate(args.channel.id, {$set: {ignoreActions: []}});
-            interaction.reply(channelLanguage.get('noActionsIgnoredChannelSuccess', [args.channel]));
+            await interaction.reply(channelLanguage.get('noActionsIgnoredChannelSuccess', [args.channel]));
         }
     },
     ignoredchannelsinfoSlash: async (interaction, args) => {
@@ -445,7 +445,7 @@ module.exports = {
             .setTimestamp()
             .setFooter({text: channelLanguage.get('ignoredActionsEmbedFooter', [channelDoc.ignoreActions.length])})
             .addField(channelLanguage.get('ignoredActionsEmbedActionsTitle'), channelDoc.ignoreActions.map(e => channelLanguage.get(`${e}ActionName`)).join('\n'));
-        interaction.reply({embeds: [embed]});
+        await interaction.reply({embeds: [embed]});
     },
     ignoredrolesaddSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
@@ -465,7 +465,7 @@ module.exports = {
                 upsert: true,
                 setDefaultsOnInsert: true,
             });
-            interaction.reply(channelLanguage.get('actionIgnoredRoleSuccess', [channelLanguage.get(`action${args.action}`), args.role.name]));
+            await interaction.reply(channelLanguage.get('actionIgnoredRoleSuccess', [channelLanguage.get(`action${args.action}`), args.role.name]));
         }
         else{
             await role.findOneAndUpdate({
@@ -475,7 +475,7 @@ module.exports = {
                 upsert: true,
                 setDefaultsOnInsert: true,
             });
-            interaction.reply(channelLanguage.get('allActionsIgnoredRoleSuccess', [args.role.name]));
+            await interaction.reply(channelLanguage.get('allActionsIgnoredRoleSuccess', [args.role.name]));
         }
     },
     ignoredrolesremoveSlash: async (interaction, args) => {
@@ -493,14 +493,14 @@ module.exports = {
                 roleID: args.role.id,
                 guild: interaction.guild.id,
             }, {$pull: {ignoreActions: args.action}});
-            interaction.reply(channelLanguage.get('actionNotIgnoredRoleSuccess', [channelLanguage.get(`action${args.action}`), args.role.name]));
+            await interaction.reply(channelLanguage.get('actionNotIgnoredRoleSuccess', [channelLanguage.get(`action${args.action}`), args.role.name]));
         }
         else{
             await role.findOneAndUpdate({
                 roleID: args.role.id,
                 guild: interaction.guild.id,
             }, {$set: {ignoreActions: []}});
-            interaction.reply(channelLanguage.get('noActionsIgnoredRoleSuccess', [args.role.name]));
+            await interaction.reply(channelLanguage.get('noActionsIgnoredRoleSuccess', [args.role.name]));
         }
     },
     ignoredrolesinfoSlash: async (interaction, args) => {
@@ -524,7 +524,7 @@ module.exports = {
             .setTimestamp()
             .setFooter({text: channelLanguage.get('ignoredActionsEmbedFooter', [roleDoc.ignoreActions.length])})
             .addField(channelLanguage.get('ignoredActionsEmbedActionsTitle'), roleDoc.ignoreActions.map(e => channelLanguage.get(`${e}ActionName`)).join('\n'));
-        interaction.reply({embeds: [embed]});
+        await interaction.reply({embeds: [embed]});
     },
     infoSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
@@ -564,7 +564,7 @@ module.exports = {
             ignoreActions: {$ne: []},
         });
         if(roles.length) embed.addField(channelLanguage.get('logsViewEmbedIgnoredRolesTitle'), roles.map(e => `<@&${e.roleID}> - \`${(e.ignoreActions.length === interaction.client.configs.actions.size) ? channelLanguage.get('logsViewEmbedIgnoredAll') : channelLanguage.get('logsViewEmbedIgnoredSome')}\``).join('\n'));
-        interaction.reply({embeds: [embed]});
+        await interaction.reply({embeds: [embed]});
     },
     slashOptions: [
         {

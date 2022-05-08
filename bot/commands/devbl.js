@@ -12,7 +12,7 @@ module.exports = {
             upsert: true,
             setDefaultsOnInsert: true,
         });
-        interaction.reply(`The user ${args.target} had their \`blacklisted\` property set to \`${args.add}\``);
+        await interaction.reply(`The user ${args.target} had their \`blacklisted\` property set to \`${args.add}\``);
     },
     slashOptions: [
         {

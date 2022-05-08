@@ -68,12 +68,12 @@ module.exports = {
     enableSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {voiceXpCooldown: (interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown = args.minutes)}});
-        interaction.reply(channelLanguage.get('voicexpEnableSuccess', [interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown]));
+        await interaction.reply(channelLanguage.get('voicexpEnableSuccess', [interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown]));
     },
     disableSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         await guild.findByIdAndUpdate(interaction.guild.id, {$unset: {voiceXpCooldown: (interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown = null)}});
-        interaction.reply(channelLanguage.get('voicexpDisableSuccess'));
+        await interaction.reply(channelLanguage.get('voicexpDisableSuccess'));
     },
     ignoreSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
@@ -84,7 +84,7 @@ module.exports = {
             upsert: true,
             setDefaultsOnInsert: true,
         });
-        interaction.reply(channelLanguage.get('xpIgnoreChannel', [args.add, args.channel]));
+        await interaction.reply(channelLanguage.get('xpIgnoreChannel', [args.add, args.channel]));
     },
     infoSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
@@ -102,7 +102,7 @@ module.exports = {
             ignoreXp: true,
         });
         if(channels.length) embed.addField(channelLanguage.get('voiceXpIgnoredChannels'), channels.map(e => `<#${e._id}>`).join(' '));
-        interaction.reply({embeds: [embed]});
+        await interaction.reply({embeds: [embed]});
     },
     slashOptions: [
         {

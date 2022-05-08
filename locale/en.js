@@ -503,6 +503,12 @@ module.exports = {
                                                'This action cannot be undone';
             case 'wipeEditionsSuccess': return 'Editions storage was succesffully wiped out';
             case 'noEditsFound': return 'There are no stored previous versions of this message';
+            case 'premiumAd0': return 'Did you know premium servers **can award their members with xp for time spent talking in voice channels**?\n' +
+                                      'To unlock this along with [many other](<https://github.com/HordLawk/YottaBot/wiki/Premium>) amazing features [join Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'premiumAd1': return 'Did you know premium servers **can add unlimited roles for members to achieve by earning xp**?\n' +
+                                      'To unlock this along with [many other](<https://github.com/HordLawk/YottaBot/wiki/Premium>) amazing features [join Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'premiumAd2': return 'Did you know premium servers **can store lists of previous versions of edited messages**?\n' +
+                                      'To unlock this along with [many other](<https://github.com/HordLawk/YottaBot/wiki/Premium>) amazing features [join Patreon](<https://www.patreon.com/YottaBot>)';
         }
     },
 };

@@ -6,6 +6,6 @@ module.exports = {
     categoryID: 5,
     executeSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
-        interaction.reply(channelLanguage.get('atwoodsLaw'));
+        await interaction.reply(channelLanguage.get('atwoodsLaw'));
     },
 };

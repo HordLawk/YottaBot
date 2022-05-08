@@ -524,6 +524,12 @@ module.exports = {
             case 'inviteLocalisedName': return 'convidar';
             case 'supportLocalisedName': return 'suporte';
             case 'voicexpLocalisedName': return 'xpvoz';
+            case 'premiumAd0': return 'Você sabia que servidores premium **podem recompensar seus membros com xp por tempo passado conversando em canais de voz**?\n' +
+                                      'Para desbloquear isso assim como [várias outras](<https://github.com/HordLawk/YottaBot/wiki/Premium>) funções incríveis [se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'premiumAd1': return 'Você sabia que servidores premium **podem adicionar cargos ilimitados para seus membros conquistarem ganhando xp**?\n' +
+                                      'Para desbloquear isso assim como [várias outras](<https://github.com/HordLawk/YottaBot/wiki/Premium>) funções incríveis [se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'premiumAd2': return 'Você sabia que servidores premium **podem armazenar listas de versões antigas de mensagens editadas**?\n' +
+                                      'Para desbloquear isso assim como [várias outras](<https://github.com/HordLawk/YottaBot/wiki/Premium>) funções incríveis [se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
         }
     },
 };

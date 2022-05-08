@@ -125,7 +125,7 @@ module.exports = {
         });
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {language: args.language}});
         interaction.client.guildData.get(interaction.guild.id).language = args.language;
-        interaction.reply(channelLanguage.get('newLang'));
+        await interaction.reply(channelLanguage.get('newLang'));
     },
     logattachmentsSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
@@ -139,10 +139,10 @@ module.exports = {
                 content: channelLanguage.get('logattachmentsNoHook'),
                 ephemeral: true,
             });
-            interaction.reply(channelLanguage.get('logattachmentsOnSuccess'));
+            await interaction.reply(channelLanguage.get('logattachmentsOnSuccess'));
         }
         else{
-            interaction.reply(channelLanguage.get('logattachmentsOffSuccess'));
+            await interaction.reply(channelLanguage.get('logattachmentsOffSuccess'));
         }
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {logAttachments: args.enable}});
         interaction.client.guildData.get(interaction.guild.id).logAttachments = args.enable;
@@ -159,28 +159,28 @@ module.exports = {
         });
         const guildDoc = await guild.findByIdAndUpdate(interaction.guild.id, {$set: {[`modlogs.${args.action_type}`]: args.modlog_channel.id}}, {new: true});
         interaction.client.guildData.get(interaction.guild.id).modlogs = guildDoc.modlogs;
-        interaction.reply(channelLanguage.get('modLogsSetSuccess', [[args.action_type], args.modlog_channel]));
+        await interaction.reply(channelLanguage.get('modLogsSetSuccess', [[args.action_type], args.modlog_channel]));
     },
     moderationclearonbanSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {pruneBan: args.days}});
         interaction.client.guildData.get(interaction.guild.id).pruneBan = args.days;
-        interaction.reply(channelLanguage.get('clearOnBanDaysSetSuccess', [args.days]));
+        await interaction.reply(channelLanguage.get('clearOnBanDaysSetSuccess', [args.days]));
     },
     moderationmassbanprotectionSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {antiMassBan: (interaction.client.guildData.get(interaction.guild.id).antiMassBan = (args.enable ? (args.max_bans || 15) : null))}});
-        interaction.reply(channelLanguage.get('massBanProtectionSuccess', [args.enable]));
+        await interaction.reply(channelLanguage.get('massBanProtectionSuccess', [args.enable]));
     },
     moderationglobalbansSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {globalBan: (interaction.client.guildData.get(interaction.guild.id).globalBan = args.enable)}});
-        interaction.reply(channelLanguage.get('globalbanSuccess', [args.enable]));
+        await interaction.reply(channelLanguage.get('globalbanSuccess', [args.enable]));
     },
     betaSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {beta: (interaction.client.guildData.get(interaction.guild.id).beta = args.enable)}});
-        interaction.reply(channelLanguage.get('betaSuccess', [args.enable]));
+        await interaction.reply(channelLanguage.get('betaSuccess', [args.enable]));
     },
     infoSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
@@ -192,7 +192,7 @@ module.exports = {
             })
             .setDescription(channelLanguage.get('configsEmbedDesc', [interaction.client.guildData.get(interaction.guild.id).prefix, interaction.client.guildData.get(interaction.guild.id).language, interaction.client.guildData.get(interaction.guild.id).logAttachments, interaction.client.guildData.get(interaction.guild.id).modlogs, interaction.client.guildData.get(interaction.guild.id).pruneBan, interaction.client.guildData.get(interaction.guild.id).antiMassBan, interaction.client.guildData.get(interaction.guild.id).globalBan, interaction.client.guildData.get(interaction.guild.id).beta]))
             .setTimestamp();
-        interaction.reply({embeds: [embed]});
+        await interaction.reply({embeds: [embed]});
     },
     slashOptions: [
         {

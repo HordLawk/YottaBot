@@ -90,12 +90,24 @@ module.exports = {
             args[opt.name] = opt[opt.type.toLowerCase()] ? opt[opt.type.toLowerCase()] : opt.value;
             if(opt.type === 'USER' && opt.member) args[opt.name].member = opt.member;
         });
-        command[`${subCommandName ? `${(subCommandGroupName ?? '')}${subCommandName}` : 'execute'}Slash`](interaction, args).catch(error => {
+        command[`${subCommandName ? `${(subCommandGroupName ?? '')}${subCommandName}` : 'execute'}Slash`](interaction, args).then(async () => {
+            if(interaction.client.guildData.get(interaction.guild.id).premiumUntil || interaction.client.guildData.get(interaction.guild.id).partner || Math.floor(Math.random() * 100)) return;
+            const msgData = {
+                content: channelLanguage.get(`premiumAd${Math.floor(Math.random() * 3)}`, [command.name]),
+                ephemeral: true,
+            };
+            if(interaction.replied){
+                await interaction.followUp(msgData);
+            }
+            else{
+                await interaction.reply(msgData);
+            }
+        }).catch(error => {
             console.error(error);
             const msgData = {
                 content: channelLanguage.get('error', [command.name]),
                 ephemeral: true,
-            }
+            };
             if(interaction.deferred){
                 interaction.editReply({
                     content: channelLanguage.get('error', [command.name]),

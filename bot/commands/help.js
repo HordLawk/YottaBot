@@ -104,7 +104,7 @@ module.exports = {
         if(command.aliases) embed.addField(channelLanguage.get('aliases'), command.aliases.map(a => `\`${a}\``).join(' '));
         if(command.perm) embed.addField(channelLanguage.get('permissionLevel'), channelLanguage.get(`permission${command.perm}`), true);
         embed.addField('Cooldown', channelLanguage.get('helpCommandCooldown', [command.cooldown]), true);
-        interaction.reply({embeds: [embed]});
+        await interaction.reply({embeds: [embed]});
     },
     slashOptions: [{
         type: 'STRING',

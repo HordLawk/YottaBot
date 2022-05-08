@@ -14,7 +14,7 @@ module.exports = {
             ephemeral: true,
         });
         interaction.client.guildData.get(guildDoc._id).partner = guildDoc.partner;
-        interaction.reply(`The server with Id \`${guildDoc._id}\` had its partner status set to \`${guildDoc.partner}\``);
+        await interaction.reply(`The server with Id \`${guildDoc._id}\` had its partner status set to \`${guildDoc.partner}\``);
     },
     slashOptions: [
         {

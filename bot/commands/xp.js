@@ -217,7 +217,7 @@ module.exports = {
             })
             .setTimestamp()
             .setDescription(channelLanguage.get('xpEmbedDescription', [current, next, Math.floor(user.xp)]));
-        interaction.reply({embeds: [embed]});
+        await interaction.reply({embeds: [embed]});
     },
     rankSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
@@ -371,7 +371,7 @@ module.exports = {
             }).join('\n'))
             .setTimestamp();
         replyData.embeds = [embed];
-        interaction.reply(replyData);
+        await interaction.reply(replyData);
     },
     executeSlash: async function(...args){
         this.infoSlash(...args);

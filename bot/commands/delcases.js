@@ -185,7 +185,7 @@ module.exports = {
             content: channelLanguage.get('caseNotFound', [caseDoc.id]),
             ephemeral: true,
         });
-        interaction.reply(channelLanguage.get('caseDeletedSuccess', [caseDoc.id]));
+        await interaction.reply(channelLanguage.get('caseDeletedSuccess', [caseDoc.id]));
     },
     slashOptions: [
         {

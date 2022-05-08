@@ -56,6 +56,6 @@ module.exports = {
             .addField(channelLanguage.get('infoEmbedSupportTitle'), channelLanguage.get('infoEmbedSupportValue', [interaction.client.configs.support]), true)
             .addField(channelLanguage.get('infoEmbedRepoTitle'), channelLanguage.get('infoEmbedRepoValue'), true)
             .addField(channelLanguage.get('infoEmbedPrivacyTitle'), channelLanguage.get('infoEmbedPrivacyValue'), true);
-        interaction.reply({embeds: [embed]});
+        await interaction.reply({embeds: [embed]});
     },
 };

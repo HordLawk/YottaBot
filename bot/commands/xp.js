@@ -29,7 +29,7 @@ module.exports = {
                 const members = await message.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
                 parcialMemberDocs = parcialMemberDocs.filter(e => members.includes(e.userID));
                 let page = 0;
-                const pageSize = 20;
+                const pageSize = 3;
                 const memberDocsSize = await member.countDocuments({
                     guild: message.guild.id,
                     xp: {$gte: 1},
@@ -50,6 +50,7 @@ module.exports = {
                     userID: message.author.id,
                     xp: {$gte: 1},
                 });
+                let memberDocsSliced = memberDocs.slice(0, pageSize);
                 const embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor({
@@ -57,7 +58,7 @@ module.exports = {
                         iconURL: message.guild.iconURL({dynamic: true}),
                     })
                     .setTimestamp()
-                    .setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
+                    .setDescription(memberDocsSliced.map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}\`#${i + 1} - ${message.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => message.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - message.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
                 if(memberDoc){
                     const queryFilter = {
                         guild: message.guild.id,
@@ -114,7 +115,8 @@ module.exports = {
                         }
                         break;
                     }
-                    embed.setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
+                    memberDocsSliced = memberDocs.slice(0, pageSize);
+                    embed.setDescription(memberDocsSliced.map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}\`#${page * pageSize + (i + 1)} - ${message.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => message.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - message.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
                     buttonPrevious.disabled = !page;
                     buttonNext.disabled = (memberDocs.length <= pageSize);
                     await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({embeds: [embed], components});
@@ -237,8 +239,8 @@ module.exports = {
             guild: interaction.guild.id,
             xp: {$gte: 1},
         }, 'userID xp').sort({xp: -1}).limit(cachePageSize);
-        const members = await interaction.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
-        parcialMemberDocs = parcialMemberDocs.filter(e => members.includes(e.userID));
+        const members = await interaction.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)});
+        parcialMemberDocs = parcialMemberDocs.filter(e => members.has(e.userID));
         let page = 0;
         const pageSize = 20;
         const memberDocsSize = await member.countDocuments({
@@ -250,8 +252,8 @@ module.exports = {
                 guild: interaction.guild.id,
                 xp: {$gte: 1},
             }, 'userID xp').sort({xp: -1}).skip((cachePage++ + 1) * cachePageSize).limit(cachePageSize);
-            const auxMembers = await interaction.guild.members.fetch({user: auxParcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
-            parcialMemberDocs = parcialMemberDocs.concat(auxParcialMemberDocs.filter(e => auxMembers.includes(e.userID)));
+            const auxMembers = await interaction.guild.members.fetch({user: auxParcialMemberDocs.map(e => e.userID)});
+            parcialMemberDocs = parcialMemberDocs.concat(auxParcialMemberDocs.filter(e => auxMembers.has(e.userID)));
             if(((((page + 1) * pageSize) + 1) > parcialMemberDocs.length) && (((cachePage + 1) * cachePageSize) < memberDocsSize)) await fetchMore();
         }
         if((pageSize + 1) > parcialMemberDocs.length) await fetchMore();
@@ -261,6 +263,7 @@ module.exports = {
             userID: interaction.user.id,
             xp: {$gte: 1},
         });
+        let memberDocsSliced = memberDocs.slice(0, pageSize);
         const embed = new MessageEmbed()
             .setColor(interaction.guild.me.displayColor || 0x8000ff)
             .setAuthor({
@@ -268,13 +271,13 @@ module.exports = {
                 iconURL: interaction.guild.iconURL({dynamic: true}),
             })
             .setTimestamp()
-            .setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}**#${i + 1} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
+            .setDescription(memberDocsSliced.map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}\`#${i + 1} - ${interaction.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => interaction.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - interaction.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
         if(memberDoc){
             const queryFilter = {
                 guild: interaction.guild.id,
                 xp: {$gt: memberDoc.xp},
             };
-            if(members.includes(interaction.user.id)) queryFilter.userID = {$in: members};
+            if(members.has(interaction.user.id)) queryFilter.userID = {$in: members.map(e => e.id)};
             const rank = await member.countDocuments(queryFilter);
             embed.setFooter({text: channelLanguage.get('xpRankEmbedFooter', [rank + 1])});
         }
@@ -329,7 +332,8 @@ module.exports = {
                 }
                 break;
             }
-            embed.setDescription(memberDocs.slice(0, pageSize).map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}**#${page * pageSize + (i + 1)} -** <@${e.userID}> **|** \`${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
+            memberDocsSliced = memberDocs.slice(0, pageSize);
+            embed.setDescription(memberDocsSliced.map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}\`#${page * pageSize + (i + 1)} - ${interaction.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => interaction.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - interaction.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
             buttonPrevious.disabled = !page;
             buttonNext.disabled = (memberDocs.length <= pageSize);
             await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({embeds: [embed], components});

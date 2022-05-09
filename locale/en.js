@@ -504,13 +504,13 @@ module.exports = {
             case 'wipeEditionsSuccess': return 'Editions storage was succesffully wiped out';
             case 'noEditsFound': return 'There are no stored previous versions of this message';
             case 'premiumAd0': return 'YottaBot needs your support to keep being fast and reliable while still offering so many free features for everyone\n' +
-                                      'Did you know premium servers **can award their members with xp for time spent talking in voice channels**?\n' +
+                                      'Did you know premium servers can **award their members with xp for time spent talking in voice channels**?\n' +
                                       'To unlock this along with [many other amazing features](<https://github.com/HordLawk/YottaBot/wiki/Premium>) ~~and stop getting these ads~~ [join Patreon](<https://www.patreon.com/YottaBot>)';
             case 'premiumAd1': return 'YottaBot needs your support to keep being fast and reliable while still offering so many free features for everyone\n' +
-                                      'Did you know premium servers **can add unlimited roles for members to achieve by earning xp**?\n' +
+                                      'Did you know premium servers can **add unlimited roles for members to achieve by earning xp**?\n' +
                                       'To unlock this along with [many other amazing features](<https://github.com/HordLawk/YottaBot/wiki/Premium>) ~~and stop getting these ads~~ [join Patreon](<https://www.patreon.com/YottaBot>)';
             case 'premiumAd2': return 'YottaBot needs your support to keep being fast and reliable while still offering so many free features for everyone\n' +
-                                      'Did you know premium servers **can store lists of previous versions of edited messages**?\n' +
+                                      'Did you know premium servers can **store lists of previous versions of edited messages**?\n' +
                                       'To unlock this along with [many other amazing features](<https://github.com/HordLawk/YottaBot/wiki/Premium>) ~~and stop getting these ads~~ [join Patreon](<https://www.patreon.com/YottaBot>)';
         }
     },

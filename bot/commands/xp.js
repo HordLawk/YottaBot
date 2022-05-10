@@ -29,7 +29,7 @@ module.exports = {
                 const members = await message.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
                 parcialMemberDocs = parcialMemberDocs.filter(e => members.includes(e.userID));
                 let page = 0;
-                const pageSize = 3;
+                const pageSize = 20;
                 const memberDocsSize = await member.countDocuments({
                     guild: message.guild.id,
                     xp: {$gte: 1},

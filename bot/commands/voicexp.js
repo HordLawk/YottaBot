@@ -32,7 +32,7 @@ module.exports = {
             case 'ignore': {
                 if(!['add', 'remove'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 let discordChannel = message.guild.channels.cache.get(args[2].match(/^(?:<#)?(\d{17,19})>?$/)?.[1]);
-                if(!discordChannel || (discordChannel.type != 'GUILD_VOICE')) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!discordChannel || (discordChannel.type !== 'GUILD_VOICE')) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 await channel.findOneAndUpdate({
                     _id: discordChannel.id,
                     guild: message.guild.id,

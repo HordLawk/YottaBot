@@ -39,11 +39,11 @@ module.exports = {
         const subCommandName = interaction.options.getSubcommand(false);
         const command = interaction.isContextMenu() ? interaction.client.commands.find(cmd => (cmd.contextName === commandName)) : interaction.client.commands.get(commandName);
         if(!command) throw new Error('Invalid command.');
-        if((command.dev && (interaction.user.id != interaction.client.application.owner.id)) || (command.alpha && !interaction.client.guildData.get(interaction.guild.id).alpha)) return interaction.reply({
+        if((command.dev && (interaction.user.id !== interaction.client.application.owner.id)) || (command.alpha && !interaction.client.guildData.get(interaction.guild.id).alpha)) return interaction.reply({
             content: channelLanguage.get('invalidCommand'),
             ephemeral: true,
         });
-        if(interaction.client.configs.maintenance && (interaction.user.id != interaction.client.application.owner.id)) return interaction.reply({
+        if(interaction.client.configs.maintenance && (interaction.user.id !== interaction.client.application.owner.id)) return interaction.reply({
             content: channelLanguage.get('maintenance'),
             ephemeral: true,
         });
@@ -71,7 +71,7 @@ module.exports = {
         const now = Date.now();
         const timestamps = interaction.client.cooldowns.get(command.name);
         const cooldownAmount = (command.cooldown / (1 + (!!interaction.client.guildData.get(interaction.guild?.id)?.premiumUntil || !!interaction.client.guildData.get(interaction.guild?.id)?.partner))) * 1000;
-        if(timestamps.has(interaction.user.id) && (interaction.user.id != interaction.client.application.owner.id)){
+        if(timestamps.has(interaction.user.id) && (interaction.user.id !== interaction.client.application.owner.id)){
             const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
             if(now < expirationTime){
                 const timeLeft = (expirationTime - now) / 1000;

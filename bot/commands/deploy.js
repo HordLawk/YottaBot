@@ -19,13 +19,13 @@ module.exports = {
                 dm_permission: !command.guildOnly,
                 ...((args.type === 'CHAT_INPUT') ? {
                     name: command.name,
-                    name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang != 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}LocalisedName`)}), {}),
+                    name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang !== 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}LocalisedName`)}), {}),
                     description: command.description(interaction.client.langs['en']),
-                    description_localizations: Object.values(interaction.client.langs).filter(e => (e.lang != 'en')).reduce((acc, e) => ({...acc, [e.code]: command.description(e)}), {}),
+                    description_localizations: Object.values(interaction.client.langs).filter(e => (e.lang !== 'en')).reduce((acc, e) => ({...acc, [e.code]: command.description(e)}), {}),
                     options: command.slashOptions,
                 } : {
                     name: command.contextName,
-                    name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang != 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}ContextName`)}), {}),
+                    name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang !== 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}ContextName`)}), {}),
                 }),
             });
             await interaction.reply(channelLanguage.get('deploySuccess', [slash.name, slash.type]));
@@ -50,13 +50,13 @@ module.exports = {
                 dm_permission: !command.guildOnly,
                 ...((slash.type === 'CHAT_INPUT') ? {
                     name: command.name,
-                    name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang != 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}LocalisedName`)}), {}),
+                    name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang !== 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}LocalisedName`)}), {}),
                     description: command.description(interaction.client.langs['en']),
-                    description_localizations: Object.values(interaction.client.langs).filter(e => (e.lang != 'en')).reduce((acc, e) => ({...acc, [e.code]: command.description(e)}), {}),
+                    description_localizations: Object.values(interaction.client.langs).filter(e => (e.lang !== 'en')).reduce((acc, e) => ({...acc, [e.code]: command.description(e)}), {}),
                     options: command.slashOptions,
                 } : {
                     name: command.contextName,
-                    name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang != 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}ContextName`)}), {}),
+                    name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang !== 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}ContextName`)}), {}),
                 })
             });
             await interaction.reply(channelLanguage.get('deploySuccess', [slash.name, slash.type]));

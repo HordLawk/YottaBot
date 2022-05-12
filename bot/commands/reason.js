@@ -24,7 +24,7 @@ module.exports = {
         });
         if(!current) return message.reply(channelLanguage.get('invCase'));
         const member = current.executor && await message.guild.members.fetch(current.executor).catch(() => null);
-        if(member && (current.executor != message.author.id) && ((message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || (message.guild.ownerId === member.id))) return message.reply(channelLanguage.get('youCantEditCase'));
+        if(member && (current.executor !== message.author.id) && ((message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || (message.guild.ownerId === member.id))) return message.reply(channelLanguage.get('youCantEditCase'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
         current.reason = reason;
         await current.save();

@@ -52,7 +52,7 @@ module.exports = {
                     if(member.joinedTimestamp) embed.addField(channelLanguage.get('memberleaveEmbedJoinedTitle'), channelLanguage.get('memberleaveEmbedJoinedValue', [Math.round(member.joinedTimestamp / 1000)]));
                     if(member.communicationDisabledUntilTimestamp > Date.now()) embed.addField(channelLanguage.get('memberleaveEmbedTimeoutTitle'), channelLanguage.get('memberleaveEmbedTimeoutValue', [Math.round(member.communicationDisabledUntilTimestamp / 1000)]));
                     if(member.premiumSince) embed.addField(channelLanguage.get('memberleaveEmbedBoostTitle'), channelLanguage.get('memberleaveEmbedBoostValue', [Math.round(member.premiumSinceTimestamp) / 1000]));
-                    const memberRoles = member.roles.cache.filter(e => (e.id != member.guild.id));
+                    const memberRoles = member.roles.cache.filter(e => (e.id !== member.guild.id));
                     if(memberRoles.size) embed.addField(channelLanguage.get('memberleaveEmbedRolesTitle'), channelLanguage.get('memberleaveEmbedRolesValue', [memberRoles]));
                     await hook.send({
                         embeds: [embed],
@@ -64,7 +64,7 @@ module.exports = {
         }
         if(!member.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)) return;
         const audits = await member.guild.fetchAuditLogs({limit: 1}).catch(() => null);
-        if(!audits || (audits.entries.first()?.action != GuildAuditLogs.Actions.MEMBER_KICK) || (audits.entries.first()?.target.id != member.id) || audits.entries.first()?.executor.bot) return;
+        if(!audits || (audits.entries.first()?.action != GuildAuditLogs.Actions.MEMBER_KICK) || (audits.entries.first()?.target.id !== member.id) || audits.entries.first()?.executor.bot) return;
         const reason = audits.entries.first().reason?.slice(0, 500);
         const guildDoc = await guild.findByIdAndUpdate(member.guild.id, {$inc: {counterLogs: 1}});
         member.client.guildData.get(member.guild.id).counterLogs = guildDoc.counterLogs + 1;

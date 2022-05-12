@@ -19,6 +19,6 @@ module.exports = {
             force: true,
         }).catch(() => null);
         if(!member) return;
-        await member.roles.set(member.roles.cache.filter(e => (e.id != discordRole.id)).map(e => e.id));
+        await member.roles.set(member.roles.cache.filter(e => (e.id !== discordRole.id)).map(e => e.id));
     },
 };

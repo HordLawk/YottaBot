@@ -83,9 +83,9 @@ module.exports = {
         if(userDoc && userDoc.blacklisted) return;
         const [commandName, ...args] = message.content.slice(prefix.length).toLowerCase().split(/\s+/g);
         const command = message.client.commands.get(commandName) || message.client.commands.find(cmd => (cmd.aliases && cmd.aliases.includes(commandName)));
-        if(!command || (command.dev && (message.author.id != message.client.application.owner.id)) || (command.alpha && !message.client.guildData.get(message.guild.id).alpha) || (!command.execute && (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === command.name))?.type != 'CHAT_INPUT'))) return;
+        if(!command || (command.dev && (message.author.id !== message.client.application.owner.id)) || (command.alpha && !message.client.guildData.get(message.guild.id).alpha) || (!command.execute && (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === command.name))?.type !== 'CHAT_INPUT'))) return;
         if(!command.execute) return message.reply(channelLanguage.get('slashOnly', [command.name]));
-        if(message.client.configs.maintenance && (message.author.id != message.client.application.owner.id)) return message.reply(channelLanguage.get('maintenance'));
+        if(message.client.configs.maintenance && (message.author.id !== message.client.application.owner.id)) return message.reply(channelLanguage.get('maintenance'));
         if(command.guildOnly && !message.guild) return message.reply(channelLanguage.get('guildOnly'));
         if(command.premium && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) return message.reply(channelLanguage.get('premiumCommand', [prefix]));
         if(command.beta && !message.client.guildData.get(message.guild.id).beta) return message.reply(channelLanguage.get('betaCommand'));
@@ -99,7 +99,7 @@ module.exports = {
         const now = Date.now();
         const timestamps = message.client.cooldowns.get(command.name);
         const cooldownAmount = (command.cooldown / (1 + (!!message.client.guildData.get(message.guild?.id)?.premiumUntil || !!message.client.guildData.get(message.guild?.id)?.partner))) * 1000;
-        if(timestamps.has(message.author.id) && (message.author.id != message.client.application.owner.id)){
+        if(timestamps.has(message.author.id) && (message.author.id !== message.client.application.owner.id)){
             const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
             if(now < expirationTime){
                 const timeLeft = (expirationTime - now) / 1000;

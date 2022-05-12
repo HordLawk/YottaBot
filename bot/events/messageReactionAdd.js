@@ -19,6 +19,6 @@ module.exports = {
             force: true,
         }).catch(() => null);
         if(!member) return;
-        await member.roles.set(member.roles.cache.filter(e => (!menuDoc.emojis.some(ee => (e.id === ee.roleID)) || (!menuDoc.toggle && (e.id != discordRole.id)))).map(e => e.id).concat([discordRole.id]));
+        await member.roles.set(member.roles.cache.filter(e => (!menuDoc.emojis.some(ee => (e.id === ee.roleID)) || (!menuDoc.toggle && (e.id !== discordRole.id)))).map(e => e.id).concat([discordRole.id]));
     },
 };

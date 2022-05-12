@@ -3,7 +3,7 @@ const {MessageEmbed, Permissions} = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
-const locales = fs.readdirSync(path.join(__dirname, '..', '..', 'locale')).filter(file => file.endsWith('.js')).map(e => require(`../../locale/${e}`)).filter(e => (e.lang != 'en'));
+const locales = fs.readdirSync(path.join(__dirname, '..', '..', 'locale')).filter(file => file.endsWith('.js')).map(e => require(`../../locale/${e}`)).filter(e => (e.lang !== 'en'));
 const getLocalisedName = name => locales.reduce((acc, e) => ({...acc, [e.code]: e.get(`${name}LocalisedName`)}), {});
 
 module.exports = {

@@ -8,8 +8,8 @@ module.exports = {
     execute: async (oldMember, newMember) => {
         if(!newMember.guild.available) return;
         if(newMember.partial) await newMember.fetch();
-        if(!oldMember.partial && (oldMember.premiumSinceTimestamp != newMember.premiumSinceTimestamp)){
-            if((newMember.guild.id != newMember.client.configs.supportID) || oldMember.premiumSince || !newMember.premiumSince) return;
+        if(!oldMember.partial && (oldMember.premiumSinceTimestamp !== newMember.premiumSinceTimestamp)){
+            if((newMember.guild.id !== newMember.client.configs.supportID) || oldMember.premiumSince || !newMember.premiumSince) return;
             const userDoc = await user.findById(newMember.id);
             if(userDoc?.boostUntil) return;
             await user.findByIdAndUpdate(newMember.id, {

@@ -21,7 +21,7 @@ module.exports = {
         if((args.length < 4) || !['create', 'edit'].includes(args[0])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         var toggle;
         if(toggle = (args[args.length - 1] === 'toggle')) args.splice(-1, 1);
-        if((args.length % 2) != 0) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+        if(args.length % 2) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         if(args.length > 42) return message.reply(channelLanguage.get('maxRolesMenu'));
         if(args[0] === 'create'){
             let discordChannel = message.guild.channels.cache.get((args[1].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
@@ -39,7 +39,7 @@ module.exports = {
             if(roles.some(e => (!e || (e.id === message.guild.id)))) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
             if(roles.some(e => (!e.editable || e.managed))) return message.reply(channelLanguage.get('manageRole'));
             if(roles.some(e => (e.position >= message.member.roles.highest.position))) return message.reply(channelLanguage.get('memberManageRole'));
-            let emojis = args.slice(2).filter((e, i) => ((i % 2) != 0)).map(e => (message.guild.emojis.cache.get(e.match(/^(?:<a?:\w+:)?(\d{17,19})>?$/)?.[1]) ?? message.guild.emojis.cache.find(ee => (ee.name.toLowerCase() === e.toLowerCase())) ?? message.guild.emojis.cache.find(ee => ee.name.toLowerCase().startsWith(e.toLowerCase())) ?? message.guild.emojis.cache.find(ee => ee.name.toLowerCase().includes(e.toLowerCase())) ?? parse(e)[0]?.text));
+            let emojis = args.slice(2).filter((_, i) => (i % 2)).map(e => (message.guild.emojis.cache.get(e.match(/^(?:<a?:\w+:)?(\d{17,19})>?$/)?.[1]) ?? message.guild.emojis.cache.find(ee => (ee.name.toLowerCase() === e.toLowerCase())) ?? message.guild.emojis.cache.find(ee => ee.name.toLowerCase().startsWith(e.toLowerCase())) ?? message.guild.emojis.cache.find(ee => ee.name.toLowerCase().includes(e.toLowerCase())) ?? parse(e)[0]?.text));
             if(emojis.some(e => (!e || (e.id && (!e.available || e.managed))))) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
             if(emojis.some(e => (emojis.filter(ee => ((ee.id || ee) === (e.id || e))).length > 1))) return message.reply(channelLanguage.get('uniqueEmoji'));
             let loadmsg = await message.reply(channelLanguage.get('loading'));
@@ -91,7 +91,7 @@ module.exports = {
             if(roles.some(e => (!e || (e.id === message.guild.id)))) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
             if(roles.some(e => (!e.editable || e.managed))) return message.reply(channelLanguage.get('manageRole'));
             if(roles.some(e => (e.position >= message.member.roles.highest.position))) return message.reply(channelLanguage.get('memberManageRole'));
-            let emojis = args.slice(2).filter((e, i) => ((i % 2) != 0)).map(e => (message.guild.emojis.cache.get(e.match(/^(?:<a?:\w+:)?(\d{17,19})>?$/)?.[1]) ?? message.guild.emojis.cache.find(ee => (ee.name.toLowerCase() === e.toLowerCase())) ?? message.guild.emojis.cache.find(ee => ee.name.toLowerCase().startsWith(e.toLowerCase())) ?? message.guild.emojis.cache.find(ee => ee.name.toLowerCase().includes(e.toLowerCase())) ?? parse(e)[0]?.text));
+            let emojis = args.slice(2).filter((_, i) => (i % 2)).map(e => (message.guild.emojis.cache.get(e.match(/^(?:<a?:\w+:)?(\d{17,19})>?$/)?.[1]) ?? message.guild.emojis.cache.find(ee => (ee.name.toLowerCase() === e.toLowerCase())) ?? message.guild.emojis.cache.find(ee => ee.name.toLowerCase().startsWith(e.toLowerCase())) ?? message.guild.emojis.cache.find(ee => ee.name.toLowerCase().includes(e.toLowerCase())) ?? parse(e)[0]?.text));
             if(emojis.some(e => (!e || (e.id && (!e.available || e.managed))))) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
             if(emojis.some(e => (emojis.filter(ee => ((ee.id || ee) === (e.id || e))).length > 1))) return message.reply(channelLanguage.get('uniqueEmoji'));
             let loadmsg = await message.reply(channelLanguage.get('loading'));

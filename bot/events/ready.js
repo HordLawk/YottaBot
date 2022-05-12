@@ -126,7 +126,7 @@ module.exports = {
             }
         }
         const renewBoost = async () => {
-            if(process.env.NODE_ENV != 'production') return;
+            if(process.env.NODE_ENV !== 'production') return;
             const endedBoost = await user.find({boostUntil: {$lt: Date.now()}});
             if(!endedBoost.length) return;
             for(userDoc of endedBoost){
@@ -166,7 +166,7 @@ module.exports = {
                 }
                 for(let [id, minutes] of inVoice.intersect(guildVoiceXpCd.get(voiceGuild._id))){
                     guildVoiceXpCd.get(voiceGuild._id).set(id, ++minutes);
-                    if((minutes % voiceGuild.voiceXpCooldown) != 0) continue;
+                    if(minutes % voiceGuild.voiceXpCooldown) continue;
                     let discordMember = inVoice.get(id).member;
                     let multiplier = roleDocs.filter(e => (e.xpMultiplier && discordMember.roles.cache.has(e.roleID))).sort((a, b) => (b.xpMultiplier - a.xpMultiplier))[0]?.xpMultiplier ?? 1;
                     let doc = await member.findOneAndUpdate({

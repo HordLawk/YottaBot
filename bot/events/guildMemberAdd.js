@@ -20,7 +20,7 @@ module.exports = {
                     })
                     .setThumbnail(member.user.displayAvatarURL({dynamic: true}))
                     .setDescription(member.toString());
-                if((member.user.flags?.bitfield || member.user.bot) && member.guild.roles.everyone.permissionsIn(hook.channelId).has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)){
+                if((member.user.flags?.toArray().length || member.user.bot) && member.guild.roles.everyone.permissionsIn(hook.channelId).has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)){
                     const badges = {
                         DISCORD_EMPLOYEE: '<:staff:967043602012315658>',
                         PARTNERED_SERVER_OWNER: '<:partner:967043547561852978>',

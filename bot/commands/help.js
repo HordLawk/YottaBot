@@ -293,7 +293,7 @@ module.exports = {
             })().catch(err => interaction.client.handlers.button(err, i)));
             collectorCategory.on('end', async () => {
                 menuCategory.disabled = true;
-                await reply.edit({components});
+                await interaction.editReply({components});
             });
             const collectorCommand = reply.createMessageComponentCollector({
                 filter: componentInteraction => ((componentInteraction.user.id === interaction.user.id) && (componentInteraction.customId === 'command')),
@@ -331,7 +331,7 @@ module.exports = {
             })().catch(err => interaction.client.handlers.button(err, i)));
             collectorCommand.on('end', async () => {
                 menuCommand.disabled = true;
-                await reply.edit({components});
+                await interaction.editReply({components});
             });
         }
         else{

@@ -512,6 +512,15 @@ module.exports = {
             case 'premiumAd2': return 'YottaBot needs your support to keep being fast and reliable while still offering so many free features for everyone\n' +
                                       'Did you know premium servers can **store lists of previous versions of edited messages**?\n' +
                                       'To unlock this along with [many other amazing features](<https://github.com/HordLawk/YottaBot/wiki/Premium>) ~~and stop getting these ads~~ [join Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'selectCategory': return 'Select a category';
+            case 'helpHome': return 'Home';
+            case 'selectCommand': return 'Select a command';
+            case 'selectCategoryFirst': return 'Select a category first';
+            case 'EmbedHelpCategory1Author': return 'Informational commands';
+            case 'EmbedHelpCategory2Author': return 'Administrative commands';
+            case 'EmbedHelpCategory3Author': return 'Moderative commands';
+            case 'EmbedHelpCategory4Author': return 'Levelling commands';
+            case 'EmbedHelpCategory5Author': return 'Miscellaneous commands';
         }
     },
 };

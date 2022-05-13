@@ -39,7 +39,7 @@ module.exports = {
     execute: async (message, args) => {
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
         if(!message.member.permissionsIn(message.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return message.reply(channelLanguage.get('cantPruneMessages'));
-        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return message.reply(channelLanguage.get('botCantPruneMessages'));
+        if(!message.channel.viewable || !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return message.reply(channelLanguage.get('botCantPruneMessages'));
         const amount = parseInt(args[0]) + 1;
         if(isNaN(amount) || !isFinite(amount) || (amount < 2) || (amount > 999)) return message.reply(channelLanguage.get('invalidPruneAmount'));
         let messages;
@@ -100,7 +100,7 @@ ${e.content}
     },
     executeSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
-        if(!interaction.guild.me.permissionsIn(interaction.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return interaction.reply({
+        if(!interaction.channel.viewable || !interaction.guild.me.permissionsIn(interaction.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return interaction.reply({
             content: channelLanguage.get('botCantPruneMessages'),
             ephemeral: true,
         });

@@ -533,6 +533,15 @@ module.exports = {
             case 'premiumAd2': return 'YottaBot precisa do seu apoio para se manter rápido e consistente enquanto continua oferencendo tantas funções gratuitas para todos\n' +
                                       'Você sabia que servidores premium podem **armazenar listas de versões antigas de mensagens editadas**?\n' +
                                       'Para desbloquear isso assim como [várias outras funções incríveis](<https://github.com/HordLawk/YottaBot/wiki/Premium>) ~~e parar de receber esses anúncios~~ [se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'selectCategory': return 'Selecione uma categoria';
+            case 'helpHome': return 'Página inicial';
+            case 'selectCommand': return 'Selecione um comando';
+            case 'selectCategoryFirst': return 'Selecione uma categoria primeiro';
+            case 'EmbedHelpCategory1Author': return 'Comandos informativos';
+            case 'EmbedHelpCategory2Author': return 'Comandos administrativos';
+            case 'EmbedHelpCategory3Author': return 'Comandos moderativos';
+            case 'EmbedHelpCategory4Author': return 'Comando de nivelamento';
+            case 'EmbedHelpCategory5Author': return 'Outros comandos';
         }
     },
 };

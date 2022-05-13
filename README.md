@@ -42,11 +42,10 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] button to edit action reason in the command reply **
 - [ ] command to add a sticker from an attachment \*\***
 - [x] message context menu that shows previous versions of the target message
-- [x] message context menu to prune after the target
 - [ ] voice channels join and leave logs
 - [ ] add support for more payment methods to buy premium
 - [ ] count use of each command by every member
-- [ ] add navigation select menus to the help command
+- [x] add navigation select menus to the help command
 - [ ] make some crypto and hashing fun commands
 - [x] delete case log message on `delcases case (ID)`
 

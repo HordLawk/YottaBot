@@ -33,7 +33,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 ## W.I.P
 - [ ] use slash commands; context menus; buttons; and stuff * ** ***
 - [ ] add rss feeds for youtube notifications
-- [x] command to delete cases
+- [ ] command to delete cases
 - [ ] `poll` command * \** \***
 - [ ] command to manage emojis
 - [ ] automated punishments when reaching a chosen amount of another type of punishment
@@ -48,7 +48,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] count use of each command by every member
 - [ ] add navigation select menus to the help command
 - [ ] make some crypto and hashing fun commands
-- [ ] delete case log message on `delcases case (ID)`
+- [x] delete case log message on `delcases case (ID)`
 
 \* on hold until Discord adds the date and time option type
 

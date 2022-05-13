@@ -185,6 +185,11 @@ module.exports = {
             content: channelLanguage.get('caseNotFound', [caseDoc.id]),
             ephemeral: true,
         });
+        const modlogChannel = interaction.guild.channels.cache.get(interaction.client.guildData.get(interaction.guild.id).modlogs[caseDoc.type]);
+        if(modlogChannel && modlogChannel.viewable && interaction.guild.me.permissionsIn(modlogChannel).has(Permissions.FLAGS.MANAGE_MESSAGES)){
+            const logMessage = await modlogChannel.messages.fetch(caseDoc.logMessage).catch(() => null);
+            if(logMessage) await logMessage.delete();
+        }
         await interaction.reply(channelLanguage.get('caseDeletedSuccess', [caseDoc.id]));
     },
     slashOptions: [

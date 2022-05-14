@@ -83,6 +83,10 @@ module.exports = {
                 if(i.values[0] === 'home'){
                     menuCommand.disabled = true;
                     menuCommand.placeholder = channelLanguage.get('selectCategoryFirst'),
+                    menuCommand.options = [{
+                        label: '\u200B',
+                        value: '\u200B',
+                    }];
                     menuCategory.options = menuCategory.options.map(e => ({
                         label: e.label,
                         value: e.value,
@@ -257,6 +261,10 @@ module.exports = {
                 if(i.values[0] === 'home'){
                     menuCommand.disabled = true;
                     menuCommand.placeholder = channelLanguage.get('selectCategoryFirst'),
+                    menuCommand.options = [{
+                        label: '\u200B',
+                        value: '\u200B',
+                    }];
                     menuCategory.options = menuCategory.options.map(e => ({
                         label: e.label,
                         value: e.value,

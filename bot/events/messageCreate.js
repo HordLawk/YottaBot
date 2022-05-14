@@ -110,7 +110,7 @@ module.exports = {
         setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
         message.channel.sendTyping();
         command.execute(message, args).then(async () => {
-            if(message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner || Math.floor(Math.random() * 1000)) return;
+            if(Math.floor(Math.random() * 1000) || (message.guild && (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner))) return;
             const embed = new MessageEmbed()
                 .setColor(0x2f3136)
                 .setDescription(channelLanguage.get(`premiumAd${Math.floor(Math.random() * 3)}`, [command.name]));

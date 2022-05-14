@@ -91,7 +91,7 @@ module.exports = {
             if(opt.type === 'USER' && opt.member) args[opt.name].member = opt.member;
         });
         command[`${subCommandName ? `${(subCommandGroupName ?? '')}${subCommandName}` : 'execute'}Slash`](interaction, args).then(async () => {
-            if(interaction.client.guildData.get(interaction.guild.id).premiumUntil || interaction.client.guildData.get(interaction.guild.id).partner || Math.floor(Math.random() * 100)) return;
+            if(Math.floor(Math.random() * 100) || (interaction.guild && (interaction.client.guildData.get(interaction.guild.id).premiumUntil || interaction.client.guildData.get(interaction.guild.id).partner))) return;
             const msgData = {
                 content: channelLanguage.get(`premiumAd${Math.floor(Math.random() * 3)}`, [command.name]),
                 ephemeral: true,

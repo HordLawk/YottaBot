@@ -38,16 +38,16 @@ module.exports = {
     guildOnly: true,
     execute: async (message, args) => {
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
-        if(!message.member.permissionsIn(message.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return message.reply(channelLanguage.get('cantPruneMessages'));
-        if(!message.channel.viewable || !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return message.reply(channelLanguage.get('botCantPruneMessages'));
+        if(!message.member.permissionsIn(message.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return await message.reply(channelLanguage.get('cantPruneMessages'));
+        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return await message.reply(channelLanguage.get('botCantPruneMessages'));
         const amount = parseInt(args[0]) + 1;
-        if(isNaN(amount) || !isFinite(amount) || (amount < 2) || (amount > 999)) return message.reply(channelLanguage.get('invalidPruneAmount'));
+        if(isNaN(amount) || !isFinite(amount) || (amount < 2) || (amount > 999)) return await message.reply(channelLanguage.get('invalidPruneAmount'));
         let messages;
         if(args[1]){
             const id = args[1].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
-            if(!id) return message.reply(channelLanguage.get('invUser'));
+            if(!id) return await message.reply(channelLanguage.get('invUser'));
             const user = await message.client.users.fetch(id).catch(() => null);
-            if(!user) return message.reply(channelLanguage.get('invUser'));
+            if(!user) return await message.reply(channelLanguage.get('invUser'));
             const msgs = await chunkFetch(amount, message.channel, user.id);
             messages = await chunkDeleteMessages(message.channel, msgs.filter(e => !e.pinned));
         }
@@ -100,11 +100,11 @@ ${e.content}
     },
     executeSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
-        if(!interaction.channel.viewable || !interaction.guild.me.permissionsIn(interaction.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return interaction.reply({
+        if(!interaction.channel.viewable || !interaction.guild.me.permissionsIn(interaction.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return await interaction.reply({
             content: channelLanguage.get('botCantPruneMessages'),
             ephemeral: true,
         });
-        if(isNaN(args.amount) || !isFinite(args.amount) || (args.amount < 2) || (args.amount > 1000)) return interaction.reply({
+        if(isNaN(args.amount) || !isFinite(args.amount) || (args.amount < 2) || (args.amount > 1000)) return await interaction.reply({
             content: channelLanguage.get('invalidPruneAmount'),
             ephemeral: true,
         });

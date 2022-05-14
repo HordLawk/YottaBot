@@ -10,7 +10,7 @@ module.exports = {
     perm: Permissions.FLAGS.MANAGE_CHANNELS,
     executeSlash: async interaction => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
-        if(!interaction.channel.viewable || !interaction.guild.me.permissionsIn(interaction.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return interaction.reply({
+        if(!interaction.channel.viewable || !interaction.guild.me.permissionsIn(interaction.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return await interaction.reply({
             content: channelLanguage.get('botCantPruneMessages'),
             ephemeral: true,
         });

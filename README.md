@@ -31,31 +31,27 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - You agree to not submit any issues, features, or pull requests related to bugs exclusively related to self-hosting.
 
 ## W.I.P
-- [ ] use slash commands; context menus; buttons; and stuff * ** ***
+- [ ] use slash commands; context menus; buttons; and stuff * ***
 - [ ] add rss feeds for youtube notifications
-- [ ] command to delete cases
-- [ ] `poll` command * \** \***
+- [ ] `poll` command * \**
 - [ ] command to manage emojis
 - [ ] automated punishments when reaching a chosen amount of another type of punishment
 - [ ] other streaming notifications for premium
-- [ ] create and edit role menus with built in forms \** \***
-- [ ] button to edit action reason in the command reply **
-- [ ] command to add a sticker from an attachment \*\***
-- [x] message context menu that shows previous versions of the target message
+- [ ] button to edit action reason in the command reply
+- [ ] command to add a sticker from an attachment \*\**
 - [ ] voice channels join and leave logs
 - [ ] add support for more payment methods to buy premium
-- [ ] count use of each command by every member
+- [x] count use of each command by every member
 - [x] add navigation select menus to the help command
 - [ ] make some crypto and hashing fun commands
 - [x] delete case log message on `delcases case (ID)`
+- [ ] userinfo command
 
 \* on hold until Discord adds the date and time option type
 
-** on hold until discord.js adds support for modal interactions
+\** on hold until Discord adds select menus for modals
 
-\*** on hold until Discord adds select menus for modals
-
-\*\*** on hold until Discord adds the file option type
+\*\** on hold until Discord adds the file option type
 
 ## Credits
 - [@elloramir](https://github.com/elloramir) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

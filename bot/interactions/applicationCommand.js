@@ -2,11 +2,12 @@ const guild = require('../../schemas/guild.js');
 const role = require('../../schemas/role.js');
 const channel = require('../../schemas/channel.js');
 const user = require('../../schemas/user.js');
-const {Collection, Permissions} = require('discord.js');
+const member = require('../../schemas/member.js');
+const {Collection} = require('discord.js');
 
 module.exports = {
     name: 'APPLICATION_COMMAND',
-    execute: async interaction => {
+    execute: async function(interaction){
         if(interaction.guild && !interaction.guild.available) throw new Error('Invalid interaction.');
         // var roleDocs;
         // var savedChannel;
@@ -56,17 +57,6 @@ module.exports = {
             content: channelLanguage.get('betaCommand'),
             ephemeral: true,
         });
-        // if(interaction.guild && !interaction.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
-        //     const roles = roleDocs.filter(e => (e.commandPermissions.id(command.name) && interaction.member.roles.cache.has(e.roleID)));
-        //     if((!roles.length && command.perm && !interaction.member.permissions.has(command.perm)) || (roles.length && roles.some(e => !e.commandPermissions.id(command.name).allow) && !roles.some(e => e.commandPermissions.id(command.name).allow))) return interaction.reply({
-        //         content: channelLanguage.get('forbidden'),
-        //         ephemeral: true,
-        //     });
-        //     if(savedChannel && savedChannel.ignoreCommands.includes(command.name) && interaction.guild.me.permissionsIn(interaction.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return interaction.reply({
-        //         content: channelLanguage.get('disabled'),
-        //         ephemeral: true,
-        //     });
-        // }
         if(!interaction.client.cooldowns.has(command.name)) interaction.client.cooldowns.set(command.name, new Collection());
         const now = Date.now();
         const timestamps = interaction.client.cooldowns.get(command.name);
@@ -83,6 +73,26 @@ module.exports = {
         }
         timestamps.set(interaction.user.id, now);
         setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
+        if(interaction.inGuild()){
+            member.findOneAndUpdate({
+                guild: interaction.guild.id,
+                userID: interaction.user.id,
+                "commandUses._id": command.name,
+            }, {$inc: {"commandUses.$.count": 1}}).then(async (doc, err) => {
+                if(err) throw err;
+                if(doc) return;
+                await member.findOneAndUpdate({
+                    guild: interaction.guild.id,
+                    userID: interaction.user.id,
+                }, {$addToSet: {commandUses: {
+                    _id: command.name,
+                    count: 1,
+                }}}, {
+                    upsert: true,
+                    setDefaultsOnInsert: true,
+                });
+            }).catch(err => interaction.client.handlers.event(err, this, [interaction]));
+        }
         const args = {};
         let options = interaction.options.data;
         if(subCommandName) options = subCommandGroupName ? interaction.options.data[0].options[0].options : interaction.options.data[0].options;

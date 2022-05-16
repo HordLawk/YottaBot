@@ -16,6 +16,13 @@ const memberSchema = new Schema({
         default: 0,
     },
     autoBanned: Boolean,
+    commandUses: [new Schema({
+        _id: String,
+        count: {
+            type: Number,
+            default: 0,
+        },
+    })],
 });
 
 module.exports = model('member', memberSchema);

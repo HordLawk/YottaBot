@@ -68,8 +68,9 @@ module.exports = {
             });
             const discordChannel = interaction.guild.channels.cache.get(interaction.client.guildData.get(interaction.guild.id).modlogs.ban);
             let banLogMsg;
+            let banLogEmbed;
             if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(interaction.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) && discordChannel.permissionsFor(interaction.guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
-                const banLogEmbed = new MessageEmbed()
+                banLogEmbed = new MessageEmbed()
                     .setColor(0xff0000)
                     .setAuthor({
                         name: channelLanguage.get('banEmbedAuthor', [interaction.user.tag, user.tag]),
@@ -94,17 +95,16 @@ module.exports = {
                 style: 'DANGER',
                 emoji: '↩️',
             };
-            // const buttonEdit = {
-            //     type: 'BUTTON',
-            //     label: channelLanguage.get('editReason'),
-            //     customId: 'edit',
-            //     style: 'PRIMARY',
-            //     emoji: '✏️',
-            // };
+            const buttonEdit = {
+                type: 'BUTTON',
+                label: channelLanguage.get('editReason'),
+                customId: 'edit',
+                style: 'PRIMARY',
+                emoji: '✏️',
+            };
             const components = [{
                 type: 'ACTION_ROW',
-                // components: [buttonEdit, buttonUndo],
-                components: [buttonUndo],
+                components: [buttonEdit, buttonUndo],
             }];
             await interaction.editReply({components});
             const collectorUndo = reply.createMessageComponentCollector({
@@ -155,21 +155,61 @@ module.exports = {
             })(i).catch(err => interaction.client.handlers.button(err, i)))
             collectorUndo.on('end', async () => {
                 buttonUndo.disabled = true;
-                // await reply.edit({components});
                 await interaction.editReply({components});
             });
-            // const collectorEdit = reply.createMessageComponentCollector({
-            //     filter: componentInteraction => ((componentInteraction.user.id === i.user.id) && (componentInteraction.customId === 'edit')),
-            //     time: 60000,
-            //     componentType: 'BUTTON',
-            // });
-            // collectorEdit.on('collect', i => (async i => {
-                
-            // })(i).catch(err => interaction.client.handlers.button(err, i)));
-            // collectorEdit.end('end', () => {
-            //     buttonEdit.disabled = true;
-            //     await interaction.editReply({components});
-            // })
+            const collectorEdit = reply.createMessageComponentCollector({
+                filter: componentInteraction => ((componentInteraction.user.id === interaction.user.id) && (componentInteraction.customId === 'edit')),
+                time: 60_000,
+                componentType: 'BUTTON',
+            });
+            collectorEdit.on('collect', i => (async () => {
+                i.awaitModalSubmit({
+                    filter: int => (int.user.id === interaction.user.id) && (int.customId === 'modalEdit'),
+                    time: 600_000,
+                }).then(async int => {
+                    current.reason = int.fields.getTextInputValue('reason');
+                    await current.save();
+                    await int.reply({
+                        content: channelLanguage.get('modalEditSuccess'),
+                        ephemeral: true,
+                    });
+                    if(!banLogMsg?.editable) return;
+                    const reasonIndex = banLogEmbed.fields.findIndex(e => (e.name === channelLanguage.get('banEmbedReasonTitle')));
+                    const reasonField = {
+                        name: channelLanguage.get('banEmbedReasonTitle'),
+                        value: current.reason
+                    };
+                    if(reasonIndex === -1){
+                        banLogEmbed.addFields(reasonField);
+                    }
+                    else{
+                        banLogEmbed.spliceFields(reasonIndex, 1, reasonField);
+                    }
+                    await banLogMsg.edit({embeds: [banLogEmbed]});
+                }).catch(async () => await i.followUp({
+                    content: channelLanguage.get('modalTimeOut'),
+                    ephemeral: true,
+                }));
+                await i.showModal({
+                    customId: 'modalEdit',
+                    title: channelLanguage.get('editReasonModalTitle'),
+                    components: [{
+                        type: 'ACTION_ROW',
+                        components: [{
+                            type: 'TEXT_INPUT',
+                            customId: 'reason',
+                            label: channelLanguage.get('editReasonModalReasonLabel'),
+                            required: true,
+                            style: 'PARAGRAPH',
+                            value: current.reason,
+                        }],
+                    }],
+                });
+            })().catch(err => interaction.client.handlers.button(err, i)));
+            collectorEdit.on('end', async () => {
+                buttonEdit.disabled = true;
+                await interaction.editReply({components});
+            });
         }
     },
 };

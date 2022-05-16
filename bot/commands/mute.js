@@ -50,11 +50,12 @@ module.exports = {
         const reply = await message.reply(channelLanguage.get('muteMemberSuccess', [current.id]));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.mute);
         let msg;
+        let embed;
         if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) && discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
             const d = Math.floor(duration / 86400000);
             const h = Math.floor((duration % 86400000) / 3600000);
             const m = Math.floor((duration % 3600000) / 60000);
-            const embed = new MessageEmbed()
+            embed = new MessageEmbed()
                 .setTimestamp()
                 .setColor(0xff8000)
                 .setAuthor({
@@ -82,9 +83,16 @@ module.exports = {
             style: 'DANGER',
             emoji: '↩️',
         };
+        const buttonEdit = {
+            type: 'BUTTON',
+            label: channelLanguage.get('editReason'),
+            customId: 'edit',
+            style: 'PRIMARY',
+            emoji: '✏️',
+        };
         const components = [{
             type: 'ACTION_ROW',
-            components: [buttonUndo],
+            components: [buttonEdit, buttonUndo],
         }];
         await reply.edit({components});
         const collectorUndo = reply.createMessageComponentCollector({
@@ -105,6 +113,59 @@ module.exports = {
         })(i).catch(err => message.client.handlers.button(err, i)));
         collectorUndo.on('end', async () => {
             buttonUndo.disabled = true;
+            await reply.edit({components});
+        });
+        const collectorEdit = reply.createMessageComponentCollector({
+            filter: componentInteraction => ((componentInteraction.user.id === message.author.id) && (componentInteraction.customId === 'edit')),
+            time: 60_000,
+            componentType: 'BUTTON',
+        });
+        collectorEdit.on('collect', i => (async () => {
+            i.awaitModalSubmit({
+                filter: int => (int.user.id === message.author.id) && (int.customId === 'modalEdit'),
+                time: 600_000,
+            }).then(async int => {
+                current.reason = int.fields.getTextInputValue('reason');
+                await current.save();
+                await int.reply({
+                    content: channelLanguage.get('modalEditSuccess'),
+                    ephemeral: true,
+                });
+                if(!msg?.editable) return;
+                const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('muteEmbedReasonTitle')));
+                const reasonField = {
+                    name: channelLanguage.get('muteEmbedReasonTitle'),
+                    value: current.reason
+                };
+                if(reasonIndex === -1){
+                    embed.addFields(reasonField);
+                }
+                else{
+                    embed.spliceFields(reasonIndex, 1, reasonField);
+                }
+                await msg.edit({embeds: [embed]});
+            }).catch(async () => await i.followUp({
+                content: channelLanguage.get('modalTimeOut'),
+                ephemeral: true,
+            }));
+            await i.showModal({
+                customId: 'modalEdit',
+                title: channelLanguage.get('editReasonModalTitle'),
+                components: [{
+                    type: 'ACTION_ROW',
+                    components: [{
+                        type: 'TEXT_INPUT',
+                        customId: 'reason',
+                        label: channelLanguage.get('editReasonModalReasonLabel'),
+                        required: true,
+                        style: 'PARAGRAPH',
+                        value: current.reason,
+                    }],
+                }],
+            });
+        })().catch(err => message.client.handlers.button(err, i)));
+        collectorEdit.on('end', async () => {
+            buttonEdit.disabled = true;
             await reply.edit({components});
         });
     },

@@ -521,6 +521,11 @@ module.exports = {
             case 'EmbedHelpCategory3Author': return 'Moderative commands';
             case 'EmbedHelpCategory4Author': return 'Levelling commands';
             case 'EmbedHelpCategory5Author': return 'Miscellaneous commands';
+            case 'modalEditSuccess': return 'The reason for this case was succesffully edited';
+            case 'modalTimeOut': return 'Modal submission timed out!';
+            case 'editReasonModalReasonLabel': return 'Reason';
+            case 'editReasonModalTitle': return 'Edit reason';
+            case 'editReason': return 'Edit reason';
         }
     },
 };

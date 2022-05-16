@@ -39,27 +39,95 @@ module.exports = {
         });
         await current.save();
         await message.guild.members.unban(ban.user.id, channelLanguage.get('unbanAuditReason', [message.author.tag, reason]));
-        await message.reply(channelLanguage.get('unbanSuccess', [current.id]));
+        const reply = await message.reply(channelLanguage.get('unbanSuccess', [current.id]));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.ban);
-        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
-        const embed = new MessageEmbed()
-            .setColor(0x00ff00)
-            .setAuthor({
-                name: channelLanguage.get('unbanEmbedAuthor', [message.author.tag, ban.user.tag]),
-                iconURL: ban.user.displayAvatarURL({dynamic: true}),
-            })
-            .setDescription(channelLanguage.get('unbanEmbedDescription', [message.url]))
-            .addField(channelLanguage.get('unbanEmbedTargetTitle'), channelLanguage.get('unbanEmbedTargetValue', [ban.user]), true)
-            .addField(channelLanguage.get('unbanEmbedExecutorTitle'), message.author.toString(), true)
-            .setTimestamp()
-            .setFooter({
-                text: channelLanguage.get('unbanEmbedFooter', [current.id]),
-                iconURL: message.guild.iconURL({dynamic: true}),
+        let msg;
+        let embed;
+        if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) && discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
+            embed = new MessageEmbed()
+                .setColor(0x00ff00)
+                .setAuthor({
+                    name: channelLanguage.get('unbanEmbedAuthor', [message.author.tag, ban.user.tag]),
+                    iconURL: ban.user.displayAvatarURL({dynamic: true}),
+                })
+                .setDescription(channelLanguage.get('unbanEmbedDescription', [message.url]))
+                .addField(channelLanguage.get('unbanEmbedTargetTitle'), channelLanguage.get('unbanEmbedTargetValue', [ban.user]), true)
+                .addField(channelLanguage.get('unbanEmbedExecutorTitle'), message.author.toString(), true)
+                .setTimestamp()
+                .setFooter({
+                    text: channelLanguage.get('unbanEmbedFooter', [current.id]),
+                    iconURL: message.guild.iconURL({dynamic: true}),
+                });
+            if(reason) embed.addField(channelLanguage.get('unbanEmbedReasonTitle'), reason);
+            if(current.image) embed.setImage(current.image);
+            msg = await discordChannel.send({embeds: [embed]});
+            current.logMessage = msg.id;
+            await current.save();
+        }
+        const buttonEdit = {
+            type: 'BUTTON',
+            label: channelLanguage.get('editReason'),
+            customId: 'edit',
+            style: 'PRIMARY',
+            emoji: '✏️',
+        };
+        const components = [{
+            type: 'ACTION_ROW',
+            components: [buttonEdit],
+        }];
+        await reply.edit({components});
+        const collectorEdit = reply.createMessageComponentCollector({
+            filter: componentInteraction => ((componentInteraction.user.id === message.author.id) && (componentInteraction.customId === 'edit')),
+            time: 60_000,
+            componentType: 'BUTTON',
+        });
+        collectorEdit.on('collect', i => (async () => {
+            i.awaitModalSubmit({
+                filter: int => (int.user.id === message.author.id) && (int.customId === 'modalEdit'),
+                time: 600_000,
+            }).then(async int => {
+                current.reason = int.fields.getTextInputValue('reason');
+                await current.save();
+                await int.reply({
+                    content: channelLanguage.get('modalEditSuccess'),
+                    ephemeral: true,
+                });
+                if(!msg?.editable) return;
+                const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('unbanEmbedReasonTitle')));
+                const reasonField = {
+                    name: channelLanguage.get('unbanEmbedReasonTitle'),
+                    value: current.reason
+                };
+                if(reasonIndex === -1){
+                    embed.addFields(reasonField);
+                }
+                else{
+                    embed.spliceFields(reasonIndex, 1, reasonField);
+                }
+                await msg.edit({embeds: [embed]});
+            }).catch(async () => await i.followUp({
+                content: channelLanguage.get('modalTimeOut'),
+                ephemeral: true,
+            }));
+            await i.showModal({
+                customId: 'modalEdit',
+                title: channelLanguage.get('editReasonModalTitle'),
+                components: [{
+                    type: 'ACTION_ROW',
+                    components: [{
+                        type: 'TEXT_INPUT',
+                        customId: 'reason',
+                        label: channelLanguage.get('editReasonModalReasonLabel'),
+                        required: true,
+                        style: 'PARAGRAPH',
+                        value: current.reason,
+                    }],
+                }],
             });
-        if(reason) embed.addField(channelLanguage.get('unbanEmbedReasonTitle'), reason);
-        if(current.image) embed.setImage(current.image);
-        const msg = await discordChannel.send({embeds: [embed]});
-        current.logMessage = msg.id;
-        await current.save();
+        })().catch(err => message.client.handlers.button(err, i)));
+        collectorEdit.on('end', async () => {
+            buttonEdit.disabled = true;
+            await reply.edit({components});
+        });
     },
 };

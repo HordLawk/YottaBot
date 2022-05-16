@@ -115,7 +115,6 @@ module.exports = {
                 "commandUses._id": command.name,
             }, {$inc: {"commandUses.$.count": 1}}, {new: true}).then(async (doc, err) => {
                 if(err) throw err;
-                console.log(doc);
                 if(doc) return;
                 await member.findOneAndUpdate({
                     guild: message.guild.id,

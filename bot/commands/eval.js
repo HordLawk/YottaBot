@@ -16,7 +16,10 @@ module.exports = {
                 ephemeral: true,
             });
             eval(i.fields.getTextInputValue('code'));
-        }).catch(async () => await interaction.followUp('Modal timed out!'));
+        }).catch(async () => await interaction.followUp({
+            content: 'Modal timed out!',
+            ephemeral: true,
+        }));
         await interaction.showModal({
             customId: 'eval',
             title: 'eval',

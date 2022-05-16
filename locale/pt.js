@@ -542,6 +542,11 @@ module.exports = {
             case 'EmbedHelpCategory3Author': return 'Comandos moderativos';
             case 'EmbedHelpCategory4Author': return 'Comando de nivelamento';
             case 'EmbedHelpCategory5Author': return 'Outros comandos';
+            case 'modalEditSuccess': return 'O motivo desse caso foi editado com sucesso';
+            case 'modalTimeOut': return 'Limite de tempo de envio do formulário atingido!';
+            case 'editReasonModalReasonLabel': return 'Motivo';
+            case 'editReasonModalTitle': return 'Editar motivo';
+            case 'editReason': return 'Editar motivo';
         }
     },
 };

@@ -37,14 +37,13 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] command to manage emojis
 - [ ] automated punishments when reaching a chosen amount of another type of punishment
 - [ ] other streaming notifications for premium
-- [ ] button to edit action reason in the command reply
+- [x] button to edit action reason in the command reply
 - [ ] command to add a sticker from an attachment \*\**
 - [ ] voice channels join and leave logs
 - [ ] add support for more payment methods to buy premium
 - [x] count use of each command by every member
 - [x] add navigation select menus to the help command
 - [ ] make some crypto and hashing fun commands
-- [x] delete case log message on `delcases case (ID)`
 - [ ] userinfo command
 
 \* on hold until Discord adds the date and time option type

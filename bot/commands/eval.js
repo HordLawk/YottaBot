@@ -9,7 +9,7 @@ module.exports = {
     executeSlash: async interaction => {
         interaction.awaitModalSubmit({
             filter: i => (i.customId === 'eval') && (i.user.id === interaction.client.application.owner.id),
-            time: 10_000,
+            time: 600_000,
         }).then(async i => {
             await i.reply({
                 content: 'Executing code...',

@@ -108,27 +108,27 @@ module.exports = {
         }
         timestamps.set(message.author.id, now);
         setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
-        // if(message.inGuild()){
-        //     member.findOneAndUpdate({
-        //         guild: message.guild.id,
-        //         userID: message.author.id,
-        //         "commandUses._id": command.name,
-        //     }, {$inc: {"commandUses.$.count": 1}}, {new: true}).then(async (doc, err) => {
-        //         if(err) throw err;
-        //         console.log(doc);
-        //         if(doc) return;
-        //         await member.findOneAndUpdate({
-        //             guild: message.guild.id,
-        //             userID: message.author.id,
-        //         }, {$addToSet: {commandUses: {
-        //             _id: command.name,
-        //             count: 1,
-        //         }}}, {
-        //             upsert: true,
-        //             setDefaultsOnInsert: true,
-        //         });
-        //     }).catch(err => message.client.handlers.event(err, this, [message]));
-        // }
+        if(message.inGuild()){
+            member.findOneAndUpdate({
+                guild: message.guild.id,
+                userID: message.author.id,
+                "commandUses._id": command.name,
+            }, {$inc: {"commandUses.$.count": 1}}, {new: true}).then(async (doc, err) => {
+                if(err) throw err;
+                console.log(doc);
+                if(doc) return;
+                await member.findOneAndUpdate({
+                    guild: message.guild.id,
+                    userID: message.author.id,
+                }, {$addToSet: {commandUses: {
+                    _id: command.name,
+                    count: 1,
+                }}}, {
+                    upsert: true,
+                    setDefaultsOnInsert: true,
+                });
+            }).catch(err => message.client.handlers.event(err, this, [message]));
+        }
         message.channel.sendTyping();
         command.execute(message, args).then(async () => {
             if(Math.floor(Math.random() * 1000) || (message.guild && (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner))) return;

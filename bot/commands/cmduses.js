@@ -7,25 +7,44 @@ module.exports = {
     dev: true,
     description: () => 'Shows command usage stats',
     allSlash: async interaction => {
-        const members = await memberModel.find({commandUses: {$ne: []}});
+        const commandUses = await memberModel.aggregate([
+            {$match: {commandUses: {
+                $ne: [],
+                $exists: true,
+            }}},
+            {$unwind: "$commandUses"},
+            {$group: {
+                _id: "$commandUses._id",
+                count: {$sum: "$commandUses.count"},
+            }},
+            {$sort: {count: -1}},
+        ]);
         const embed = new MessageEmbed()
             .setAuthor({
-                name: 'General command usage stats',
+                name: 'Commands usage stats',
                 iconURL: interaction.client.user.avatarURL(),
             })
             .setColor(0x2f3136)
-            .setDescription(members.reduce((acc, e) => (e.commandUses.forEach(el => acc.set(el._id, (acc.get(el._id) ?? 0) + el.count)), acc), new Collection()).map((e, i) => `${i}: \`${e}\``).join('\n'));
+            .setDescription(commandUses.map(e => `${e._id}: \`${e.count}\``).join('\n'));
         await interaction.reply({embeds: [embed]});
     },
     userSlash: async (interaction, args) => {
-        const members = await memberModel.find({
-            userID: args.user.id,
-            commandUses: {
-                $ne: [],
-                $exists: true,
-            },
-        });
-        if(!members.length) return await interaction.reply({
+        const commandUses = await memberModel.aggregate([
+            {$match: {
+                userID: args.user.id,
+                commandUses: {
+                    $ne: [],
+                    $exists: true,
+                },
+            }},
+            {$unwind: "$commandUses"},
+            {$group: {
+                _id: "$commandUses._id",
+                count: {$sum: "$commandUses.count"},
+            }},
+            {$sort: {count: -1}},
+        ]);
+        if(!commandUses.length) return await interaction.reply({
             content: 'There are no commands usage statistics for this user',
             ephemeral: true,
         });
@@ -35,18 +54,26 @@ module.exports = {
                 iconURL: args.user.avatarURL(),
             })
             .setColor(0x2f3136)
-            .setDescription(members.reduce((acc, e) => (e.commandUses.forEach(el => acc.set(el._id, (acc.get(el._id) ?? 0) + el.count)), acc), new Collection()).map((e, i) => `${i}: \`${e}\``).join('\n'));
+            .setDescription(commandUses.map(e => `${e._id}: \`${e.count}\``).join('\n'));
         await interaction.reply({embeds: [embed]});
     },
     serverSlash: async (interaction, args) => {
-        const members = await memberModel.find({
-            guild: args.guild,
-            commandUses: {
-                $ne: [],
-                $exists: true,
-            },
-        });
-        if(!members.length) return await interaction.reply({
+        const commandUses = await memberModel.aggregate([
+            {$match: {
+                guild: args.guild,
+                commandUses: {
+                    $ne: [],
+                    $exists: true,
+                },
+            }},
+            {$unwind: "$commandUses"},
+            {$group: {
+                _id: "$commandUses._id",
+                count: {$sum: "$commandUses.count"},
+            }},
+            {$sort: {count: -1}},
+        ]);
+        if(!commandUses.length) return await interaction.reply({
             content: 'There are no commands usage statistics for this server',
             ephemeral: true,
         });
@@ -57,7 +84,7 @@ module.exports = {
                 iconURL: server.iconURL({dynamic: true}),
             })
             .setColor(0x2f3136)
-            .setDescription(members.reduce((acc, e) => (e.commandUses.forEach(el => acc.set(el._id, (acc.get(el._id) ?? 0) + el.count)), acc), new Collection()).map((e, i) => `${i}: \`${e}\``).join('\n'));
+            .setDescription(commandUses.map(e => `${e._id}: \`${e.count}\``).join('\n'));
         await interaction.reply({embeds: [embed]});
     },
     slashOptions: [

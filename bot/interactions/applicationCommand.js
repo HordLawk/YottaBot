@@ -73,26 +73,26 @@ module.exports = {
         }
         timestamps.set(interaction.user.id, now);
         setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
-        // if(interaction.inGuild()){
-        //     member.findOneAndUpdate({
-        //         guild: interaction.guild.id,
-        //         userID: interaction.user.id,
-        //         "commandUses._id": command.name,
-        //     }, {$inc: {"commandUses.$.count": 1}}).then(async (doc, err) => {
-        //         if(err) throw err;
-        //         if(doc) return;
-        //         await member.findOneAndUpdate({
-        //             guild: interaction.guild.id,
-        //             userID: interaction.user.id,
-        //         }, {$addToSet: {commandUses: {
-        //             _id: command.name,
-        //             count: 1,
-        //         }}}, {
-        //             upsert: true,
-        //             setDefaultsOnInsert: true,
-        //         });
-        //     }).catch(err => interaction.client.handlers.event(err, this, [interaction]));
-        // }
+        if(interaction.inGuild()){
+            member.findOneAndUpdate({
+                guild: interaction.guild.id,
+                userID: interaction.user.id,
+                "commandUses._id": command.name,
+            }, {$inc: {"commandUses.$.count": 1}}).then(async (doc, err) => {
+                if(err) throw err;
+                if(doc) return;
+                await member.findOneAndUpdate({
+                    guild: interaction.guild.id,
+                    userID: interaction.user.id,
+                }, {$addToSet: {commandUses: {
+                    _id: command.name,
+                    count: 1,
+                }}}, {
+                    upsert: true,
+                    setDefaultsOnInsert: true,
+                });
+            }).catch(err => interaction.client.handlers.event(err, this, [interaction]));
+        }
         const args = {};
         let options = interaction.options.data;
         if(subCommandName) options = subCommandGroupName ? interaction.options.data[0].options[0].options : interaction.options.data[0].options;

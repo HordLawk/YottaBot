@@ -19,8 +19,6 @@ const guild = require('../schemas/guild.js');
 const _transformCommand = Discord.ApplicationCommandManager.transformCommand;
 Discord.ApplicationCommandManager.transformCommand = command => ({
     ..._transformCommand(command),
-    name_localizations: command.name_localizations,
-    description_localizations: command.description_localizations,
     default_member_permissions: command.default_member_permissions?.toString(),
     dm_permission: command.dm_permission,
 });

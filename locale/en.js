@@ -526,6 +526,13 @@ module.exports = {
             case 'editReasonModalReasonLabel': return 'Reason';
             case 'editReasonModalTitle': return 'Edit reason';
             case 'editReason': return 'Edit reason';
+            case 'setReasonModalTitle': return 'Log reason';
+            case 'setReasonModalReasonLabel': return 'Reason';
+            case 'optionalInput': return '(optional)';
+            case 'filteridsDescription': return 'Reads text from a file or text input and returns the Discord IDs found';
+            case 'filteridsModaltextLabel': return 'Unfiltered text';
+            case 'fileTooBig': return 'This file is too big for me to filter it';
+            case 'invalidFile': return 'Only plain text files are allowed';
         }
     },
 };

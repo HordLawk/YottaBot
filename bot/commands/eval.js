@@ -8,7 +8,7 @@ module.exports = {
     execute: async message => eval(message.content.replace(/^\S+\s+/, '')),
     executeSlash: async interaction => {
         interaction.awaitModalSubmit({
-            filter: i => (i.customId === 'eval') && (i.user.id === interaction.client.application.owner.id),
+            filter: i => (i.customId === `eval${interaction.id}`) && (i.user.id === interaction.client.application.owner.id),
             time: 600_000,
         }).then(async i => {
             await i.reply({
@@ -21,7 +21,7 @@ module.exports = {
             ephemeral: true,
         }));
         await interaction.showModal({
-            customId: 'eval',
+            customId: `eval${interaction.id}`,
             title: 'eval',
             components: [{
                 type: 'ACTION_ROW',

@@ -1,6 +1,9 @@
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
-const {MessageEmbed, Permissions} = require('discord.js');
+const {MessageEmbed, Permissions, SnowflakeUtil} = require('discord.js');
+const locale = require('../../locale');
+
+const getStringLocales = key => [...locale.values()].reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
 
 module.exports = {
     active: true,
@@ -152,7 +155,7 @@ module.exports = {
         });
         collectorEdit.on('collect', i => (async () => {
             i.awaitModalSubmit({
-                filter: int => (int.user.id === message.author.id) && (int.customId === 'modalEdit'),
+                filter: int => (int.user.id === message.author.id) && (int.customId === `modalEdit${i.id}`),
                 time: 600_000,
             }).then(async int => {
                 current.reason = int.fields.getTextInputValue('reason');
@@ -179,7 +182,7 @@ module.exports = {
                 ephemeral: true,
             }));
             await i.showModal({
-                customId: 'modalEdit',
+                customId: `modalEdit${i.id}`,
                 title: channelLanguage.get('editReasonModalTitle'),
                 components: [{
                     type: 'ACTION_ROW',
@@ -190,6 +193,7 @@ module.exports = {
                         required: true,
                         style: 'PARAGRAPH',
                         value: current.reason,
+                        maxLength: 500,
                     }],
                 }],
             });
@@ -199,4 +203,243 @@ module.exports = {
             await reply.edit({components});
         });
     },
+    executeSlash: async (interaction, args) => {
+        let {channelLanguage} = interaction;
+        let reason;
+        let lastInteraction = interaction;
+        if(args.with_reason){
+            await interaction.showModal({
+                customId: `modalReason${interaction.id}`,
+                title: channelLanguage.get('setReasonModalTitle'),
+                components: [{
+                    type: 'ACTION_ROW',
+                    components: [{
+                        type: 'TEXT_INPUT',
+                        customId: 'reason',
+                        label: channelLanguage.get('setReasonModalReasonLabel'),
+                        required: true,
+                        style: 'PARAGRAPH',
+                        maxLength: 500,
+                    }],
+                }],
+            });
+            const i = await interaction.awaitModalSubmit({
+                filter: int => (int.user.id === interaction.user.id) && (int.customId === `modalReason${interaction.id}`),
+                time: 600_000,
+            }).catch(() => null);
+            if(!i) return await interaction.followUp({
+                content: channelLanguage.get('modalTimeOut'),
+                ephemeral: true,
+            });
+            reason = i.fields.getTextInputValue('reason');
+            lastInteraction = i;
+        }
+        if(args.target.member){
+            if(!args.target.member.bannable) return await lastInteraction.reply({
+                content: channelLanguage.get('cantBan'),
+                ephemeral: true,
+            });
+            if(lastInteraction.member.roles.highest.comparePositionTo(args.target.member.roles.highest) <= 0) return await lastInteraction.reply({
+                content: channelLanguage.get('youCantBan'),
+                ephemeral: true,
+            });
+            await args.target.send(channelLanguage.get('dmBanned', [lastInteraction.guild.name, reason])).catch(() => null);
+        }
+        else{
+            const ban = await lastInteraction.guild.bans.fetch(args.target.id).catch(() => null);
+            if(ban) return await lastInteraction.reply({
+                content: channelLanguage.get('alreadyBanned'),
+                ephemeral: true,
+            });
+        }
+        const newban = await lastInteraction.guild.members.ban(args.target.id, {
+            reason: channelLanguage.get('banReason', [lastInteraction.user.tag, reason]),
+            days: lastInteraction.client.guildData.get(lastInteraction.guild.id).pruneBan,
+        }).catch(() => null);
+        if(!newban) return await lastInteraction.reply({
+            content: channelLanguage.get('cantBan'),
+            ephemeral: true,
+        });
+        const guildDoc = await guild.findByIdAndUpdate(lastInteraction.guild.id, {$inc: {counterLogs: 1}});
+        lastInteraction.client.guildData.get(lastInteraction.guild.id).counterLogs = guildDoc.counterLogs + 1;
+        const current = new log({
+            id: guildDoc.counterLogs,
+            guild: lastInteraction.guild.id,
+            type: 'ban',
+            target: args.target.id,
+            executor: lastInteraction.user.id,
+            timeStamp: Date.now(),
+            reason,
+        });
+        await current.save();
+        const reply = await lastInteraction.reply({
+            content: channelLanguage.get('memberBanSuccess', [current.id]),
+            fetchReply: true,
+        });
+        current.actionMessage = reply.url;
+        await current.save();
+        const discordChannel = lastInteraction.guild.channels.cache.get(lastInteraction.client.guildData.get(lastInteraction.guild.id).modlogs.ban);
+        let msg;
+        let embed;
+        if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(lastInteraction.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) && discordChannel.permissionsFor(lastInteraction.guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
+            embed = new MessageEmbed()
+                .setColor(0xff0000)
+                .setAuthor({
+                    name: channelLanguage.get('banEmbedAuthor', [lastInteraction.user.tag, args.target.tag]),
+                    iconURL: args.target.displayAvatarURL({dynamic: true}),
+                })
+                .setDescription(channelLanguage.get('banEmbedDescription', [reply.url]))
+                .addField(channelLanguage.get('banEmbedTargetTitle'), channelLanguage.get('banEmbedTargetValue', [args.target]), true)
+                .addField(channelLanguage.get('banEmbedExecutorTitle'), lastInteraction.user.toString(), true)
+                .setTimestamp()
+                .setFooter({
+                    text: channelLanguage.get('banEmbedFooter', [current.id]),
+                    iconURL: lastInteraction.guild.iconURL({dynamic: true}),
+                });
+            if(reason) embed.addField(channelLanguage.get('banEmbedReasonTitle'), reason)
+            msg = await discordChannel.send({embeds: [embed]});
+            current.logMessage = msg.id;
+            await current.save();
+        }
+        const buttonUndo = {
+            type: 'BUTTON',
+            label: channelLanguage.get('undo'),
+            customId: 'undo',
+            style: 'DANGER',
+            emoji: '↩️',
+        };
+        const buttonEdit = {
+            type: 'BUTTON',
+            label: channelLanguage.get('editReason'),
+            customId: 'edit',
+            style: 'PRIMARY',
+            emoji: '✏️',
+        };
+        const components = [{
+            type: 'ACTION_ROW',
+            components: [buttonEdit, buttonUndo],
+        }];
+        await lastInteraction.editReply({components});
+        const collectorUndo = reply.createMessageComponentCollector({
+            filter: componentInteraction => ((componentInteraction.user.id === lastInteraction.user.id) && (componentInteraction.customId === 'undo')),
+            idle: 10_000,
+            max: 1,
+            componentType: 'BUTTON',
+        });
+        collectorUndo.on('collect', i => (async () => {
+            await lastInteraction.guild.members.unban(args.target.id, channelLanguage.get('unbanAuditReason', [lastInteraction.user.tag]))
+            const guildDocUnban = await guild.findByIdAndUpdate(lastInteraction.guild.id, {$inc: {counterLogs: 1}});
+            lastInteraction.client.guildData.get(lastInteraction.guild.id).counterLogs = guildDocUnban.counterLogs + 1;
+            const currentUnban = new log({
+                id: guildDocUnban.counterLogs,
+                guild: lastInteraction.guild.id,
+                type: 'ban',
+                target: args.target.id,
+                executor: lastInteraction.user.id,
+                timeStamp: Date.now(),
+                removal: true,
+            });
+            await currentUnban.save();
+            const action = await i.reply({
+                content: channelLanguage.get('unbanSuccess', [currentUnban.id]),
+                fetchReply: true,
+            });
+            currentUnban.actionMessage = action.url;
+            await currentUnban.save();
+            if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(lastInteraction.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(lastInteraction.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
+            const embedUnban = new MessageEmbed()
+                .setColor(0x00ff00)
+                .setAuthor({
+                    name: channelLanguage.get('unbanEmbedAuthor', [lastInteraction.user.tag, args.target.tag]),
+                    iconURL: args.target.displayAvatarURL({dynamic: true}),
+                })
+                .setDescription(channelLanguage.get('unbanEmbedDescription', [action.url]))
+                .addField(channelLanguage.get('unbanEmbedTargetTitle'), channelLanguage.get('unbanEmbedTargetValue', [args.target]), true)
+                .addField(channelLanguage.get('unbanEmbedExecutorTitle'), lastInteraction.user.toString(), true)
+                .setTimestamp()
+                .setFooter({
+                    text: channelLanguage.get('unbanEmbedFooter', [currentUnban.id]),
+                    iconURL: lastInteraction.guild.iconURL({dynamic: true}),
+                });
+            const msgUnban = await discordChannel.send({embeds: [embedUnban]});
+            currentUnban.logMessage = msgUnban.id;
+            await currentUnban.save();
+        })().catch(err => lastInteraction.client.handlers.button(err, i)));
+        collectorUndo.on('end', async () => {
+            buttonUndo.disabled = true;
+            await lastInteraction.editReply({components});
+        });
+        const collectorEdit = reply.createMessageComponentCollector({
+            filter: componentInteraction => ((componentInteraction.user.id === lastInteraction.user.id) && (componentInteraction.customId === 'edit')),
+            time: 60_000,
+            componentType: 'BUTTON',
+        });
+        collectorEdit.on('collect', i => (async () => {
+            i.awaitModalSubmit({
+                filter: int => (int.user.id === lastInteraction.user.id) && (int.customId === `modalEdit${i.id}`),
+                time: 600_000,
+            }).then(async int => {
+                current.reason = int.fields.getTextInputValue('reason');
+                await current.save();
+                await int.reply({
+                    content: channelLanguage.get('modalEditSuccess'),
+                    ephemeral: true,
+                });
+                if(!msg?.editable) return;
+                const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('banEmbedReasonTitle')));
+                const reasonField = {
+                    name: channelLanguage.get('banEmbedReasonTitle'),
+                    value: current.reason
+                };
+                if(reasonIndex === -1){
+                    embed.addFields(reasonField);
+                }
+                else{
+                    embed.spliceFields(reasonIndex, 1, reasonField);
+                }
+                await msg.edit({embeds: [embed]});
+            }).catch(async () => await i.followUp({
+                content: channelLanguage.get('modalTimeOut'),
+                ephemeral: true,
+            }));
+            await i.showModal({
+                customId: `modalEdit${i.id}`,
+                title: channelLanguage.get('editReasonModalTitle'),
+                components: [{
+                    type: 'ACTION_ROW',
+                    components: [{
+                        type: 'TEXT_INPUT',
+                        customId: 'reason',
+                        label: channelLanguage.get('editReasonModalReasonLabel'),
+                        required: true,
+                        style: 'PARAGRAPH',
+                        value: current.reason,
+                        maxLength: 500,
+                    }],
+                }],
+            });
+        })().catch(err => lastInteraction.client.handlers.button(err, i)));
+        collectorEdit.on('end', async () => {
+            buttonEdit.disabled = true;
+            await lastInteraction.editReply({components});
+        });
+    },
+    slashOptions: [
+        {
+            type: 'USER',
+            name: 'target',
+            nameLocalizations: getStringLocales('banOptiontargetLocalisedName'),
+            description: 'The user to ban',
+            descriptionLocalizations: getStringLocales('banOptiontargetLocalisedDesc'),
+            required: true,
+        },
+        {
+            type: 'BOOLEAN',
+            name: 'with_reason',
+            nameLocalizations: getStringLocales('banOptionwith_reasonLocalisedName'),
+            description: 'Whether to prompt a modal asking for the ban reason',
+            descriptionLocalizations: getStringLocales('banOptionwith_reasonLocalisedDesc'),
+            required: false,
+        },
+    ],
 };

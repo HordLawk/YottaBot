@@ -547,6 +547,31 @@ module.exports = {
             case 'editReasonModalReasonLabel': return 'Motivo';
             case 'editReasonModalTitle': return 'Editar motivo';
             case 'editReason': return 'Editar motivo';
+            case 'banOptiontargetLocalisedName': return 'alvo';
+            case 'banOptiontargetLocalisedDesc': return 'O usuário para banir';
+            case 'banOptionwith_reasonLocalisedName': return 'com_motivo';
+            case 'banOptionwith_reasonLocalisedDesc': return 'Se deve ser apresentado um formulário com um campo para informar o motivo do banimento';
+            case 'setReasonModalTitle': return 'Registrar motivo';
+            case 'setReasonModalReasonLabel': return 'Motivo';
+            case 'kickOptiontargetLocalisedName': return 'alvo';
+            case 'kickOptiontargetLocalisedDesc': return 'O usuário para expulsar';
+            case 'kickOptionwith_reasonLocalisedName': return 'com_motivo';
+            case 'kickOptionwith_reasonLocalisedDesc': return 'Se deve ser apresentado um formulário com um campo para informar o motivo da expulsão';
+            case 'unbanOptiontargetLocalisedName': return 'alvo';
+            case 'unbanOptiontargetLocalisedDesc': return 'O usuário para desbanir';
+            case 'optionalInput': return '(opcional)';
+            case 'reasonLocalisedName': return 'motivo';
+            case 'warnContextName': return 'Advertir';
+            case 'massbanOptiontargetsLocalisedName': return 'alvos';
+            case 'massbanOptiontargetsLocalisedDesc': return 'Menções ou IDs dos usuários para banir separados por espaços';
+            case 'massbanOptionwith_reasonLocalisedName': return 'com_motivo';
+            case 'massbanOptionwith_reasonLocalisedDesc': return 'Se deve ser apresentado um formulário com um campo para informar o motivo dos banimentos';
+            case 'filteridsDescription': return 'Lê texto de um arquivo ou caixa de texto e retorna todos os IDs do Discord encontrados';
+            case 'filteridsOptiontext_fileLocalisedName': return 'arquivo_texto';
+            case 'filteridsOptiontext_fileLocalisedDesc': return 'Um arquivo de texto com IDs do Discord para serem filtrados';
+            case 'filteridsModaltextLabel': return 'Texto com IDs';
+            case 'fileTooBig': return 'Esse arquivo é grande demais para ser filtrado';
+            case 'invalidFile': return 'Apenas arquivos totalmente de texto são aceitos';
         }
     },
 };

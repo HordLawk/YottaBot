@@ -1,5 +1,8 @@
 const log = require('../../schemas/log.js');
 const {Permissions} = require('discord.js');
+const locale = require('../../locale');
+
+const getStringLocales = key => [...locale.values()].reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
 
 module.exports = {
     active: true,
@@ -30,10 +33,10 @@ module.exports = {
         await current.save();
         await message.reply(channelLanguage.get('reasonEditSuccess'));
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs[current.type]);
-        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
+        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES)) return;
         const msg = await discordChannel.messages.fetch(current.logMessage).catch(() => null);
         if(!msg || !msg.editable || !msg.embeds.length) return;
-        const embed = msg.embeds.find(e => (e.type === 'rich'));
+        const embed = msg.embeds[0];
         embed.setFields([{
             name: channelLanguage.get('reasonEmbedTargetTitle'),
             value: channelLanguage.get('reasonEmbedTargetValue', [current.target]),
@@ -50,4 +53,79 @@ module.exports = {
         embed.addField(channelLanguage.get('reasonEmbedReasonTitle'), reason);
         await msg.edit({embeds: [embed]});
     },
+    executeSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
+        const current = await log.findOne({
+            id: args.case_id,
+            guild: interaction.guild.id,
+        });
+        if(!current) return await interaction.reply({
+            content: channelLanguage.get('invCase'),
+            ephemeral: true,
+        });
+        const member = current.executor && await interaction.guild.members.fetch(current.executor).catch(() => null);
+        if(member && (current.executor !== interaction.user.id) && ((interaction.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || (interaction.guild.ownerId === member.id))) return await interaction.reply({
+            content: channelLanguage.get('youCantEditCase'),
+            ephemeral: true,
+        });
+        await interaction.showModal({
+            customId: `modalEdit${interaction.id}`,
+            title: channelLanguage.get('editReasonModalTitle'),
+            components: [{
+                type: 'ACTION_ROW',
+                components: [{
+                    type: 'TEXT_INPUT',
+                    customId: 'reason',
+                    label: channelLanguage.get('editReasonModalReasonLabel'),
+                    required: true,
+                    style: 'PARAGRAPH',
+                    maxLength: 500,
+                    value: current.reason,
+                }],
+            }],
+        });
+        interaction.awaitModalSubmit({
+            filter: int => (int.user.id === interaction.user.id) && (int.customId === `modalEdit${interaction.id}`),
+            time: 600_000,
+        }).then(async i => {
+            current.reason = i.fields.getTextInputValue('reason');
+            await current.save();
+            await i.reply({
+                content: channelLanguage.get('reasonEditSuccess'),
+                ephemeral: true,
+            });
+            const discordChannel = interaction.guild.channels.cache.get(interaction.client.guildData.get(interaction.guild.id).modlogs[current.type]);
+            if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(interaction.guild.me).has(Permissions.FLAGS.EMBED_LINKS) || !discordChannel.permissionsFor(interaction.guild.me).has(Permissions.FLAGS.SEND_MESSAGES)) return;
+            const msg = await discordChannel.messages.fetch(current.logMessage).catch(() => null);
+            if(!msg?.editable || !msg.embeds.length) return;
+            const embed = msg.embeds[0];
+            embed.setFields([{
+                name: channelLanguage.get('reasonEmbedTargetTitle'),
+                value: channelLanguage.get('reasonEmbedTargetValue', [current.target]),
+                inline: true,
+            }]);
+            if(current.executor) embed.addField(channelLanguage.get('reasonEmbedExecutorTitle'), channelLanguage.get('reasonEmbedExecutorValue', [current.executor]), true);
+            if(current.duration){
+                let duration = Math.round((current.duration.getTime() - current.timeStamp.getTime()) / 60000);
+                let d = Math.floor(duration / 1440);
+                let h = Math.floor((duration % 1440) / 60);
+                let m = Math.floor(duration % 60);
+                embed.addField(channelLanguage.get('reasonEmbedDurationTitle'), channelLanguage.get('reasonEmbedDurationValue', [d, h, m, Math.floor(current.duration.getTime() / 1000)]), true);
+            }
+            embed.addField(channelLanguage.get('reasonEmbedReasonTitle'), current.reason);
+            await msg.edit({embeds: [embed]});
+        }).catch(async () => await interaction.followUp({
+            content: channelLanguage.get('modalTimeOut'),
+            ephemeral: true,
+        }));
+    },
+    slashOptions: [{
+        type: 'INTEGER',
+        name: 'case_id',
+        nameLocalizations: getStringLocales('reasonOptioncase_idLocalisedName'),
+        description: 'The ID of the case to edit the reason of',
+        descriptionLocalizations: getStringLocales('reasonOptioncase_idLocalisedDesc'),
+        required: true,
+        minValue: 0,
+    }],
 };

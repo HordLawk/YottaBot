@@ -1,17 +1,23 @@
 const {Schema, model} = require('mongoose');
+const configs = require('../bot/configs.js');
 
 const roleSchema = new Schema({
     guild: {
         type: String,
         required: true,
         ref: 'guild',
+        index: true,
     },
     roleID: {
         type: String,
         required: true,
+        index: true,
+        match: /^\d{17,19}$/,
     },
-    autoroleDelay: Number,
-    ignoreActions: [String],
+    ignoreActions: [{
+        type: String,
+        enum: [...configs.actions.keys()],
+    }],
     commandPermissions: [new Schema({
         _id: String,
         allow: {
@@ -19,9 +25,15 @@ const roleSchema = new Schema({
             required: true,
         },
     })],
-    xp: Number,
+    xp: {
+        type: Number,
+        min: 1,
+    },
     ignoreXp: Boolean,
-    xpMultiplier: Number,
+    xpMultiplier: {
+        type: Number,
+        min: 1,
+    },
 });
 
 module.exports = model('role', roleSchema);

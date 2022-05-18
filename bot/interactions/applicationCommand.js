@@ -4,6 +4,7 @@ const channel = require('../../schemas/channel.js');
 const user = require('../../schemas/user.js');
 const member = require('../../schemas/member.js');
 const {Collection} = require('discord.js');
+const locale = require('../../locale');
 
 module.exports = {
     name: 'APPLICATION_COMMAND',
@@ -28,7 +29,7 @@ module.exports = {
             // savedChannel = await channel.findById(interaction.channel.id);
             if(!interaction.member) throw new Error('Member could not be fetched.');
         }
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const channelLanguage = locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en');
         if(interaction.channel.partial) await interaction.channel.fetch();
         const userDoc = await user.findById(interaction.user.id);
         if(userDoc && userDoc.blacklisted) return interaction.reply({
@@ -100,6 +101,7 @@ module.exports = {
             args[opt.name] = opt[opt.type.toLowerCase()] ? opt[opt.type.toLowerCase()] : opt.value;
             if(opt.type === 'USER' && opt.member) args[opt.name].member = opt.member;
         });
+        interaction.channelLanguage = channelLanguage;
         command[`${subCommandName ? `${(subCommandGroupName ?? '')}${subCommandName}` : 'execute'}Slash`](interaction, args).then(async () => {
             if(Math.floor(Math.random() * 100) || (interaction.guild && (interaction.client.guildData.get(interaction.guild.id).premiumUntil || interaction.client.guildData.get(interaction.guild.id).partner))) return;
             const msgData = {

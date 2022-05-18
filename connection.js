@@ -5,6 +5,7 @@ const connect = () => mongoose.connect(`${process.env.MONGOURL}?retryWrites=true
     useNewUrlParser: true,
     useFindAndModify: false,
     useUnifiedTopology: true,
+    useCreateIndex: true,
 });
 
 app.on("error", () => mongoose.disconnect());

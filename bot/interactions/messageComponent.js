@@ -164,7 +164,7 @@ module.exports = {
             });
             collectorEdit.on('collect', i => (async () => {
                 i.awaitModalSubmit({
-                    filter: int => (int.user.id === interaction.user.id) && (int.customId === 'modalEdit'),
+                    filter: int => (int.user.id === interaction.user.id) && (int.customId === `modalEdit${i.id}`),
                     time: 600_000,
                 }).then(async int => {
                     current.reason = int.fields.getTextInputValue('reason');
@@ -191,7 +191,7 @@ module.exports = {
                     ephemeral: true,
                 }));
                 await i.showModal({
-                    customId: 'modalEdit',
+                    customId: `modalEdit${i.id}`,
                     title: channelLanguage.get('editReasonModalTitle'),
                     components: [{
                         type: 'ACTION_ROW',
@@ -202,6 +202,7 @@ module.exports = {
                             required: true,
                             style: 'PARAGRAPH',
                             value: current.reason,
+                            maxLength: 500,
                         }],
                     }],
                 });

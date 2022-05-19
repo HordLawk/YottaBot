@@ -572,6 +572,7 @@ module.exports = {
             case 'filteridsModaltextLabel': return 'Texto com IDs';
             case 'fileTooBig': return 'Esse arquivo é grande demais para ser filtrado';
             case 'invalidFile': return 'Apenas arquivos totalmente de texto são aceitos';
+            case 'filteridsLocalisedName': return 'filtrarids';
         }
     },
 };

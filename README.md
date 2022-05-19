@@ -31,14 +31,14 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - You agree to not submit any issues, features, or pull requests related to bugs exclusively related to self-hosting.
 
 ## W.I.P
-- [ ] use slash commands; context menus; buttons; and stuff * ***
+- [ ] use slash commands; context menus; buttons; and stuff *
 - [ ] add rss feeds for youtube notifications
 - [ ] `poll` command * \**
 - [ ] command to manage emojis
 - [ ] automated punishments when reaching a chosen amount of another type of punishment
 - [ ] other streaming notifications for premium
 - [x] button to edit action reason in the command reply
-- [ ] command to add a sticker from an attachment \*\**
+- [ ] command to add a sticker from an attachment
 - [ ] voice channels join and leave logs
 - [ ] add support for more payment methods to buy premium
 - [x] count use of each command by every member
@@ -49,8 +49,6 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 \* on hold until Discord adds the date and time option type
 
 \** on hold until Discord adds select menus for modals
-
-\*\** on hold until Discord adds the file option type
 
 ## Credits
 - [@elloramir](https://github.com/elloramir) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

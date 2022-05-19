@@ -573,6 +573,9 @@ module.exports = {
             case 'fileTooBig': return 'Esse arquivo é grande demais para ser filtrado';
             case 'invalidFile': return 'Apenas arquivos totalmente de texto são aceitos';
             case 'filteridsLocalisedName': return 'filtrarids';
+            case 'botCantAddSticker': return 'Eu não tenho permissão para adicionar figurinhas nesse servidor';
+            case 'stickerTooBig': return 'Figurinhas devem ter um tamanho menor que 500 KB';
+            case 'lottieNotPartner': return 'Sticker Lottie só podem ser adicionados em servidores parceiros ou verificados';
         }
     },
 };

@@ -533,6 +533,9 @@ module.exports = {
             case 'filteridsModaltextLabel': return 'Unfiltered text';
             case 'fileTooBig': return 'This file is too big for me to filter it';
             case 'invalidFile': return 'Only plain text files are allowed';
+            case 'botCantAddSticker': return 'I don\'t have permission to add stickers in this server';
+            case 'stickerTooBig': return 'Stickers must have a file size lower than 500 KB';
+            case 'lottieNotPartner': return 'Lottie stickers can only be uploaded on guilds that are either partnered or verified';
         }
     },
 };

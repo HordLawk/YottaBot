@@ -7,19 +7,6 @@ module.exports = {
     usage: () => ['(code)'],
     execute: async message => eval(message.content.replace(/^\S+\s+/, '')),
     executeSlash: async interaction => {
-        interaction.awaitModalSubmit({
-            filter: i => (i.customId === `eval${interaction.id}`) && (i.user.id === interaction.client.application.owner.id),
-            time: 600_000,
-        }).then(async i => {
-            await i.reply({
-                content: 'Executing code...',
-                ephemeral: true,
-            });
-            eval(i.fields.getTextInputValue('code'));
-        }).catch(async () => await interaction.followUp({
-            content: 'Modal timed out!',
-            ephemeral: true,
-        }));
         await interaction.showModal({
             customId: `eval${interaction.id}`,
             title: 'eval',
@@ -35,5 +22,24 @@ module.exports = {
                 }],
             }],
         });
+        const i = await interaction.awaitModalSubmit({
+            filter: i => (i.customId === `eval${interaction.id}`) && (i.user.id === interaction.client.application.owner.id),
+            time: 10_000,
+        }).catch(async err => {
+            if(err.code === 'INTERACTION_COLLECTOR_ERROR'){
+                await interaction.followUp({
+                    content: 'Modal timed out!',
+                    ephemeral: true,
+                });
+                return;
+            }
+            throw err;
+        });
+        if(!i) return;
+        await i.reply({
+            content: 'Executing code...',
+            ephemeral: true,
+        });
+        eval(i.fields.getTextInputValue('code'));
     },
 };

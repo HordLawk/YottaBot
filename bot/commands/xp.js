@@ -22,18 +22,21 @@ module.exports = {
                 if(message.client.guildData.get(message.guild.id).processing) return message.reply(channelLanguage.get('processing'));
                 message.client.guildData.get(message.guild.id).processing = true;
                 let cachePage = 0;
-                const cachePageSize = 500;
+                const cachePageSize = 100;
                 let parcialMemberDocs = await member.find({
                     guild: message.guild.id,
                     xp: {$gte: 1},
                 }, 'userID xp').sort({xp: -1}).limit(cachePageSize);
-                console.log('500 database members:');
-                console.log(parcialMemberDocs.map(e => e.userID));
-                const members = await message.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
-                parcialMemberDocs = parcialMemberDocs.filter(e => members.includes(e.userID));
-                console.log('interception database and discord members:');
-                console.log(`length: ${parcialMemberDocs.length}`);
-                console.log(parcialMemberDocs.map(e => e.userID));
+                if(verbose){
+                    console.log('100 database members');
+                }
+                const members = await message.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)});
+                parcialMemberDocs = parcialMemberDocs.filter(e => members.has(e.userID));
+                if(verbose){
+                    console.log('interception database and discord members:');
+                    console.log(`length: ${parcialMemberDocs.length}`);
+                    console.log(parcialMemberDocs.map(e => e.userID));
+                }
                 let page = 0;
                 const pageSize = 20;
                 const memberDocsSize = await member.countDocuments({
@@ -45,13 +48,16 @@ module.exports = {
                         guild: message.guild.id,
                         xp: {$gte: 1},
                     }, 'userID xp').sort({xp: -1}).skip((cachePage++ + 1) * cachePageSize).limit(cachePageSize);
-                    console.log('more 500 database members:');
-                    console.log(auxParcialMemberDocs.map(e => e.userID));
-                    const auxMembers = await message.guild.members.fetch({user: auxParcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
-                    console.log('interception as database members:');
-                    console.log(`length: ${auxMembers.length}`);
-                    console.log(auxParcialMemberDocs.filter(e => auxMembers.includes(e.userID)).map(e => e.userID));
-                    parcialMemberDocs = parcialMemberDocs.concat(auxParcialMemberDocs.filter(e => auxMembers.includes(e.userID)));
+                    if(verbose){
+                        console.log('more 100 database members');
+                    }
+                    const auxMembers = await message.guild.members.fetch({user: auxParcialMemberDocs.map(e => e.userID)});
+                    if(verbose){
+                        console.log('interception as database members:');
+                        console.log(`length: ${auxMembers.size}`);
+                        console.log(auxParcialMemberDocs.filter(e => auxMembers.has(e.userID)).map(e => e.userID));
+                    }
+                    parcialMemberDocs = parcialMemberDocs.concat(auxParcialMemberDocs.filter(e => auxMembers.has(e.userID)));
                     if(((((page + 1) * pageSize) + 1) > parcialMemberDocs.length) && (((cachePage + 1) * cachePageSize) < memberDocsSize)) await fetchMore();
                 }
                 if((pageSize + 1) > parcialMemberDocs.length) await fetchMore();
@@ -245,7 +251,7 @@ module.exports = {
         interaction.client.guildData.get(interaction.guild.id).processing = true;
         await interaction.deferReply();
         let cachePage = 0;
-        const cachePageSize = 500;
+        const cachePageSize = 100;
         let parcialMemberDocs = await member.find({
             guild: interaction.guild.id,
             xp: {$gte: 1},

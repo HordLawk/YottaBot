@@ -24,18 +24,12 @@ module.exports = {
         });
         const i = await interaction.awaitModalSubmit({
             filter: i => (i.customId === `eval${interaction.id}`) && (i.user.id === interaction.client.application.owner.id),
-            time: 10_000,
-        }).catch(async err => {
-            if(err.code === 'INTERACTION_COLLECTOR_ERROR'){
-                await interaction.followUp({
-                    content: 'Modal timed out!',
-                    ephemeral: true,
-                });
-                return;
-            }
-            throw err;
+            time: 600_000,
+        }).catch(() => null);
+        if(!i) return await interaction.followUp({
+            content: 'Modal timed out!',
+            ephemeral: true,
         });
-        if(!i) return;
         await i.reply({
             content: 'Executing code...',
             ephemeral: true,

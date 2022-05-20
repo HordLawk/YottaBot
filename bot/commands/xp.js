@@ -18,6 +18,7 @@ module.exports = {
         if(!message.client.guildData.get(message.guild.id).gainExp && !message.client.guildData.get(message.guild.id).voiceXpCooldown) return message.reply(channelLanguage.get('xpDisabled'));
         switch(args[0]){
             case 'rank': {
+                const verbose = (args[1] === 'verbose') && (message.author.id === message.client.application.owner.id);
                 if(message.client.guildData.get(message.guild.id).processing) return message.reply(channelLanguage.get('processing'));
                 message.client.guildData.get(message.guild.id).processing = true;
                 let cachePage = 0;
@@ -26,8 +27,13 @@ module.exports = {
                     guild: message.guild.id,
                     xp: {$gte: 1},
                 }, 'userID xp').sort({xp: -1}).limit(cachePageSize);
+                console.log('500 database members:');
+                console.log(parcialMemberDocs.map(e => e.userID));
                 const members = await message.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
                 parcialMemberDocs = parcialMemberDocs.filter(e => members.includes(e.userID));
+                console.log('interception database and discord members:');
+                console.log(`length: ${parcialMemberDocs.length}`);
+                console.log(parcialMemberDocs.map(e => e.userID));
                 let page = 0;
                 const pageSize = 20;
                 const memberDocsSize = await member.countDocuments({
@@ -39,7 +45,12 @@ module.exports = {
                         guild: message.guild.id,
                         xp: {$gte: 1},
                     }, 'userID xp').sort({xp: -1}).skip((cachePage++ + 1) * cachePageSize).limit(cachePageSize);
+                    console.log('more 500 database members:');
+                    console.log(auxParcialMemberDocs.map(e => e.userID));
                     const auxMembers = await message.guild.members.fetch({user: auxParcialMemberDocs.map(e => e.userID)}).then(res => res.map(e => e.id));
+                    console.log('interception as database members:');
+                    console.log(`length: ${auxMembers.length}`);
+                    console.log(auxParcialMemberDocs.filter(e => auxMembers.includes(e.userID)).map(e => e.userID));
                     parcialMemberDocs = parcialMemberDocs.concat(auxParcialMemberDocs.filter(e => auxMembers.includes(e.userID)));
                     if(((((page + 1) * pageSize) + 1) > parcialMemberDocs.length) && (((cachePage + 1) * cachePageSize) < memberDocsSize)) await fetchMore();
                 }

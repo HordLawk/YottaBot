@@ -81,7 +81,7 @@ module.exports = {
                         guild: message.guild.id,
                         xp: {$gt: memberDoc.xp},
                     };
-                    if(members.includes(message.author.id)) queryFilter.userID = {$in: members};
+                    if(members.has(message.author.id)) queryFilter.userID = {$in: members.map(e => e.id)};
                     const rank = await member.countDocuments(queryFilter);
                     embed.setFooter({text: channelLanguage.get('xpRankEmbedFooter', [rank + 1])});
                 }

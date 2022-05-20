@@ -575,7 +575,7 @@ module.exports = {
             case 'filteridsLocalisedName': return 'filtrarids';
             case 'botCantAddSticker': return 'Eu não tenho permissão para adicionar figurinhas nesse servidor';
             case 'stickerTooBig': return 'Figurinhas devem ter um tamanho menor que 500 KB';
-            case 'lottieNotPartner': return 'Sticker Lottie só podem ser adicionados em servidores parceiros ou verificados';
+            case 'lottieNotPartner': return 'Stickers Lottie só podem ser adicionados em servidores parceiros ou verificados';
         }
     },
 };

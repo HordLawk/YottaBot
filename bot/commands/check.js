@@ -13,7 +13,7 @@ module.exports = {
     args: true,
     guilOnly: true,
     execute: async function(message, args){
-        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const {channelLanguage} = message;
         if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.reply(channelLanguage.get('botReactions'));
         if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
@@ -101,11 +101,11 @@ module.exports = {
         });
     },
     executeSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
         if(interaction.isUserContextMenu()) args = {
             user: (interaction.targetUser.member = interaction.targetMember, interaction.targetUser),
             case_type: 'all',
         };
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args.case_type)) throw new Error('Invalid slash command options');
         const filter = (args.time_filter_unit ?? args.time_filter_value) ? (Date.now() - ((args.time_filter_unit ?? 86400000) * (args.time_filter_value ?? 1))) : 0;
         const logDocs = await log.find({

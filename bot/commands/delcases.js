@@ -52,7 +52,7 @@ module.exports = {
     perm: Permissions.FLAGS.ADMINISTRATOR,
     guildOnly: true,
     execute: async function(message, args){
-        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const {channelLanguage} = message;
         const {buttonConfirm, buttonCancel, components, collectorOptions} = buildButtons(channelLanguage, message.author);
         const collectorEnd = reply => (async collected => {
             if(!reply.editable) return;
@@ -123,7 +123,7 @@ module.exports = {
         }
     },
     serverSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         const {buttonConfirm, buttonCancel, components, collectorOptions} = buildButtons(channelLanguage, interaction.user);
         const reply = await interaction.reply({
             content: channelLanguage.get('resetServerCasesConfirm'),
@@ -147,7 +147,7 @@ module.exports = {
         collector.on('end', slashCollectorEnd(buttonConfirm, buttonCancel, components, channelLanguage, interaction, reply));
     },
     userSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         const {buttonConfirm, buttonCancel, components, collectorOptions} = buildButtons(channelLanguage, interaction.user);
         const reply = await interaction.reply({
             content: channelLanguage.get('resetUserCasesConfirm', [args.target]),
@@ -174,7 +174,7 @@ module.exports = {
         collector.on('end', slashCollectorEnd(buttonConfirm, buttonCancel, components, channelLanguage, interaction, reply));
     },
     caseSlash: async function(interaction, args){
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(isNaN(args.id) || !isFinite(args.id) || (args.id < 0)) return interaction.reply({
             content: channelLanguage.get('invArgs', [interaction.client.guildData.get(interaction.guild.id).prefix, this.name, this.usage(channelLanguage)]),
             ephemeral: true,

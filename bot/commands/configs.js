@@ -1,10 +1,8 @@
 const guild = require('../../schemas/guild.js');
 const {MessageEmbed, Permissions} = require('discord.js');
-const fs = require('fs');
-const path = require('path');
+const locale = require('../../locale');
 
-const locales = fs.readdirSync(path.join(__dirname, '..', '..', 'locale')).filter(file => file.endsWith('.js')).map(e => require(`../../locale/${e}`)).filter(e => (e.lang !== 'en'));
-const getLocalisedName = name => locales.reduce((acc, e) => ({...acc, [e.code]: e.get(`${name}LocalisedName`)}), {});
+const getLocalisedName = name => locale.filter((_, i) => (i !== 'en')).reduce((acc, e) => (e.get(`${name}LocalisedName`) ? {...acc, [e.code]: e.get(`${name}LocalisedName`)} : acc), {});
 
 module.exports = {
     active: true,
@@ -19,7 +17,7 @@ module.exports = {
     perm: Permissions.FLAGS.ADMINISTRATOR,
     guildOnly: true,
     execute: async function(message, args){
-        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const {channelLanguage} = message;
         switch(args[0]){
             case 'prefix': {
                 if(!args[1]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
@@ -30,10 +28,10 @@ module.exports = {
             }
             break;
             case 'language': {
-                if(!message.client.langs[args[1]]) return message.reply(channelLanguage.get('lang404'));
+                if(!locale.has(args[1])) return message.reply(channelLanguage.get('lang404'));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {language: args[1]}});
                 message.client.guildData.get(message.guild.id).language = args[1];
-                message.reply(message.client.langs[message.client.guildData.get(message.guild.id).language].get('newLang'));
+                message.reply(locale.get(message.client.guildData.get(message.guild.id).language).get('newLang'));
             }
             break;
             case 'logattachments': {
@@ -118,17 +116,17 @@ module.exports = {
         }
     },
     languageSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
-        if(!interaction.client.langs[args.language]) return interaction.reply({
+        const {channelLanguage} = interaction;
+        if(!locale.has(args.language)) return interaction.reply({
             content: channelLanguage.get('lang404'),
             ephemeral: true,
         });
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {language: args.language}});
         interaction.client.guildData.get(interaction.guild.id).language = args.language;
-        await interaction.reply(channelLanguage.get('newLang'));
+        await interaction.reply(locale.get(args.language).get('newLang'));
     },
     logattachmentsSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(args.enable){
             if(!interaction.client.guildData.get(interaction.guild.id).actionlogs.id('delmsg')) return interaction.reply({
                 content: channelLanguage.get('logattachmentsNoHook'),
@@ -148,7 +146,7 @@ module.exports = {
         interaction.client.guildData.get(interaction.guild.id).logAttachments = args.enable;
     },
     moderationlogsSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(!interaction.guild.me.permissionsIn(args.modlog_channel).has(Permissions.FLAGS.SEND_MESSAGES) || !args.modlog_channel.viewable) return interaction.reply({
             content: channelLanguage.get('sendMessages'),
             ephemeral: true,
@@ -162,28 +160,28 @@ module.exports = {
         await interaction.reply(channelLanguage.get('modLogsSetSuccess', [[args.action_type], args.modlog_channel]));
     },
     moderationclearonbanSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {pruneBan: args.days}});
         interaction.client.guildData.get(interaction.guild.id).pruneBan = args.days;
         await interaction.reply(channelLanguage.get('clearOnBanDaysSetSuccess', [args.days]));
     },
     moderationmassbanprotectionSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {antiMassBan: (interaction.client.guildData.get(interaction.guild.id).antiMassBan = (args.enable ? (args.max_bans || 15) : null))}});
         await interaction.reply(channelLanguage.get('massBanProtectionSuccess', [args.enable]));
     },
     moderationglobalbansSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {globalBan: (interaction.client.guildData.get(interaction.guild.id).globalBan = args.enable)}});
         await interaction.reply(channelLanguage.get('globalbanSuccess', [args.enable]));
     },
     betaSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {beta: (interaction.client.guildData.get(interaction.guild.id).beta = args.enable)}});
         await interaction.reply(channelLanguage.get('betaSuccess', [args.enable]));
     },
     infoSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         const embed = new MessageEmbed()
             .setColor(interaction.guild.me.displayColor || 0x8000ff)
             .setAuthor({
@@ -329,9 +327,9 @@ module.exports = {
         },
     ],
     languageAutocomplete: {
-        language: (interaction, value) => interaction.respond(Object.values(interaction.client.langs).filter(e => e.name.startsWith(value)).map(e => ({
+        language: (interaction, value) => interaction.respond(locale.filter(e => e.name.startsWith(value)).map((e, i) => ({
             name: e.name,
-            value: e.lang,
+            value: i,
         }))),
     },
 };

@@ -4,6 +4,7 @@ const edition = require('../../schemas/edition.js');
 const {MessageEmbed, Util} = require('discord.js');
 const {sha256} = require('js-sha256');
 const aesjs = require('aes-js');
+const locale = require('../../locale');
 
 module.exports = {
     name: 'messageUpdate',
@@ -26,7 +27,7 @@ module.exports = {
         }
         if(newMessage.partial) await newMessage.fetch();
         if(!newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg') || (!newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg').hookID && !newMessage.client.guildData.get(newMessage.guild.id).defaultLogsHookID) || (oldMessage.content === newMessage.content)) return;
-        const channelLanguage = newMessage.client.langs[newMessage.client.guildData.get(newMessage.guild.id).language];
+        const channelLanguage = locale.get(newMessage.client.guildData.get(newMessage.guild.id).language);
         const channelDoc = await channel.findById(newMessage.channel.id);
         if(channelDoc && channelDoc.ignoreActions.includes('editmsg')) return;
         const memb = newMessage.member || await newMessage.guild.members.fetch(newMessage.author.id).catch(() => null);

@@ -8,6 +8,7 @@ const member = require('../../schemas/member.js');
 const {MessageEmbed, Collection, Permissions} = require('discord.js');
 const {AutoPoster} = require('topgg-autoposter');
 const axios = require('axios');
+const locale = require('../../locale');
 
 module.exports = {
     name: 'ready',
@@ -63,7 +64,7 @@ module.exports = {
                 let discordUser = discordMember?.user ?? await client.users.fetch(unmuteDoc.target).catch(() => {});
                 let discordChannel = guild.channels.cache.get(client.guildData.get(guild.id).modlogs.mute);
                 if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(guild.me).has(Permissions.FLAGS.SEND_MESSAGES) && discordChannel.permissionsFor(guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
-                    let guildLanguage = client.langs[client.guildData.get(guild.id).language];
+                    let guildLanguage = locale.get(client.guildData.get(guild.id).language);
                     let embed = new MessageEmbed()
                         .setColor(0x0000ff)
                         .setAuthor({
@@ -135,7 +136,7 @@ module.exports = {
                 if(discordMember?.premiumSince){
                     userDoc.boostUntil = new Date(userDoc.boostUntil.getTime() + 2592000000);
                     userDoc.premiumKeys++;
-                    discordMember.send(client.langs.en.get('renewBoost', [discordMember.guild.name])).catch(() => null);
+                    discordMember.send(locale.get('en').get('renewBoost', [discordMember.guild.name])).catch(() => null);
                 }
                 else{
                     userDoc.boostUntil = null;
@@ -181,7 +182,7 @@ module.exports = {
                     if(!lowerRoles.length || discordMember.roles.cache.has(lowerRoles[0].roleID)) continue;
                     await discordMember.roles.set(discordMember.roles.cache.map(e => e.id).filter(e => !lowerRoles.some(ee => (e === ee.roleID))).concat(lowerRoles.map(e => e.roleID).slice(0, client.guildData.get(voiceGuild._id).dontStack ? 1 : undefined)));
                     if(!client.guildData.get(voiceGuild._id).xpChannel || (doc.xp >= (lowerRoles[0].xp + multiplier))) continue;
-                    let guildLanguage = client.langs[client.guildData.get(voiceGuild._id).language];
+                    let guildLanguage = locale.get(client.guildData.get(voiceGuild._id).language);
                     if(client.guildData.get(voiceGuild._id).xpChannel === 'dm'){
                         discordMember.send(guildLanguage.get('achieveDM', [discordGuild.roles.cache.get(lowerRoles[0].roleID).name, discordGuild.name])).catch(() => null);
                         continue;

@@ -1,12 +1,13 @@
 const memberModel = require('../../schemas/member.js');
 const {MessageEmbed, Permissions} = require('discord.js');
+const locale = require('../../locale');
 
 module.exports = {
     name: 'guildMemberAdd',
     execute: async member => {
         if(member.partial) await member.fetch();
         if(!member.client.guildData.has(member.guild.id)) return;
-        const channelLanguage = member.client.langs[member.client.guildData.get(member.guild.id).language];
+        const channelLanguage = locale.get(member.client.guildData.get(member.guild.id).language);
         if(member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin') && (member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin').hookID || member.client.guildData.get(member.guild.id).defaultLogsHookID)){
             const hook = await member.client.fetchWebhook(member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin').hookID || member.client.guildData.get(member.guild.id).defaultLogsHookID, member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin').hookToken || member.client.guildData.get(member.guild.id).defaultLogsHookToken).catch(() => null);
             if(hook){

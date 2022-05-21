@@ -2,13 +2,14 @@ const {MessageEmbed, Permissions, GuildAuditLogs} = require('discord.js');
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
 const role = require('../../schemas/role.js');
+const locale = require('../../locale');
 
 module.exports = {
     name: 'guildMemberRemove',
     execute: async member => {
         if(member.partial) member.user = await member.client.users.fetch(member.id).catch(() => null);
         if(!member || !member.user || (member.id === member.client.user.id) || !member.client.guildData.has(member.guild.id)) return;
-        const channelLanguage = member.client.langs[member.client.guildData.get(member.guild.id).language];
+        const channelLanguage = locale.get(member.client.guildData.get(member.guild.id).language);
         if(member.client.guildData.get(member.guild.id).actionlogs.id('memberleave') && (member.client.guildData.get(member.guild.id).actionlogs.id('memberleave').hookID || member.client.guildData.get(member.guild.id).defaultLogsHookID)){
             const roleDoc = await role.findOne({
                 guild: member.guild.id,

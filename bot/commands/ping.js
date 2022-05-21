@@ -7,7 +7,7 @@ module.exports = {
     cooldown: 5,
     categoryID: 1,
     execute: async message => {
-        const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
+        const {channelLanguage} = message;
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         const hex = (latency) => {
             if(latency <= 100) return '00ff00';
@@ -34,7 +34,7 @@ module.exports = {
         await msg.edit({embeds: [embed]});
     },
     executeSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         const hex = (latency) => {
             if(latency <= 100) return '00ff00';
             if(latency >= 1000) return 'ff0000';

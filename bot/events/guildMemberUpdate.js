@@ -2,6 +2,7 @@ const user = require('../../schemas/user.js');
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
 const {MessageEmbed, Permissions, GuildAuditLogs} = require('discord.js');
+const locale = require('../../locale');
 
 module.exports = {
     name: 'guildMemberUpdate',
@@ -20,7 +21,7 @@ module.exports = {
                 setDefaultsOnInsert: true,
                 new: true,
             });
-            newMember.send(newMember.client.langs[newMember.client.guildData.get(newMember.client.configs.supportID).language].get('firstBoost', [newMember, newMember.guild.name])).catch(() => null);
+            newMember.send(locale.get(newMember.client.guildData.get(newMember.client.configs.supportID).language).get('firstBoost', [newMember, newMember.guild.name])).catch(() => null);
         }
         else{
             if(!newMember.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG) || !newMember.client.guildData.has(newMember.guild.id)) return;
@@ -34,7 +35,7 @@ module.exports = {
                 const guildDoc = await guild.findByIdAndUpdate(newMember.guild.id, {$inc: {counterLogs: 1}});
                 newMember.client.guildData.get(newMember.guild.id).counterLogs = guildDoc.counterLogs + 1;
                 const discordChannel = newMember.guild.channels.cache.get(newMember.client.guildData.get(newMember.guild.id).modlogs.mute);
-                const channelLanguage = newMember.client.langs[newMember.client.guildData.get(newMember.guild.id).language];
+                const channelLanguage = locale.get(newMember.client.guildData.get(newMember.guild.id).language);
                 if(newMember.isCommunicationDisabled()){
                     const duration = Math.round((newMember.communicationDisabledUntilTimestamp - audits.entries.first().createdTimestamp) / 60000);
                     const current = new log({

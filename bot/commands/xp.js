@@ -13,7 +13,7 @@ module.exports = {
     categoryID: 4,
     guildOnly: true,
     execute: async (message, args) => {
-        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const {channelLanguage} = message;
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         if(!message.client.guildData.get(message.guild.id).gainExp && !message.client.guildData.get(message.guild.id).voiceXpCooldown) return message.reply(channelLanguage.get('xpDisabled'));
         switch(args[0]){
@@ -204,8 +204,8 @@ module.exports = {
         }
     },
     infoSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
         if(!args.user) args = {user: interaction.isUserContextMenu() ? (interaction.targetUser.member = interaction.targetMember, interaction.targetUser) : (interaction.user.member = interaction.member, interaction.user)};
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
         if(!interaction.client.guildData.get(interaction.guild.id).gainExp && !interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown) return interaction.reply({
             content: channelLanguage.get('xpDisabled'),
             ephemeral: true,
@@ -240,7 +240,7 @@ module.exports = {
         await interaction.reply({embeds: [embed]});
     },
     rankSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(!interaction.client.guildData.get(interaction.guild.id).gainExp && !interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown) return interaction.reply({
             content: channelLanguage.get('xpDisabled'),
             ephemeral: true,
@@ -363,7 +363,7 @@ module.exports = {
         })
     },
     rolesSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(!interaction.client.guildData.get(interaction.guild.id).gainExp && !interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown) return interaction.reply({
             content: channelLanguage.get('xpDisabled'),
             ephemeral: true,

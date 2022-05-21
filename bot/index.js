@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const Discord = require('discord.js');
+const guild = require('../schemas/guild.js');
+const locale = require('../locale');
 const client = new Discord.Client({
     partials: ['REACTION', 'MESSAGE', 'CHANNEL', 'GUILD_MEMBER'],
     intents: [
@@ -15,7 +17,6 @@ const client = new Discord.Client({
     allowedMentions: {repliedUser: false},
     failIfNotExists: false,
 });
-const guild = require('../schemas/guild.js');
 const _transformCommand = Discord.ApplicationCommandManager.transformCommand;
 Discord.ApplicationCommandManager.transformCommand = command => ({
     ..._transformCommand(command),
@@ -23,7 +24,6 @@ Discord.ApplicationCommandManager.transformCommand = command => ({
     dm_permission: command.dm_permission,
 });
 client.configs = require('./configs.js');
-client.langs = fs.readdirSync(path.join(__dirname, '..', 'locale')).filter(file => file.endsWith('.js')).map(e => require(`../locale/${e}`)).reduce((obj, e) => ({...obj, [e.lang]: e}), {});
 client.commands = new Discord.Collection(fs.readdirSync(path.join(__dirname, 'commands')).filter(file => file.endsWith('.js')).map(e => require(`./commands/${e}`)).filter(e => e.active).map(e => [e.name, e]));
 client.interactions = new Discord.Collection(fs.readdirSync(path.join(__dirname, 'interactions')).filter(file => file.endsWith('.js')).map(e => require(`./interactions/${e}`)).map(e => [e.name, e]));
 client.cooldowns = new Discord.Collection();
@@ -32,7 +32,7 @@ client.lastdelmsg = new Discord.Collection();
 client.handlers = {
     button: (err, i) => {
         console.error(err);
-        const channelLanguage = client.langs[(i.locale === 'pt-BR') ? 'pt' : 'en'];
+        const channelLanguage = locale.get((i.locale === 'pt-BR') ? 'pt' : 'en');
         const msgData = {
             content: channelLanguage.get('componentError'),
             ephemeral: true,

@@ -1,3 +1,5 @@
+const locale = require('../../locale');
+
 module.exports = {
     active: true,
     name: 'deploy',
@@ -5,7 +7,7 @@ module.exports = {
     args: true,
     usage: () => ['<user/message/chat_input> (command name)'],
     addSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(!args.name || !['CHAT_INPUT', 'USER', 'MESSAGE'].includes(args.type)) throw new Error('Invalid slash command options');
         const command = interaction.client.commands.get(args.name);
         if(!command) return interaction.reply({
@@ -19,13 +21,13 @@ module.exports = {
                 dm_permission: !command.guildOnly,
                 ...((args.type === 'CHAT_INPUT') ? {
                     name: command.name,
-                    name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang !== 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}LocalisedName`)}), {}),
-                    description: command.description(interaction.client.langs['en']),
-                    description_localizations: Object.values(interaction.client.langs).filter(e => (e.lang !== 'en')).reduce((acc, e) => ({...acc, [e.code]: command.description(e)}), {}),
+                    name_localizations: locale.filter((_, i) => (i !== 'en')).reduce((acc, e) => (e.get(`${command.name}LocalisedName`) ? {...acc, [e.code]: e.get(`${command.name}LocalisedName`)} : acc), {}),
+                    description: command.description(locale.get('en')),
+                    description_localizations: locale.filter((_, i) => (i !== 'en')).reduce((acc, e) => ({...acc, [e.code]: command.description(e)}), {}),
                     options: command.slashOptions,
                 } : {
                     name: command.contextName,
-                    name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang !== 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}ContextName`)}), {}),
+                    name_localizations: locale.filter((_, i) => (i !== 'en')).reduce((acc, e) => (e.get(`${command.name}ContextName`) ? {...acc, [e.code]: e.get(`${command.name}ContextName`)} : acc), {}),
                 }),
             });
             await interaction.reply(channelLanguage.get('deploySuccess', [slash.name, slash.type]));
@@ -36,7 +38,7 @@ module.exports = {
         }
     },
     editSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(!args.slash_name || !args.command_name || !['CHAT_INPUT', 'USER', 'MESSAGE'].includes(args.type)) throw new Error('Invalid slash command options');
         const command = interaction.client.commands.get(args.command_name);
         const slash = ((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.guild).commands.cache.get(args.slash_name);
@@ -50,13 +52,13 @@ module.exports = {
                 dm_permission: !command.guildOnly,
                 ...((slash.type === 'CHAT_INPUT') ? {
                     name: command.name,
-                    name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang !== 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}LocalisedName`)}), {}),
-                    description: command.description(interaction.client.langs['en']),
-                    description_localizations: Object.values(interaction.client.langs).filter(e => (e.lang !== 'en')).reduce((acc, e) => ({...acc, [e.code]: command.description(e)}), {}),
+                    name_localizations: locale.filter((_, i) => (i !== 'en')).reduce((acc, e) => (e.get(`${command.name}LocalisedName`) ? {...acc, [e.code]: e.get(`${command.name}LocalisedName`)} : acc), {}),
+                    description: command.description(locale.get('en')),
+                    description_localizations: locale.filter((_, i) => (i !== 'en')).reduce((acc, e) => ({...acc, [e.code]: command.description(e)}), {}),
                     options: command.slashOptions,
                 } : {
                     name: command.contextName,
-                    name_localizations: Object.values(interaction.client.langs).filter(e => (e.lang !== 'en')).reduce((acc, e) => ({...acc, [e.code]: e.get(`${command.name}ContextName`)}), {}),
+                    name_localizations: locale.filter((_, i) => (i !== 'en')).reduce((acc, e) => (e.get(`${command.name}ContextName`) ? {...acc, [e.code]: e.get(`${command.name}ContextName`)} : acc), {}),
                 })
             });
             await interaction.reply(channelLanguage.get('deploySuccess', [slash.name, slash.type]));

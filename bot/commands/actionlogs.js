@@ -2,9 +2,10 @@ const {MessageEmbed, Permissions} = require('discord.js');
 const channel = require('../../schemas/channel.js');
 const role = require('../../schemas/role.js');
 const guild = require('../../schemas/guild.js');
+const locale = require('../../locale');
 
 const actionOptionMapper = filter => ((interaction, value) => interaction.respond((filter ? interaction.client.configs.actions.filter(filter) : interaction.client.configs.actions).map((_, i) => ({
-    name: interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'].get(`${i}ActionName`),
+    name: locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en').get(`${i}ActionName`),
     value: i,
 })).filter(e => e.name.toLowerCase().startsWith(value.toLowerCase()))));
 
@@ -21,7 +22,7 @@ module.exports = {
     perm: Permissions.FLAGS.ADMINISTRATOR,
     guildOnly: true,
     execute: async function(message, args){
-        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const {channelLanguage} = message;
         switch(args[0]){
             case 'defaultchannel': {
                 if(!args[1]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
@@ -298,7 +299,7 @@ module.exports = {
         }
     },
     defaultSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(!interaction.guild.me.permissionsIn(args.channel).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) return interaction.reply({
             content: channelLanguage.get('botWebhooks'),
             ephemeral: true,
@@ -317,7 +318,7 @@ module.exports = {
         await interaction.reply(channelLanguage.get('newDefaultLog', [args.channel]));
     },
     actionssetSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(!interaction.client.configs.actions.has(args.action)) return interaction.reply({
             content: channelLanguage.get('invAction'),
             ephemeral: true,
@@ -371,7 +372,7 @@ module.exports = {
         }
     },
     actionsremoveSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(!interaction.client.configs.actions.has(args.action)) return interaction.reply({
             content: channelLanguage.get('invAction'),
             ephemeral: true,
@@ -387,7 +388,7 @@ module.exports = {
         await interaction.reply(channelLanguage.get('removeLogSuccess'));
     },
     ignoredchannelsaddSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(args.action){
             if(!interaction.client.configs.actions.filter(e => e.ignorableChannels).has(args.action)) return interaction.reply({
                 content: channelLanguage.get('invAction'),
@@ -414,7 +415,7 @@ module.exports = {
         }
     },
     ignoredchannelsremoveSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(args.action){
             if(!interaction.client.configs.actions.filter(e => e.ignorableChannels).has(args.action)) return interaction.reply({
                 content: channelLanguage.get('invAction'),
@@ -429,7 +430,7 @@ module.exports = {
         }
     },
     ignoredchannelsinfoSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         const channelDoc = await channel.findById(args.channel.id);
         if(!channelDoc || !channelDoc.ignoreActions.length) return interaction.reply({
             content: channelLanguage.get('noIgnoredActionsChannel'),
@@ -448,7 +449,7 @@ module.exports = {
         await interaction.reply({embeds: [embed]});
     },
     ignoredrolesaddSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(args.role.id === interaction.guild.id) return interaction.reply({
             content: channelLanguage.get('cantIgnoreEveryone'),
             ephemeral: true,
@@ -479,7 +480,7 @@ module.exports = {
         }
     },
     ignoredrolesremoveSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(args.role.id === interaction.guild.id) return interaction.reply({
             content: channelLanguage.get('cantIgnoreEveryone'),
             ephemeral: true,
@@ -504,7 +505,7 @@ module.exports = {
         }
     },
     ignoredrolesinfoSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         const roleDoc = await role.findOne({
             guild: interaction.guild.id,
             roleID: args.role.id,
@@ -527,7 +528,7 @@ module.exports = {
         await interaction.reply({embeds: [embed]});
     },
     infoSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         const hook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
         const embed = new MessageEmbed()
             .setColor(interaction.guild.me.displayColor || 0x8000ff)

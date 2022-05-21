@@ -16,7 +16,7 @@ module.exports = {
     guildOnly: true,
     premium: true,
     execute: async function(message, args){
-        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const {channelLanguage} = message;
         switch(args[0]){
             case 'enable': {
                 if(isNaN(parseInt(args[1], 10)) || !isFinite(parseInt(args[1], 10)) || (parseInt(args[1], 10) < 1) || (parseInt(args[1], 10) > 59)) return message.reply(channelLanguage.get('invCooldown'));
@@ -66,17 +66,17 @@ module.exports = {
         }
     },
     enableSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {voiceXpCooldown: (interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown = args.minutes)}});
         await interaction.reply(channelLanguage.get('voicexpEnableSuccess', [interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown]));
     },
     disableSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         await guild.findByIdAndUpdate(interaction.guild.id, {$unset: {voiceXpCooldown: (interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown = null)}});
         await interaction.reply(channelLanguage.get('voicexpDisableSuccess'));
     },
     ignoreSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         await channel.findOneAndUpdate({
             _id: args.channel.id,
             guild: interaction.guild.id,
@@ -87,7 +87,7 @@ module.exports = {
         await interaction.reply(channelLanguage.get('xpIgnoreChannel', [args.add, args.channel]));
     },
     infoSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         const embed = new MessageEmbed()
             .setColor(interaction.guild.me.displayColor ?? 0x8000ff)
             .setAuthor({

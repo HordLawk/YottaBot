@@ -15,7 +15,7 @@ module.exports = {
     perm: Permissions.FLAGS.MODERATE_MEMBERS,
     guildOnly: true,
     execute: async (message, args) => {
-        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const {channelLanguage} = message;
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
         if(!message.member) return;
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];

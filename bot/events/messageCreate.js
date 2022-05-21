@@ -4,6 +4,7 @@ const channel = require('../../schemas/channel.js');
 const member = require('../../schemas/member.js');
 const user = require('../../schemas/user.js');
 const {Collection, Permissions, MessageEmbed} = require('discord.js');
+const locale = require('../../locale');
 
 module.exports = {
     name: 'messageCreate',
@@ -31,7 +32,7 @@ module.exports = {
             savedChannel = await channel.findById(message.channel.id);
             if(!message.member) return;
         }
-        const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
+        const channelLanguage = locale.get(message.guild ? message.client.guildData.get(message.guild.id).language : 'en');
         if(message.guild && message.client.guildData.get(message.guild.id).gainExp && (!message.client.xpcds.has(message.guild.id) || !message.client.xpcds.get(message.guild.id).has(message.author.id) || ((message.client.xpcds.get(message.guild.id).get(message.author.id) + 60000) <= Date.now())) && !roleDocs.some(e => (e.ignoreXp && message.member.roles.cache.has(e.roleID))) && (!savedChannel || !savedChannel.ignoreXp)){
             const multiplier = roleDocs.filter(e => (e.xpMultiplier && message.member.roles.cache.has(e.roleID))).sort((a, b) => (b.xpMultiplier - a.xpMultiplier))[0]?.xpMultiplier ?? 1;
             member.findOneAndUpdate({
@@ -129,6 +130,7 @@ module.exports = {
             }).catch(err => message.client.handlers.event(err, this, [message]));
         }
         message.channel.sendTyping();
+        message.channelLanguage = channelLanguage;
         command.execute(message, args).then(async () => {
             if(Math.floor(Math.random() * 1000) || (message.guild && (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner))) return;
             const embed = new MessageEmbed()

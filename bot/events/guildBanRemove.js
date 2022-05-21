@@ -1,6 +1,7 @@
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
 const {MessageEmbed, Permissions, GuildAuditLogs} = require('discord.js');
+const locale = require('../../locale');
 
 module.exports = {
     name: 'guildBanRemove',
@@ -26,7 +27,7 @@ module.exports = {
         await current.save();
         const discordChannel = ban.guild.channels.cache.get(ban.client.guildData.get(ban.guild.id).modlogs.ban);
         if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(ban.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(ban.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
-        const channelLanguage = ban.client.langs[ban.client.guildData.get(ban.guild.id).language];
+        const channelLanguage = locale.get(ban.client.guildData.get(ban.guild.id).language);
         const embed = new MessageEmbed()
             .setColor(0x00ff00)
             .setAuthor({

@@ -3,7 +3,7 @@ const log = require('../../schemas/log.js');
 const {MessageEmbed, Permissions} = require('discord.js');
 const locale = require('../../locale');
 
-const getStringLocales = key => [...locale.values()].reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
+const getStringLocales = key => locale.reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
 
 module.exports = {
     active: true,
@@ -18,7 +18,7 @@ module.exports = {
     perm: Permissions.FLAGS.ADMINISTRATOR,
     guildOnly: true,
     execute: async (message, args) => {
-        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const {channelLanguage} = message;
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
         if(!message.member) return;
         const ids = args.map(e => e.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1]);
@@ -90,7 +90,7 @@ module.exports = {
         }
         await guild.findByIdAndUpdate(message.guild.id, {$set: {counterLogs: message.client.guildData.get(message.guild.id).counterLogs}});
         await log.insertMany(caseLogs);
-        message.reply(channelLanguage.get('massbanSuccess', [bans, invargs, invusers, banneds]));
+        await message.reply(channelLanguage.get('massbanSuccess', [bans, invargs, invusers, banneds]));
     },
     executeSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;

@@ -16,7 +16,7 @@ module.exports = {
     perm: Permissions.FLAGS.MANAGE_ROLES,
     guildOnly: true,
     execute: async function(message){
-        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const {channelLanguage} = message;
         const args = message.content.split(/\s+(?=(?:[^"]*"[^"]*")*[^"]*$)/g).slice(1);
         if((args.length < 4) || !['create', 'edit'].includes(args[0])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         var toggle;

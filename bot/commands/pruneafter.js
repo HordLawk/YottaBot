@@ -1,6 +1,7 @@
 const {Permissions, Collection, MessageEmbed} = require('discord.js');
 const channelModel = require('../../schemas/channel.js');
 const roleModel = require('../../schemas/role.js');
+const locale = require('../../locale');
 
 module.exports = {
     active: true,
@@ -9,7 +10,7 @@ module.exports = {
     cooldown: 10,
     perm: Permissions.FLAGS.MANAGE_CHANNELS,
     executeSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(!interaction.channel.viewable || !interaction.guild.me.permissionsIn(interaction.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return await interaction.reply({
             content: channelLanguage.get('botCantPruneMessages'),
             ephemeral: true,
@@ -41,7 +42,7 @@ module.exports = {
         if(roleDoc) return;
         const hook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id('prune')?.hookID ?? interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id('prune').hookToken ?? interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
-        const logsLanguage = interaction.client.langs[interaction.client.guildData.get(interaction.guild.id).language];
+        const logsLanguage = locale.get(interaction.client.guildData.get(interaction.guild.id).language);
         const embed = new MessageEmbed()
             .setColor(0xff0000)
             .setTimestamp()

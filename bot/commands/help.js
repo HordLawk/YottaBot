@@ -10,7 +10,7 @@ module.exports = {
     cooldown: 5,
     categoryID: 1,
     execute: async (message, args) => {
-        const channelLanguage = message.client.langs[message.guild ? message.client.guildData.get(message.guild.id).language : 'en'];
+        const {channelLanguage} = message;
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         const prefix = message.guild ? message.client.guildData.get(message.guild.id).prefix : message.client.configs.defaultPrefix;
         let embed;
@@ -191,7 +191,7 @@ module.exports = {
         }
     },
     executeSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         const prefix = interaction.guild ? interaction.client.guildData.get(interaction.guild.id).prefix : interaction.client.configs.defaultPrefix;
         let embed;
         if(!args.command){

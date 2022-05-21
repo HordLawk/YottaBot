@@ -6,7 +6,7 @@ module.exports = {
     description: lang => lang.get('getstickerDescription'),
     cooldown: 5,
     executeSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(!interaction.targetMessage.stickers.size) return interaction.reply({
             content: channelLanguage.get('noStickerFound'),
             ephemeral: true,

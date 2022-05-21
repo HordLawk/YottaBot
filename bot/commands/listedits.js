@@ -13,7 +13,7 @@ module.exports = {
     premium: true,
     contextName: 'List previous edits',
     executeSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         const edits = await edition.find({messageID: interaction.targetMessage.id}).sort({timestamp: -1});
         if(!edits.length) return await interaction.reply({
             content: channelLanguage.get('noEditsFound'),

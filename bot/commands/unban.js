@@ -3,7 +3,7 @@ const log = require('../../schemas/log.js');
 const {MessageEmbed, Permissions} = require('discord.js');
 const locale = require('../../locale');
 
-const getStringLocales = key => [...locale.values()].reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
+const getStringLocales = key => locale.reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
 
 module.exports = {
     active: true,
@@ -17,7 +17,7 @@ module.exports = {
     guildOnly: true,
     perm: Permissions.FLAGS.BAN_MEMBERS,
     execute: async (message, args) => {
-        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const {channelLanguage} = message;
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
         if(!message.member) return;
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];

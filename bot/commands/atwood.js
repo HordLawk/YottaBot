@@ -5,7 +5,7 @@ module.exports = {
     cooldown: 1,
     categoryID: 5,
     executeSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         await interaction.reply(channelLanguage.get('atwoodsLaw'));
     },
 };

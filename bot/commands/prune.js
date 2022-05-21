@@ -1,6 +1,7 @@
 const {Permissions, Collection, MessageEmbed} = require('discord.js');
 const channelModel = require('../../schemas/channel.js');
 const roleModel = require('../../schemas/role.js');
+const locale = require('../../locale');
 
 const chunkFetch = async (maxAmount, channel, authorId, fetched = (new Collection()), count = 0, before) => {
     if(fetched.size >= maxAmount) return fetched.first(maxAmount);
@@ -37,7 +38,7 @@ module.exports = {
     perm: Permissions.FLAGS.MANAGE_CHANNELS,
     guildOnly: true,
     execute: async (message, args) => {
-        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const {channelLanguage} = message;
         if(!message.member.permissionsIn(message.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return await message.reply(channelLanguage.get('cantPruneMessages'));
         if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return await message.reply(channelLanguage.get('botCantPruneMessages'));
         const amount = parseInt(args[0]) + 1;
@@ -99,7 +100,7 @@ ${e.content}
         });
     },
     executeSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         if(!interaction.channel.viewable || !interaction.guild.me.permissionsIn(interaction.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return await interaction.reply({
             content: channelLanguage.get('botCantPruneMessages'),
             ephemeral: true,
@@ -136,7 +137,7 @@ ${e.content}
         if(roleDoc) return;
         const hook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id('prune')?.hookID ?? interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id('prune').hookToken ?? interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
-        const logsLanguage = interaction.client.langs[interaction.client.guildData.get(interaction.guild.id).language];
+        const logsLanguage = locale.get(interaction.client.guildData.get(interaction.guild.id).language);
         const embed = new MessageEmbed()
             .setColor(0xff0000)
             .setTimestamp()

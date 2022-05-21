@@ -2,7 +2,7 @@ const log = require('../../schemas/log.js');
 const {Permissions} = require('discord.js');
 const locale = require('../../locale');
 
-const getStringLocales = key => [...locale.values()].reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
+const getStringLocales = key => locale.reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
 
 module.exports = {
     active: true,
@@ -17,7 +17,7 @@ module.exports = {
     perm: Permissions.FLAGS.BAN_MEMBERS,
     guildOnly: true,
     execute: async function(message, args){
-        const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
+        const {channelLanguage} = message;
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
         if(!message.member) return;
         if(!args[1] || isNaN(parseInt(args[0], 10)) || !isFinite(parseInt(args[0], 10)) || (parseInt(args[0], 10) < 0)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));

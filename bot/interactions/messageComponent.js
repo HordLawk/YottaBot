@@ -2,13 +2,14 @@ const role = require('../../schemas/role.js');
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
 const {Permissions, MessageEmbed} = require('discord.js');
+const locale = require('../../locale');
 
 module.exports = {
     name: 'MESSAGE_COMPONENT',
     execute: async interaction => {
         const banid = interaction.customId.match(/^banjoined(\d{17,19})$/)?.[1];
         if(banid){
-            const channelLanguage = interaction.client.langs[interaction.client.guildData.get(interaction.guild.id).language];
+            const channelLanguage = locale.get(interaction.client.guildData.get(interaction.guild.id).language);
             if(!interaction.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
                 const roles = await role.find({
                     guild: interaction.guild.id,

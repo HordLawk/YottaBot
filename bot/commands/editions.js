@@ -11,12 +11,12 @@ module.exports = {
     perm: Permissions.FLAGS.ADMINISTRATOR,
     guildOnly: true,
     storageSlash: async (interaction, args) => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         await guildModel.findByIdAndUpdate(interaction.guild.id, {$set: {storeEditions: (interaction.client.guildData.get(interaction.guild.id).storeEditions = args.enable)}});
         await interaction.reply(channelLanguage.get('storageSuccess', [args.enable]));
     },
     wipeSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         const buttonConfirm = {
             type: 'BUTTON',
             label: channelLanguage.get('confirm'),
@@ -68,7 +68,7 @@ module.exports = {
         });
     },
     infoSlash: async interaction => {
-        const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
+        const {channelLanguage} = interaction;
         const editionsAmount = await editionModel.countDocuments({guild: interaction.guild.id});
         const premiumLike = (interaction.client.guildData.get(interaction.guild.id).premiumUntil ?? interaction.client.guildData.get(interaction.guild.id).partner);
         const embed = new MessageEmbed()

@@ -1,4 +1,5 @@
 const guild = require('../../schemas/guild.js');
+const locale = require('../../locale');
 
 module.exports = {
     active: true,
@@ -36,7 +37,7 @@ module.exports = {
             name: e.name,
             value: e.id,
         })) : [{
-            name: interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'].get('forbidden'),
+            name: locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en').get('forbidden'),
             value: '',
         }]),
     },

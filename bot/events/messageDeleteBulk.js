@@ -1,7 +1,8 @@
 const channelModel = require('../../schemas/channel.js');
 const role = require('../../schemas/role.js');
 const edition = require('../../schemas/edition.js');
-const {Permissions, GuildAuditLogs, MessageEmbed} = require('discord.js');
+const {Permissions, MessageEmbed} = require('discord.js');
+const locale = require('../../locale');
 
 module.exports = {
     name: 'messageDeleteBulk',
@@ -12,7 +13,7 @@ module.exports = {
         if(!guild.available || !client.guildData.get(guild.id)?.actionlogs.id('prune') || (!client.guildData.get(guild.id)?.actionlogs.id('prune').hookID && !client.guildData.get(guild.id)?.defaultLogsHookID) || !guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)) return;
         const relevantMessages = messages.filter(e => (!e.partial && !e.author.bot && !e.system));
         if(!relevantMessages.size) return;
-        const channelLanguage = client.langs[client.guildData.get(guild.id).language];
+        const channelLanguage = locale.get(client.guildData.get(guild.id).language);
         const audits = await guild.fetchAuditLogs({limit: 1});
         const executor = (() => {
             if(audits.entries.size && ['MESSAGE_BULK_DELETE', 'MEMBER_BAN_ADD'].includes(audits.entries.first().action)) return audits.entries.first().executor;

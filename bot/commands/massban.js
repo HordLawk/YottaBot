@@ -24,7 +24,8 @@ module.exports = {
         const ids = args.map(e => e.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1]);
         const reasonStart = ids.indexOf(undefined);
         if(!reasonStart) return message.reply(channelLanguage.get('invUser'));
-        const reason = message.content.replace(new RegExp(`^(?:\\S+\\s+){${(reasonStart === -1) ? args.length : reasonStart}}\\S+\\s*`), '').slice(0, 500);
+        if(reasonStart === -1) reasonStart = args.length;
+        const reason = message.content.replace(new RegExp(`^(?:\\S+\\s+){${reasonStart}}\\S+\\s*`), '').slice(0, 500);
         var bans = 0;
         var invargs = 0;
         var invusers = 0;

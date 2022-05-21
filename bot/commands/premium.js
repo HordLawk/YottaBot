@@ -261,6 +261,7 @@ module.exports = {
                         });
                     })(i2).catch(err => interaction.client.handlers.button(err, i2)));
                     collector2.on('end', async collected => {
+                        if(!reply2.editable) return;
                         if(collected.size) return;
                         buttonRenew.disabled = true;
                         await i.editReply({components});
@@ -270,6 +271,7 @@ module.exports = {
             }
         })(i).catch(err => interaction.client.handlers.button(err, i)));
         collector.on('end', async collected => {
+            if(!reply.editable) return;
             if(collected.size) return;
             buttonReward.disabled = buttonKey.disabled = true;
             await interaction.editReply({content: channelLanguage.get('timedOut'), components});

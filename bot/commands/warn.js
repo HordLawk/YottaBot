@@ -85,33 +85,6 @@ module.exports = {
             componentType: 'BUTTON',
         });
         collectorEdit.on('collect', i => (async () => {
-            i.awaitModalSubmit({
-                filter: int => (int.user.id === message.author.id) && (int.customId === `modalEdit${i.id}`),
-                time: 600_000,
-            }).then(async int => {
-                current.reason = int.fields.getTextInputValue('reason');
-                await current.save();
-                await int.reply({
-                    content: channelLanguage.get('modalEditSuccess'),
-                    ephemeral: true,
-                });
-                if(!msg?.editable) return;
-                const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('warnEmbedReasonTitle')));
-                const reasonField = {
-                    name: channelLanguage.get('warnEmbedReasonTitle'),
-                    value: current.reason,
-                };
-                if(reasonIndex === -1){
-                    embed.addFields(reasonField);
-                }
-                else{
-                    embed.spliceFields(reasonIndex, 1, reasonField);
-                }
-                await msg.edit({embeds: [embed]});
-            }).catch(async () => await i.followUp({
-                content: channelLanguage.get('modalTimeOut'),
-                ephemeral: true,
-            }));
             await i.showModal({
                 customId: `modalEdit${i.id}`,
                 title: channelLanguage.get('editReasonModalTitle'),
@@ -128,8 +101,36 @@ module.exports = {
                     }],
                 }],
             });
+            const int = await i.awaitModalSubmit({
+                filter: int => (int.user.id === message.author.id) && (int.customId === `modalEdit${i.id}`),
+                time: 600_000,
+            }).catch(() => null);
+            if(!int) return await i.followUp({
+                content: channelLanguage.get('modalTimeOut'),
+                ephemeral: true,
+            });
+            current.reason = int.fields.getTextInputValue('reason');
+            await current.save();
+            await int.reply({
+                content: channelLanguage.get('modalEditSuccess'),
+                ephemeral: true,
+            });
+            if(!msg?.editable) return;
+            const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('warnEmbedReasonTitle')));
+            const reasonField = {
+                name: channelLanguage.get('warnEmbedReasonTitle'),
+                value: current.reason,
+            };
+            if(reasonIndex === -1){
+                embed.addFields(reasonField);
+            }
+            else{
+                embed.spliceFields(reasonIndex, 1, reasonField);
+            }
+            await msg.edit({embeds: [embed]});
         })().catch(err => message.client.handlers.button(err, i)));
         collectorEdit.on('end', async () => {
+            if(!reply.editable) return;
             buttonEdit.disabled = true;
             await reply.edit({components});
         });
@@ -236,33 +237,6 @@ module.exports = {
             componentType: 'BUTTON',
         });
         collectorEdit.on('collect', int => (async () => {
-            int.awaitModalSubmit({
-                filter: inte => (inte.user.id === interaction.user.id) && (inte.customId === `modalEdit${int.id}`),
-                time: 600_000,
-            }).then(async inte => {
-                current.reason = inte.fields.getTextInputValue('reason');
-                await current.save();
-                await inte.reply({
-                    content: channelLanguage.get('modalEditSuccess'),
-                    ephemeral: true,
-                });
-                if(!msg?.editable) return;
-                const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('warnEmbedReasonTitle')));
-                const reasonField = {
-                    name: channelLanguage.get('warnEmbedReasonTitle'),
-                    value: current.reason,
-                };
-                if(reasonIndex === -1){
-                    embed.addFields(reasonField);
-                }
-                else{
-                    embed.spliceFields(reasonIndex, 1, reasonField);
-                }
-                await msg.edit({embeds: [embed]});
-            }).catch(async () => await int.followUp({
-                content: channelLanguage.get('modalTimeOut'),
-                ephemeral: true,
-            }));
             await int.showModal({
                 customId: `modalEdit${int.id}`,
                 title: channelLanguage.get('editReasonModalTitle'),
@@ -279,8 +253,36 @@ module.exports = {
                     }],
                 }],
             });
+            const inte = await int.awaitModalSubmit({
+                filter: inte => (inte.user.id === interaction.user.id) && (inte.customId === `modalEdit${int.id}`),
+                time: 600_000,
+            }).catch(() => null);
+            if(!inte) return await int.followUp({
+                content: channelLanguage.get('modalTimeOut'),
+                ephemeral: true,
+            });
+            current.reason = inte.fields.getTextInputValue('reason');
+            await current.save();
+            await inte.reply({
+                content: channelLanguage.get('modalEditSuccess'),
+                ephemeral: true,
+            });
+            if(!msg?.editable) return;
+            const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('warnEmbedReasonTitle')));
+            const reasonField = {
+                name: channelLanguage.get('warnEmbedReasonTitle'),
+                value: current.reason,
+            };
+            if(reasonIndex === -1){
+                embed.addFields(reasonField);
+            }
+            else{
+                embed.spliceFields(reasonIndex, 1, reasonField);
+            }
+            await msg.edit({embeds: [embed]});
         })().catch(err => interaction.client.handlers.button(err, int)));
         collectorEdit.on('end', async () => {
+            if(!reply.editable) return;
             buttonEdit.disabled = true;
             await i.editReply({components});
         });

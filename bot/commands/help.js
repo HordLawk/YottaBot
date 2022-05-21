@@ -122,6 +122,7 @@ module.exports = {
                 await i.update({embeds: [categoryEmbed], components});
             })().catch(err => message.client.handlers.button(err, i)));
             collectorCategory.on('end', async () => {
+                if(!reply.editable) return;
                 menuCategory.disabled = true;
                 await reply.edit({components});
             });
@@ -160,6 +161,7 @@ module.exports = {
                 await i.update({embeds: [commandEmbed], components});
             })().catch(err => message.client.handlers.button(err, i)));
             collectorCommand.on('end', async () => {
+                if(!reply.editable) return;
                 menuCommand.disabled = true;
                 await reply.edit({components});
             });
@@ -300,6 +302,7 @@ module.exports = {
                 await i.update({embeds: [categoryEmbed], components});
             })().catch(err => interaction.client.handlers.button(err, i)));
             collectorCategory.on('end', async () => {
+                if(!reply.editable) return;
                 menuCategory.disabled = true;
                 await interaction.editReply({components});
             });
@@ -338,6 +341,7 @@ module.exports = {
                 await i.update({embeds: [commandEmbed], components});
             })().catch(err => interaction.client.handlers.button(err, i)));
             collectorCommand.on('end', async () => {
+                if(!reply.editable) return;
                 menuCommand.disabled = true;
                 await interaction.editReply({components});
             });

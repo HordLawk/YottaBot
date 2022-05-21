@@ -83,6 +83,7 @@ module.exports = {
             await i.update({embeds: [embed], components});
         })().catch(err => interaction.client.handlers.button(err, i)));
         collector.on('end', async () => {
+            if(!reply.editable) return;
             buttonNext.disabled = buttonPrevious.disabled = true;
             await interaction.editReply({embeds: [embed], components});
         });

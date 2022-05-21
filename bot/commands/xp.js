@@ -139,6 +139,7 @@ module.exports = {
                     await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({embeds: [embed], components});
                 })(buttonInteraction).catch(err => message.client.handlers.button(err, buttonInteraction)));
                 collector.on('end', async () => {
+                    if(!reply.editable) return;
                     buttonNext.disabled = buttonPrevious.disabled = true;
                     await reply.edit({embeds: [embed], components});
                 });
@@ -356,6 +357,7 @@ module.exports = {
             await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({embeds: [embed], components});
         })(buttonInteraction).catch(err => interaction.client.handlers.button(err, buttonInteraction)));
         collector.on('end', async () => {
+            if(!reply.editable) return;
             buttonNext.disabled = buttonPrevious.disabled = true;
             await interaction.editReply({embeds: [embed], components});
         })

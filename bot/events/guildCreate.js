@@ -55,6 +55,7 @@ module.exports = {
                         await i.update({embeds: [dmEmbed], components});
                     })(i).catch(err => guild.client.handlers.button(err, i)));
                     collector.on('end', async () => {
+                        if(!dm.editable) return;
                         buttonLocale.disabled = true;
                         await dm.edit({components});
                     });

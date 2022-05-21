@@ -95,6 +95,7 @@ module.exports = {
             await button.update({embeds: [embed], components});
         })(button).catch(err => message.client.handlers.button(err, button)));
         col.on('end', async () => {
+            if(!msg.editable) return;
             buttonNext.disabled = buttonPrevious.disabled = true;
             await msg.edit({embeds: [embed], components});
         });

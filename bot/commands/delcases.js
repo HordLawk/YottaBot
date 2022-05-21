@@ -31,7 +31,8 @@ const buildButtons = (channelLanguage, author) => {
         },
     };
 }
-const slashCollectorEnd = (buttonConfirm, buttonCancel, components, channelLanguage, interaction) => (async collected => {
+const slashCollectorEnd = (buttonConfirm, buttonCancel, components, channelLanguage, interaction, reply) => (async collected => {
+    if(!reply.editable) return;
     buttonCancel.disabled = buttonConfirm.disabled = true;
     const msgData = {components};
     if(!collected.size) msgData.content = channelLanguage.get('timedOut');
@@ -54,6 +55,7 @@ module.exports = {
         const channelLanguage = message.client.langs[message.client.guildData.get(message.guild.id).language];
         const {buttonConfirm, buttonCancel, components, collectorOptions} = buildButtons(channelLanguage, message.author);
         const collectorEnd = reply => (async collected => {
+            if(!reply.editable) return;
             buttonCancel.disabled = buttonConfirm.disabled = true;
             const msgData = {components};
             if(!collected.size) msgData.content = channelLanguage.get('timedOut');
@@ -142,7 +144,7 @@ module.exports = {
                 break;
             }
         })(i).catch(err => interaction.client.handlers.button(err, i)));
-        collector.on('end', slashCollectorEnd(buttonConfirm, buttonCancel, components, channelLanguage, interaction));
+        collector.on('end', slashCollectorEnd(buttonConfirm, buttonCancel, components, channelLanguage, interaction, reply));
     },
     userSlash: async (interaction, args) => {
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];
@@ -169,7 +171,7 @@ module.exports = {
                 break;
             }
         })(i).catch(err => interaction.client.handlers.button(err, i)));
-        collector.on('end', slashCollectorEnd(buttonConfirm, buttonCancel, components, channelLanguage, interaction));
+        collector.on('end', slashCollectorEnd(buttonConfirm, buttonCancel, components, channelLanguage, interaction, reply));
     },
     caseSlash: async function(interaction, args){
         const channelLanguage = interaction.client.langs[(interaction.locale === 'pt-BR') ? 'pt' : 'en'];

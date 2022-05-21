@@ -71,6 +71,7 @@ module.exports = {
                 });
             })(i).catch(err => interaction.client.handlers.button(err, i)));
             collector.on('end', async () => {
+                if(!reply.editable) return;
                 buttonAdd.disabled = true;
                 await interaction.editReply({components});
             });

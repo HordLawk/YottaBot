@@ -333,6 +333,7 @@ module.exports = {
                     }
                 })(i).catch(err => message.client.handlers.button(err, i)));
                 collector.on('end', async collected => {
+                    if(!reply.editable) return;
                     buttonCancel.disabled = buttonConfirm.disabled = true;
                     const msgData = {components};
                     if(!collected.size) msgData.content = channelLanguage.get('timedOut');

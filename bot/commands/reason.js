@@ -84,40 +84,40 @@ module.exports = {
                 }],
             }],
         });
-        interaction.awaitModalSubmit({
+        const i = await interaction.awaitModalSubmit({
             filter: int => (int.user.id === interaction.user.id) && (int.customId === `modalEdit${interaction.id}`),
             time: 600_000,
-        }).then(async i => {
-            current.reason = i.fields.getTextInputValue('reason');
-            await current.save();
-            await i.reply({
-                content: channelLanguage.get('reasonEditSuccess'),
-                ephemeral: true,
-            });
-            const discordChannel = interaction.guild.channels.cache.get(interaction.client.guildData.get(interaction.guild.id).modlogs[current.type]);
-            if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(interaction.guild.me).has(Permissions.FLAGS.EMBED_LINKS) || !discordChannel.permissionsFor(interaction.guild.me).has(Permissions.FLAGS.SEND_MESSAGES)) return;
-            const msg = await discordChannel.messages.fetch(current.logMessage).catch(() => null);
-            if(!msg?.editable || !msg.embeds.length) return;
-            const embed = msg.embeds[0];
-            embed.setFields([{
-                name: channelLanguage.get('reasonEmbedTargetTitle'),
-                value: channelLanguage.get('reasonEmbedTargetValue', [current.target]),
-                inline: true,
-            }]);
-            if(current.executor) embed.addField(channelLanguage.get('reasonEmbedExecutorTitle'), channelLanguage.get('reasonEmbedExecutorValue', [current.executor]), true);
-            if(current.duration){
-                let duration = Math.round((current.duration.getTime() - current.timeStamp.getTime()) / 60000);
-                let d = Math.floor(duration / 1440);
-                let h = Math.floor((duration % 1440) / 60);
-                let m = Math.floor(duration % 60);
-                embed.addField(channelLanguage.get('reasonEmbedDurationTitle'), channelLanguage.get('reasonEmbedDurationValue', [d, h, m, Math.floor(current.duration.getTime() / 1000)]), true);
-            }
-            embed.addField(channelLanguage.get('reasonEmbedReasonTitle'), current.reason);
-            await msg.edit({embeds: [embed]});
-        }).catch(async () => await interaction.followUp({
+        }).catch(() => null);
+        if(!i) return await interaction.followUp({
             content: channelLanguage.get('modalTimeOut'),
             ephemeral: true,
-        }));
+        });
+        current.reason = i.fields.getTextInputValue('reason');
+        await current.save();
+        await i.reply({
+            content: channelLanguage.get('reasonEditSuccess'),
+            ephemeral: true,
+        });
+        const discordChannel = interaction.guild.channels.cache.get(interaction.client.guildData.get(interaction.guild.id).modlogs[current.type]);
+        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(interaction.guild.me).has(Permissions.FLAGS.EMBED_LINKS) || !discordChannel.permissionsFor(interaction.guild.me).has(Permissions.FLAGS.SEND_MESSAGES)) return;
+        const msg = await discordChannel.messages.fetch(current.logMessage).catch(() => null);
+        if(!msg?.editable || !msg.embeds.length) return;
+        const embed = msg.embeds[0];
+        embed.setFields([{
+            name: channelLanguage.get('reasonEmbedTargetTitle'),
+            value: channelLanguage.get('reasonEmbedTargetValue', [current.target]),
+            inline: true,
+        }]);
+        if(current.executor) embed.addField(channelLanguage.get('reasonEmbedExecutorTitle'), channelLanguage.get('reasonEmbedExecutorValue', [current.executor]), true);
+        if(current.duration){
+            let duration = Math.round((current.duration.getTime() - current.timeStamp.getTime()) / 60000);
+            let d = Math.floor(duration / 1440);
+            let h = Math.floor((duration % 1440) / 60);
+            let m = Math.floor(duration % 60);
+            embed.addField(channelLanguage.get('reasonEmbedDurationTitle'), channelLanguage.get('reasonEmbedDurationValue', [d, h, m, Math.floor(current.duration.getTime() / 1000)]), true);
+        }
+        embed.addField(channelLanguage.get('reasonEmbedReasonTitle'), current.reason);
+        await msg.edit({embeds: [embed]});
     },
     slashOptions: [{
         type: 'INTEGER',

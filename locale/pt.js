@@ -576,6 +576,18 @@ module.exports = {
             case 'botCantAddSticker': return 'Eu não tenho permissão para adicionar figurinhas nesse servidor';
             case 'stickerTooBig': return 'Figurinhas devem ter um tamanho menor que 500 KB';
             case 'lottieNotPartner': return 'Stickers Lottie só podem ser adicionados em servidores parceiros ou verificados';
+            case 'newinviteLocalisedName': return 'criarconvite';
+            case 'newinviteDescription': return 'Cria um convite para o servidor atual com as configurações selecionadas';
+            case 'newinviteOptionmax_usesLocalisedName': return 'limite_usos';
+            case 'newinviteOptionmax_usesLocalisedDesc': return 'Número máximo de vezes que esse convite pode ser usado';
+            case 'newinviteOptionexpire_afterLocalisedName': return 'expira_em';
+            case 'newinviteOptionexpire_afterLocalisedDesc': return 'Validade do convite em horas';
+            case 'newinviteOptiondestinationLocalisedName': return 'destino';
+            case 'newinviteOptiondestinationLocalisedDesc': return 'O canal ao qual esse convite leva';
+            case 'newinviteOptionrequire_roleLocalisedName': return 'requer_cargo';
+            case 'newinviteOptionrequire_roleLocalisedDesc': return 'Se os novos membros devem ser expulsos após 24 horas caso ainda não tenham recebido um cargo';
+            case 'botCantCreateInvite': return `Eu não tenho permissão para criar convites para ${vars[0]}`;
+            case 'memberCantCreateInvite': return `Você não tem permissão para criar convites para ${vars[0]}`;
         }
     },
 };

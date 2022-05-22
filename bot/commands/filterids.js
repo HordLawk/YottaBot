@@ -7,7 +7,7 @@ module.exports = {
     active: true,
     name: 'filterids',
     description: lang => lang.get('filteridsDescription'),
-    cooldown: 3,
+    cooldown: 5,
     categoryID: 5,
     executeSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;

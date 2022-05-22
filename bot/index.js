@@ -3,6 +3,7 @@ const path = require('path');
 const Discord = require('discord.js');
 const guild = require('../schemas/guild.js');
 const locale = require('../locale');
+
 const client = new Discord.Client({
     partials: ['REACTION', 'MESSAGE', 'CHANNEL', 'GUILD_MEMBER'],
     intents: [

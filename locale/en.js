@@ -536,6 +536,9 @@ module.exports = {
             case 'botCantAddSticker': return 'I don\'t have permission to add stickers in this server';
             case 'stickerTooBig': return 'Stickers must have a file size lower than 500 KB';
             case 'lottieNotPartner': return 'Lottie stickers can only be uploaded on guilds that are either partnered or verified';
+            case 'newinviteDescription': return 'Generates an invite to the current server with the chosen options';
+            case 'botCantCreateInvite': return `I don't have permission to create invites for ${vars[0]}`;
+            case 'memberCantCreateInvite': return `You don't have permission to create invites for ${vars[0]}`;
         }
     },
 };

@@ -1,4 +1,5 @@
 const {MessageEmbed, Permissions, version} = require('discord.js');
+const configs = require('../configs');
 
 module.exports = {
     active: true,
@@ -12,7 +13,7 @@ module.exports = {
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         const invite = await message.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
-            permissions: message.client.configs.permissions,
+            permissions: configs.permissions,
         });
         const embed = new MessageEmbed()
             .setColor(message.guild?.me.displayColor || 0x8000ff)
@@ -28,7 +29,7 @@ module.exports = {
             .addField(channelLanguage.get('infoEmbedDeveloperTitle'), channelLanguage.get('infoEmbedDeveloperValue', [message.client.application.owner.tag, message.client.application.owner.id]), true)
             .addField(channelLanguage.get('infoEmbedUptimeTitle'), channelLanguage.get('infoEmbedUptimeValue', [Date.now() - message.client.uptime]), true)
             .addField(channelLanguage.get('infoEmbedRAMTitle'), channelLanguage.get('infoEmbedRAMValue', [process.memoryUsage().heapUsed]), true)
-            .addField(channelLanguage.get('infoEmbedSupportTitle'), channelLanguage.get('infoEmbedSupportValue', [message.client.configs.support]), true)
+            .addField(channelLanguage.get('infoEmbedSupportTitle'), channelLanguage.get('infoEmbedSupportValue', [configs.support]), true)
             .addField(channelLanguage.get('infoEmbedRepoTitle'), channelLanguage.get('infoEmbedRepoValue'), true)
             .addField(channelLanguage.get('infoEmbedPrivacyTitle'), channelLanguage.get('infoEmbedPrivacyValue'), true);
         message.reply({embeds: [embed]});
@@ -37,7 +38,7 @@ module.exports = {
         const {channelLanguage} = interaction;
         const invite = await interaction.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
-            permissions: interaction.client.configs.permissions,
+            permissions: configs.permissions,
         });
         const embed = new MessageEmbed()
             .setColor(interaction.guild?.me.displayColor || 0x8000ff)
@@ -53,7 +54,7 @@ module.exports = {
             .addField(channelLanguage.get('infoEmbedDeveloperTitle'), channelLanguage.get('infoEmbedDeveloperValue', [interaction.client.application.owner.tag, interaction.client.application.owner.id]), true)
             .addField(channelLanguage.get('infoEmbedUptimeTitle'), channelLanguage.get('infoEmbedUptimeValue', [Date.now() - interaction.client.uptime]), true)
             .addField(channelLanguage.get('infoEmbedRAMTitle'), channelLanguage.get('infoEmbedRAMValue', [process.memoryUsage().heapUsed]), true)
-            .addField(channelLanguage.get('infoEmbedSupportTitle'), channelLanguage.get('infoEmbedSupportValue', [interaction.client.configs.support]), true)
+            .addField(channelLanguage.get('infoEmbedSupportTitle'), channelLanguage.get('infoEmbedSupportValue', [configs.support]), true)
             .addField(channelLanguage.get('infoEmbedRepoTitle'), channelLanguage.get('infoEmbedRepoValue'), true)
             .addField(channelLanguage.get('infoEmbedPrivacyTitle'), channelLanguage.get('infoEmbedPrivacyValue'), true);
         await interaction.reply({embeds: [embed]});

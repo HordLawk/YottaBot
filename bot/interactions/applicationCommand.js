@@ -5,6 +5,7 @@ const user = require('../../schemas/user.js');
 const member = require('../../schemas/member.js');
 const {Collection} = require('discord.js');
 const locale = require('../../locale');
+const configs = require('../configs.js');
 
 module.exports = {
     name: 'APPLICATION_COMMAND',
@@ -45,7 +46,7 @@ module.exports = {
             content: channelLanguage.get('invalidCommand'),
             ephemeral: true,
         });
-        if(interaction.client.configs.maintenance && (interaction.user.id !== interaction.client.application.owner.id)) return interaction.reply({
+        if(configs.maintenance && (interaction.user.id !== interaction.client.application.owner.id)) return interaction.reply({
             content: channelLanguage.get('maintenance'),
             ephemeral: true,
         });
@@ -134,7 +135,7 @@ module.exports = {
             else{
                 interaction.reply(msgData).catch(console.error);
             }
-            if(process.env.NODE_ENV === 'production') interaction.client.channels.cache.get(interaction.client.configs.errorlog).send({
+            if(process.env.NODE_ENV === 'production') interaction.client.channels.cache.get(configs.errorlog).send({
                 content: `Error: *${error.message}*\nInteraction User: ${interaction.user}\nInteraction ID: ${interaction.id}`,
                 files: [
                     {

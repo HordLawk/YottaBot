@@ -1,6 +1,7 @@
 const {MessageEmbed, Permissions} = require('discord.js');
 const guildModel = require('../../schemas/guild.js');
 const locale = require('../../locale');
+const configs = require('../configs.js');
 
 module.exports = {
     name: 'guildCreate',
@@ -14,7 +15,7 @@ module.exports = {
                 let guildLanguage = locale.get(guild.client.guildData.get(guild.id)?.language ?? ((guild.preferredLocale === 'pt-BR') ? 'pt' : 'en'));
                 let dmEmbed = new MessageEmbed()
                     .setColor(0x8000ff)
-                    .setDescription(guildLanguage.get('dmBotAdder', [adder, guild.name, guild.client.guildData.get(guild.id)?.prefix ?? 'y!', guild.client.configs.support]));
+                    .setDescription(guildLanguage.get('dmBotAdder', [adder, guild.name, guild.client.guildData.get(guild.id)?.prefix ?? 'y!', configs.support]));
                 const buttonLocale = {
                     type: 'SELECT_MENU',
                     customId: 'locale',
@@ -45,7 +46,7 @@ module.exports = {
                             guild.client.guildData.set(guildData._id, guildData);
                         }
                         guildLanguage = locale.get(i.values[0]);
-                        dmEmbed.setDescription(guildLanguage.get('dmBotAdder', [adder, guild.name, guild.client.guildData.get(guild.id)?.prefix ?? 'y!', guild.client.configs.support]));
+                        dmEmbed.setDescription(guildLanguage.get('dmBotAdder', [adder, guild.name, guild.client.guildData.get(guild.id)?.prefix ?? 'y!', configs.support]));
                         buttonLocale.placeholder = guildLanguage.get('language');
                         buttonLocale.options = locale.map((e, i) => ({
                             label: e.name,
@@ -71,7 +72,7 @@ module.exports = {
                 iconURL: guild.iconURL({dynamic: true}),
             })
             .setDescription(`${content}Member count: ${guild.memberCount}\nID: ${guild.id}\nName: ${guild.name}\nOwner: <@${guild.ownerId}>\nLocale: ${guild.preferredLocale}\nFeatures:\`\`\`${guild.features.join('\n')}\`\`\``);
-        await guild.client.channels.cache.get(guild.client.configs.guildlog).send({embeds: [embed]});
-        guild.client.channels.cache.get(guild.client.configs.guildlog).setTopic(guild.client.guilds.cache.size);
+        await guild.client.channels.cache.get(configs.guildlog).send({embeds: [embed]});
+        guild.client.channels.cache.get(configs.guildlog).setTopic(guild.client.guilds.cache.size);
     },
 };

@@ -9,6 +9,7 @@ const {MessageEmbed, Collection, Permissions} = require('discord.js');
 const {AutoPoster} = require('topgg-autoposter');
 const axios = require('axios');
 const locale = require('../../locale');
+const configs = require('../configs.js');
 
 module.exports = {
     name: 'ready',
@@ -18,8 +19,8 @@ module.exports = {
         await client.application.fetch();
         await ((process.env.NODE_ENV === 'production') ? client.application : client.guilds.cache.get(process.env.DEV_GUILD)).commands.fetch();
         if(process.env.NODE_ENV === 'production'){
-            await client.channels.cache.get(client.configs.bootlog).send(`Connected with ping \`${client.ws.ping}ms\`!`);
-            await client.guilds.cache.get(client.configs.supportID).members.fetch();
+            await client.channels.cache.get(configs.bootlog).send(`Connected with ping \`${client.ws.ping}ms\`!`);
+            await client.guilds.cache.get(configs.supportID).members.fetch();
             AutoPoster(process.env.TOPGG_TOKEN, client);
             axios({
                 method: 'POST',
@@ -131,7 +132,7 @@ module.exports = {
             const endedBoost = await user.find({boostUntil: {$lt: Date.now()}});
             if(!endedBoost.length) return;
             for(userDoc of endedBoost){
-                let discordMember = await client.guilds.cache.get(client.configs.supportID).members.fetch(userDoc._id).catch(() => null);
+                let discordMember = await client.guilds.cache.get(configs.supportID).members.fetch(userDoc._id).catch(() => null);
                 userDoc.boostUntil = discordMember?.premiumSince && new Date(userDoc.boostUntil.getTime() + 2592000000);
                 if(discordMember?.premiumSince){
                     userDoc.boostUntil = new Date(userDoc.boostUntil.getTime() + 2592000000);

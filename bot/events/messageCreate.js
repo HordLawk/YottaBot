@@ -5,12 +5,13 @@ const member = require('../../schemas/member.js');
 const user = require('../../schemas/user.js');
 const {Collection, Permissions, MessageEmbed} = require('discord.js');
 const locale = require('../../locale');
+const configs = require('../configs.js');
 
 module.exports = {
     name: 'messageCreate',
     execute: async function(message){
         if(message.author.bot || (!['DEFAULT', 'REPLY'].includes(message.type)) || (message.guild && !message.guild.available)) return;
-        var prefix = message.client.configs.defaultPrefix;
+        var prefix = configs.defaultPrefix;
         var roleDocs;
         var savedChannel;
         if(message.channel.partial) await message.channel.fetch();
@@ -52,7 +53,7 @@ module.exports = {
                 }
                 if(!message.member) return;
                 const lowerRoles = roleDocs.filter(e => (e.xp && (e.xp <= doc.xp))).sort((a, b) => (b.xp - a.xp));
-                if(!lowerRoles.length || message.member.roles.cache.has(lowerRoles[0].roleID) || !message.guild.roles.cache.get(lowerRoles[0].roleID).editable || ((lowerRoles.length > message.client.configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner)) return;
+                if(!lowerRoles.length || message.member.roles.cache.has(lowerRoles[0].roleID) || !message.guild.roles.cache.get(lowerRoles[0].roleID).editable || ((lowerRoles.length > configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner)) return;
                 await message.member.roles.set(message.member.roles.cache.map(e => e.id).filter(e => !lowerRoles.some(ee => (e === ee.roleID))).concat(lowerRoles.map(e => e.roleID).filter(e => message.guild.roles.cache.get(e).editable).slice(0, message.client.guildData.get(message.guild.id).dontStack ? 1 : undefined)));
                 if(!message.client.guildData.get(message.guild.id).xpChannel || (doc.xp >= (lowerRoles[0].xp + multiplier))) return;
                 switch(message.client.guildData.get(message.guild.id).xpChannel){
@@ -86,7 +87,7 @@ module.exports = {
         const command = message.client.commands.get(commandName) || message.client.commands.find(cmd => (cmd.aliases && cmd.aliases.includes(commandName)));
         if(!command || (command.dev && (message.author.id !== message.client.application.owner.id)) || (command.alpha && !message.client.guildData.get(message.guild.id).alpha) || (!command.execute && (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === command.name))?.type !== 'CHAT_INPUT'))) return;
         if(!command.execute) return message.reply(channelLanguage.get('slashOnly', [command.name]));
-        if(message.client.configs.maintenance && (message.author.id !== message.client.application.owner.id)) return message.reply(channelLanguage.get('maintenance'));
+        if(configs.maintenance && (message.author.id !== message.client.application.owner.id)) return message.reply(channelLanguage.get('maintenance'));
         if(command.guildOnly && !message.guild) return message.reply(channelLanguage.get('guildOnly'));
         if(command.premium && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) return message.reply(channelLanguage.get('premiumCommand', [prefix]));
         if(command.beta && !message.client.guildData.get(message.guild.id).beta) return message.reply(channelLanguage.get('betaCommand'));
@@ -140,7 +141,7 @@ module.exports = {
         }).catch(error => {
             console.error(error);
             message.reply(channelLanguage.get('error', [command.name]));
-            if(process.env.NODE_ENV === 'production') message.client.channels.cache.get(message.client.configs.errorlog).send({
+            if(process.env.NODE_ENV === 'production') message.client.channels.cache.get(configs.errorlog).send({
                 content: `Error: *${error.message}*\nMessage Author: ${message.author}\nMessage URL: ${message.url}`,
                 files: [
                     {

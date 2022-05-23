@@ -3,8 +3,9 @@ const channel = require('../../schemas/channel.js');
 const role = require('../../schemas/role.js');
 const guild = require('../../schemas/guild.js');
 const locale = require('../../locale');
+const configs = require('../configs');
 
-const actionOptionMapper = filter => ((interaction, value) => interaction.respond((filter ? interaction.client.configs.actions.filter(filter) : interaction.client.configs.actions).map((_, i) => ({
+const actionOptionMapper = filter => ((interaction, value) => interaction.respond((filter ? configs.actions.filter(filter) : configs.actions).map((_, i) => ({
     name: locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en').get(`${i}ActionName`),
     value: i,
 })).filter(e => e.name.toLowerCase().startsWith(value.toLowerCase()))));
@@ -45,7 +46,7 @@ module.exports = {
             }
             break;
             case 'set': {
-                if((args.length < 3) || !message.client.configs.actions.has(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if((args.length < 3) || !configs.actions.has(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 if(args[2] === 'default'){
                     let hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
                     if(!hook) return message.reply(channelLanguage.get('noDefaultLog'));
@@ -92,7 +93,7 @@ module.exports = {
             }
             break;
             case 'remove': {
-                if(!args[1] || !message.client.configs.actions.has(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!args[1] || !configs.actions.has(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 let oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
                 if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [args[1]]));
                 let guildDoc = await guild.findById(message.guild.id);
@@ -167,7 +168,7 @@ module.exports = {
                                     await channel.findOneAndUpdate({
                                         _id: discordChannel.id,
                                         guild: message.guild.id,
-                                    }, {$set: {ignoreActions: [...message.client.configs.actions.filter(e => e.ignorableChannels).keys()]}}, {
+                                    }, {$set: {ignoreActions: [...configs.actions.filter(e => e.ignorableChannels).keys()]}}, {
                                         upsert: true,
                                         setDefaultsOnInsert: true,
                                     });
@@ -186,7 +187,7 @@ module.exports = {
                                     await role.findOneAndUpdate({
                                         roleID: discordRole.id,
                                         guild: message.guild.id,
-                                    }, {$set: {ignoreActions: [...message.client.configs.actions.filter(e => e.ignorableRoles).keys()]}}, {
+                                    }, {$set: {ignoreActions: [...configs.actions.filter(e => e.ignorableRoles).keys()]}}, {
                                         upsert: true,
                                         setDefaultsOnInsert: true,
                                     });
@@ -203,7 +204,7 @@ module.exports = {
                         }
                         else{
                             if(args[1] === 'channel'){
-                                if(!message.client.configs.actions.filter(e => e.ignorableChannels).has(args[4])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                                if(!configs.actions.filter(e => e.ignorableChannels).has(args[4])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                                 let discordChannel = message.guild.channels.cache.get((args[3].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
                                 if(!discordChannel) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                                 if(args[2] === 'add'){
@@ -222,7 +223,7 @@ module.exports = {
                                 }
                             }
                             else{
-                                if(!message.client.configs.actions.filter(e => e.ignorableRoles).has(args[4])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                                if(!configs.actions.filter(e => e.ignorableRoles).has(args[4])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                                 let roleName = message.content.toLowerCase().replace(/^(?:\S+\s+){4}/, '');
                                 let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
                                 if(!discordRole || (discordRole.id === message.guild.id)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
@@ -285,13 +286,13 @@ module.exports = {
                     guild: message.guild.id,
                     ignoreActions: {$ne: []},
                 });
-                if(channels.length) embed.addField(channelLanguage.get('logsViewEmbedIgnoredChannelsTitle'), channels.map(e => `<#${e._id}> - \`${(e.ignoreActions.length === message.client.configs.actions.size) ? channelLanguage.get('logsViewEmbedIgnoredAll') : channelLanguage.get('logsViewEmbedIgnoredSome')}\``).join('\n'));
+                if(channels.length) embed.addField(channelLanguage.get('logsViewEmbedIgnoredChannelsTitle'), channels.map(e => `<#${e._id}> - \`${(e.ignoreActions.length === configs.actions.size) ? channelLanguage.get('logsViewEmbedIgnoredAll') : channelLanguage.get('logsViewEmbedIgnoredSome')}\``).join('\n'));
                 let roles = await role.find({
                     guild: message.guild.id,
                     roleID: {$in: message.guild.roles.cache.map(e => e.id)},
                     ignoreActions: {$ne: []},
                 });
-                if(roles.length) embed.addField(channelLanguage.get('logsViewEmbedIgnoredRolesTitle'), roles.map(e => `<@&${e.roleID}> - \`${(e.ignoreActions.length === message.client.configs.actions.size) ? channelLanguage.get('logsViewEmbedIgnoredAll') : channelLanguage.get('logsViewEmbedIgnoredSome')}\``).join('\n'));
+                if(roles.length) embed.addField(channelLanguage.get('logsViewEmbedIgnoredRolesTitle'), roles.map(e => `<@&${e.roleID}> - \`${(e.ignoreActions.length === configs.actions.size) ? channelLanguage.get('logsViewEmbedIgnoredAll') : channelLanguage.get('logsViewEmbedIgnoredSome')}\``).join('\n'));
                 message.reply({embeds: [embed]});
             }
             break;
@@ -319,7 +320,7 @@ module.exports = {
     },
     actionssetSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        if(!interaction.client.configs.actions.has(args.action)) return interaction.reply({
+        if(!configs.actions.has(args.action)) return interaction.reply({
             content: channelLanguage.get('invAction'),
             ephemeral: true,
         });
@@ -373,7 +374,7 @@ module.exports = {
     },
     actionsremoveSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        if(!interaction.client.configs.actions.has(args.action)) return interaction.reply({
+        if(!configs.actions.has(args.action)) return interaction.reply({
             content: channelLanguage.get('invAction'),
             ephemeral: true,
         });
@@ -390,7 +391,7 @@ module.exports = {
     ignoredchannelsaddSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
         if(args.action){
-            if(!interaction.client.configs.actions.filter(e => e.ignorableChannels).has(args.action)) return interaction.reply({
+            if(!configs.actions.filter(e => e.ignorableChannels).has(args.action)) return interaction.reply({
                 content: channelLanguage.get('invAction'),
                 ephemeral: true,
             });
@@ -407,7 +408,7 @@ module.exports = {
             await channel.findOneAndUpdate({
                 _id: args.channel.id,
                 guild: interaction.guild.id,
-            }, {$set: {ignoreActions: [...interaction.client.configs.actions.filter(e => e.ignorableChannels).keys()]}}, {
+            }, {$set: {ignoreActions: [...configs.actions.filter(e => e.ignorableChannels).keys()]}}, {
                 upsert: true,
                 setDefaultsOnInsert: true,
             });
@@ -417,7 +418,7 @@ module.exports = {
     ignoredchannelsremoveSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
         if(args.action){
-            if(!interaction.client.configs.actions.filter(e => e.ignorableChannels).has(args.action)) return interaction.reply({
+            if(!configs.actions.filter(e => e.ignorableChannels).has(args.action)) return interaction.reply({
                 content: channelLanguage.get('invAction'),
                 ephemeral: true,
             });
@@ -455,7 +456,7 @@ module.exports = {
             ephemeral: true,
         });
         if(args.action){
-            if(!interaction.client.configs.actions.filter(e => e.ignorableRoles).has(args.action)) return interaction.reply({
+            if(!configs.actions.filter(e => e.ignorableRoles).has(args.action)) return interaction.reply({
                 content: channelLanguage.get('invAction'),
                 ephemeral: true,
             });
@@ -472,7 +473,7 @@ module.exports = {
             await role.findOneAndUpdate({
                 roleID: args.role.id,
                 guild: interaction.guild.id,
-            }, {$set: {ignoreActions: [...interaction.client.configs.actions.filter(e => e.ignorableRoles).keys()]}}, {
+            }, {$set: {ignoreActions: [...configs.actions.filter(e => e.ignorableRoles).keys()]}}, {
                 upsert: true,
                 setDefaultsOnInsert: true,
             });
@@ -486,7 +487,7 @@ module.exports = {
             ephemeral: true,
         });
         if(args.action){
-            if(!interaction.client.configs.actions.filter(e => e.ignorableRoles).has(args.action)) return interaction.reply({
+            if(!configs.actions.filter(e => e.ignorableRoles).has(args.action)) return interaction.reply({
                 content: channelLanguage.get('invAction'),
                 ephemeral: true,
             });
@@ -558,13 +559,13 @@ module.exports = {
             guild: interaction.guild.id,
             ignoreActions: {$ne: []},
         });
-        if(channels.length) embed.addField(channelLanguage.get('logsViewEmbedIgnoredChannelsTitle'), channels.map(e => `<#${e._id}> - \`${(e.ignoreActions.length === interaction.client.configs.actions.size) ? channelLanguage.get('logsViewEmbedIgnoredAll') : channelLanguage.get('logsViewEmbedIgnoredSome')}\``).join('\n'));
+        if(channels.length) embed.addField(channelLanguage.get('logsViewEmbedIgnoredChannelsTitle'), channels.map(e => `<#${e._id}> - \`${(e.ignoreActions.length === configs.actions.size) ? channelLanguage.get('logsViewEmbedIgnoredAll') : channelLanguage.get('logsViewEmbedIgnoredSome')}\``).join('\n'));
         const roles = await role.find({
             guild: interaction.guild.id,
             roleID: {$in: interaction.guild.roles.cache.map(e => e.id)},
             ignoreActions: {$ne: []},
         });
-        if(roles.length) embed.addField(channelLanguage.get('logsViewEmbedIgnoredRolesTitle'), roles.map(e => `<@&${e.roleID}> - \`${(e.ignoreActions.length === interaction.client.configs.actions.size) ? channelLanguage.get('logsViewEmbedIgnoredAll') : channelLanguage.get('logsViewEmbedIgnoredSome')}\``).join('\n'));
+        if(roles.length) embed.addField(channelLanguage.get('logsViewEmbedIgnoredRolesTitle'), roles.map(e => `<@&${e.roleID}> - \`${(e.ignoreActions.length === configs.actions.size) ? channelLanguage.get('logsViewEmbedIgnoredAll') : channelLanguage.get('logsViewEmbedIgnoredSome')}\``).join('\n'));
         await interaction.reply({embeds: [embed]});
     },
     slashOptions: [

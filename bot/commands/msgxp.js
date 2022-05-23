@@ -3,6 +3,7 @@ const role = require('../../schemas/role.js');
 const channel = require('../../schemas/channel.js');
 const member = require('../../schemas/member.js');
 const {MessageEmbed, Permissions} = require('discord.js');
+const configs = require('../configs.js');
 
 module.exports = {
     active: true,
@@ -269,10 +270,10 @@ module.exports = {
                 }).sort({xp: -1});
                 const replyData = {};
                 if(roles.filter(e => e.xp).length){
-                    if((roles.filter(e => e.xp).length > message.client.configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) replyData.content = channelLanguage.get('disabledPremiumXpRolesNoHL');
+                    if((roles.filter(e => e.xp).length > configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) replyData.content = channelLanguage.get('disabledPremiumXpRolesNoHL');
                     embed.addField(channelLanguage.get('xpViewRoles'), roles.filter(e => e.xp).map((e, i) => {
                         const roleStr = `\`${(new Array(roles.filter(e => e.xp)[0].xp.toString().length - e.xp.toString().length)).fill(' ').join('')}${e.xp}\` **-** <@&${e.roleID}>`;
-                        return (((roles.filter(e => e.xp).length - i) > message.client.configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) ? `~~${roleStr}~~` : roleStr;
+                        return (((roles.filter(e => e.xp).length - i) > configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) ? `~~${roleStr}~~` : roleStr;
                     }).join('\n'));
                 }
                 if(roles.filter(e => (e.xpMultiplier && (e.xpMultiplier > 1))).length) embed.addField(channelLanguage.get('xpViewMultipliedRoles'), roles.filter(e => (e.xpMultiplier && (e.xpMultiplier > 1))).map(e => `<@&${e.roleID}> **-** \`${e.xpMultiplier}x\``).join('\n'));

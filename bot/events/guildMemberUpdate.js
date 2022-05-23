@@ -3,6 +3,7 @@ const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
 const {MessageEmbed, Permissions, GuildAuditLogs} = require('discord.js');
 const locale = require('../../locale');
+const configs = require('../configs.js');
 
 module.exports = {
     name: 'guildMemberUpdate',
@@ -10,7 +11,7 @@ module.exports = {
         if(!newMember.guild.available) return;
         if(newMember.partial) await newMember.fetch();
         if(!oldMember.partial && (oldMember.premiumSinceTimestamp !== newMember.premiumSinceTimestamp)){
-            if((newMember.guild.id !== newMember.client.configs.supportID) || oldMember.premiumSince || !newMember.premiumSince) return;
+            if((newMember.guild.id !== configs.supportID) || oldMember.premiumSince || !newMember.premiumSince) return;
             const userDoc = await user.findById(newMember.id);
             if(userDoc?.boostUntil) return;
             await user.findByIdAndUpdate(newMember.id, {
@@ -21,7 +22,7 @@ module.exports = {
                 setDefaultsOnInsert: true,
                 new: true,
             });
-            newMember.send(locale.get(newMember.client.guildData.get(newMember.client.configs.supportID).language).get('firstBoost', [newMember, newMember.guild.name])).catch(() => null);
+            newMember.send(locale.get(newMember.client.guildData.get(configs.supportID).language).get('firstBoost', [newMember, newMember.guild.name])).catch(() => null);
         }
         else{
             if(!newMember.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG) || !newMember.client.guildData.has(newMember.guild.id)) return;

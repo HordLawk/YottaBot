@@ -1,4 +1,5 @@
 const {Permissions, MessageEmbed} = require('discord.js');
+const configs = require('../configs.js');
 
 module.exports = {
     active: true,
@@ -11,7 +12,7 @@ module.exports = {
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         const url = await message.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
-            permissions: message.client.configs.permissions,
+            permissions: configs.permissions,
         });
         const embed = new MessageEmbed()
             .setColor(message.guild?.me.displayColor || 0x8000ff)
@@ -22,7 +23,7 @@ module.exports = {
         const {channelLanguage} = interaction;
         const url = await interaction.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
-            permissions: interaction.client.configs.permissions,
+            permissions: configs.permissions,
         });
         const embed = new MessageEmbed()
             .setColor(interaction.guild?.me.displayColor || 0x8000ff)

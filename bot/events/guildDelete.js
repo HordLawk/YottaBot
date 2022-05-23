@@ -1,4 +1,5 @@
 const {MessageEmbed} = require('discord.js');
+const configs = require('../configs.js');
 
 module.exports = {
     name: 'guildDelete',
@@ -11,7 +12,7 @@ module.exports = {
                 iconURL: guild.iconURL({dynamic: true}),
             })
             .setDescription(`Member count: ${guild.memberCount}\nID: ${guild.id}\nName: ${guild.name}\nOwner: <@${guild.ownerId}>\nLocale: ${guild.preferredLocale}\nFeatures:\`\`\`${guild.features.join('\n')}\`\`\``);
-        await guild.client.channels.cache.get(guild.client.configs.guildlog).send({embeds: [embed]});
-        guild.client.channels.cache.get(guild.client.configs.guildlog).setTopic(guild.client.guilds.cache.size);
+        await guild.client.channels.cache.get(configs.guildlog).send({embeds: [embed]});
+        guild.client.channels.cache.get(configs.guildlog).setTopic(guild.client.guilds.cache.size);
     },
 };

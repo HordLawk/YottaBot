@@ -3,6 +3,7 @@ const path = require('path');
 const Discord = require('discord.js');
 const guild = require('../schemas/guild.js');
 const locale = require('../locale');
+const configs = require('./configs.js');
 
 const client = new Discord.Client({
     partials: ['REACTION', 'MESSAGE', 'CHANNEL', 'GUILD_MEMBER'],
@@ -24,7 +25,6 @@ Discord.ApplicationCommandManager.transformCommand = command => ({
     default_member_permissions: command.default_member_permissions?.toString(),
     dm_permission: command.dm_permission,
 });
-client.configs = require('./configs.js');
 client.commands = new Discord.Collection(fs.readdirSync(path.join(__dirname, 'commands')).filter(file => file.endsWith('.js')).map(e => require(`./commands/${e}`)).filter(e => e.active).map(e => [e.name, e]));
 client.interactions = new Discord.Collection(fs.readdirSync(path.join(__dirname, 'interactions')).filter(file => file.endsWith('.js')).map(e => require(`./interactions/${e}`)).map(e => [e.name, e]));
 client.cooldowns = new Discord.Collection();
@@ -52,7 +52,7 @@ client.handlers = {
         else{
             i.reply(msgData).catch(console.error);
         }
-        if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send({
+        if(process.env.NODE_ENV === 'production') client.channels.cache.get(configs.errorlog).send({
             content: `Error: *${err.message}*\nButton ID: ${i.customId}\nInteraction User: ${i.user}\nInteraction ID: ${i.id}`,
             files: [{
                 name: 'stack.log',
@@ -64,7 +64,7 @@ client.handlers = {
         console.error(err);
         console.log(e.name);
         console.log(args);
-        if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send({
+        if(process.env.NODE_ENV === 'production') client.channels.cache.get(configs.errorlog).send({
             content: `Error: *${err.message}*\nEvent: ${e.name}`,
             files: [
                 {
@@ -83,7 +83,7 @@ eval(process.env.UNDOCUMENTED);
 fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js')).map(e => require(`./events/${e}`)).forEach(e => client.on(e.name, (...args) => e.execute(...args, client).catch(err => client.handlers.event(err, e, args))));
 process.on('unhandledRejection', error => {
     console.error('Unhandled promise rejection:', error);
-    if(process.env.NODE_ENV === 'production') client.channels.cache.get(client.configs.errorlog).send({
+    if(process.env.NODE_ENV === 'production') client.channels.cache.get(configs.errorlog).send({
         content: `Error: *${error.message}*`,
         files: [{
             name: 'stack.log',

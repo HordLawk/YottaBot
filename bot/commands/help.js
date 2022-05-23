@@ -1,4 +1,5 @@
 const {MessageEmbed, Permissions} = require('discord.js');
+const configs = require('../configs');
 
 module.exports = {
     active: true,
@@ -12,12 +13,12 @@ module.exports = {
     execute: async (message, args) => {
         const {channelLanguage} = message;
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
-        const prefix = message.guild ? message.client.guildData.get(message.guild.id).prefix : message.client.configs.defaultPrefix;
+        const prefix = message.guild ? message.client.guildData.get(message.guild.id).prefix : configs.defaultPrefix;
         let embed;
         if(!args.length){
             let perms = await message.client.generateInvite({
                 scopes: ['bot', 'applications.commands'],
-                permissions: message.client.configs.permissions,
+                permissions: configs.permissions,
             });
             embed = new MessageEmbed()
                 .setColor(message.guild ? (message.guild.me.displayColor || 0x8000ff) : 0x8000ff)
@@ -28,7 +29,7 @@ module.exports = {
                         dynamic: true,
                     }),
                 })
-                .setDescription(channelLanguage.get('helpEmbedDescription', [message.client.configs.support, perms, prefix, message.client.user.id]))
+                .setDescription(channelLanguage.get('helpEmbedDescription', [configs.support, perms, prefix, message.client.user.id]))
                 .setFooter({text: channelLanguage.get('helpEmbedFooter', [message.client.commands.filter(command => !command.dev).size])})
                 .setTimestamp();
             const categories = message.client.commands.filter(cmd => (!cmd.dev && (cmd.execute || (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === cmd.name))?.type === 'CHAT_INPUT')))).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
@@ -192,12 +193,12 @@ module.exports = {
     },
     executeSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        const prefix = interaction.guild ? interaction.client.guildData.get(interaction.guild.id).prefix : interaction.client.configs.defaultPrefix;
+        const prefix = interaction.guild ? interaction.client.guildData.get(interaction.guild.id).prefix : configs.defaultPrefix;
         let embed;
         if(!args.command){
             let perms = await interaction.client.generateInvite({
                 scopes: ['bot', 'applications.commands'],
-                permissions: interaction.client.configs.permissions,
+                permissions: configs.permissions,
             });
             embed = new MessageEmbed()
                 .setColor(interaction.guild ? (interaction.guild.me.displayColor || 0x8000ff) : 0x8000ff)
@@ -208,7 +209,7 @@ module.exports = {
                         dynamic: true,
                     }),
                 })
-                .setDescription(channelLanguage.get('helpEmbedDescription', [interaction.client.configs.support, perms, prefix, interaction.client.user.id]))
+                .setDescription(channelLanguage.get('helpEmbedDescription', [configs.support, perms, prefix, interaction.client.user.id]))
                 .setFooter({text: channelLanguage.get('helpEmbedFooter', [interaction.client.commands.filter(command => !command.dev).size])})
                 .setTimestamp();
             const categories = interaction.client.commands.filter(cmd => (!cmd.dev && (cmd.execute || (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === cmd.name))?.type === 'CHAT_INPUT')))).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);

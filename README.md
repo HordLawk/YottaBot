@@ -46,6 +46,8 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] make some crypto and hashing fun commands
 - [ ] userinfo command
 - [ ] command to make messages in a chosen channel be autopublished
+- [ ] command to manage invites
+- [ ] invite tracking system
 
 \* on hold until Discord adds the date and time option type
 

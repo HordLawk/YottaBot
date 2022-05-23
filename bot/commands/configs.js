@@ -245,7 +245,7 @@ module.exports = {
                                     value: 'warn',
                                 },
                                 {
-                                    name: 'Mutes',
+                                    name: 'Mutes/Timeouts',
                                     name_localizations: getLocalisedName('muteChoice'),
                                     value: 'mute',
                                 },

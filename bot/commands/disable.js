@@ -14,6 +14,7 @@ module.exports = {
     perm: Permissions.FLAGS.ADMINISTRATOR,
     guildOnly: true,
     execute: async function(message, args){
+        const commands = require('.');
         const {channelLanguage} = message;
         if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         if(args.length < 2) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
@@ -28,12 +29,12 @@ module.exports = {
                     guild: message.guild.id,
                 });
                 if(args[2] === 'all'){
-                    channelDoc.ignoreCommands = (args[1] === 'on') ? message.client.commands.map(e => e.name) : [];
+                    channelDoc.ignoreCommands = (args[1] === 'on') ? commands.map(e => e.name) : [];
                     message.reply(channelLanguage.get('disableAll', [args[1], discordChannel]));
                 }
                 else{
                     args.slice(2).forEach(e => {
-                        const command = message.client.commands.get(e) || message.client.commands.find(cmd => (cmd.aliases && cmd.aliases.includes(e)));
+                        const command = commands.get(e) || commands.find(cmd => (cmd.aliases && cmd.aliases.includes(e)));
                         if(!command || (((args[1] === 'on') && channelDoc.ignoreCommands.includes(command.name)) || ((args[1] === 'off') && !channelDoc.ignoreCommands.includes(command.name)))) return;
                         if(args[1] === 'on') return channelDoc.ignoreCommands.push(command.name);
                         channelDoc.ignoreCommands.splice(channelDoc.ignoreCommands.indexOf(command.name), 1);

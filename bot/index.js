@@ -25,7 +25,6 @@ Discord.ApplicationCommandManager.transformCommand = command => ({
     default_member_permissions: command.default_member_permissions?.toString(),
     dm_permission: command.dm_permission,
 });
-client.commands = new Discord.Collection(fs.readdirSync(path.join(__dirname, 'commands')).filter(file => file.endsWith('.js')).map(e => require(`./commands/${e}`)).filter(e => e.active).map(e => [e.name, e]));
 client.interactions = new Discord.Collection(fs.readdirSync(path.join(__dirname, 'interactions')).filter(file => file.endsWith('.js')).map(e => require(`./interactions/${e}`)).map(e => [e.name, e]));
 client.cooldowns = new Discord.Collection();
 client.xpcds = new Discord.Collection();

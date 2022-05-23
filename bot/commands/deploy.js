@@ -7,9 +7,10 @@ module.exports = {
     args: true,
     usage: () => ['<user/message/chat_input> (command name)'],
     addSlash: async (interaction, args) => {
+        const commands = require('.');
         const {channelLanguage} = interaction;
         if(!args.name || !['CHAT_INPUT', 'USER', 'MESSAGE'].includes(args.type)) throw new Error('Invalid slash command options');
-        const command = interaction.client.commands.get(args.name);
+        const command = commands.get(args.name);
         if(!command) return interaction.reply({
             content: channelLanguage.get('invalidCommand'),
             ephemeral: true,
@@ -38,9 +39,10 @@ module.exports = {
         }
     },
     editSlash: async (interaction, args) => {
+        const commands = require('.');
         const {channelLanguage} = interaction;
         if(!args.slash_name || !args.command_name || !['CHAT_INPUT', 'USER', 'MESSAGE'].includes(args.type)) throw new Error('Invalid slash command options');
-        const command = interaction.client.commands.get(args.command_name);
+        const command = commands.get(args.command_name);
         const slash = ((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.guild).commands.cache.get(args.slash_name);
         if(!command || !slash) return interaction.reply({
             content: channelLanguage.get('invalidCommand'),
@@ -146,7 +148,7 @@ module.exports = {
         },
     ],
     addAutocomplete: {
-        name: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => e.name.startsWith(value.toLowerCase())).first(25).map(e => ({
+        name: (interaction, value) => interaction.respond(commands.filter(e => e.name.startsWith(value.toLowerCase())).first(25).map(e => ({
             name: e.name,
             value: e.name,
         }))),
@@ -156,7 +158,7 @@ module.exports = {
             name: e.name,
             value: e.id,
         }))),
-        command_name: (interaction, value) => interaction.respond(interaction.client.commands.filter(e => e.name.startsWith(value.toLowerCase())).first(25).map(e => ({
+        command_name: (interaction, value) => interaction.respond(commands.filter(e => e.name.startsWith(value.toLowerCase())).first(25).map(e => ({
             name: e.name,
             value: e.name,
         }))),

@@ -6,6 +6,7 @@ const member = require('../../schemas/member.js');
 const {Collection} = require('discord.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
+const commands = require('../commands');
 
 module.exports = {
     name: 'APPLICATION_COMMAND',
@@ -40,7 +41,7 @@ module.exports = {
         const {commandName} = interaction;
         const subCommandGroupName = interaction.options.getSubcommandGroup(false);
         const subCommandName = interaction.options.getSubcommand(false);
-        const command = interaction.isContextMenu() ? interaction.client.commands.find(cmd => (cmd.contextName === commandName)) : interaction.client.commands.get(commandName);
+        const command = interaction.isContextMenu() ? commands.find(cmd => (cmd.contextName === commandName)) : commands.get(commandName);
         if(!command) throw new Error('Invalid command.');
         if((command.dev && (interaction.user.id !== interaction.client.application.owner.id)) || (command.alpha && !interaction.client.guildData.get(interaction.guild.id).alpha)) return interaction.reply({
             content: channelLanguage.get('invalidCommand'),

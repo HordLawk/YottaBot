@@ -14,6 +14,7 @@ module.exports = {
     perm: Permissions.FLAGS.ADMINISTRATOR,
     guildOnly: true,
     execute: async function(message){
+        const commands = require('.');
         const {channelLanguage} = message;
         if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         const args = message.content.split(/\s+(?=(?:[^"]*"[^"]*")*[^"]*$)/g).slice(1);
@@ -33,7 +34,7 @@ module.exports = {
                     roleID: discordRole.id,
                 });
                 args.slice(2).forEach(e => {
-                    const command = message.client.commands.get(e) || message.client.commands.find(cmd => (cmd.aliases && cmd.aliases.includes(e)));
+                    const command = commands.get(e) || commands.find(cmd => (cmd.aliases && cmd.aliases.includes(e)));
                     if(!command) return;
                     if(!roleDoc.commandPermissions.id(command.name)) return roleDoc.commandPermissions.push({
                         _id: command.name,
@@ -54,7 +55,7 @@ module.exports = {
                 });
                 if(!roleDoc) return message.reply(channelLanguage.get('noSpecialPerms'));
                 args.slice(2).forEach(e => {
-                    const command = message.client.commands.get(e) || message.client.commands.find(cmd => (cmd.aliases && cmd.aliases.includes(e)));
+                    const command = commands.get(e) || commands.find(cmd => (cmd.aliases && cmd.aliases.includes(e)));
                     if(!command) return;
                     const item = roleDoc.commandPermissions.id(command.name);
                     if(!item) return;

@@ -184,7 +184,7 @@ module.exports = {
             guild: interaction.guild.id,
         });
         if(!caseDoc) return interaction.reply({
-            content: channelLanguage.get('caseNotFound', [caseDoc.id]),
+            content: channelLanguage.get('caseNotFound', [args.id]),
             ephemeral: true,
         });
         const modlogChannel = interaction.guild.channels.cache.get(interaction.client.guildData.get(interaction.guild.id).modlogs[caseDoc.type]);

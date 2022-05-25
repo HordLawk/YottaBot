@@ -148,7 +148,7 @@ module.exports = {
         },
     ],
     addAutocomplete: {
-        name: (interaction, value) => interaction.respond(commands.filter(e => e.name.startsWith(value.toLowerCase())).first(25).map(e => ({
+        name: (interaction, value) => interaction.respond(require('.').filter(e => e.name.startsWith(value.toLowerCase())).first(25).map(e => ({
             name: e.name,
             value: e.name,
         }))),
@@ -158,7 +158,7 @@ module.exports = {
             name: e.name,
             value: e.id,
         }))),
-        command_name: (interaction, value) => interaction.respond(commands.filter(e => e.name.startsWith(value.toLowerCase())).first(25).map(e => ({
+        command_name: (interaction, value) => interaction.respond(require('.').filter(e => e.name.startsWith(value.toLowerCase())).first(25).map(e => ({
             name: e.name,
             value: e.name,
         }))),

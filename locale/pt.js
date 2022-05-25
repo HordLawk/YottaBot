@@ -588,6 +588,8 @@ module.exports = {
             case 'newinviteOptionrequire_roleLocalisedDesc': return 'Se os novos membros devem ser expulsos após 24 horas caso ainda não tenham recebido um cargo';
             case 'botCantCreateInvite': return `Eu não tenho permissão para criar convites para ${vars[0]}`;
             case 'memberCantCreateInvite': return `Você não tem permissão para criar convites para ${vars[0]}`;
+            case 'banOptionprune_daysLocalisedName': return 'limpa_dias';
+            case 'banOptionprune_daysLocalisedDesc': return 'Número de dias de mensagens para limpar, substitui a configuração padrão para isso';
         }
     },
 };

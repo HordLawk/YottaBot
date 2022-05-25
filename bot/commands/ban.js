@@ -256,7 +256,7 @@ module.exports = {
         }
         const newban = await lastInteraction.guild.members.ban(args.target.id, {
             reason: channelLanguage.get('banReason', [lastInteraction.user.tag, reason]),
-            days: lastInteraction.client.guildData.get(lastInteraction.guild.id).pruneBan,
+            days: args.prune_days ?? lastInteraction.client.guildData.get(lastInteraction.guild.id).pruneBan,
         }).catch(() => null);
         if(!newban) return await lastInteraction.reply({
             content: channelLanguage.get('cantBan'),
@@ -443,6 +443,16 @@ module.exports = {
             nameLocalizations: getStringLocales('banOptionwith_reasonLocalisedName'),
             description: 'Whether to prompt a modal asking for the ban reason',
             descriptionLocalizations: getStringLocales('banOptionwith_reasonLocalisedDesc'),
+            required: false,
+        },
+        {
+            type: 'INTEGER',
+            name: 'prune_days',
+            nameLocalizations: getStringLocales('banOptionprune_daysLocalisedName'),
+            description: 'Number of days of messages to delete, overrides the default settings for this',
+            descriptionLocalizations: getStringLocales('banOptionprune_daysLocalisedDesc'),
+            maxValue: 7,
+            minValue: 0,
             required: false,
         },
     ],

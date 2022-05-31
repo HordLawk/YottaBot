@@ -41,12 +41,12 @@ module.exports = {
                 data: {server_count: client.guilds.cache.size},
             });
         }
-        await channel.deleteMany({
-            _id: {$nin: client.channels.cache.map(e => e.id)},
-            guild: {$in: client.guilds.cache.map(e => e.id)},
-        });
-        const roleDocs = await role.find({guild: {$in: client.guilds.cache.map(e => e.id)}});
-        await role.deleteMany({_id: {$in: roleDocs.filter(e => !client.guilds.cache.get(e.guild).roles.cache.has(e.roleID)).map(e => e._id)}});
+        // await channel.deleteMany({
+        //     _id: {$nin: client.channels.cache.map(e => e.id)},
+        //     guild: {$in: client.guilds.cache.map(e => e.id)},
+        // });
+        // const roleDocs = await role.find({guild: {$in: client.guilds.cache.map(e => e.id)}});
+        // await role.deleteMany({_id: {$in: roleDocs.filter(e => !client.guilds.cache.get(e.guild).roles.cache.has(e.roleID)).map(e => e._id)}});
         await menu.deleteMany({channelID: {$nin: client.channels.cache.map(e => e.id)}});
         const guildVoiceXpCd = new Collection();
         const unmuteTimer = async () => {

@@ -82,13 +82,18 @@ eval(process.env.UNDOCUMENTED);
 fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js')).map(e => require(`./events/${e}`)).forEach(e => client.on(e.name, (...args) => e.execute(...args, client).catch(err => client.handlers.event(err, e, args))));
 process.on('unhandledRejection', error => {
     console.error('Unhandled promise rejection:', error);
-    if(process.env.NODE_ENV === 'production') client.channels.cache.get(configs.errorlog).send({
-        content: `Error: *${error.message}*`,
-        files: [{
-            name: 'stack.log',
-            attachment: Buffer.from(error.stack),
-        }],
-    }).catch(console.error);
+    try{
+        if(process.env.NODE_ENV === 'production') client.channels.cache.get(configs.errorlog).send({
+            content: `Error: *${error.message}*`,
+            files: [{
+                name: 'stack.log',
+                attachment: Buffer.from(error.stack),
+            }],
+        }).catch(console.error);
+    }
+    catch(err){
+        console.error(err);
+    }
 });
 (async () => {
     const guilds = await guild.find({});

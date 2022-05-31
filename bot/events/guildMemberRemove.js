@@ -52,7 +52,7 @@ module.exports = {
                     if(member.guild.features.includes('MEMBER_VERIFICATION_GATE_ENABLED') && !member.partial) embed.addField(channelLanguage.get('memberleaveEmbedMembershipTitle'), channelLanguage.get('memberleaveEmbedMembershipValue', [member.pending]), true);
                     if(member.joinedTimestamp) embed.addField(channelLanguage.get('memberleaveEmbedJoinedTitle'), channelLanguage.get('memberleaveEmbedJoinedValue', [Math.round(member.joinedTimestamp / 1000)]));
                     if(member.communicationDisabledUntilTimestamp > Date.now()) embed.addField(channelLanguage.get('memberleaveEmbedTimeoutTitle'), channelLanguage.get('memberleaveEmbedTimeoutValue', [Math.round(member.communicationDisabledUntilTimestamp / 1000)]));
-                    if(member.premiumSince) embed.addField(channelLanguage.get('memberleaveEmbedBoostTitle'), channelLanguage.get('memberleaveEmbedBoostValue', [Math.round(member.premiumSinceTimestamp) / 1000]));
+                    if(member.premiumSince) embed.addField(channelLanguage.get('memberleaveEmbedBoostTitle'), channelLanguage.get('memberleaveEmbedBoostValue', [Math.round(member.premiumSinceTimestamp / 1000)]));
                     const memberRoles = member.roles.cache.filter(e => (e.id !== member.guild.id));
                     if(memberRoles.size) embed.addField(channelLanguage.get('memberleaveEmbedRolesTitle'), channelLanguage.get('memberleaveEmbedRolesValue', [memberRoles]));
                     await hook.send({

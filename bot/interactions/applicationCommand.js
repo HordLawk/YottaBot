@@ -106,22 +106,12 @@ module.exports = {
         interaction.channelLanguage = channelLanguage;
         command[`${subCommandName ? `${(subCommandGroupName ?? '')}${subCommandName}` : 'execute'}Slash`](interaction, args).then(async () => {
             if(Math.floor(Math.random() * 100) || (interaction.guild && (interaction.client.guildData.get(interaction.guild.id).premiumUntil || interaction.client.guildData.get(interaction.guild.id).partner))) return;
-            const msgData = {
+            await interaction[interaction.replied ? 'followUp' : 'reply']({
                 content: channelLanguage.get(`premiumAd${Math.floor(Math.random() * 3)}`, [command.name]),
                 ephemeral: true,
-            };
-            if(interaction.replied){
-                await interaction.followUp(msgData);
-            }
-            else{
-                await interaction.reply(msgData);
-            }
+            });
         }).catch(error => {
             console.error(error);
-            const msgData = {
-                content: channelLanguage.get('error', [command.name]),
-                ephemeral: true,
-            };
             if(interaction.deferred){
                 interaction.editReply({
                     content: channelLanguage.get('error', [command.name]),
@@ -130,11 +120,11 @@ module.exports = {
                     components: [],
                 }).catch(console.error);
             }
-            else if(interaction.replied){
-                interaction.followUp(msgData).catch(console.error);
-            }
             else{
-                interaction.reply(msgData).catch(console.error);
+                interaction[interaction.replied ? 'followUp' : 'reply']({
+                    content: channelLanguage.get('error', [command.name]),
+                    ephemeral: true,
+                }).catch(console.error);
             }
             if(process.env.NODE_ENV === 'production') interaction.client.channels.cache.get(configs.errorlog).send({
                 content: `Error: *${error.message}*\nInteraction User: ${interaction.user}\nInteraction ID: ${interaction.id}`,

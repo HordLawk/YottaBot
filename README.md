@@ -31,9 +31,8 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - You agree to not submit any issues, features, or pull requests related to bugs exclusively related to self-hosting.
 
 ## W.I.P
-- [ ] use slash commands; context menus; buttons; and stuff *
 - [ ] add rss feeds for youtube notifications
-- [ ] `poll` command * \**
+- [ ] `poll` command
 - [ ] command to manage emojis
 - [ ] automated punishments when reaching a chosen amount of another type of punishment
 - [ ] other streaming notifications for premium
@@ -48,6 +47,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] command to make messages in a chosen channel be autopublished
 - [ ] command to manage invites
 - [ ] invite tracking system
+- [ ] have an actual website
 
 \* on hold until Discord adds the date and time option type
 

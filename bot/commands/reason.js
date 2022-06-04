@@ -14,7 +14,7 @@ module.exports = {
     cooldown: 5,
     categoryID: 3,
     args: true,
-    perm: Permissions.FLAGS.BAN_MEMBERS,
+    perm: Permissions.FLAGS.MODERATE_MEMBERS,
     guildOnly: true,
     execute: async function(message, args){
         const {channelLanguage} = message;

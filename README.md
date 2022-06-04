@@ -43,15 +43,13 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [x] count use of each command by every member
 - [x] add navigation select menus to the help command
 - [ ] make some crypto and hashing fun commands
-- [ ] userinfo command
+- [ ] `userinfo` command
 - [ ] command to make messages in a chosen channel be autopublished
 - [ ] command to manage invites
 - [ ] invite tracking system
 - [ ] have an actual website
-
-\* on hold until Discord adds the date and time option type
-
-\** on hold until Discord adds select menus for modals
+- [ ] usernames local blacklist
+- [ ] make `massban` accept text attachments
 
 ## Credits
 - [@elloramir](https://github.com/elloramir) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

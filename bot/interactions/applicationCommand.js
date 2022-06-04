@@ -12,8 +12,6 @@ module.exports = {
     name: 'APPLICATION_COMMAND',
     execute: async function(interaction){
         if(interaction.guild && !interaction.guild.available) throw new Error('Invalid interaction.');
-        // var roleDocs;
-        // var savedChannel;
         if(interaction.guild){
             if(!interaction.client.guildData.has(interaction.guild.id)){
                 let guildData = new guild({
@@ -24,15 +22,14 @@ module.exports = {
                 interaction.client.guildData.set(guildData._id, guildData);
             }
             if(!interaction.member) interaction.member = await interaction.guild.members.fetch(interaction.user.id).catch(() => null);
-            // roleDocs = await role.find({
-            //     guild: interaction.guild.id,
-            //     roleID: {$in: interaction.guild.roles.cache.map(e => e.id)},
-            // });
-            // savedChannel = await channel.findById(interaction.channel.id);
             if(!interaction.member) throw new Error('Member could not be fetched.');
         }
         const channelLanguage = locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en');
         if(interaction.channel.partial) await interaction.channel.fetch();
+        if(interaction.channel.type === 'GUILD_VOICE') return await interaction.reply({
+            content: channelLanguage.get('guildVoiceUnsupported'),
+            ephemeral: true,
+        });
         const userDoc = await user.findById(interaction.user.id);
         if(userDoc && userDoc.blacklisted) return interaction.reply({
             content: channelLanguage.get('blacklisted'),

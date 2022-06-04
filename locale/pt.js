@@ -590,6 +590,7 @@ module.exports = {
             case 'memberCantCreateInvite': return `Você não tem permissão para criar convites para ${vars[0]}`;
             case 'banOptionprune_daysLocalisedName': return 'limpa_dias';
             case 'banOptionprune_daysLocalisedDesc': return 'Número de dias de mensagens para limpar, substitui a configuração padrão para isso';
+            case 'guildVoiceUnsupported': return 'Comandos ainda não são suportados em canais de voz';
         }
     },
 };

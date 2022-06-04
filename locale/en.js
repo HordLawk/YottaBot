@@ -539,6 +539,7 @@ module.exports = {
             case 'newinviteDescription': return 'Generates an invite to the current server with the chosen options';
             case 'botCantCreateInvite': return `I don't have permission to create invites for ${vars[0]}`;
             case 'memberCantCreateInvite': return `You don't have permission to create invites for ${vars[0]}`;
+            case 'guildVoiceUnsupported': return 'Commands are not supported in voice channels yet';
         }
     },
 };

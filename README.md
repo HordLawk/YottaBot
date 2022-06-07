@@ -52,6 +52,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] make `massban` accept text attachments
 - [ ] ticketing system
 - [ ] make default vc xp earning state configurable
+- [ ] finish adapting to slash commands
 
 ## Credits
 - [@elloramir](https://github.com/elloramir) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

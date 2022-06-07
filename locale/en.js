@@ -361,7 +361,12 @@ module.exports = {
             case 'kickEmbedReasonTitle': return 'Reason';
             case 'massbanDescription': return 'Bans many users at the same time';
             case 'massbanUsage': return '(user) [(list of users)] [(reason)]';
-            case 'massbanSuccess': return `${vars[0] ? `${vars[0]} users banned\n` : ''}${vars[1] ? `${vars[1]} invalid users\n` : ''}${vars[2] ? `${vars[2]} users could not be banned\n` : ''}${vars[3] ? `${vars[3]} users were already banned` : ''}`;
+            case 'massbanSuccess': return `${vars[0] ? `${vars[0]} users banned\n` : ''}` +
+                                          `${vars[1] ? `${vars[1]} invalid users\n` : ''}` +
+                                          `${vars[2] ? `${vars[2]} users could not be banned\n` : ''}` +
+                                          `${vars[3] ? `${vars[3]} users were already banned\n` : ''}` +
+                                          `${vars[4] ? '' : '\nNote that non premium servers have a massban limit of **300** users\n' +
+                                                            'To upgrade this to **1000** you can get premium by [joining Patreon](<https://www.patreon.com/YottaBot>)'}`;
             case 'firstBoost': return `Congratulations ${vars[0]}, you boosted **${vars[1]}** and was rewarded with a premium key, use the \`/premium activate\` commannd in any server to activate its premium features`;
             case 'renewBoost': return `Thank you for boosting **${vars[0]}** for another month! You got a premium key as a reward, use the \`/premium activate\` commannd in any server to activate its premium features`;
             case 'recommendMinLevels': return 'You can\'t ask for recommendations for less than 2 levels';
@@ -540,6 +545,7 @@ module.exports = {
             case 'botCantCreateInvite': return `I don't have permission to create invites for ${vars[0]}`;
             case 'memberCantCreateInvite': return `You don't have permission to create invites for ${vars[0]}`;
             case 'guildVoiceUnsupported': return 'Commands are not supported in voice channels yet';
+            case 'massbanNoValidIds': return 'Targets must include valid user mentions or IDs';
         }
     },
 };

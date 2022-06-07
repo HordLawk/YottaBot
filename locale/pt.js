@@ -362,7 +362,12 @@ module.exports = {
             case 'kickEmbedReasonTitle': return 'Motivo';
             case 'massbanDescription': return 'Bane varios usuários ao mesmo tempo';
             case 'massbanUsage': return '(usuário) [(lista de usuários)] [(motivo)]';
-            case 'massbanSuccess': return `${vars[0] ? `${vars[0]} usuários banidos\n` : ''}${vars[1] ? `${vars[1]} usuários inválidos\n` : ''}${vars[2] ? `${vars[2]} usuários não puderam ser banidos\n` : ''}${vars[3] ? `${vars[3]} usuários já estavam banidos` : ''}`;
+            case 'massbanSuccess': return `${vars[0] ? `${vars[0]} usuários banidos\n` : ''}` +
+                                          `${vars[1] ? `${vars[1]} usuários inválidos\n` : ''}` +
+                                          `${vars[2] ? `${vars[2]} usuários não puderam ser banidos\n` : ''}` +
+                                          `${vars[3] ? `${vars[3]} usuários já estavam banidos\n` : ''}` +
+                                          `${vars[4] ? '' : '\nNote que servidores não premium tem um limite de massban de 300 usuários\n' +
+                                                            'Para aumentar esse limite para 1000 você pode adquirir premium [se juntando ao Patreon](<https://www.patreon.com/YottaBot>)'}`;
             case 'firstBoost': return `Parabéns ${vars[0]}, você impulsionou **${vars[1]}** e foi recompensado com uma chave premium, use o comando \`/premium activate\` em qualquer servidor para ativar as funções premium`;
             case 'renewBoost': return `Obrigado por impulsionar **${vars[0]}** por mais um mês! Você recebeu uma chave premium como recompensa, use o comando \`/premium activate\` em qualquer servidor para ativar as funções premium`;
             case 'recommendMinLevels': return 'Você não pode pedir por recomendações para menos de 2 níveis';
@@ -591,6 +596,7 @@ module.exports = {
             case 'banOptionprune_daysLocalisedName': return 'limpa_dias';
             case 'banOptionprune_daysLocalisedDesc': return 'Número de dias de mensagens para limpar, substitui a configuração padrão para isso';
             case 'guildVoiceUnsupported': return 'Comandos ainda não são suportados em canais de voz';
+            case 'massbanNoValidIds': return 'Alvos devem incluir menções ou IDs válidos de usuários';
         }
     },
 };

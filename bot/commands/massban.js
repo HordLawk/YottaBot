@@ -95,7 +95,11 @@ module.exports = {
     },
     executeSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        const ids = args.targets.split(/\s+/g).map(e => e.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1]);
+        const ids = args.targets.split(/\s+/g).map(e => e.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1]).filter(e => e);
+        if(!ids.length) return await interaction.reply({
+            content: channelLanguage.get('massbanNoValidIds'),
+            ephemeral: true,
+        });
         let reason;
         let lastInteraction = interaction;
         if(args.with_reason){
@@ -132,7 +136,7 @@ module.exports = {
         const caseLogs = [];
         const discordChannel = interaction.guild.channels.cache.get(interaction.client.guildData.get(interaction.guild.id).modlogs.ban);
         const reply = await lastInteraction.deferReply({fetchReply: true});
-        for(const id of [...(new Set(ids))]){
+        for(const id of [...(new Set(ids))].slice(0, (interaction.client.guildData.get(interaction.guild.id).premiumUntil ?? interaction.client.guildData.get(interaction.guild.id).partner) ? 1000 : 300)){
             const user = await interaction.client.users.fetch(id).catch(() => null);
             if(!user){
                 invargs++;
@@ -189,7 +193,7 @@ module.exports = {
         }
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {counterLogs: interaction.client.guildData.get(interaction.guild.id).counterLogs}});
         await log.insertMany(caseLogs);
-        await lastInteraction.editReply(channelLanguage.get('massbanSuccess', [bans, invargs, invusers, banneds]));
+        await lastInteraction.editReply(channelLanguage.get('massbanSuccess', [bans, invargs, invusers, banneds, interaction.client.guildData.get(interaction.guild.id).premiumUntil ?? interaction.client.guildData.get(interaction.guild.id).partner]));
     },
     slashOptions: [
         {

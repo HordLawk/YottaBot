@@ -2,7 +2,7 @@ const guild = require('../../schemas/guild.js');
 const {MessageEmbed, Permissions} = require('discord.js');
 const locale = require('../../locale');
 
-const getLocalisedName = name => locale.filter((_, i) => (i !== 'en')).reduce((acc, e) => (e.get(`${name}LocalisedName`) ? {...acc, [e.code]: e.get(`${name}LocalisedName`)} : acc), {});
+const getStringLocales = key => locale.reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
 
 module.exports = {
     active: true,
@@ -241,22 +241,22 @@ module.exports = {
                             choices: [
                                 {
                                     name: 'Warns',
-                                    name_localizations: getLocalisedName('warnChoice'),
+                                    name_localizations: getStringLocales('warnChoiceLocalisedName'),
                                     value: 'warn',
                                 },
                                 {
                                     name: 'Mutes/Timeouts',
-                                    name_localizations: getLocalisedName('muteChoice'),
+                                    name_localizations: getStringLocales('muteChoiceLocalisedName'),
                                     value: 'mute',
                                 },
                                 {
                                     name: 'Kicks',
-                                    name_localizations: getLocalisedName('kickChoice'),
+                                    name_localizations: getStringLocales('kickChoiceLocalisedName'),
                                     value: 'kick',
                                 },
                                 {
                                     name: 'Bans',
-                                    name_localizations: getLocalisedName('banChoice'),
+                                    name_localizations: getStringLocales('banChoiceLocalisedName'),
                                     value: 'ban',
                                 },
                             ],

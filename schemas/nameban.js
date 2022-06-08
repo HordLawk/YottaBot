@@ -12,9 +12,10 @@ const namebanSchema = new Schema({
         required: true,
         minLength: 2,
         maxLength: 32,
+        index: true,
     },
     partial: Boolean,
     caseSensitive: Boolean,
-});
+}, {timestamps: true});
 
 module.exports = model('nameban', namebanSchema);

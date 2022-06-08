@@ -598,6 +598,46 @@ module.exports = {
             case 'guildVoiceUnsupported': return 'Comandos ainda não são suportados em canais de voz';
             case 'massbanNoValidIds': return 'Alvos devem incluir menções ou IDs válidos de usuários';
             case 'namebansLocalisedName': return 'nomebans';
+            case 'namebansDescription': return 'Bane automaticamente usuários com nomes que correspondem a textos ' +
+                                               'escolhidos';
+            case 'namebans_addLocalisedName': return 'adicionar';
+            case 'namebans_manageLocalisedDesc': return 'Adiciona texto à lista de textos banidos em usernames';
+            case 'namebans_addOptiontextLocalisedName': return 'texto';
+            case 'namebans_addOptiontextLocalisedDesc': return 'O pedaço de texto que será parcialmente ou completamente ' +
+                                                               'banido do servidor';
+            case 'namebans_addOptionpartialLocalisedName': return 'parcial';
+            case 'namebans_addOptionpartialLocalisedName': return 'Se os usernames devem ser exatamente iguais ou apenas ' +
+                                                                  'conter o texto selecionado';
+            case 'namebans_addOptioncase_sensitiveLocalisedName': return 'diferenciar_maiusculas';
+            case 'namebans_addOptioncase_sensitiveLocalisedDesc': return 'Se a correspondencia de usernames deve ' +
+                                                                         'diferenciar letras maiúsculas de minúsculas ou não';
+            case 'namebans_removeLocalisedName': return 'remover';
+            case 'namebans_removeLocalisedDesc': return 'Remove da lista de textos banidos em usernames';
+            case 'namebans_removeOptiontextLocalisedName': return 'texto';
+            case 'namebans_removeOptiontextLocalisedDesc': return 'O pedaço de texto à ser removido da lista de usernames ' +
+                                                                  'banidos';
+            case 'namebans_listLocalisedName': return 'listar';
+            case 'namebans_listLocalisedName': return 'Lista informações sobre todos os usernames banidos atualmente';
+            case 'usernameTooLong': return 'O pedaço de texto banido deve ter menos de 33 caracteres';
+            case 'tooManyNamebans': return `Você alcançou o limite de ${vars[0]} usernames banidos para esse servidor\n` +
+                                           `Se você deseja aumentar esse limite para ${vars[1]} ` +
+                                           '[se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'tooManyNamebansPremium': return `Você alcançou o limite de ${vars[1]} usernames banidos para esse ` +
+                                                  'servidor';
+            case 'namebanAddSuccess': return `\`${vars[0]}\` foi adicionado a lista de usernames banidos com sucesso`;
+            case 'namebanRemoveSuccess': return `\`${vars[0]}\` foi removido da lista de usernames banidos com sucesso`;
+            case 'namebanNotFound': return 'O texto precisa ser escolhido de uma das opções apresentadas na lista de ' +
+                                           'usernames banidos';
+            case 'disabledExtraNamebans': return 'Como o número de usernames banidos excedia o limite para servidores não ' +
+                                                'premium, os últimos usernames acima desse limite foram desativados ' +
+                                                'temporariamente\n' +
+                                                'Você pode tornar esses usernames banidos novamente com premium, para ' +
+                                                'adquirir premium [se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'namebans_listEmbedAuthor': return 'Usernames banidos atualmente';
+            case 'namebans_listEmbedDescription': return `Texto: \`${vars[0]}\`\n` +
+                                                         `Parcial: \`${vars[1] ? 'sim' : 'não'}\`\n` +
+                                                         `Diferencia maiúsculas: \`${vars[2] ? 'sim' : 'não'}\``;
+            case 'namebanReason': return 'Username proibido detectado';
         }
     },
 };

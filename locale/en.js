@@ -546,6 +546,28 @@ module.exports = {
             case 'memberCantCreateInvite': return `You don't have permission to create invites for ${vars[0]}`;
             case 'guildVoiceUnsupported': return 'Commands are not supported in voice channels yet';
             case 'massbanNoValidIds': return 'Targets must include valid user mentions or IDs';
+            case 'namebansDescription': return 'Automatically bans users with names that partially or completely match ' +
+                                              'chosen text';
+            case 'usernameTooLong': return 'The banned piece of text must be shorter than 33 characters in length';
+            case 'tooManyNamebans': return `You have reached the limit of ${vars[0]} banned usernames for this server\n` +
+                                           `If you wish to upgrade this limit to ${vars[1]} ` +
+                                           '[join Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'tooManyNamebansPremium': return `You have reached the limit of ${vars[1]} banned usernames for this ` +
+                                                  'server';
+            case 'namebanAddSuccess': return `\`${vars[0]}\` was successfully added to the list of banned usernames`;
+            case 'namebanRemoveSuccess': return `\`${vars[0]}\` was successfully removed from the list of banned usernames`;
+            case 'namebanNotFound': return 'The text must be chosen from one of the choices presentedd in the command ' +
+                                           'autocomplete';
+            case 'disabledExtraNamebans': return 'Since the number of banned usernames exceeded the limit for non ' +
+                                                 'premium servers, the latest added usernames over this limite were ' +
+                                                 'temporarily disabled\n' +
+                                                 'You can make these usernames banned again with premium, to get premium ' +
+                                                 '[join Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'namebans_listEmbedAuthor': return 'Currently banned usernames';
+            case 'namebans_listEmbedDescription': return `Text: \`${vars[0]}\`\n` +
+                                                         `Partial: \`${vars[1] ? 'yes' : 'no'}\`\n` +
+                                                         `Case sensitive: \`${vars[2] ? 'yes' : 'no'}\``;
+            case 'namebanReason': return 'Forbidden username detected';
         }
     },
 };

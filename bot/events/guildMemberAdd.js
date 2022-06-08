@@ -1,6 +1,6 @@
-const memberModel = require('../../schemas/member.js');
 const {MessageEmbed, Permissions} = require('discord.js');
 const locale = require('../../locale');
+const configs = require('../configs.js');
 
 module.exports = {
     name: 'guildMemberAdd',
@@ -58,12 +58,34 @@ module.exports = {
                 });
             }
         }
-        if(!member.client.guildData.get(member.guild.id).globalBan) return;
+        const memberModel = require('../../schemas/member.js');
         let memberDoc = await memberModel.findOne({
             guild: member.guild.id,
             userID: member.id,
         });
         if(memberDoc?.autoBanned) return;
+        const namebanModel = require('../../schemas/nameban.js');
+        const namebanDocs = await namebanModel.find({guild: member.guild.id}).sort({createdAt: 1});
+        if(namebanDocs.slice(0, configs.namebansLimits[+!!(
+            member.client.guildData.get(member.guild.id).premiumUntil ?? member.client.guildData.get(member.guild.id).partner
+        )]).some(e => {
+            const username = e.caseSensitive ? member.user.username.toLowerCase() : member.user.username;
+            return (username === e.text) || (e.partial && username.includes(e.text));
+        })){
+            if(memberDoc){
+                memberDoc.autoBanned = true;
+            }
+            else{
+                memberDoc = new memberModel({
+                    guild: member.guild.id,
+                    userID: member.id,
+                    autoBanned: true,
+                });
+            }
+            await memberDoc.save();
+            return await member.ban({reason: channelLanguage.get('namebanReason')});
+        }
+        if(!member.client.guildData.get(member.guild.id).globalBan) return;
         const banCount = await memberModel.countDocuments({
             userID: member.id,
             relevantBan: true,

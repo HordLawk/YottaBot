@@ -10,17 +10,18 @@ module.exports = {
         const banid = interaction.customId.match(/^banjoined(\d{17,19})$/)?.[1];
         if(banid){
             const channelLanguage = locale.get(interaction.client.guildData.get(interaction.guild.id).language);
-            if(!interaction.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
-                const roles = await role.find({
-                    guild: interaction.guild.id,
-                    roleID: {$in: interaction.member.roles.cache.map(e => e.id)},
-                    "commandPermissions._id": 'ban',
-                });
-                if((!roles.length && !interaction.member.permissions.has(Permissions.FLAGS.BAN_MEMBERS)) || (roles.length && roles.some(e => !e.commandPermissions.id('ban').allow) && !roles.some(e => e.commandPermissions.id('ban').allow))) return await interaction.reply({
-                    content: channelLanguage.get('forbidden'),
-                    ephemeral: true,
-                });
-            }
+            const allowed = await (
+                (process.env.NODE_ENV === 'production') ?
+                interaction.client.application :
+                interaction.client.guilds.cache.get(process.env.DEV_GUILD)
+            ).commands.cache.find(e => (e.name === 'ban')).permissions.has({
+                guild: interaction.guild,
+                permissionId: interaction.user.id,
+            });
+            if(!allowed) return await interaction.reply({
+                content: channelLanguage.get('forbidden'),
+                ephemeral: true,
+            });
             const user = await interaction.client.users.fetch(banid).catch(() => null);
             if(!user) throw new Error('User not found');
             const member = await interaction.guild.members.fetch(user.id).catch(() => null);

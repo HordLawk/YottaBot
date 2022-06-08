@@ -6,7 +6,7 @@ const locale = require('../locale');
 const configs = require('./configs.js');
 
 const client = new Discord.Client({
-    partials: ['REACTION', 'MESSAGE', 'CHANNEL', 'GUILD_MEMBER'],
+    partials: ['REACTION', 'MESSAGE', 'CHANNEL', 'GUILD_MEMBER', 'USER'],
     intents: [
         Discord.Intents.FLAGS.GUILDS,
         Discord.Intents.FLAGS.GUILD_MEMBERS,

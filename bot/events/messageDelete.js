@@ -1,13 +1,11 @@
-const channel = require('../../schemas/channel.js');
-const role = require('../../schemas/role.js');
-const edition = require('../../schemas/edition.js');
 const {MessageEmbed, Permissions, GuildAuditLogs} = require('discord.js');
 const locale = require('../../locale');
 
 module.exports = {
     name: 'messageDelete',
     execute: async message => {
-        if(!message.guild || message.system || !message.client.guildData.has(message.guild.id)) return;
+        if(!message.guild || !message.client.guildData.has(message.guild.id)) return;
+        const edition = require('../../schemas/edition.js');
         await edition.deleteMany({messageID: message.id});
         if(message.partial || !message.guild.available || !message.client.guildData.get(message.guild.id).actionlogs.id('delmsg') || (!message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookID && !message.client.guildData.get(message.guild.id).defaultLogsHookID)) return;
         const channelLanguage = locale.get(message.client.guildData.get(message.guild.id).language);
@@ -25,11 +23,13 @@ module.exports = {
                 });
             }
         }
-        if(message.author.bot) return;
+        if(message.author.bot || message.system) return;
+        const channel = require('../../schemas/channel.js');
         const channelDoc = await channel.findById(message.channel.id);
         if(channelDoc && channelDoc.ignoreActions.includes('delmsg')) return;
         const memb = executor && await message.guild.members.fetch(executor.id).catch(() => null);
         if(memb){
+            const role = require('../../schemas/role.js');
             let roleDoc = await role.findOne({
                 guild: message.guild.id,
                 roleID: {$in: memb.roles.cache.map(e => e.id)},

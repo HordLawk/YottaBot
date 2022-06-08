@@ -1,4 +1,5 @@
 const {Schema, model} = require('mongoose');
+const commands = require('../bot/commands');
 
 const memberSchema = new Schema({
     guild: {
@@ -21,7 +22,10 @@ const memberSchema = new Schema({
     },
     autoBanned: Boolean,
     commandUses: [new Schema({
-        _id: String,
+        _id: {
+            type: String,
+            enum: [...commands.keys()],
+        },
         count: {
             type: Number,
             default: 0,

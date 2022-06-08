@@ -1,5 +1,6 @@
 const {Schema, model} = require('mongoose');
 const configs = require('../bot/configs.js');
+const commands = require('../bot/commands');
 
 const roleSchema = new Schema({
     guild: {
@@ -19,7 +20,10 @@ const roleSchema = new Schema({
         enum: [...configs.actions.keys()],
     }],
     commandPermissions: [new Schema({
-        _id: String,
+        _id: {
+            type: String,
+            enum: [...commands.keys()],
+        },
         allow: {
             type: Boolean,
             required: true,

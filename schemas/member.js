@@ -1,5 +1,5 @@
 const {Schema, model} = require('mongoose');
-const commands = require('../bot/commands');
+// const commands = require('../bot/commands');
 
 const memberSchema = new Schema({
     guild: {

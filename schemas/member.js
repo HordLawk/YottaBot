@@ -24,7 +24,7 @@ const memberSchema = new Schema({
     commandUses: [new Schema({
         _id: {
             type: String,
-            enum: [...commands.keys()],
+            // enum: [...commands.keys()],
         },
         count: {
             type: Number,

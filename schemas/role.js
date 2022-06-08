@@ -22,7 +22,7 @@ const roleSchema = new Schema({
     commandPermissions: [new Schema({
         _id: {
             type: String,
-            enum: [...commands.keys()],
+            // enum: [...commands.keys()],
         },
         allow: {
             type: Boolean,

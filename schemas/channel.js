@@ -18,7 +18,7 @@ const channelSchema = new Schema({
     }],
     ignoreCommands: [{
         type: String,
-        enum: [...commands.keys()]
+        // enum: [...commands.keys()]
     }],
     ignoreXp: Boolean,
     autoPublish: Boolean,

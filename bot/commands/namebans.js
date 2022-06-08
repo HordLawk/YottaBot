@@ -1,5 +1,6 @@
 const {Permissions} = require('discord.js');
 const utils = require('../utils.js');
+const namebanModel = require('../../schemas/nameban.js');
 
 module.exports = {
     active: false,
@@ -23,6 +24,7 @@ module.exports = {
                     nameLocalizations: utils.getStringLocales('namebans_addOptiontextLocalisedName'), // fazer locale
                     description: 'The piece of text that will be banned partially or not from the server',
                     descriptionLocalizations: utils.getStringLocales('namebans_addOptiontextLocalisedDesc'), // fazer locale
+                    required: true,
                 },
                 {
                     type: 'BOOLEAN',
@@ -30,6 +32,15 @@ module.exports = {
                     nameLocalizations: utils.getStringLocales('namebans_addOptionpartialLocalisedName'), // fazer locale
                     description: 'Whether the usernames should be exact or only contain the selected text',
                     descriptionLocalizations: utils.getStringLocales('namebans_addOptionpartialLocalisedName'), // fazer locale
+                    required: false,
+                },
+                {
+                    type: 'BOOLEAN',
+                    name: 'case_sensitive',
+                    nameLocalizations: utils.getStringLocales('namebans_addOptioncase_sensitiveLocalisedName'), // fazer locale
+                    description: 'Whether username matching should be sensitive to casing or not',
+                    descriptionLocalizations: utils.getStringLocales('namebans_addOptioncase_sensitiveLocalisedDesc'), // fazer locale
+                    required: false,
                 },
             ],
         },
@@ -46,6 +57,7 @@ module.exports = {
                 description: 'The piece of text to be removed from the list of banned usernames',
                 descriptionLocalizations: utils.getStringLocales('namebans_removeOptiontextDesc'), // fazer locale
                 autocomplete: true,
+                required: true,
             }],
         },
         {
@@ -57,12 +69,16 @@ module.exports = {
         },
     ],
     addSlash: async (interaction, args) => {
-        
+        const {channelLanguage} = interaction;
+
     },
     removeSlash: async (interaction, args) => {
 
     },
     listSlash: async interaction => {
 
+    },
+    removeAutocomplete: {
+        // text: (interaction, value) => 
     },
 };

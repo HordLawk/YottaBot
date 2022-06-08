@@ -597,6 +597,7 @@ module.exports = {
             case 'banOptionprune_daysLocalisedDesc': return 'Número de dias de mensagens para limpar, substitui a configuração padrão para isso';
             case 'guildVoiceUnsupported': return 'Comandos ainda não são suportados em canais de voz';
             case 'massbanNoValidIds': return 'Alvos devem incluir menções ou IDs válidos de usuários';
+            case 'namebansLocalisedName': return 'nomebans';
         }
     },
 };

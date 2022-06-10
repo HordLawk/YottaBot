@@ -42,7 +42,7 @@ module.exports = {
         if(!message.member.permissionsIn(message.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return await message.reply(channelLanguage.get('cantPruneMessages'));
         if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.MANAGE_MESSAGES)) return await message.reply(channelLanguage.get('botCantPruneMessages'));
         const amount = parseInt(args[0]) + 1;
-        if(isNaN(amount) || !isFinite(amount) || (amount < 2) || (amount > 999)) return await message.reply(channelLanguage.get('invalidPruneAmount'));
+        if(isNaN(amount) || !isFinite(amount) || (amount < 3) || (amount > 1000)) return await message.reply(channelLanguage.get('invalidPruneAmount'));
         let messages;
         if(args[1]){
             const id = args[1].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];

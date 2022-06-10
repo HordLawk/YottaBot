@@ -36,7 +36,6 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] command to manage emojis
 - [ ] automated punishments when reaching a chosen amount of another type of punishment
 - [ ] other streaming notifications for premium
-- [x] button to edit action reason in the command reply
 - [ ] command to add a sticker from an attachment
 - [ ] voice channels join and leave logs
 - [ ] add support for more payment methods to buy premium
@@ -48,7 +47,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] command to manage invites
 - [ ] invite tracking system
 - [ ] have an actual website
-- [ ] usernames local blacklist
+- [x] usernames local blacklist
 - [ ] make `massban` accept text attachments
 - [ ] ticketing system
 - [ ] make default vc xp earning state configurable

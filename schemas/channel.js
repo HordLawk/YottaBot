@@ -1,6 +1,6 @@
 const {Schema, model} = require('mongoose');
 const configs = require('../bot/configs.js');
-// const commands = require('../bot/commands');
+const commands = require('../bot/commands');
 
 const channelSchema = new Schema({
     _id: {
@@ -18,7 +18,7 @@ const channelSchema = new Schema({
     }],
     ignoreCommands: [{
         type: String,
-        // enum: [...commands.keys()]
+        enum: [...commands.keys()]
     }],
     ignoreXp: Boolean,
     autoPublish: Boolean,

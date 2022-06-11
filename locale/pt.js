@@ -638,6 +638,7 @@ module.exports = {
                                                          `Parcial: \`${vars[1] ? 'sim' : 'não'}\`\n` +
                                                          `Diferencia maiúsculas: \`${vars[2] ? 'sim' : 'não'}\``;
             case 'namebanReason': return 'Username proibido detectado';
+            case 'idsNotFound': return 'Nenhum ID do Discord foi encontrado no texto';
         }
     },
 };

@@ -19,9 +19,14 @@ module.exports = {
                 content: channelLanguage.get('invalidFile'),
                 ephemeral: true,
             });
+            const ids = res.data.match(/(?<!\d)\d{17,19}(?!\d)/g);
+            if(!ids) return await interaction.reply({
+                content: channelLanguage.get('idsNotFound'),
+                ephemeral: true,
+            });
             await interaction.reply({files: [{
                 name: 'IDs.txt',
-                attachment: Buffer.from(res.data.match(/(?<!\d)\d{17,19}(?!\d)/g).join('\n')),
+                attachment: Buffer.from(ids.join('\n')),
             }]});
         }
         else{
@@ -47,9 +52,14 @@ module.exports = {
                 content: channelLanguage.get('modalTimeOut'),
                 ephemeral: true,
             });
+            const ids = i.fields.getTextInputValue('text').match(/(?<!\d)\d{17,19}(?!\d)/g);
+            if(!ids) return await i.reply({
+                content: channelLanguage.get('idsNotFound'),
+                ephemeral: true,
+            });
             await i.reply({files: [{
                 name: 'IDs.txt',
-                attachment: Buffer.from(i.fields.getTextInputValue('text').match(/(?<!\d)\d{17,19}(?!\d)/g).join('\n')),
+                attachment: Buffer.from(ids.join('\n')),
             }]});
         }
     },

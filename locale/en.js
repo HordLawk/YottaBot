@@ -568,6 +568,7 @@ module.exports = {
                                                          `Partial: \`${vars[1] ? 'yes' : 'no'}\`\n` +
                                                          `Case sensitive: \`${vars[2] ? 'yes' : 'no'}\``;
             case 'namebanReason': return 'Forbidden username detected';
+            case 'idsNotFound': return 'No Discord IDs could be found in the text';
         }
     },
 };

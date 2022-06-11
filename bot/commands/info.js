@@ -76,7 +76,7 @@ module.exports = {
             .addField(
                 channelLanguage.get('infoEmbedSupportTitle'),
                 channelLanguage.get(
-                    'infoEmbedSupportValue'
+                    'infoEmbedSupportValue',
                     [configs.support]
                 ),
                 true

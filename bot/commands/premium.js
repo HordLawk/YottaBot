@@ -1,7 +1,5 @@
 const {MessageEmbed} = require('discord.js');
 const axios = require('axios');
-const user = require('../../schemas/user.js');
-const guild = require('../../schemas/guild.js');
 
 module.exports = {
     active: true,
@@ -18,6 +16,7 @@ module.exports = {
             content: channelLanguage.get('alreadyPremium'),
             ephemeral: true,
         });
+        const user = require('../../schemas/user.js');
         const userDoc = await user.findById(interaction.user.id);
         if(!interaction.guild) return interaction.reply(channelLanguage.get('activatePremium', [userDoc?.premiumKeys]));
         const buttonKey = {
@@ -52,6 +51,7 @@ module.exports = {
             componentType: 'BUTTON',
         });
         collector.on('collect', i => (async i => {
+            const guild = require('../../schemas/guild.js');
             switch(i.customId){
                 case 'useKey': {
                     if(!userDoc?.premiumKeys) return;
@@ -170,6 +170,7 @@ module.exports = {
             content: channelLanguage.get('invGuild'),
             ephemeral: true,
         });
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(args.guild, {$set: {renewPremium: args.enable}}, {new: true});
         if(!guildDoc) return interaction.reply({
             content: channelLanguage.get('invGuild'),

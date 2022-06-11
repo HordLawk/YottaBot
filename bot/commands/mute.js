@@ -1,5 +1,3 @@
-const log = require('../../schemas/log.js');
-const guild = require('../../schemas/guild.js');
 const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
@@ -21,15 +19,39 @@ module.exports = {
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
         const member = id && await message.guild.members.fetch(id).catch(() => null);
         if(!member) return message.reply(channelLanguage.get('invMember'));
-        if((message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return message.reply(channelLanguage.get('youCantMute'));
+        if(
+            (message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0)
+            ||
+            member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)
+        ) return message.reply(channelLanguage.get('youCantMute'));
         if(!member.moderatable) return message.reply(channelLanguage.get('iCantMute'));
-        const duration = args[1] && (((parseInt(args[1].match(/(\d+)d/)?.[1], 10) * 86400000) || 0) + ((parseInt(args[1].match(/(\d+)h/)?.[1], 10) * 3600000) || 0) + ((parseInt(args[1].match(/(\d+)m/)?.[1], 10) * 60000) || 0));
+        const duration = (
+            args[1]
+            &&
+            (
+                (
+                    (parseInt(args[1].match(/(\d+)d/)?.[1], 10) * 86400000)
+                    ||
+                    0
+                ) + (
+                    (parseInt(args[1].match(/(\d+)h/)?.[1], 10) * 3600000)
+                    ||
+                    0
+                ) + (
+                    (parseInt(args[1].match(/(\d+)m/)?.[1], 10) * 60000)
+                    ||
+                    0
+                )
+            )
+        );
         const timeStamp = Date.now();
         if(!duration || (duration > 2419200000)) return message.reply(channelLanguage.get('invMuteDuration'));
         if(member.isCommunicationDisabled()) return message.reply(channelLanguage.get('alreadyMuted'));
         const reason = message.content.replace(/^(?:\S+\s+){2}\S+\s*/, '').slice(0, 500);
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findById(message.guild.id);
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
+        const log = require('../../schemas/log.js');
         const current = new log({
             id: guildDoc.counterLogs++,
             guild: message.guild.id,
@@ -51,7 +73,19 @@ module.exports = {
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.mute);
         let msg;
         let embed;
-        if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) && discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
+        if(
+            discordChannel
+            &&
+            discordChannel.viewable
+            &&
+            discordChannel
+                .permissionsFor(message.guild.me)
+                .has(Permissions.FLAGS.SEND_MESSAGES)
+            &&
+            discordChannel
+                .permissionsFor(message.guild.me)
+                .has(Permissions.FLAGS.EMBED_LINKS)
+        ){
             const d = Math.floor(duration / 86400000);
             const h = Math.floor((duration % 86400000) / 3600000);
             const m = Math.floor((duration % 3600000) / 60000);
@@ -63,9 +97,28 @@ module.exports = {
                     iconURL: member.user.displayAvatarURL({dynamic: true}),
                 })
                 .setDescription(channelLanguage.get('muteEmbedDescription', [message.url]))
-                .addField(channelLanguage.get('muteEmbedTargetTitle'), channelLanguage.get('muteEmbedTargetValue', [member]), true)
+                .addField(
+                    channelLanguage.get('muteEmbedTargetTitle'),
+                    channelLanguage.get(
+                        'muteEmbedTargetValue',
+                        [member]
+                    ),
+                    true
+                )
                 .addField(channelLanguage.get('muteEmbedExecutorTitle'), message.author.toString(), true)
-                .addField(channelLanguage.get('muteEmbedDurationTitle'), channelLanguage.get('muteEmbedDurationValue', [d, h, m, Math.floor(current.duration.getTime() / 1000)]), true)
+                .addField(
+                    channelLanguage.get('muteEmbedDurationTitle'),
+                    channelLanguage.get(
+                        'muteEmbedDurationValue',
+                        [
+                            d,
+                            h,
+                            m,
+                            Math.floor(current.duration.getTime() / 1000),
+                        ]
+                    ),
+                    true
+                )
                 .setFooter({
                     text: channelLanguage.get('muteEmbedFooter', [current.id]),
                     iconURL: message.guild.iconURL({dynamic: true}),
@@ -96,7 +149,11 @@ module.exports = {
         }];
         await reply.edit({components});
         const collectorUndo = reply.createMessageComponentCollector({
-            filter: componentInteraction => ((componentInteraction.user.id === message.author.id) && (componentInteraction.customId === 'undo')),
+            filter: componentInteraction => (
+                (componentInteraction.user.id === message.author.id)
+                &&
+                (componentInteraction.customId === 'undo')
+            ),
             idle: 10000,
             max: 1,
             componentType: 'BUTTON',
@@ -117,7 +174,11 @@ module.exports = {
             await reply.edit({components});
         });
         const collectorEdit = reply.createMessageComponentCollector({
-            filter: componentInteraction => ((componentInteraction.user.id === message.author.id) && (componentInteraction.customId === 'edit')),
+            filter: componentInteraction => (
+                (componentInteraction.user.id === message.author.id)
+                &&
+                (componentInteraction.customId === 'edit')
+            ),
             time: 60_000,
             componentType: 'BUTTON',
         });

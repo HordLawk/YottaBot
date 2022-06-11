@@ -9,7 +9,13 @@ module.exports = {
     categoryID: 1,
     execute: async message => {
         const {channelLanguage} = message;
-        if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
+        if(
+            message.guild
+            &&
+            !message.guild.me
+                .permissionsIn(message.channel)
+                .has(Permissions.FLAGS.EMBED_LINKS)
+        ) return message.reply(channelLanguage.get('botEmbed'));
         const url = await message.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
             permissions: configs.permissions,

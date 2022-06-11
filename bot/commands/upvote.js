@@ -9,7 +9,13 @@ module.exports = {
     categoryID: 5,
     execute: async message => {
         const {channelLanguage} = message;
-        if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
+        if(
+            message.guild
+            &&
+            !message.guild.me
+                .permissionsIn(message.channel)
+                .has(Permissions.FLAGS.EMBED_LINKS)
+        ) return message.reply(channelLanguage.get('botEmbed'));
         const embed = new MessageEmbed()
             .setColor(message.guild?.me.displayColor || 0x8000ff)
             .setDescription(channelLanguage.get('upvoteEmbedDescription', [message.client.user.id]));

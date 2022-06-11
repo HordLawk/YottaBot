@@ -37,10 +37,12 @@ module.exports = {
                 componentType: 'BUTTON',
             });
             collector.on('collect', i => (async i => {
-                if(!interaction.guild.me.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS)) return await i.reply({
-                    content: channelLanguage.get('botCantAddSticker'),
-                    ephemeral: true,
-                });
+                if(!interaction.guild.me.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS)){
+                    return await i.reply({
+                        content: channelLanguage.get('botCantAddSticker'),
+                        ephemeral: true,
+                    });
+                }
                 await interaction.guild.stickers.fetch();
                 const maxStickers = {
                     NONE: 0,
@@ -57,14 +59,25 @@ module.exports = {
                     ephemeral: true,
                 })
                 await interaction.targetMessage.stickers.first().fetch();
-                if((interaction.targetMessage.stickers.first().format === 'LOTTIE') && !interaction.guild.partnered && !interaction.guild.verified) return await i.reply({
+                if(
+                    (interaction.targetMessage.stickers.first().format === 'LOTTIE')
+                    &&
+                    !interaction.guild.partnered
+                    &&
+                    !interaction.guild.verified
+                ) return await i.reply({
                     content: channelLanguage.get('lottieNotPartner'),
                     ephemeral: true,
                 });
-                await interaction.guild.stickers.create(interaction.targetMessage.stickers.first().url, interaction.targetMessage.stickers.first().name, interaction.targetMessage.stickers.first().tags[0], {
-                    description: interaction.targetMessage.stickers.first().description,
-                    reason: channelLanguage.get('stickerCreator', [interaction.user.tag, interaction.user.id]),
-                });
+                await interaction.guild.stickers.create(
+                    interaction.targetMessage.stickers.first().url,
+                    interaction.targetMessage.stickers.first().name,
+                    interaction.targetMessage.stickers.first().tags[0],
+                    {
+                        description: interaction.targetMessage.stickers.first().description,
+                        reason: channelLanguage.get('stickerCreator', [interaction.user.tag, interaction.user.id]),
+                    }
+                );
                 await i.reply({
                     content: channelLanguage.get('stickerAdded'),
                     ephemeral: true,

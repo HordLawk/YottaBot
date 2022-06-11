@@ -1,5 +1,4 @@
 const {Permissions} = require('discord.js');
-const log = require('../../schemas/log.js');
 
 const buildButtons = (channelLanguage, author) => {
     const buttonConfirm = {
@@ -61,6 +60,7 @@ module.exports = {
             if(!collected.size) msgData.content = channelLanguage.get('timedOut');
             await reply.edit(msgData);
         });
+        const log = require('../../schemas/log.js');
         switch(args[0]){
             case 'server': {
                 const reply = await message.reply({content: channelLanguage.get('resetServerCasesConfirm'), components});
@@ -138,6 +138,7 @@ module.exports = {
                 }
                 break;
                 case 'confirm': {
+                    const log = require('../../schemas/log.js');
                     await log.deleteMany({guild: interaction.guild.id});
                     await i.reply({content: channelLanguage.get('resetServerCasesSuccess')});
                 }
@@ -162,6 +163,7 @@ module.exports = {
                 }
                 break;
                 case 'confirm': {
+                    const log = require('../../schemas/log.js');
                     await log.deleteMany({
                         guild: interaction.guild.id,
                         target: args.target.id,
@@ -179,6 +181,7 @@ module.exports = {
             content: channelLanguage.get('invArgs', [interaction.client.guildData.get(interaction.guild.id).prefix, this.name, this.usage(channelLanguage)]),
             ephemeral: true,
         });
+        const log = require('../../schemas/log.js');
         const caseDoc = await log.findOneAndDelete({
             id: args.id,
             guild: interaction.guild.id,

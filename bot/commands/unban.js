@@ -1,9 +1,5 @@
-const guild = require('../../schemas/guild.js');
-const log = require('../../schemas/log.js');
 const {MessageEmbed, Permissions} = require('discord.js');
-const locale = require('../../locale');
-
-const getStringLocales = key => locale.reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
+const utils = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -26,8 +22,10 @@ module.exports = {
         if(!ban) return message.reply(channelLanguage.get('invBanned'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
         if(!message.guild.me.permissions.has(Permissions.FLAGS.BAN_MEMBERS)) return message.reply(channelLanguage.get('cantUnban'));
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
+        const log = require('../../schemas/log.js');
         const current = new log({
             id: guildDoc.counterLogs,
             guild: message.guild.id,
@@ -170,8 +168,10 @@ module.exports = {
             content: channelLanguage.get('cantUnban'),
             ephemeral: true,
         });
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(interaction.guild.id, {$inc: {counterLogs: 1}});
         interaction.client.guildData.get(interaction.guild.id).counterLogs = guildDoc.counterLogs + 1;
+        const log = require('../../schemas/log.js');
         const current = new log({
             id: guildDoc.counterLogs,
             guild: interaction.guild.id,
@@ -284,9 +284,9 @@ module.exports = {
     slashOptions: [{
         type: 'STRING',
         name: 'target_id',
-        nameLocalizations: getStringLocales('unbanOptiontargetLocalisedName'),
+        nameLocalizations: utils.getStringLocales('unbanOptiontargetLocalisedName'),
         description: 'The ID of the user to unban',
-        descriptionLocalizations: getStringLocales('unbanOptiontargetLocalisedDesc'),
+        descriptionLocalizations: utils.getStringLocales('unbanOptiontargetLocalisedDesc'),
         required: true,
         autocomplete: true,
     }],

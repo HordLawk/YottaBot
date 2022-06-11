@@ -1,5 +1,4 @@
 const {Permissions, MessageEmbed, Util} = require('discord.js');
-const edition = require('../../schemas/edition.js');
 const {sha256} = require('js-sha256');
 const aesjs = require('aes-js');
 
@@ -14,6 +13,7 @@ module.exports = {
     contextName: 'List previous edits',
     executeSlash: async interaction => {
         const {channelLanguage} = interaction;
+        const edition = require('../../schemas/edition.js');
         const edits = await edition.find({messageID: interaction.targetMessage.id}).sort({timestamp: -1});
         if(!edits.length) return await interaction.reply({
             content: channelLanguage.get('noEditsFound'),
@@ -24,7 +24,18 @@ module.exports = {
             const aesCtr = new aesjs.ModeOfOperation.ctr(sha256.array(process.env.CRYPT_PASSWD));
             return {
                 name: channelLanguage.get('listeditsEmbedVersionTitle', [edits.length - i]),
-                value: channelLanguage.get('listeditsEmbedVersionValue', [Util.escapeCodeBlock(Util.cleanContent(aesjs.utils.utf8.fromBytes(aesCtr.decrypt(e.content)), interaction.channel)), Math.round(e.timestamp.getTime() / 1000)]),
+                value: channelLanguage.get(
+                    'listeditsEmbedVersionValue',
+                    [
+                        Util.escapeCodeBlock(
+                            Util.cleanContent(
+                                aesjs.utils.utf8.fromBytes(aesCtr.decrypt(e.content)),
+                                interaction.channel
+                            )
+                        ),
+                        Math.round(e.timestamp.getTime() / 1000),
+                    ]
+                ),
             };
         });
         const embed = new MessageEmbed()

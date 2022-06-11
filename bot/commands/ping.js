@@ -8,7 +8,13 @@ module.exports = {
     categoryID: 1,
     execute: async message => {
         const {channelLanguage} = message;
-        if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
+        if(
+            message.guild
+            &&
+            !message.guild.me
+                .permissionsIn(message.channel)
+                .has(Permissions.FLAGS.EMBED_LINKS)
+        ) return message.reply(channelLanguage.get('botEmbed'));
         const hex = (latency) => {
             if(latency <= 100) return '00ff00';
             if(latency >= 1000) return 'ff0000';
@@ -30,7 +36,14 @@ module.exports = {
             .setTimestamp();
         const msg = await message.reply({embeds: [embed]});
         const current = msg.createdTimestamp - message.createdTimestamp;
-        embed.setColor(hex(current)).setFooter({text: foot(current)}).addField(channelLanguage.get('current'), `${current}ms`, true);
+        embed
+            .setColor(hex(current))
+            .setFooter({text: foot(current)})
+            .addField(
+                channelLanguage.get('current'),
+                `${current}ms`,
+                true
+            );
         await msg.edit({embeds: [embed]});
     },
     executeSlash: async interaction => {
@@ -59,7 +72,14 @@ module.exports = {
             fetchReply: true,
         });
         const current = inter.createdTimestamp - interaction.createdTimestamp;
-        embed.setColor(hex(current)).setFooter({text: foot(current)}).addField(channelLanguage.get('current'), `${current}ms`, true);
+        embed
+            .setColor(hex(current))
+            .setFooter({text: foot(current)})
+            .addField(
+                channelLanguage.get('current'),
+                `${current}ms`,
+                true
+            );
         await interaction.editReply({embeds: [embed]});
     },
 };

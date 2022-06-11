@@ -1,4 +1,3 @@
-const log = require('../../schemas/log.js');
 const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
@@ -20,6 +19,7 @@ module.exports = {
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
         if(!id) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         const filter = args[2] ? (Date.now() - (((parseInt(args[2].match(/(\d+)d/)?.[1], 10) * 86400000) || 0) + ((parseInt(args[2].match(/(\d+)h/)?.[1], 10) * 3600000) || 0) + ((parseInt(args[2].match(/(\d+)m/)?.[1], 10) * 60000) || 0) + ((parseInt(args[2].match(/(\d+)s/)?.[1], 10) * 1000) || 0))) : 0;
+        const log = require('../../schemas/log.js');
         const logDocs = await log.find({
             guild: message.guild.id,
             target: id,
@@ -108,6 +108,7 @@ module.exports = {
         };
         if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args.case_type)) throw new Error('Invalid slash command options');
         const filter = (args.time_filter_unit ?? args.time_filter_value) ? (Date.now() - ((args.time_filter_unit ?? 86400000) * (args.time_filter_value ?? 1))) : 0;
+        const log = require('../../schemas/log.js');
         const logDocs = await log.find({
             guild: interaction.guild.id,
             type: (args.case_type === 'all') ? {$ne: args.case_type} : {$eq: args.case_type},

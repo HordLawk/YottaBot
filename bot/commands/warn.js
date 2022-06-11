@@ -1,9 +1,5 @@
-const guild = require('../../schemas/guild.js');
-const log = require('../../schemas/log.js');
 const {MessageEmbed, Permissions} = require('discord.js');
-const locale = require('../../locale');
-
-const getStringLocales = key => locale.reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
+const utils = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -27,8 +23,10 @@ module.exports = {
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
         if(member.user.bot) return message.reply(channelLanguage.get('cantWarnBot'));
         if((message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) || (message.guild.ownerId === member.id)) return message.reply(channelLanguage.get('youCantWarn'));
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
+        const log = require('../../schemas/log.js');
         const current = new log({
             id: guildDoc.counterLogs,
             guild: message.guild.id,
@@ -177,8 +175,10 @@ module.exports = {
             ephemeral: true,
         });
         reason = i.fields.getTextInputValue('reason');
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(interaction.guild.id, {$inc: {counterLogs: 1}});
         interaction.client.guildData.get(interaction.guild.id).counterLogs = guildDoc.counterLogs + 1;
+        const log = require('../../schemas/log.js');
         const current = new log({
             id: guildDoc.counterLogs,
             guild: interaction.guild.id,
@@ -290,9 +290,9 @@ module.exports = {
     slashOptions: [{
         type: 'USER',
         name: 'target',
-        nameLocalizations: getStringLocales('warnOptiontargetLocalisedName'),
+        nameLocalizations: utils.getStringLocales('warnOptiontargetLocalisedName'),
         description: 'The user to warn',
-        descriptionLocalizations: getStringLocales('warnOptiontargetLOcalisedDesc'),
+        descriptionLocalizations: utils.getStringLocales('warnOptiontargetLOcalisedDesc'),
         required: true,
     }],
     contextName: 'Warn',

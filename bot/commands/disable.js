@@ -1,4 +1,3 @@
-const channel = require('../../schemas/channel.js');
 const {MessageEmbed, Permissions} = require('discord.js');
 
 module.exports = {
@@ -16,14 +15,54 @@ module.exports = {
     execute: async function(message, args){
         const commands = require('.');
         const {channelLanguage} = message;
-        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
-        if(args.length < 2) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-        const discordChannel = message.guild.channels.cache.get((args[0].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[0]);
-        if(!discordChannel || !discordChannel.isText()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+        if(
+            !message.guild.me
+                .permissionsIn(message.channel)
+                .has(Permissions.FLAGS.EMBED_LINKS)
+        ) return message.reply(channelLanguage.get('botEmbed'));
+        if(args.length < 2) return message.reply(
+            channelLanguage.get(
+                'invArgs',
+                [
+                    message.client.guildData.get(message.guild.id).prefix,
+                    this.name,
+                    this.usage(channelLanguage)
+                ]
+            )
+        );
+        const discordChannel = (
+            message.guild.channels.cache.get((args[0].match(/<#(\d{17,19})>/) || [])[1])
+            ||
+            message.guild.channels.cache.get(args[0])
+        );
+        if(
+            !discordChannel
+            ||
+            !discordChannel.isText()
+        ) return message.reply(
+            channelLanguage.get(
+                'invArgs',
+                [
+                    message.client.guildData.get(message.guild.id).prefix,
+                    this.name,
+                    this.usage(channelLanguage)
+                ]
+            )
+        );
+        const channel = require('../../schemas/channel.js');
         switch(args[1]){
             case 'on':
             case 'off': {
-                if(!args[2]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!args[2]) return message.reply(
+                    channelLanguage.get(
+                        'invArgs',
+                        [
+                            message.client.guildData.get(message.guild.id).prefix,
+                            this.name,
+                            this.usage(channelLanguage)
+                        ]
+                    )
+                );
                 let channelDoc = await channel.findById(discordChannel.id) || new channel({
                     _id: discordChannel.id,
                     guild: message.guild.id,
@@ -35,7 +74,23 @@ module.exports = {
                 else{
                     args.slice(2).forEach(e => {
                         const command = commands.get(e) || commands.find(cmd => (cmd.aliases && cmd.aliases.includes(e)));
-                        if(!command || (((args[1] === 'on') && channelDoc.ignoreCommands.includes(command.name)) || ((args[1] === 'off') && !channelDoc.ignoreCommands.includes(command.name)))) return;
+                        if(
+                            !command
+                            ||
+                            (
+                                (
+                                    (args[1] === 'on')
+                                    &&
+                                    channelDoc.ignoreCommands.includes(command.name)
+                                )
+                                ||
+                                (
+                                    (args[1] === 'off')
+                                    &&
+                                    !channelDoc.ignoreCommands.includes(command.name)
+                                )
+                            )
+                        ) return;
                         if(args[1] === 'on') return channelDoc.ignoreCommands.push(command.name);
                         channelDoc.ignoreCommands.splice(channelDoc.ignoreCommands.indexOf(command.name), 1);
                     });
@@ -46,7 +101,11 @@ module.exports = {
             break;
             case 'view':{
                 let channelDoc = await channel.findById(discordChannel.id);
-                if(!channelDoc || !channelDoc.ignoreCommands.length) return message.reply(channelLanguage.get('noDisabledCmds'));
+                if(
+                    !channelDoc
+                    ||
+                    !channelDoc.ignoreCommands.length
+                ) return message.reply(channelLanguage.get('noDisabledCmds'));
                 const embed = new MessageEmbed()
                     .setColor(message.guild.me.displayColor || 0x8000ff)
                     .setAuthor({
@@ -58,11 +117,25 @@ module.exports = {
                     })
                     .setDescription(channelLanguage.get('disabledEmbedDesc', [discordChannel]))
                     .setTimestamp()
-                    .addField(channelLanguage.get('disabledField'), channelDoc.ignoreCommands.map(e => `\`${e}\``).join(' '));
+                    .addField(
+                        channelLanguage.get('disabledField'),
+                        channelDoc.ignoreCommands
+                            .map(e => `\`${e}\``)
+                            .join(' ')
+                    );
                 message.reply({embeds: [embed]});
             }
             break;
-            default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+            default: message.reply(
+                channelLanguage.get(
+                    'invArgs',
+                    [
+                        message.client.guildData.get(message.guild.id).prefix,
+                        this.name,
+                        this.usage(channelLanguage)
+                    ]
+                )
+            );
         }
     },
 };

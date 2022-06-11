@@ -1,5 +1,3 @@
-const user = require('../../schemas/user.js');
-
 module.exports = {
     active: true,
     name: 'devbl',
@@ -8,6 +6,7 @@ module.exports = {
     args: true,
     usage: () => ['<add/rem> (user id)'],
     executeSlash: async (interaction, args) => {
+        const user = require('../../schemas/user.js');
         await user.findByIdAndUpdate(args.target.id, {$set: {blacklisted: args.add}}, {
             upsert: true,
             setDefaultsOnInsert: true,

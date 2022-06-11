@@ -26,10 +26,6 @@ module.exports = {
         }
         const channelLanguage = locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en');
         if(interaction.channel.partial) await interaction.channel.fetch();
-        // if(interaction.channel.type === 'GUILD_VOICE') return await interaction.reply({
-        //     content: channelLanguage.get('guildVoiceUnsupported'),
-        //     ephemeral: true,
-        // });
         const userDoc = await user.findById(interaction.user.id);
         if(userDoc && userDoc.blacklisted) return interaction.reply({
             content: channelLanguage.get('blacklisted'),

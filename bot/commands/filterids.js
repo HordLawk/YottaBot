@@ -1,7 +1,5 @@
-const locale = require('../../locale');
+const utils = require('../utils.js');
 const axios = require('axios');
-
-const getStringLocales = key => [...locale.values()].reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
 
 module.exports = {
     active: true,
@@ -58,9 +56,9 @@ module.exports = {
     slashOptions: [{
         type: 'ATTACHMENT',
         name: 'text_file',
-        nameLocalizations: getStringLocales('filteridsOptiontext_fileLocalisedName'),
+        nameLocalizations: utils.getStringLocales('filteridsOptiontext_fileLocalisedName'),
         description: 'A text file with Discord IDs to be filtered',
-        descriptionLocalizations: getStringLocales('filteridsOptiontext_fileLocalisedDesc'),
+        descriptionLocalizations: utils.getStringLocales('filteridsOptiontext_fileLocalisedDesc'),
         required: false,
     }],
 }

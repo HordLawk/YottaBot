@@ -1,9 +1,5 @@
-const guild = require('../../schemas/guild.js');
-const log = require('../../schemas/log.js');
 const {MessageEmbed, Permissions} = require('discord.js');
-const locale = require('../../locale');
-
-const getStringLocales = key => locale.reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
+const utils = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -32,6 +28,7 @@ module.exports = {
         var banneds = 0;
         const caseLogs = [];
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.ban);
+        const log = require('../../schemas/log.js');
         for(let id of [...(new Set(ids.slice(0, reasonStart)))]){
             let user = await message.client.users.fetch(id).catch(() => null);
             if(!user){
@@ -89,6 +86,7 @@ module.exports = {
             let msg = await discordChannel.send({embeds: [embed]});
             caseLogs[caseLogs.length - 1].logMessage = msg.id;
         }
+        const guild = require('../../schemas/guild.js');
         await guild.findByIdAndUpdate(message.guild.id, {$set: {counterLogs: message.client.guildData.get(message.guild.id).counterLogs}});
         await log.insertMany(caseLogs);
         await message.reply(channelLanguage.get('massbanSuccess', [bans, invargs, invusers, banneds]));
@@ -136,6 +134,7 @@ module.exports = {
         const caseLogs = [];
         const discordChannel = interaction.guild.channels.cache.get(interaction.client.guildData.get(interaction.guild.id).modlogs.ban);
         const reply = await lastInteraction.deferReply({fetchReply: true});
+        const log = require('../../schemas/log.js');
         for(const id of [...(new Set(ids))].slice(0, (interaction.client.guildData.get(interaction.guild.id).premiumUntil ?? interaction.client.guildData.get(interaction.guild.id).partner) ? 1000 : 300)){
             const user = await interaction.client.users.fetch(id).catch(() => null);
             if(!user){
@@ -191,6 +190,7 @@ module.exports = {
             const msg = await discordChannel.send({embeds: [embed]});
             caseLogs[caseLogs.length - 1].logMessage = msg.id;
         }
+        const guild = require('../../schemas/guild.js');
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {counterLogs: interaction.client.guildData.get(interaction.guild.id).counterLogs}});
         await log.insertMany(caseLogs);
         await lastInteraction.editReply(channelLanguage.get('massbanSuccess', [bans, invargs, invusers, banneds, interaction.client.guildData.get(interaction.guild.id).premiumUntil ?? interaction.client.guildData.get(interaction.guild.id).partner]));
@@ -199,17 +199,17 @@ module.exports = {
         {
             type: 'STRING',
             name: 'targets',
-            nameLocalizations: getStringLocales('massbanOptiontargetsLocalisedName'),
+            nameLocalizations: utils.getStringLocales('massbanOptiontargetsLocalisedName'),
             description: 'Mentions or IDs of the users to ban separated by spaces',
-            descriptionLocalizations: getStringLocales('massbanOptiontargetsLocalisedDesc'),
+            descriptionLocalizations: utils.getStringLocales('massbanOptiontargetsLocalisedDesc'),
             required: true,
         },
         {
             type: 'BOOLEAN',
             name: 'with_reason',
-            nameLocalizations: getStringLocales('massbanOptionwith_reasonLocalisedName'),
+            nameLocalizations: utils.getStringLocales('massbanOptionwith_reasonLocalisedName'),
             description: 'Whether to prompt a modal asking for the ban reason',
-            descriptionLocalizations: getStringLocales('massbanOptionwith_reasonLocalisedDesc'),
+            descriptionLocalizations: utils.getStringLocales('massbanOptionwith_reasonLocalisedDesc'),
             required: false,
         },
     ],

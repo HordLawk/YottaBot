@@ -1,5 +1,3 @@
-const member = require('../../schemas/member.js');
-const role = require('../../schemas/role.js');
 const {MessageEmbed, Permissions} = require('discord.js');
 const configs = require('../configs.js');
 
@@ -17,6 +15,8 @@ module.exports = {
         const {channelLanguage} = message;
         if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
         if(!message.client.guildData.get(message.guild.id).gainExp && !message.client.guildData.get(message.guild.id).voiceXpCooldown) return message.reply(channelLanguage.get('xpDisabled'));
+        const role = require('../../schemas/role.js');
+        const member = require('../../schemas/member.js');
         switch(args[0]){
             case 'rank': {
                 const verbose = (args[1] === 'verbose') && (message.author.id === message.client.application.owner.id);
@@ -211,6 +211,7 @@ module.exports = {
             content: channelLanguage.get('xpDisabled'),
             ephemeral: true,
         });
+        const member = require('../../schemas/member.js');
         const user = await member.findOne({
             guild: interaction.guild.id,
             userID: args.user.id,
@@ -219,6 +220,7 @@ module.exports = {
             content: channelLanguage.get('noXp'),
             ephemeral: true,
         });
+        const role = require('../../schemas/role.js');
         const roleDocs = await role.find({
             guild: interaction.guild.id,
             roleID: {$in: interaction.guild.roles.cache.map(e => e.id)},
@@ -254,6 +256,7 @@ module.exports = {
         await interaction.deferReply();
         let cachePage = 0;
         const cachePageSize = 100;
+        const member = require('../../schemas/member.js');
         let parcialMemberDocs = await member.find({
             guild: interaction.guild.id,
             xp: {$gte: 1},
@@ -369,6 +372,7 @@ module.exports = {
             content: channelLanguage.get('xpDisabled'),
             ephemeral: true,
         });
+        const role = require('../../schemas/role.js');
         const roles = await role.find({
             guild: interaction.guild.id,
             roleID: {$in: interaction.guild.roles.cache.map(e => e.id)},

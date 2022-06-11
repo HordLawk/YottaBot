@@ -1,5 +1,4 @@
-const { MessageEmbed, Collection } = require("discord.js");
-const memberModel = require('../../schemas/member.js');
+const { MessageEmbed } = require("discord.js");
 const locale = require('../../locale');
 
 module.exports = {
@@ -8,6 +7,7 @@ module.exports = {
     dev: true,
     description: () => 'Shows command usage stats',
     allSlash: async interaction => {
+        const memberModel = require('../../schemas/member.js');
         const commandUses = await memberModel.aggregate([
             {$match: {commandUses: {
                 $ne: [],
@@ -30,6 +30,7 @@ module.exports = {
         await interaction.reply({embeds: [embed]});
     },
     userSlash: async (interaction, args) => {
+        const memberModel = require('../../schemas/member.js');
         const commandUses = await memberModel.aggregate([
             {$match: {
                 userID: args.user.id,
@@ -59,6 +60,7 @@ module.exports = {
         await interaction.reply({embeds: [embed]});
     },
     serverSlash: async (interaction, args) => {
+        const memberModel = require('../../schemas/member.js');
         const commandUses = await memberModel.aggregate([
             {$match: {
                 guild: args.guild,
@@ -119,12 +121,19 @@ module.exports = {
         },
     ],
     serverAutocomplete: {
-        guild: (interaction, value) => interaction.respond((interaction.user.id === interaction.client.application.owner.id) ? interaction.client.guilds.cache.filter(e => e.name.toLowerCase().startsWith(value.toLowerCase())).first(25).map(e => ({
-            name: e.name,
-            value: e.id,
-        })) : [{
-            name: locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en').get('forbidden'),
-            value: '',
-        }]),
+        guild: (interaction, value) => interaction.respond(
+            (interaction.user.id === interaction.client.application.owner.id) ?
+            interaction.client.guilds.cache
+                .filter(e => e.name.toLowerCase().startsWith(value.toLowerCase()))
+                .first(25)
+                .map(e => ({
+                    name: e.name,
+                    value: e.id,
+                })) :
+            [{
+                name: locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en').get('forbidden'),
+                value: '',
+            }]
+        ),
     },
 };

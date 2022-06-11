@@ -1,6 +1,4 @@
 const {Permissions, MessageEmbed} = require('discord.js');
-const guildModel = require('../../schemas/guild.js');
-const editionModel = require('../../schemas/edition.js');
 
 module.exports = {
     active: true,
@@ -12,7 +10,11 @@ module.exports = {
     guildOnly: true,
     storageSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        await guildModel.findByIdAndUpdate(interaction.guild.id, {$set: {storeEditions: (interaction.client.guildData.get(interaction.guild.id).storeEditions = args.enable)}});
+        const guildModel = require('../../schemas/guild.js');
+        await guildModel.findByIdAndUpdate(
+            interaction.guild.id,
+            {$set: {storeEditions: (interaction.client.guildData.get(interaction.guild.id).storeEditions = args.enable)}}
+        );
         await interaction.reply(channelLanguage.get('storageSuccess', [args.enable]));
     },
     wipeSlash: async interaction => {
@@ -53,6 +55,7 @@ module.exports = {
                 }
                 break;
                 case 'confirm': {
+                    const editionModel = require('../../schemas/edition.js');
                     await editionModel.deleteMany({guild: interaction.guild.id});
                     await i.reply({content: channelLanguage.get('wipeEditionsSuccess')});
                 }
@@ -69,18 +72,32 @@ module.exports = {
     },
     infoSlash: async interaction => {
         const {channelLanguage} = interaction;
+        const editionModel = require('../../schemas/edition.js');
         const editionsAmount = await editionModel.countDocuments({guild: interaction.guild.id});
-        const premiumLike = (interaction.client.guildData.get(interaction.guild.id).premiumUntil ?? interaction.client.guildData.get(interaction.guild.id).partner);
+        const premiumLike = (
+            interaction.client.guildData.get(interaction.guild.id).premiumUntil
+            ??
+            interaction.client.guildData.get(interaction.guild.id).partner
+        );
         const embed = new MessageEmbed()
             .setColor(0x2f3136)
             .setAuthor({
-                name: channelLanguage.get('editionsinfoEmbedAuthor'), // fazer locale
+                name: channelLanguage.get('editionsinfoEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true}),
             })
             .setTimestamp()
-            .setDescription(channelLanguage.get('editionsinfoEmbedDescription', [interaction.client.guildData.get(interaction.guild.id).storeEditions, editionsAmount, premiumLike])); // fazer locale
+            .setDescription(
+                channelLanguage.get(
+                    'editionsinfoEmbedDescription',
+                    [
+                        interaction.client.guildData.get(interaction.guild.id).storeEditions,
+                        editionsAmount,
+                        premiumLike
+                    ]
+                )
+            );
         const replyData = {embeds: [embed]};
-        if(!premiumLike) replyData.content = channelLanguage.get('nonPremiumStorage'); // fazer locale
+        if(!premiumLike) replyData.content = channelLanguage.get('nonPremiumStorage');
         await interaction.reply(replyData);
     },
     slashOptions: [
@@ -103,7 +120,8 @@ module.exports = {
         {
             type: 'SUB_COMMAND',
             name: 'info',
-            description: 'Shows information on the current state of the edited messages storing functionality in this server',
+            description: 'Shows information on the current state of the edited messages storing functionality in this ' +
+                         'server',
         },
     ],
 };

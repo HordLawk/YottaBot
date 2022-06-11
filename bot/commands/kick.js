@@ -1,9 +1,5 @@
-const guild = require('../../schemas/guild.js');
-const log = require('../../schemas/log.js');
 const {MessageEmbed, Permissions} = require('discord.js');
-const locale = require('../../locale');
-
-const getStringLocales = key => locale.reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
+const utils = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -25,10 +21,14 @@ module.exports = {
         const member = id && await message.guild.members.fetch(id).catch(() => null);
         if(!member) return message.reply(channelLanguage.get('invMember'));
         if(!member.kickable) return message.reply(channelLanguage.get('cantKick'));
-        if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return message.reply(channelLanguage.get('youCantKick'));
+        if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0){
+            return message.reply(channelLanguage.get('youCantKick'));
+        }
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
+        const log = require('../../schemas/log.js');
         const current = new log({
             id: guildDoc.counterLogs,
             guild: message.guild.id,
@@ -46,7 +46,19 @@ module.exports = {
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.kick);
         let msg;
         let embed;
-        if(discordChannel && discordChannel.viewable &&  discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) &&  discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
+        if(
+            discordChannel
+            &&
+            discordChannel.viewable
+            &&
+            discordChannel
+                .permissionsFor(message.guild.me)
+                .has(Permissions.FLAGS.SEND_MESSAGES)
+            &&
+            discordChannel
+                .permissionsFor(message.guild.me)
+                .has(Permissions.FLAGS.EMBED_LINKS)
+        ){
             embed = new MessageEmbed()
                 .setColor(0xffbf00)
                 .setAuthor({
@@ -54,7 +66,17 @@ module.exports = {
                     iconURL: member.user.displayAvatarURL({dynamic: true}),
                 })
                 .setDescription(channelLanguage.get('kickEmbedDescription', [message.url]))
-                .addField(channelLanguage.get('kickEmbedTargetTitle'), channelLanguage.get('kickEmbedTargetValue', [member, member.id]), true)
+                .addField(
+                    channelLanguage.get('kickEmbedTargetTitle'),
+                    channelLanguage.get(
+                        'kickEmbedTargetValue',
+                        [
+                            member,
+                            member.id,
+                        ]
+                    ),
+                    true
+                )
                 .addField(channelLanguage.get('kickEmbedExecutorTitle'), message.author.toString(), true)
                 .setTimestamp()
                 .setFooter({
@@ -80,7 +102,11 @@ module.exports = {
         }];
         await reply.edit({components});
         const collectorEdit = reply.createMessageComponentCollector({
-            filter: componentInteraction => ((componentInteraction.user.id === message.author.id) && (componentInteraction.customId === 'edit')),
+            filter: componentInteraction => (
+                (componentInteraction.user.id === message.author.id)
+                &&
+                (componentInteraction.customId === 'edit')
+            ),
             time: 60_000,
             componentType: 'BUTTON',
         });
@@ -145,10 +171,12 @@ module.exports = {
             content: channelLanguage.get('cantKick'),
             ephemeral: true,
         });
-        if(interaction.member.roles.highest.comparePositionTo(args.target.member.roles.highest) <= 0) return await interaction.reply({
-            content: channelLanguage.get('youCantKick'),
-            ephemeral: true,
-        });
+        if(interaction.member.roles.highest.comparePositionTo(args.target.member.roles.highest) <= 0){
+            return await interaction.reply({
+                content: channelLanguage.get('youCantKick'),
+                ephemeral: true,
+            });
+        }
         let reason;
         let lastInteraction = interaction;
         if(args.with_reason){
@@ -178,8 +206,10 @@ module.exports = {
             reason = i.fields.getTextInputValue('reason');
             lastInteraction = i;
         }
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(lastInteraction.guild.id, {$inc: {counterLogs: 1}});
         lastInteraction.client.guildData.get(lastInteraction.guild.id).counterLogs = guildDoc.counterLogs + 1;
+        const log = require('../../schemas/log.js');
         const current = new log({
             id: guildDoc.counterLogs,
             guild: lastInteraction.guild.id,
@@ -197,10 +227,24 @@ module.exports = {
         });
         current.actionMessage = reply.url;
         await current.save();
-        const discordChannel = lastInteraction.guild.channels.cache.get(lastInteraction.client.guildData.get(lastInteraction.guild.id).modlogs.kick);
+        const discordChannel = lastInteraction.guild.channels.cache.get(
+            lastInteraction.client.guildData.get(lastInteraction.guild.id).modlogs.kick
+        );
         let msg;
         let embed;
-        if(discordChannel && discordChannel.viewable &&  discordChannel.permissionsFor(lastInteraction.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) &&  discordChannel.permissionsFor(lastInteraction.guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
+        if(
+            discordChannel
+            &&
+            discordChannel.viewable
+            &&
+            discordChannel
+                .permissionsFor(lastInteraction.guild.me)
+                .has(Permissions.FLAGS.SEND_MESSAGES)
+            &&
+            discordChannel
+                .permissionsFor(lastInteraction.guild.me)
+                .has(Permissions.FLAGS.EMBED_LINKS)
+        ){
             embed = new MessageEmbed()
                 .setColor(0xffbf00)
                 .setAuthor({
@@ -208,7 +252,17 @@ module.exports = {
                     iconURL: args.target.displayAvatarURL({dynamic: true}),
                 })
                 .setDescription(channelLanguage.get('kickEmbedDescription', [reply.url]))
-                .addField(channelLanguage.get('kickEmbedTargetTitle'), channelLanguage.get('kickEmbedTargetValue', [args.target, args.target.id]), true)
+                .addField(
+                    channelLanguage.get('kickEmbedTargetTitle'),
+                    channelLanguage.get(
+                        'kickEmbedTargetValue',
+                        [
+                            args.target,
+                            args.target.id,
+                        ]
+                    ),
+                    true
+                )
                 .addField(channelLanguage.get('kickEmbedExecutorTitle'), lastInteraction.user.toString(), true)
                 .setTimestamp()
                 .setFooter({
@@ -233,7 +287,11 @@ module.exports = {
         }];
         await lastInteraction.editReply({components});
         const collectorEdit = reply.createMessageComponentCollector({
-            filter: componentInteraction => ((componentInteraction.user.id === lastInteraction.user.id) && (componentInteraction.customId === 'edit')),
+            filter: componentInteraction => (
+                (componentInteraction.user.id === lastInteraction.user.id)
+                &&
+                (componentInteraction.customId === 'edit')
+            ),
             time: 60_000,
             componentType: 'BUTTON',
         });
@@ -292,17 +350,17 @@ module.exports = {
         {
             type: 'USER',
             name: 'target',
-            nameLocalizations: getStringLocales('kickOptiontargetLocalisedName'),
+            nameLocalizations: utils.getStringLocales('kickOptiontargetLocalisedName'),
             description: 'The user to kick',
-            descriptionLocalizations: getStringLocales('kickOptiontargetLocalisedDesc'),
+            descriptionLocalizations: utils.getStringLocales('kickOptiontargetLocalisedDesc'),
             required: true,
         },
         {
             type: 'BOOLEAN',
             name: 'with_reason',
-            nameLocalizations: getStringLocales('kickOptionwith_reasonLocalisedName'),
+            nameLocalizations: utils.getStringLocales('kickOptionwith_reasonLocalisedName'),
             description: 'Whether to prompt a modal asking for the ban reason',
-            descriptionLocalizations: getStringLocales('kickOptionwith_reasonLocalisedDesc'),
+            descriptionLocalizations: utils.getStringLocales('kickOptionwith_reasonLocalisedDesc'),
             required: false,
         },
     ],

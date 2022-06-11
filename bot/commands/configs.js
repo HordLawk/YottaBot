@@ -1,8 +1,6 @@
-const guild = require('../../schemas/guild.js');
 const {MessageEmbed, Permissions} = require('discord.js');
+const utils = require('../utils.js');
 const locale = require('../../locale');
-
-const getStringLocales = key => locale.reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
 
 module.exports = {
     active: true,
@@ -18,6 +16,7 @@ module.exports = {
     guildOnly: true,
     execute: async function(message, args){
         const {channelLanguage} = message;
+        const guild = require('../../schemas/guild.js');
         switch(args[0]){
             case 'prefix': {
                 if(!args[1]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
@@ -121,6 +120,7 @@ module.exports = {
             content: channelLanguage.get('lang404'),
             ephemeral: true,
         });
+        const guild = require('../../schemas/guild.js');
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {language: args.language}});
         interaction.client.guildData.get(interaction.guild.id).language = args.language;
         await interaction.reply(locale.get(args.language).get('newLang'));
@@ -142,6 +142,7 @@ module.exports = {
         else{
             await interaction.reply(channelLanguage.get('logattachmentsOffSuccess'));
         }
+        const guild = require('../../schemas/guild.js');
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {logAttachments: args.enable}});
         interaction.client.guildData.get(interaction.guild.id).logAttachments = args.enable;
     },
@@ -155,28 +156,33 @@ module.exports = {
             content: channelLanguage.get('botEmbed'),
             ephemeral: true,
         });
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(interaction.guild.id, {$set: {[`modlogs.${args.action_type}`]: args.modlog_channel.id}}, {new: true});
         interaction.client.guildData.get(interaction.guild.id).modlogs = guildDoc.modlogs;
         await interaction.reply(channelLanguage.get('modLogsSetSuccess', [[args.action_type], args.modlog_channel]));
     },
     moderationclearonbanSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
+        const guild = require('../../schemas/guild.js');
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {pruneBan: args.days}});
         interaction.client.guildData.get(interaction.guild.id).pruneBan = args.days;
         await interaction.reply(channelLanguage.get('clearOnBanDaysSetSuccess', [args.days]));
     },
     moderationmassbanprotectionSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
+        const guild = require('../../schemas/guild.js');
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {antiMassBan: (interaction.client.guildData.get(interaction.guild.id).antiMassBan = (args.enable ? (args.max_bans || 15) : null))}});
         await interaction.reply(channelLanguage.get('massBanProtectionSuccess', [args.enable]));
     },
     moderationglobalbansSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
+        const guild = require('../../schemas/guild.js');
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {globalBan: (interaction.client.guildData.get(interaction.guild.id).globalBan = args.enable)}});
         await interaction.reply(channelLanguage.get('globalbanSuccess', [args.enable]));
     },
     betaSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
+        const guild = require('../../schemas/guild.js');
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {beta: (interaction.client.guildData.get(interaction.guild.id).beta = args.enable)}});
         await interaction.reply(channelLanguage.get('betaSuccess', [args.enable]));
     },
@@ -241,22 +247,22 @@ module.exports = {
                             choices: [
                                 {
                                     name: 'Warns',
-                                    name_localizations: getStringLocales('warnChoiceLocalisedName'),
+                                    name_localizations: utils.getStringLocales('warnChoiceLocalisedName'),
                                     value: 'warn',
                                 },
                                 {
                                     name: 'Mutes/Timeouts',
-                                    name_localizations: getStringLocales('muteChoiceLocalisedName'),
+                                    name_localizations: utils.getStringLocales('muteChoiceLocalisedName'),
                                     value: 'mute',
                                 },
                                 {
                                     name: 'Kicks',
-                                    name_localizations: getStringLocales('kickChoiceLocalisedName'),
+                                    name_localizations: utils.getStringLocales('kickChoiceLocalisedName'),
                                     value: 'kick',
                                 },
                                 {
                                     name: 'Bans',
-                                    name_localizations: getStringLocales('banChoiceLocalisedName'),
+                                    name_localizations: utils.getStringLocales('banChoiceLocalisedName'),
                                     value: 'ban',
                                 },
                             ],

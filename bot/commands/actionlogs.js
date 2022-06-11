@@ -1,7 +1,4 @@
 const {MessageEmbed, Permissions} = require('discord.js');
-const channel = require('../../schemas/channel.js');
-const role = require('../../schemas/role.js');
-const guild = require('../../schemas/guild.js');
 const locale = require('../../locale');
 const configs = require('../configs');
 
@@ -24,6 +21,9 @@ module.exports = {
     guildOnly: true,
     execute: async function(message, args){
         const {channelLanguage} = message;
+        const channel = require('../../schemas/channel.js');
+        const role = require('../../schemas/role.js');
+        const guild = require('../../schemas/guild.js');
         switch(args[0]){
             case 'defaultchannel': {
                 if(!args[1]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
@@ -311,6 +311,7 @@ module.exports = {
         });
         const oldHook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
         if(oldHook && interaction.guild.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldDefaultHookReason'));
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(interaction.guild.id, {$set: {
             defaultLogsHookID: hook.id,
             defaultLogsHookToken: hook.token,
@@ -324,6 +325,7 @@ module.exports = {
             content: channelLanguage.get('invAction'),
             ephemeral: true,
         });
+        const guild = require('../../schemas/guild.js');
         if(args.log_channel){
             if(!interaction.guild.me.permissionsIn(args.log_channel).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) return interaction.reply({
                 content: channelLanguage.get('botWebhooks'),
@@ -380,6 +382,7 @@ module.exports = {
         });
         const oldHook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookToken).catch(() => null);
         if(oldHook && interaction.guild.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [args.action]));
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findById(interaction.guild.id);
         if(guildDoc.actionlogs.id(args.action)){
             guildDoc.actionlogs.id(args.action).remove();
@@ -390,6 +393,7 @@ module.exports = {
     },
     ignoredchannelsaddSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
+        const channel = require('../../schemas/channel.js');
         if(args.action){
             if(!configs.actions.filter(e => e.ignorableChannels).has(args.action)) return interaction.reply({
                 content: channelLanguage.get('invAction'),
@@ -417,6 +421,7 @@ module.exports = {
     },
     ignoredchannelsremoveSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
+        const channel = require('../../schemas/channel.js');
         if(args.action){
             if(!configs.actions.filter(e => e.ignorableChannels).has(args.action)) return interaction.reply({
                 content: channelLanguage.get('invAction'),
@@ -432,6 +437,7 @@ module.exports = {
     },
     ignoredchannelsinfoSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
+        const channel = require('../../schemas/channel.js');
         const channelDoc = await channel.findById(args.channel.id);
         if(!channelDoc || !channelDoc.ignoreActions.length) return interaction.reply({
             content: channelLanguage.get('noIgnoredActionsChannel'),
@@ -455,6 +461,7 @@ module.exports = {
             content: channelLanguage.get('cantIgnoreEveryone'),
             ephemeral: true,
         });
+        const role = require('../../schemas/role.js');
         if(args.action){
             if(!configs.actions.filter(e => e.ignorableRoles).has(args.action)) return interaction.reply({
                 content: channelLanguage.get('invAction'),
@@ -486,6 +493,7 @@ module.exports = {
             content: channelLanguage.get('cantIgnoreEveryone'),
             ephemeral: true,
         });
+        const role = require('../../schemas/role.js');
         if(args.action){
             if(!configs.actions.filter(e => e.ignorableRoles).has(args.action)) return interaction.reply({
                 content: channelLanguage.get('invAction'),
@@ -507,6 +515,7 @@ module.exports = {
     },
     ignoredrolesinfoSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
+        const role = require('../../schemas/role.js');
         const roleDoc = await role.findOne({
             guild: interaction.guild.id,
             roleID: args.role.id,
@@ -554,12 +563,14 @@ module.exports = {
         if(activeLogs.length){
             embed.addField(channelLanguage.get('logsViewEmbedActionsTitle'), activeLogs.map(e => channelLanguage.get('logsViewEmbedActions', [channelLanguage.get(`action${e.id}`), e.channelID])).join('\n'));
         }
+        const channel = require('../../schemas/channel.js');
         const channels = await channel.find({
             _id: {$in: interaction.client.channels.cache.map(e => e.id)},
             guild: interaction.guild.id,
             ignoreActions: {$ne: []},
         });
         if(channels.length) embed.addField(channelLanguage.get('logsViewEmbedIgnoredChannelsTitle'), channels.map(e => `<#${e._id}> - \`${(e.ignoreActions.length === configs.actions.size) ? channelLanguage.get('logsViewEmbedIgnoredAll') : channelLanguage.get('logsViewEmbedIgnoredSome')}\``).join('\n'));
+        const role = require('../../schemas/role.js');
         const roles = await role.find({
             guild: interaction.guild.id,
             roleID: {$in: interaction.guild.roles.cache.map(e => e.id)},

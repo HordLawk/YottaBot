@@ -1,9 +1,5 @@
-const log = require('../../schemas/log.js');
-const guild = require('../../schemas/guild.js');
 const {MessageEmbed, Permissions} = require('discord.js');
-const locale = require('../../locale');
-
-const getStringLocales = key => locale.reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
+const utils = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -25,6 +21,7 @@ module.exports = {
         if(!member) return message.reply(channelLanguage.get('invMember'));
         if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return message.reply(channelLanguage.get('youCantUnmute'));
         if(!member.moderatable) return message.reply(channelLanguage.get('iCantMute'));
+        const log = require('../../schemas/log.js');
         const mute = await log.findOneAndUpdate({
             guild: message.guild.id,
             target: id,
@@ -33,6 +30,7 @@ module.exports = {
         }, {$set: {ongoing: false}});
         if(!mute) return message.reply(channelLanguage.get('invMuted'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
         const current = new log({
@@ -156,6 +154,7 @@ module.exports = {
             content: channelLanguage.get('iCantMute'),
             ephemeral: true,
         });
+        const log = require('../../schemas/log.js');
         const mute = await log.findOneAndUpdate({
             guild: interaction.guild.id,
             target: args.target.id,
@@ -190,6 +189,7 @@ module.exports = {
             ephemeral: true,
         });
         reason = i.fields.getTextInputValue('reason');
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(interaction.guild.id, {$inc: {counterLogs: 1}});
         interaction.client.guildData.get(interaction.guild.id).counterLogs = guildDoc.counterLogs + 1;
         const current = new log({
@@ -304,9 +304,9 @@ module.exports = {
     slashOptions: [{
         type: 'USER',
         name: 'target',
-        nameLocalizations: getStringLocales('unmuteOptiontargetLocalisedName'),
+        nameLocalizations: utils.getStringLocales('unmuteOptiontargetLocalisedName'),
         description: 'The user to unmute',
-        descriptionLocalizations: getStringLocales('unmuteOptiontargetLocalisedDesc'),
+        descriptionLocalizations: utils.getStringLocales('unmuteOptiontargetLocalisedDesc'),
         required: true,
     }],
 };

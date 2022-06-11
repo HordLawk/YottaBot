@@ -1,9 +1,5 @@
-const guild = require('../../schemas/guild.js');
-const log = require('../../schemas/log.js');
 const {MessageEmbed, Permissions} = require('discord.js');
-const locale = require('../../locale');
-
-const getStringLocales = key => locale.reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
+const utils = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -41,8 +37,10 @@ module.exports = {
             days: message.client.guildData.get(message.guild.id).pruneBan,
         }).catch(() => null);
         if(!newban) return message.reply(channelLanguage.get('cantBan'));
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
+        const log = require('../../schemas/log.js');
         const current = new log({
             id: guildDoc.counterLogs,
             guild: message.guild.id,
@@ -262,8 +260,10 @@ module.exports = {
             content: channelLanguage.get('cantBan'),
             ephemeral: true,
         });
+        const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(lastInteraction.guild.id, {$inc: {counterLogs: 1}});
         lastInteraction.client.guildData.get(lastInteraction.guild.id).counterLogs = guildDoc.counterLogs + 1;
+        const log = require('../../schemas/log.js');
         const current = new log({
             id: guildDoc.counterLogs,
             guild: lastInteraction.guild.id,
@@ -432,25 +432,25 @@ module.exports = {
         {
             type: 'USER',
             name: 'target',
-            nameLocalizations: getStringLocales('banOptiontargetLocalisedName'),
+            nameLocalizations: utils.getStringLocales('banOptiontargetLocalisedName'),
             description: 'The user to ban',
-            descriptionLocalizations: getStringLocales('banOptiontargetLocalisedDesc'),
+            descriptionLocalizations: utils.getStringLocales('banOptiontargetLocalisedDesc'),
             required: true,
         },
         {
             type: 'BOOLEAN',
             name: 'with_reason',
-            nameLocalizations: getStringLocales('banOptionwith_reasonLocalisedName'),
+            nameLocalizations: utils.getStringLocales('banOptionwith_reasonLocalisedName'),
             description: 'Whether to prompt a modal asking for the ban reason',
-            descriptionLocalizations: getStringLocales('banOptionwith_reasonLocalisedDesc'),
+            descriptionLocalizations: utils.getStringLocales('banOptionwith_reasonLocalisedDesc'),
             required: false,
         },
         {
             type: 'INTEGER',
             name: 'prune_days',
-            nameLocalizations: getStringLocales('banOptionprune_daysLocalisedName'),
+            nameLocalizations: utils.getStringLocales('banOptionprune_daysLocalisedName'),
             description: 'Number of days of messages to delete, overrides the default settings for this',
-            descriptionLocalizations: getStringLocales('banOptionprune_daysLocalisedDesc'),
+            descriptionLocalizations: utils.getStringLocales('banOptionprune_daysLocalisedDesc'),
             maxValue: 7,
             minValue: 0,
             required: false,

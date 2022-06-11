@@ -382,8 +382,10 @@ module.exports = {
         required: false,
         autocomplete: true,
     }],
-    commandAutocomplete: {command: (interaction, value) => interaction.respond(require('.').filter(e => (e.name.startsWith(value.toLowerCase()) && !e.dev && (e.execute || (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(cmd => (e.name === cmd.name))?.type === 'CHAT_INPUT')))).first(25).map(e => ({
-        name: e.name,
-        value: e.name,
-    })))},
+    commandAutocomplete: {
+        command: (interaction, value) => interaction.respond(require('.').filter(e => (e.name.startsWith(value.toLowerCase()) && !e.dev && (e.execute || (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(cmd => (e.name === cmd.name))?.type === 'CHAT_INPUT')))).first(25).map(e => ({
+            name: e.name,
+            value: e.name,
+        }))),
+    },
 };

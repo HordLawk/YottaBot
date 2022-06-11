@@ -1,7 +1,3 @@
-const guild = require('../../schemas/guild.js');
-const role = require('../../schemas/role.js');
-const channel = require('../../schemas/channel.js');
-const member = require('../../schemas/member.js');
 const {MessageEmbed, Permissions} = require('discord.js');
 const configs = require('../configs.js');
 
@@ -19,6 +15,10 @@ module.exports = {
     guildOnly: true,
     execute: async function(message, args){
         const {channelLanguage} = message;
+        const member = require('../../schemas/member.js');
+        const channel = require('../../schemas/channel.js');
+        const role = require('../../schemas/role.js');
+        const guild = require('../../schemas/guild.js');
         switch(args[0]){
             case 'enable': {
                 if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));

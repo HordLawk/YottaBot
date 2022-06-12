@@ -1,6 +1,6 @@
+const {Collection} = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-const {Collection} = require('discord.js');
 
 module.exports = fs
     .readdirSync(path.join(__dirname))
@@ -8,12 +8,10 @@ module.exports = fs
     .map(e => require(`./${e}`))
     .reduce(
         (acc, e) => (
-            e.active ?
             acc.set(
                 e.name,
                 e
-            ) :
-            acc
+            )
         ),
         new Collection()
     );

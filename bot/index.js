@@ -25,7 +25,6 @@ Discord.ApplicationCommandManager.transformCommand = command => ({
     default_member_permissions: command.default_member_permissions?.toString(),
     dm_permission: command.dm_permission,
 });
-client.interactions = new Discord.Collection(fs.readdirSync(path.join(__dirname, 'interactions')).filter(file => file.endsWith('.js')).map(e => require(`./interactions/${e}`)).map(e => [e.name, e]));
 client.cooldowns = new Discord.Collection();
 client.xpcds = new Discord.Collection();
 client.lastdelmsg = new Discord.Collection();
@@ -52,7 +51,10 @@ client.handlers = {
             i.reply(msgData).catch(console.error);
         }
         if(process.env.NODE_ENV === 'production') client.channels.cache.get(configs.errorlog).send({
-            content: `Error: *${err.message}*\nButton ID: ${i.customId}\nInteraction User: ${i.user}\nInteraction ID: ${i.id}`,
+            content: `Error: *${err.message}*\n` +
+                     `Button ID: ${i.customId}\n` +
+                     `Interaction User: ${i.user}\n` +
+                     `Interaction ID: ${i.id}`,
             files: [{
                 name: 'stack.log',
                 attachment: Buffer.from(err.stack),
@@ -68,7 +70,17 @@ client.handlers = {
             files: [
                 {
                     name: 'args.json',
-                    attachment: Buffer.from(JSON.stringify(args, (key, value) => ((typeof value === "bigint") ? `${value}n` : value), 4)),
+                    attachment: Buffer.from(
+                        JSON.stringify(
+                            args,
+                            (_, value) => (
+                                (typeof value === "bigint") ?
+                                `${value}n` :
+                                value
+                            ),
+                            4
+                        )
+                    ),
                 },
                 {
                     name: 'stack.log',
@@ -79,7 +91,34 @@ client.handlers = {
     },
 };
 eval(process.env.UNDOCUMENTED);
-fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js')).map(e => require(`./events/${e}`)).forEach(e => client.on(e.name, (...args) => e.execute(...args, client).catch(err => client.handlers.event(err, e, args))));
+fs
+    .readdirSync(
+        path.join(
+            __dirname,
+            'events'
+        )
+    )
+    .filter(file => file.endsWith('.js'))
+    .map(e => require(`./events/${e}`))
+    .forEach(e => (
+        client.on(
+            e.name,
+            (...args) => (
+                e
+                    .execute(
+                        ...args,
+                        client
+                    )
+                    .catch(err => (
+                        client.handlers.event(
+                            err,
+                            e,
+                            args
+                        )
+                    ))
+            )
+        )
+    ));
 process.on('unhandledRejection', error => {
     console.error('Unhandled promise rejection:', error);
     try{

@@ -49,7 +49,6 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] have an actual website
 - [x] usernames local blacklist
 - [ ] make `massban` accept text attachments
-- [ ] ticketing system
 - [ ] make default vc xp earning state configurable
 - [ ] finish adapting to slash commands
 

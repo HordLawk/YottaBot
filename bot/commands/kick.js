@@ -43,7 +43,9 @@ module.exports = {
         await current.save();
         await member.kick(channelLanguage.get('kickAuditReason', [message.author.tag, reason]));
         const reply = await message.reply(channelLanguage.get('kickSuccess', [current.id]));
-        const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.kick);
+        const discordChannel = message.guild.channels.cache.get(
+            message.client.guildData.get(message.guild.id).modlogs.kick
+        );
         let msg;
         let embed;
         if(
@@ -196,7 +198,11 @@ module.exports = {
                 }],
             });
             const i = await interaction.awaitModalSubmit({
-                filter: int => (int.user.id === interaction.user.id) && (int.customId === `modalReason${interaction.id}`),
+                filter: int => (
+                    (int.user.id === interaction.user.id)
+                    &&
+                    (int.customId === `modalReason${interaction.id}`)
+                ),
                 time: 600_000,
             }).catch(() => null);
             if(!i) return await interaction.followUp({

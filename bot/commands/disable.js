@@ -73,7 +73,15 @@ module.exports = {
                 }
                 else{
                     args.slice(2).forEach(e => {
-                        const command = commands.get(e) || commands.find(cmd => (cmd.aliases && cmd.aliases.includes(e)));
+                        const command = (
+                            commands.get(e)
+                            ||
+                            commands.find(cmd => (
+                                cmd.aliases
+                                &&
+                                cmd.aliases.includes(e)
+                            ))
+                        );
                         if(
                             !command
                             ||

@@ -84,8 +84,8 @@ module.exports = {
             type: 'BOOLEAN',
             name: 'require_role',
             nameLocalizations: utils.getStringLocales('newinviteOptionrequire_roleLocalisedName'),
-            description: 'Whether members should be automatically kicked after 24 hours if they have not yet received a ' +
-                         'role',
+            description: 'Whether members should be automatically kicked after 24 hours if they have not yet ' +
+                         'received a role',
             descriptionLocalizations: utils.getStringLocales('newinviteOptionrequire_roleLocalisedDesc'),
         },
         {

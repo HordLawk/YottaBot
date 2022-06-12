@@ -23,7 +23,11 @@ module.exports = {
             }],
         });
         const i = await interaction.awaitModalSubmit({
-            filter: i => (i.customId === `eval${interaction.id}`) && (i.user.id === interaction.client.application.owner.id),
+            filter: i => (
+                (i.customId === `eval${interaction.id}`)
+                &&
+                (i.user.id === interaction.client.application.owner.id)
+            ),
             time: 600_000,
         }).catch(() => null);
         if(!i) return await interaction.followUp({

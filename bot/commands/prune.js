@@ -15,7 +15,12 @@ const chunkFetch = async (maxAmount, channel, authorId, fetched = (new Collectio
     );
 }
 const chunkDeleteMessages = async (channel, msgsLeft, deletedMessages = new Collection()) => {
-    if(msgsLeft.length <= 100) return await channel.bulkDelete(msgsLeft, true).then(dels => deletedMessages.concat(dels));
+    if(msgsLeft.length <= 100) return await channel
+        .bulkDelete(
+            msgsLeft,
+            true
+        )
+        .then(dels => deletedMessages.concat(dels));
     const deleted = await channel.bulkDelete(msgsLeft.slice(0, 100), true);
     return await chunkDeleteMessages(channel, msgsLeft.slice(100), deletedMessages.concat(deleted));
 }

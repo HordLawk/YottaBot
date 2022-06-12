@@ -13,7 +13,11 @@ module.exports = {
         const guildModel = require('../../schemas/guild.js');
         await guildModel.findByIdAndUpdate(
             interaction.guild.id,
-            {$set: {storeEditions: (interaction.client.guildData.get(interaction.guild.id).storeEditions = args.enable)}}
+            {
+                $set: {
+                    storeEditions: (interaction.client.guildData.get(interaction.guild.id).storeEditions = args.enable),
+                },
+            }
         );
         await interaction.reply(channelLanguage.get('storageSuccess', [args.enable]));
     },
@@ -120,8 +124,8 @@ module.exports = {
         {
             type: 'SUB_COMMAND',
             name: 'info',
-            description: 'Shows information on the current state of the edited messages storing functionality in this ' +
-                         'server',
+            description: 'Shows information on the current state of the edited messages storing functionality in ' +
+                         'this server',
         },
     ],
 };

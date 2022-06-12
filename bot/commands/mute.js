@@ -70,7 +70,9 @@ module.exports = {
         current.duration = member.communicationDisabledUntil;
         await current.save();
         const reply = await message.reply(channelLanguage.get('muteMemberSuccess', [current.id]));
-        const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.mute);
+        const discordChannel = message.guild.channels.cache.get(
+            message.client.guildData.get(message.guild.id).modlogs.mute
+        );
         let msg;
         let embed;
         if(

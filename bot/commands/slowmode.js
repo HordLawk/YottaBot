@@ -55,8 +55,8 @@ module.exports = {
         const m = Math.floor((seconds % 3600) / 60);
         const s = Math.floor(seconds % 60);
         await message.reply(
-            seconds ?
-            channelLanguage.get(
+            seconds
+            ? channelLanguage.get(
                 'slowmodeEdited',
                 [
                     h,
@@ -64,8 +64,8 @@ module.exports = {
                     s,
                     discordChannel,
                 ]
-            ) :
-            channelLanguage.get(
+            )
+            : channelLanguage.get(
                 'slowmodeRemoved',
                 [discordChannel]
             )

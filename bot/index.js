@@ -74,9 +74,9 @@ client.handlers = {
                         JSON.stringify(
                             args,
                             (_, value) => (
-                                (typeof value === "bigint") ?
-                                `${value}n` :
-                                value
+                                (typeof value === "bigint")
+                                ? `${value}n`
+                                : value
                             ),
                             4
                         )

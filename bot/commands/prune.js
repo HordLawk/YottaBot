@@ -132,19 +132,19 @@ module.exports = {
                             `${channelLanguage.get('delmsgEmbedAuthorTitle')}: ${e.author.tag} (${e.author.id})\n` +
                             `${channelLanguage.get('delmsgEmbedSentTitle')}: ${e.createdAt.toUTCString()}` +
                             `${
-                                e.content ?
-                                (
+                                e.content
+                                ? (
                                     `\n================================================\n` +
                                     `${e.content}\n` +
                                     `================================================`
-                                ) :
-                                ''
+                                )
+                                : ''
                             }` +
                             [...e.attachments.values()]
                                 .map((ee, i) => `\nAttachment-${i + 1}-${
-                                    ee.height ?
-                                    `Media: ${ee.proxyURL}` :
-                                    `File: ${ee.url}`
+                                    ee.height
+                                    ? `Media: ${ee.proxyURL}`
+                                    : `File: ${ee.url}`
                                 }`)
                                 .join('')
                         ))
@@ -244,19 +244,19 @@ module.exports = {
                             `${channelLanguage.get('delmsgEmbedAuthorTitle')}: ${e.author.tag} (${e.author.id})\n` +
                             `${channelLanguage.get('delmsgEmbedSentTitle')}: ${e.createdAt.toUTCString()}` +
                             `${
-                                e.content ?
-                                (
+                                e.content
+                                ? (
                                     `\n================================================\n` +
                                     `${e.content}\n` +
                                     `================================================`
-                                ) :
-                                ''
+                                )
+                                : ''
                             }` +
                             [...e.attachments.values()]
                                 .map((ee, i) => `\nAttachment-${i + 1}-${
-                                    ee.height ?
-                                    `Media: ${ee.proxyURL}` :
-                                    `File: ${ee.url}`
+                                    ee.height
+                                    ? `Media: ${ee.proxyURL}`
+                                    : `File: ${ee.url}`
                                 }`)
                                 .join('')
                         ))

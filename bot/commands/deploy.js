@@ -20,9 +20,9 @@ module.exports = {
         });
         try{
             const slash = await (
-                ((process.env.NODE_ENV === 'production') && !command.dev) ?
-                interaction.client.application :
-                interaction.guild
+                ((process.env.NODE_ENV === 'production') && !command.dev)
+                ? interaction.client.application
+                : interaction.guild
             ).commands.create({
                 type: args.type,
                 default_member_permissions: command.perm,
@@ -32,9 +32,9 @@ module.exports = {
                     name_localizations: locale
                         .filter((_, i) => (i !== 'en'))
                         .reduce((acc, e) => (
-                            e.get(`${command.name}LocalisedName`) ?
-                            {...acc, [e.code]: e.get(`${command.name}LocalisedName`)} :
-                            acc
+                            e.get(`${command.name}LocalisedName`)
+                            ? {...acc, [e.code]: e.get(`${command.name}LocalisedName`)}
+                            : acc
                         ), {}),
                     description: command.description(locale.get('en')),
                     description_localizations: locale
@@ -46,9 +46,9 @@ module.exports = {
                     name_localizations: locale
                         .filter((_, i) => (i !== 'en'))
                         .reduce((acc, e) => (
-                            e.get(`${command.name}ContextName`) ?
-                            {...acc, [e.code]: e.get(`${command.name}ContextName`)} :
-                            acc
+                            e.get(`${command.name}ContextName`)
+                            ? {...acc, [e.code]: e.get(`${command.name}ContextName`)}
+                            : acc
                         ), {}),
                 }),
             });
@@ -69,9 +69,9 @@ module.exports = {
         ) throw new Error('Invalid slash command options');
         const command = commands.get(args.command_name);
         const slash = (
-            (process.env.NODE_ENV === 'production') ?
-            interaction.client.application :
-            interaction.guild
+            (process.env.NODE_ENV === 'production')
+            ? interaction.client.application
+            : interaction.guild
         ).commands.cache.get(args.slash_name);
         if(!command || !slash) return interaction.reply({
             content: channelLanguage.get('invalidCommand'),
@@ -86,9 +86,9 @@ module.exports = {
                     name_localizations: locale
                         .filter((_, i) => (i !== 'en'))
                         .reduce((acc, e) => (
-                            e.get(`${command.name}LocalisedName`) ?
-                            {...acc, [e.code]: e.get(`${command.name}LocalisedName`)} :
-                            acc
+                            e.get(`${command.name}LocalisedName`)
+                            ? {...acc, [e.code]: e.get(`${command.name}LocalisedName`)}
+                            : acc
                         ), {}),
                     description: command.description(locale.get('en')),
                     description_localizations: locale
@@ -100,9 +100,9 @@ module.exports = {
                     name_localizations: locale
                         .filter((_, i) => (i !== 'en'))
                         .reduce((acc, e) => (
-                            e.get(`${command.name}ContextName`) ?
-                            {...acc, [e.code]: e.get(`${command.name}ContextName`)} :
-                            acc
+                            e.get(`${command.name}ContextName`)
+                            ? {...acc, [e.code]: e.get(`${command.name}ContextName`)}
+                            : acc
                         ), {}),
                 })
             });
@@ -204,9 +204,9 @@ module.exports = {
     editAutocomplete: {
         slash_name: (interaction, value) => interaction.respond(
             (
-                (process.env.NODE_ENV === 'production') ?
-                interaction.client.application :
-                interaction.client.guilds.cache.get(process.env.DEV_GUILD)
+                (process.env.NODE_ENV === 'production')
+                ? interaction.client.application
+                : interaction.client.guilds.cache.get(process.env.DEV_GUILD)
             ).commands.cache
                 .filter(e => (
                     e.name.toLowerCase().startsWith(value.toLowerCase()) &&

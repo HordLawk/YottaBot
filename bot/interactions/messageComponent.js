@@ -11,9 +11,9 @@ module.exports = {
         if(banid){
             const channelLanguage = locale.get(interaction.client.guildData.get(interaction.guild.id).language);
             const allowed = await (
-                (process.env.NODE_ENV === 'production') ?
-                interaction.client.application :
-                interaction.client.guilds.cache.get(process.env.DEV_GUILD)
+                (process.env.NODE_ENV === 'production')
+                ? interaction.client.application
+                : interaction.client.guilds.cache.get(process.env.DEV_GUILD)
             ).commands.cache.find(e => (e.name === 'ban')).permissions.has({
                 guild: interaction.guild,
                 permissionId: interaction.user.id,

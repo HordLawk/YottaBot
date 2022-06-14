@@ -122,15 +122,15 @@ module.exports = {
     ],
     serverAutocomplete: {
         guild: (interaction, value) => interaction.respond(
-            (interaction.user.id === interaction.client.application.owner.id) ?
-            interaction.client.guilds.cache
+            (interaction.user.id === interaction.client.application.owner.id)
+            ? interaction.client.guilds.cache
                 .filter(e => e.name.toLowerCase().startsWith(value.toLowerCase()))
                 .first(25)
                 .map(e => ({
                     name: e.name,
                     value: e.id,
-                })) :
-            [{
+                }))
+            : [{
                 name: locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en').get('forbidden'),
                 value: '',
             }]

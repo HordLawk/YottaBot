@@ -8,12 +8,12 @@ module.exports = fs
     .map(e => require(`./${e}`))
     .reduce(
         (acc, e) => (
-            e.active ?
-            acc.set(
+            e.active
+            ? acc.set(
                 e.name,
                 e
-            ) :
-            acc
+            )
+            : acc
         ),
         new Collection()
     );

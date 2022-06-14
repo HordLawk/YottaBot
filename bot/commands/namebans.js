@@ -110,10 +110,10 @@ module.exports = {
         const namebanModel = require('../../schemas/nameban.js');
         const namebanDocs = await namebanModel.find({guild: interaction.guild.id}).sort({createdAt: 1});
         const replyData = {};
-        const namebansLimit = 5 ** (!!(
+        const namebansLimit = configs.namebansLimits[+!!(
             interaction.client.guildData.get(interaction.guild.id).premiumUntil ??
             interaction.client.guildData.get(interaction.guild.id).partner
-        ) + 1);
+        )];
         if(namebanDocs.length >= namebansLimit) replyData.content = channelLanguage.get('disabledExtraNamebans');
         const embed = new MessageEmbed()
             .setColor(0x2f3136)

@@ -141,7 +141,17 @@ module.exports = {
             case 'lang404': return 'Language not supported';
             case 'newLang': return 'Server language updated';
             case 'configsEmbedAuthor': return 'Server settings';
-            case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\nLanguage: \`${vars[1]}\`\nLog attachments: \`${vars[2] ? 'on' : 'off'}\`\nWarn log channel: ${vars[3].warn ? `<#${vars[3].warn}>` : '`none`'}\nMute/Timeout log channel: ${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\nKick log channel: ${vars[3].kick ? `<#${vars[3].kick}>` : '`none`'}\nBan log channel: ${vars[3].ban ? `<#${vars[3].ban}>` : '`none`'}\nDays of messages to delete on ban: \`${vars[4]}\`\nMax bans per moderator per 10 seconds: \`${vars[5] ?? '∞'}\`\nGlobal bans: \`${vars[6] ? 'on' : 'off'}\`\nBeta features: \`${vars[7] ? 'on' : 'off'}\``;
+            case 'configsEmbedDesc': return `Prefix: \`${vars[0]}\`\n` +
+                                            `Language: \`${vars[1]}\`\n` +
+                                            `Log attachments: \`${vars[2] ? 'on' : 'off'}\`\n` +
+                                            `Warn log channel: ${vars[3].warn ? `<#${vars[3].warn}>` : '`none`'}\n` +
+                                            `Mute/Timeout log channel: ${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\n` +
+                                            `Kick log channel: ${vars[3].kick ? `<#${vars[3].kick}>` : '`none`'}\n` +
+                                            `Ban log channel: ${vars[3].ban ? `<#${vars[3].ban}>` : '`none`'}\n` +
+                                            `Days of messages to delete on ban: \`${vars[4]}\`\n` +
+                                            `Max bans per moderator per 10 seconds: \`${vars[5] ?? '∞'}\`\n` +
+                                            `Global bans: \`${vars[6] ? 'on' : 'off'}\`\n` +
+                                            `Beta features: \`${vars[7] ? 'on' : 'off'}\``;
             case 'betaCommand': return 'This command is currently only available for servers that enabled open beta features in the bot settings';
             case 'premiumCommand': return `This command is a premium feature, to get premium [join Patreon](<https://www.patreon.com/YottaBot>)`;
             case 'botWebhooks': return 'I need permission to manage webhooks in this channel';
@@ -569,6 +579,25 @@ module.exports = {
                                                          `Case sensitive: \`${vars[2] ? 'yes' : 'no'}\``;
             case 'namebanReason': return 'Forbidden username detected';
             case 'idsNotFound': return 'No Discord IDs could be found in the text';
+            case 'notarchiveDescription': return 'Define threads that should be automatically unarchived';
+            case 'channelIsNotThread': return 'This command can only be used inside a thread channel';
+            case 'threadNotArchiveSuccess': return `The archiving status of this thread was set to \`${vars[0]}\``;
+            case 'noThreadsWontArchive': return 'There are no threads set to never archive in this server';
+            case 'notarchiveEmbedAuthor': return 'Threads set to never archive';
+            case 'botCantUnarchive': return 'I need permission to manage this thread';
+            case 'threadUnarchiveReason': return 'Thread was set to be automatically unarchived';
+            case 'tooManyAutoUnarchives': return `You have reached the limit of ${vars[0]} automatically unarchied ` +
+                                                 'threads for this server\n' +
+                                                 `If you wish to upgrade this limit to ${vars[1]} ` +
+                                                 '[join Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'tooManyAutoUnarchivesPremium': return `You have reached the limit of ${vars[0]} automatically ` +
+                                                        'unarchived threads for this server';
+            case 'disabledExtraNotArchiveds': return 'Since the number of automatically unarchived threads exceeded ' +
+                                                     'the limit for non premium servers, the latest added threads ' +
+                                                     'over this limite were temporarily disabled\n' +
+                                                     'You can make these threads automatically unarchived again with ' +
+                                                     'premium, to get premium ' +
+                                                     '[join Patreon](<https://www.patreon.com/YottaBot>)';
         }
     },
 };

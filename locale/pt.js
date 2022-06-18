@@ -639,6 +639,33 @@ module.exports = {
                                                          `Diferencia maiúsculas: \`${vars[2] ? 'sim' : 'não'}\``;
             case 'namebanReason': return 'Username proibido detectado';
             case 'idsNotFound': return 'Nenhum ID do Discord foi encontrado no texto';
+            case 'notarchiveLocalisedName': return 'naoarquivar';
+            case 'notarchiveDescription': return 'Define threads que devem ser desarquivadas automaticamente';
+            case 'notarchive_manageLocalisedName': return 'gerenciar';
+            case 'notarchive_manageLocalisedDesc': return 'Ativa ou desativa o desarquivamento automatico da thread atual';
+            case 'notarchive_manageOptionenableLocalisedName': return 'ativar';
+            case 'notarchive_manageOptionenableLocalisedDesc': return 'Se deve ser ativado ou desativado';
+            case 'notarchive_listLocalisedName': return 'listar';
+            case 'notarchive_listLocalisedDesc': return 'Lista threads que foram configuradas para serem automaticamente desarquivadas';
+            case 'channelIsNotThread': return 'Esse comando so pode ser utilizado dentro de uma thread';
+            case 'threadNotArchiveSuccess': return `O estado de não arquivamento dessa thread foi definido para \`${vars[0] ? 'ativo' : 'desativado'}\``;
+            case 'noThreadsWontArchive': return 'Não há nenhuma thread definida para não ser arquivada nesse servidor';
+            case 'notarchiveEmbedAuthor': return 'Threads que serão automaticamente desarquivadas';
+            case 'botCantUnarchive': return 'Eu preciso de permissão para gerenciar essa thread';
+            case 'threadUnarchiveReason': return 'Essa thread foi definida para ser desarquivada automaticamente';
+            case 'tooManyAutoUnarchives': return `Você atingiu o limite de ${vars[0]} threads automaticamente ` +
+                                                 'desarquivadas para esse servidor\n' +
+                                                 `Caso deseje aumentar esse limite para ${vars[1]} ` +
+                                                 '[se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'tooManyAutoUnarchivesPremium': return `Você atingiu o limite de ${vars[0]} threads automaticamente ` +
+                                                        'desarquivadas para esse servidor';
+            case 'disabledExtraNotArchiveds': return 'Como o número de threads automaticamente desarquivadas excedeu ' +
+                                                     'o limite para servidores não premium, as últimas threads ' +
+                                                     'adicionadas acima desse limite foram temporariamente ' +
+                                                     'desativadas\n' +
+                                                     'Você pode tornar essas threads automaticamente desarquivadas ' +
+                                                     'novamente com premium, para adquirir premium ' +
+                                                     '[se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
         }
     },
 };

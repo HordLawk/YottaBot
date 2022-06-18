@@ -27,4 +27,5 @@ module.exports = {
     permissions: Permissions.ALL - (Permissions.FLAGS.START_EMBEDDED_ACTIVITIES + Permissions.FLAGS.VIEW_GUILD_INSIGHTS + Permissions.FLAGS.USE_APPLICATION_COMMANDS + Permissions.FLAGS.STREAM),
     xpRolesLimit: 10,
     namebansLimits: [5, 25],
+    notarchiveLimits: [5, 50],
 };

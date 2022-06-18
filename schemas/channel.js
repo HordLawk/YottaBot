@@ -22,6 +22,7 @@ const channelSchema = new Schema({
     }],
     ignoreXp: Boolean,
     autoPublish: Boolean,
-});
+    autoUnarchive: Boolean,
+}, {timestamps: true});
 
 module.exports = model('channel', channelSchema);

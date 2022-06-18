@@ -52,6 +52,7 @@ module.exports = {
         });
         const channelModel = require('../../schemas/channel.js');
         const threadCount = await channelModel.countDocuments({
+            _id: {$in: interaction.guild.channels.cache.map(e => e.id)},
             guild: interaction.guild.id,
             autoUnarchive: true,
         });
@@ -88,6 +89,7 @@ module.exports = {
         const {channelLanguage} = interaction;
         const channelModel = require('../../schemas/channel.js');
         const threads = await channelModel.find({
+            _id: {$in: interaction.guild.channels.cache.map(e => e.id)},
             guild: interaction.guild.id,
             autoUnarchive: true,
         }).sort({createdAt: 1});

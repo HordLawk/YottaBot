@@ -15,6 +15,7 @@ module.exports = {
         ) return;
         const channelModel = require('../../schemas/channel.js');
         const threads = await channelModel.find({
+            _id: {$in: newThread.guild.channels.cache.map(e => e.id)},
             guild: newThread.guild.id,
             autoUnarchive: true,
         });

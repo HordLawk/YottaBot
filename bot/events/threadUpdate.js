@@ -31,6 +31,13 @@ module.exports = {
                     )]
                 )
                 .some(e => (e._id === newThread.id))
-        ) await newThread.setArchived(false, channelLanguage.get('threadUnarchiveReason'));
+        ) await newThread.edit(
+            {
+                archived: false,
+                autoArchiveDuration: 'MAX',
+                locked: false,
+            },
+            channelLanguage.get('threadUnarchiveReason'),
+        );
     },
 };

@@ -79,7 +79,7 @@ module.exports = {
                 }
             })(err, doc).catch(err => message.client.handlers.event(err, this, [message])));
         }
-        if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES)) return;
+        if(message.guild && !message.guild.me.permissionsIn(message.channel.id).has(Permissions.FLAGS.SEND_MESSAGES)) return;
         if((new RegExp(`<@!?${message.client.user.id}>`)).test(message.content)) return message.reply(channelLanguage.get('mentionHelp', [prefix]));
         if(!message.content.toLowerCase().startsWith(prefix.toLowerCase())) return;
         const userDoc = await user.findById(message.author.id);

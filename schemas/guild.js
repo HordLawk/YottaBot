@@ -101,6 +101,16 @@ const guildSchema = new Schema({
     },
     renewPremium: Boolean,
     storeEditions: Boolean,
+    welcomeHook: new Schema({
+        _id: {
+            type: String,
+            match: /^\d{17,19}$/,
+        },
+        token: {
+            type: String,
+            required: true,
+        },
+    }),
 });
 
 module.exports = model("guild", guildSchema);

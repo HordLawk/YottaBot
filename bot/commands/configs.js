@@ -188,15 +188,107 @@ module.exports = {
     },
     infoSlash: async interaction => {
         const {channelLanguage} = interaction;
+        const hook = (
+            interaction.client.guildData.get(interaction.guild.id).welcomeHook
+            &&
+            await interaction.client
+                .fetchWebhook(
+                    interaction.client.guildData.get(interaction.guild.id).welcomeHook._id,
+                    interaction.client.guildData.get(interaction.guild.id).welcomeHook.token,
+                )
+                .catch(() => null)
+        );
         const embed = new MessageEmbed()
             .setColor(interaction.guild.me.displayColor || 0x8000ff)
             .setAuthor({
                 name: channelLanguage.get('configsEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true}),
             })
-            .setDescription(channelLanguage.get('configsEmbedDesc', [interaction.client.guildData.get(interaction.guild.id).prefix, interaction.client.guildData.get(interaction.guild.id).language, interaction.client.guildData.get(interaction.guild.id).logAttachments, interaction.client.guildData.get(interaction.guild.id).modlogs, interaction.client.guildData.get(interaction.guild.id).pruneBan, interaction.client.guildData.get(interaction.guild.id).antiMassBan, interaction.client.guildData.get(interaction.guild.id).globalBan, interaction.client.guildData.get(interaction.guild.id).beta]))
+            .setDescription(
+                channelLanguage.get(
+                    'configsEmbedDesc',
+                    [
+                        interaction.client.guildData.get(interaction.guild.id).prefix,
+                        interaction.client.guildData.get(interaction.guild.id).language,
+                        interaction.client.guildData.get(interaction.guild.id).logAttachments,
+                        interaction.client.guildData.get(interaction.guild.id).modlogs,
+                        interaction.client.guildData.get(interaction.guild.id).pruneBan,
+                        interaction.client.guildData.get(interaction.guild.id).antiMassBan,
+                        interaction.client.guildData.get(interaction.guild.id).globalBan,
+                        interaction.client.guildData.get(interaction.guild.id).beta,
+                        hook?.channelId,
+                    ]
+                )
+            )
             .setTimestamp();
         await interaction.reply({embeds: [embed]});
+    },
+    welcomeenableSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
+        if(!interaction.client.guildData.get(interaction.guild.id).beta) return await interaction.reply({
+            content: channelLanguage.get('betaCommand'),
+            ephemeral: true,
+        });
+        if(
+            !interaction.guild.me
+                .permissionsIn(args.channel)
+                .has(Permissions.FLAGS.MANAGE_WEBHOOKS)
+        ) return await interaction.reply({
+            content: channelLanguage.get('botWebhooks'),
+            ephemeral: true,
+        });
+        const hook = await args.channel.createWebhook(interaction.client.user.username, {
+            avatar: interaction.client.user.avatarURL(),
+            reason: channelLanguage.get('newWelcomeHookReason'),
+        });
+        if(interaction.client.guildData.get(interaction.guild.id).welcomeHook){
+            const oldHook = await interaction.client
+                .fetchWebhook(
+                    interaction.client.guildData.get(interaction.guild.id).welcomeHook._id,
+                    interaction.client.guildData.get(interaction.guild.id).welcomeHook.token,
+                )
+                .catch(() => null);
+            if(
+                oldHook
+                &&
+                interaction.guild.me
+                    .permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId))
+                    .has(Permissions.FLAGS.MANAGE_WEBHOOKS)
+            ) await oldHook.delete(channelLanguage.get('WelcomeOldHookDeletedReason'));
+        }
+        const guildModel = require('../../schemas/guild.js');
+        await guildModel.findByIdAndUpdate(
+            interaction.guild.id,
+            {$set: {welcomeHook: (interaction.client.guildData.get(interaction.guild.id).welcomeHook = {
+                _id: hook.id,
+                token: hook.token,
+            })}},
+        );
+        await interaction.reply(channelLanguage.get('welcomEnableSuccess', [args.channel]));
+    },
+    welcomedisableSlash: async interaction => {
+        const {channelLanguage} = interaction;
+        if(interaction.client.guildData.get(interaction.guild.id).welcomeHook){
+            const oldHook = await interaction.client
+                .fetchWebhook(
+                    interaction.client.guildData.get(interaction.guild.id).welcomeHook._id,
+                    interaction.client.guildData.get(interaction.guild.id).welcomeHook.token,
+                )
+                .catch(() => null);
+            if(
+                oldHook
+                &&
+                interaction.guild.me
+                    .permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId))
+                    .has(Permissions.FLAGS.MANAGE_WEBHOOKS)
+            ) await oldHook.delete(channelLanguage.get('WelcomeOldHookDeletedReason'));
+            const guildModel = require('../../schemas/guild.js');
+            await guildModel.findByIdAndUpdate(
+                interaction.guild.id,
+                {$set: {welcomeHook: (interaction.client.guildData.get(interaction.guild.id).welcomeHook = null)}},
+            );
+        }
+        await interaction.reply(channelLanguage.get('welcomeDisableSuccess'));
     },
     slashOptions: [
         {
@@ -330,6 +422,39 @@ module.exports = {
             type: 'SUB_COMMAND',
             name: 'info',
             description: 'Lists the current server bot configs',
+        },
+        {
+            type: 'SUB_COMMAND_GROUP',
+            name: 'welcome',
+            nameLocalizations: utils.getStringLocales('configs_welcomeLocalisedName'),
+            description: 'Sets a channel for a welcome message to be sent when a new user joins the server',
+            options: [
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'enable',
+                    nameLocalizations: utils.getStringLocales('configs_welcome_enableLocalisedName'),
+                    description: 'Sets a channel for a welcome message to be sent when a new user joins the server',
+                    descriptionLocalizations: utils.getStringLocales('configs_welcome_enableLocalisedDesc'),
+                    options: [{
+                        type: 'CHANNEL',
+                        name: 'channel',
+                        nameLocalizations: utils.getStringLocales('configs_welcome_enableOptionchannelLocalisedName'),
+                        description: 'The channel in which to welcome new members',
+                        descriptionLocalizations: utils.getStringLocales(
+                            'configs_welcome_enableOptionchannelLocalisedDesc'
+                        ),
+                        channelTypes: ['GUILD_TEXT', 'GUILD_NEWS'],
+                        required: true,
+                    }],
+                },
+                {
+                    type: 'SUB_COMMAND',
+                    name: 'disable',
+                    nameLocalizations: utils.getStringLocales('configs_welcome_disableLocalisedName'),
+                    description: 'Disables welcome messages for new members',
+                    descriptionLocalizations: utils.getStringLocales('configs_welcome_disableLocalisedDesc'),
+                },
+            ],
         },
     ],
     languageAutocomplete: {

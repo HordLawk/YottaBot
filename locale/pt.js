@@ -142,7 +142,22 @@ module.exports = {
             case 'lang404': return 'Idioma não suportado';
             case 'newLang': return 'Idioma do servidor atualizado';
             case 'configsEmbedAuthor': return 'Configurações do servidor';
-            case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\nIdioma: \`${vars[1]}\`\nRegistrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\`\nCanal de registro de warn: ${vars[3].warn ? `<#${vars[3].warn}>` : '`nenhum`'}\nCanal de registro de mute/castigo: ${vars[3].mute ? `<#${vars[3].mute}>` : '`nenhum`'}\nCanal de registro de kick: ${vars[3].kick ? `<#${vars[3].kick}>` : '`nenhum`'}\nCanal de registro de ban: ${vars[3].ban ? `<#${vars[3].ban}>` : '`nenhum`'}\nNúmero de dias de mensagens deletadas em bans: \`${vars[4]}\`\nMáximo de bans por moderador por 10 segundos: \`${vars[5] ?? '∞'}\`\nBanimentos globais: \`${vars[6] ? 'ativados' : 'desativados'}\`\nFunções beta: \`${vars[7] ? 'ativadas' : 'desativadas'}\``;
+            case 'configsEmbedDesc': return `Prefixo: \`${vars[0]}\`\n` +
+                                            `Idioma: \`${vars[1]}\`\n` +
+                                            `Registrar anexos: \`${vars[2] ? 'ativado' : 'desativado'}\`\n` +
+                                            'Canal de registro de warn: ' +
+                                            `${vars[3].warn ? `<#${vars[3].warn}>` : '`nenhum`'}\n` +
+                                            'Canal de registro de mute/castigo: ' +
+                                            `${vars[3].mute ? `<#${vars[3].mute}>` : '`nenhum`'}\n` +
+                                            'Canal de registro de kick: ' +
+                                            `${vars[3].kick ? `<#${vars[3].kick}>` : '`nenhum`'}\n` +
+                                            'Canal de registro de ban: ' +
+                                            `${vars[3].ban ? `<#${vars[3].ban}>` : '`nenhum`'}\n` +
+                                            `Número de dias de mensagens deletadas em bans: \`${vars[4]}\`\n` +
+                                            `Máximo de bans por moderador por 10 segundos: \`${vars[5] ?? '∞'}\`\n` +
+                                            `Banimentos globais: \`${vars[6] ? 'ativados' : 'desativados'}\`\n` +
+                                            `Canal de boas vindas: ${vars[8] ? `<#${vars[8]}>` : '`nenhum`'}\n` +
+                                            `Funções beta: \`${vars[7] ? 'ativadas' : 'desativadas'}\``;
             case 'betaCommand': return 'Esse comando atualmente está disponível apenas para servidor que ativaram funcionalidade beta nas configurações do bot';
             case 'premiumCommand': return `Esse comando é uma funcionalidade premium, para adquirir premium [se junte ao Patreon](<https://www.patreon.com/YottaBot>)`;
             case 'botWebhooks': return 'Eu preciso de permissão para gerenciar webhooks nesse canal';
@@ -666,6 +681,20 @@ module.exports = {
                                                      'Você pode tornar essas threads automaticamente desarquivadas ' +
                                                      'novamente com premium, para adquirir premium ' +
                                                      '[se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'welcomeMessage': return `${vars[0]} acabou de entrar!\n` +
+                                          'Desejem boas vindas ao servidor para ele(a)';
+            case 'newWelcomeHookReason': return 'Criado para recepcionar novos membros';
+            case 'WelcomeOldHookDeletedReason': return 'Webhook de boas vindas antigo não utilizado mais';
+            case 'welcomEnableSuccess': return `Mensagens de boas vindas ativadas em ${vars[0]} com sucesso`;
+            case 'welcomeDisableSuccess': return 'Mensagens de boas vindas desativadas com sucesso';
+            case 'configs_welcomeLocalisedName': return 'boas_vindas';
+            case 'configs_welcome_enableLocalisedName': return 'ativar';
+            case 'configs_welcome_enableLocalisedDesc': return 'Seleciona um canal para a mensagemm de boas vindas ' +
+                                                               'ser enviada quando um novo membro entrar';
+            case 'configs_welcome_enableOptionchannelLocalisedName': return 'canal';
+            case 'configs_welcome_enableOptionchannelLocalisedDesc': return 'O canal para recepcionar novos membros';
+            case 'configs_welcome_disableLocalisedName': return 'desativar';
+            case 'configs_welcome_disableLocalisedDesc': return 'Desativa mensagens de boas vindas para novos membros';
         }
     },
 };

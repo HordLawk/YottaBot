@@ -145,12 +145,14 @@ module.exports = {
                                             `Language: \`${vars[1]}\`\n` +
                                             `Log attachments: \`${vars[2] ? 'on' : 'off'}\`\n` +
                                             `Warn log channel: ${vars[3].warn ? `<#${vars[3].warn}>` : '`none`'}\n` +
-                                            `Mute/Timeout log channel: ${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\n` +
+                                            'Mute/Timeout log channel: ' +
+                                            `${vars[3].mute ? `<#${vars[3].mute}>` : '`none`'}\n` +
                                             `Kick log channel: ${vars[3].kick ? `<#${vars[3].kick}>` : '`none`'}\n` +
                                             `Ban log channel: ${vars[3].ban ? `<#${vars[3].ban}>` : '`none`'}\n` +
                                             `Days of messages to delete on ban: \`${vars[4]}\`\n` +
                                             `Max bans per moderator per 10 seconds: \`${vars[5] ?? '∞'}\`\n` +
                                             `Global bans: \`${vars[6] ? 'on' : 'off'}\`\n` +
+                                            `Welcome channel: ${vars[8] ? `<#${vars[8]}>` : '`none`'}\n` +
                                             `Beta features: \`${vars[7] ? 'on' : 'off'}\``;
             case 'betaCommand': return 'This command is currently only available for servers that enabled open beta features in the bot settings';
             case 'premiumCommand': return `This command is a premium feature, to get premium [join Patreon](<https://www.patreon.com/YottaBot>)`;
@@ -598,6 +600,12 @@ module.exports = {
                                                      'You can make these threads automatically unarchived again with ' +
                                                      'premium, to get premium ' +
                                                      '[join Patreon](<https://www.patreon.com/YottaBot>)';
+            case 'welcomeMessage': return `${vars[0]} just joined!\n` +
+                                          `Please welcome them to the server`;
+            case 'newWelcomeHookReason': return 'Created to welcome new members';
+            case 'WelcomeOldHookDeletedReason': return 'Old unused welcome webhook';
+            case 'welcomEnableSuccess': return `Welcome messages successfully enabled in ${vars[0]}`;
+            case 'welcomeDisableSuccess': return 'Welcome messages succesfully disabled';
         }
     },
 };

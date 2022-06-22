@@ -58,6 +58,15 @@ module.exports = {
                 });
             }
         }
+        if(member.client.guildData.get(member.guild.id).welcomeHook){
+            const hook = await member.client
+                .fetchWebhook(
+                    member.client.guildData.get(member.guild.id).welcomeHook._id,
+                    member.client.guildData.get(member.guild.id).welcomeHook.token,
+                )
+                .catch(() => null);
+            if(hook) await hook.send(channelLanguage.get('welcomeMessage', [member]));
+        }
         const memberModel = require('../../schemas/member.js');
         let memberDoc = await memberModel.findOne({
             guild: member.guild.id,

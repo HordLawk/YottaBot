@@ -600,7 +600,7 @@ module.exports = {
                                                      'You can make these threads automatically unarchived again with ' +
                                                      'premium, to get premium ' +
                                                      '[join Patreon](<https://www.patreon.com/YottaBot>)';
-            case 'welcomeMessage': return `${vars[0]} just joined!\n` +
+            case 'welcomeMessage': return `**${vars[0]}** just joined!\n` +
                                           `Please welcome them to the server`;
             case 'newWelcomeHookReason': return 'Created to welcome new members';
             case 'WelcomeOldHookDeletedReason': return 'Old unused welcome webhook';

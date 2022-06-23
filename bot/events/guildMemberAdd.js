@@ -65,7 +65,7 @@ module.exports = {
                     member.client.guildData.get(member.guild.id).welcomeHook.token,
                 )
                 .catch(() => null);
-            if(hook) await hook.send(channelLanguage.get('welcomeMessage', [member]));
+            if(hook) await hook.send(channelLanguage.get('welcomeMessage', [member.user.username]));
         }
         const memberModel = require('../../schemas/member.js');
         let memberDoc = await memberModel.findOne({

@@ -681,7 +681,7 @@ module.exports = {
                                                      'Você pode tornar essas threads automaticamente desarquivadas ' +
                                                      'novamente com premium, para adquirir premium ' +
                                                      '[se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
-            case 'welcomeMessage': return `${vars[0]} acabou de entrar!\n` +
+            case 'welcomeMessage': return `**${vars[0]}** acabou de entrar!\n` +
                                           'Desejem boas vindas ao servidor para ele(a)';
             case 'newWelcomeHookReason': return 'Criado para recepcionar novos membros';
             case 'WelcomeOldHookDeletedReason': return 'Webhook de boas vindas antigo não utilizado mais';

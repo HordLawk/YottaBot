@@ -32,7 +32,7 @@ module.exports = {
             });
             if(!audits.entries.size || audits.entries.first().executor.bot) return;
             if(audits.entries.first().changes?.some((e) => (e.key === "communication_disabled_until"))){
-                const reason = audits.entries.first().reason?.slice(0, 500);
+                const reason = audits.entries.first().reason?.slice(0, 500).trim() || null;
                 const guildDoc = await guild.findByIdAndUpdate(newMember.guild.id, {$inc: {counterLogs: 1}});
                 newMember.client.guildData.get(newMember.guild.id).counterLogs = guildDoc.counterLogs + 1;
                 const discordChannel = newMember.guild.channels.cache.get(newMember.client.guildData.get(newMember.guild.id).modlogs.mute);

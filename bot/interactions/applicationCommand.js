@@ -120,7 +120,9 @@ module.exports = {
                 }).catch(console.error);
             }
             if(process.env.NODE_ENV === 'production') interaction.client.channels.cache.get(configs.errorlog).send({
-                content: `Error: *${error.message}*\nInteraction User: ${interaction.user}\nInteraction ID: ${interaction.id}`,
+                content: `Error: *${error.message}*\n` +
+                         `Interaction User: ${interaction.user}\n` +
+                         `Interaction Channel: ${interaction.channel}`,
                 files: [
                     {
                         name: 'args.json',

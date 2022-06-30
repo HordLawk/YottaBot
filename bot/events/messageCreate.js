@@ -143,7 +143,9 @@ module.exports = {
             console.error(error);
             message.reply(channelLanguage.get('error', [command.name]));
             if(process.env.NODE_ENV === 'production') message.client.channels.cache.get(configs.errorlog).send({
-                content: `Error: *${error.message}*\nMessage Author: ${message.author}\nMessage URL: ${message.url}`,
+                content: `Error: *${error.message}*\n` +
+                         `Message Author: ${message.author}\n` +
+                         `Message URL: ${message.url}\n`,
                 files: [
                     {
                         name: 'content.txt',

@@ -34,7 +34,7 @@ module.exports = {
             .addField(channelLanguage.get('userInfoCreatedAt'), '<t:' + Math.floor(user.createdAt.getTime() / 1000) + ':R>', true);
         
         if (member) embed.addField(channelLanguage.get('userInfoJoinedAt'), '<t:' + Math.floor(member.joinedTimestamp / 1000) + ':R>', true);
-        if (member && member.roles.cache.length) embed.addField(channelLanguage.get('userInfoRoles'), '\`\`\`' + member.roles.cache.filter(c => c.name != '\@everyone').map(c => c.name).join(', ') + '\`\`\`');
+        if (member && member.roles.cache) embed.addField(channelLanguage.get('userInfoRoles'), '\`\`\`' + member.roles.cache.filter(c => c.name != '\@everyone').map(c => c.name).join(', ') + '\`\`\`');
         
         embed
             .setThumbnail(user.avatarURL())
@@ -68,7 +68,7 @@ module.exports = {
             .addField(channelLanguage.get('userInfoCreatedAt'), '<t:' + Math.floor(user.createdAt.getTime() / 1000) + ':R>', true);
         
         if (member) embed.addField(channelLanguage.get('userInfoJoinedAt'), '<t:' + Math.floor(member.joinedTimestamp / 1000) + ':R>', true);
-        if (member && member.roles.cache.length) embed.addField(channelLanguage.get('userInfoRoles'), '\`\`\`' + member.roles.cache.filter(c => c.name != '\@everyone').map(c => c.name).join(', ') + '\`\`\`');
+        if (member && member.roles.cache) embed.addField(channelLanguage.get('userInfoRoles'), '\`\`\`' + member.roles.cache.filter(c => c.name != '\@everyone').map(c => c.name).join(', ') + '\`\`\`');
         
         embed
             .setThumbnail(user.avatarURL())

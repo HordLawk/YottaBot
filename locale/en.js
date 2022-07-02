@@ -606,6 +606,13 @@ module.exports = {
             case 'WelcomeOldHookDeletedReason': return 'Old unused welcome webhook';
             case 'welcomEnableSuccess': return `Welcome messages successfully enabled in ${vars[0]}`;
             case 'welcomeDisableSuccess': return 'Welcome messages succesfully disabled';
+            case 'userInfoTitle': return 'User Info';
+            case 'userInfoUsername': return 'Username';
+            case 'userInfoNickname': return 'Nickname';
+            case 'userInfoCreatedAt': return 'Account created at';
+            case 'userInfoJoinedAt': return 'Joined the server at';
+            case 'userInfoRoles': return 'Roles';
+            case 'userInfoDescription': return 'Show the specified user\'s info if the user is not specified it will show your info';
         }
     },
 };

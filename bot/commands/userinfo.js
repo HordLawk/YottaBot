@@ -25,7 +25,7 @@ module.exports = {
         const embed = new MessageEmbed()
             .setTitle(channelLanguage.get('userInfoTitle'))
             .setColor(0x2f3136)
-            .addField(channelLanguage.get('userInfoUsername'), '\`\`\`' + user.username + '\`\`\`');
+            .addField(channelLanguage.get('userInfoUsername'), '\`\`\`' + user.tag + '\`\`\`');
         
         if(member && member.nickname) embed.addField(channelLanguage.get('userInfoNickname'), '\`\`\`' + member.nickname + '\`\`\`');
 
@@ -55,11 +55,10 @@ module.exports = {
 
         const user = id && await interaction.client.users.fetch(id).catch(() => null) || interaction.author;
         const member = user === interaction.author ? interaction.member : interaction.guild?.members?.cache.get(id);
-
         const embed = new MessageEmbed()
             .setTitle(channelLanguage.get('userInfoTitle'))
             .setColor(0x2f3136)
-            .addField(channelLanguage.get('userInfoUsername'), '\`\`\`' + user.username + '\`\`\`');
+            .addField(channelLanguage.get('userInfoUsername'), '\`\`\`' + user.tag + '\`\`\`');
         
         if(member && member.nickname) embed.addField(channelLanguage.get('userInfoNickname'), '\`\`\`' + member.nickname + '\`\`\`');
 

@@ -50,7 +50,10 @@ module.exports = {
             !interaction.guild.me
                 .permissionsIn(interaction.channel)
                 .has(Permissions.FLAGS.EMBED_LINKS)
-        ) return interaction.reply(channelLanguage.get('botEmbed'));
+        ) return await interaction.reply({
+            content: channelLanguage.get('botEmbed'),
+            ephemeral: true,
+        });
         const id = args ?? args[0]?.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
 
         const user = id && await interaction.client.users.fetch(id).catch(() => null) || interaction.author;

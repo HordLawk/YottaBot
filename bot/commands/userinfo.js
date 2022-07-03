@@ -54,7 +54,6 @@ module.exports = {
             content: channelLanguage.get('botEmbed'),
             ephemeral: true,
         });
-        const id = args ?? args[0]?.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
 
         const user = id && await interaction.client.users.fetch(id).catch(() => null) || interaction.author;
         const member = args.target ? args.target.member : interaction.member;

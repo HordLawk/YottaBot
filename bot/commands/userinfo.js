@@ -54,7 +54,7 @@ module.exports = {
         const id = args ?? args[0]?.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
 
         const user = id && await interaction.client.users.fetch(id).catch(() => null) || interaction.author;
-        const member = user === interaction.author ? interaction.member : interaction.guild?.members?.cache.get(id);
+        const member = args.target ? args.target.member : interaction.member;
         const embed = new MessageEmbed()
             .setTitle(channelLanguage.get('userInfoTitle'))
             .setColor(0x2f3136)

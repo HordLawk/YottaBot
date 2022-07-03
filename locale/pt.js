@@ -703,6 +703,8 @@ module.exports = {
             case 'userInfoRoles': return 'Cargos';
             case 'userInfoDescription': return 'Mostra as informações de um usuário, caso não seja específicado irá mostrar suas informações';
             case 'userInfoOptiontargetLocalisedDesc': return 'O usuário para mostrar as informações';
+            case 'userInfoOptiontargetLocalisedName': return 'alvo';
+            case 'userinfoLocalisedName': return 'usuarioinfo';
         }
     },
 };

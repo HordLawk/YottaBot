@@ -55,7 +55,7 @@ module.exports = {
             ephemeral: true,
         });
 
-        const user = id && await interaction.client.users.fetch(id).catch(() => null) || interaction.author;
+        const user = args.target ?? interaction.user;
         const member = args.target ? args.target.member : interaction.member;
         const embed = new MessageEmbed()
             .setTitle(channelLanguage.get('userInfoTitle'))

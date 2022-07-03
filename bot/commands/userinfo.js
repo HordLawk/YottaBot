@@ -20,7 +20,7 @@ module.exports = {
         const id = args ?? args[0]?.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
 
         const user = id && await message.client.users.fetch(id).catch(() => null) || message.author;
-        const member = user === message.author ? message.member : message.guild?.members?.cache.get(id);
+        const member = user === message.author ? message.member : await message.guild?.members?.fetch(id).catch(() => null);
 
         const embed = new MessageEmbed()
             .setTitle(channelLanguage.get('userInfoTitle'))

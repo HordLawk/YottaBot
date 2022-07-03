@@ -695,6 +695,16 @@ module.exports = {
             case 'configs_welcome_enableOptionchannelLocalisedDesc': return 'O canal para recepcionar novos membros';
             case 'configs_welcome_disableLocalisedName': return 'desativar';
             case 'configs_welcome_disableLocalisedDesc': return 'Desativa mensagens de boas vindas para novos membros';
+            case 'userInfoTitle': return 'Informações de usuário';
+            case 'userInfoUsername': return 'Nome de usuário';
+            case 'userInfoNickname': return 'Apelido';
+            case 'userInfoCreatedAt': return 'Conta criada em';
+            case 'userInfoJoinedAt': return 'Entrou no servidor em';
+            case 'userInfoRoles': return 'Cargos';
+            case 'userInfoDescription': return 'Mostra as informações de um usuário, caso não seja específicado irá mostrar suas informações';
+            case 'userInfoOptiontargetLocalisedDesc': return 'O usuário para mostrar as informações';
+            case 'userInfoOptiontargetLocalisedName': return 'alvo';
+            case 'userinfoLocalisedName': return 'usuarioinfo';
         }
     },
 };

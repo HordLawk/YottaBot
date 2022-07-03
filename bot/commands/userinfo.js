@@ -80,7 +80,7 @@ module.exports = {
     slashOptions: [{
         type: 'USER',
         name: 'target',
-        nameLocalizations: utils.getStringLocales('banOptiontargetLocalisedName'),
+        nameLocalizations: utils.getStringLocales('userInfoOptiontargetLocalisedName'),
         description: 'The user to show info',
         descriptionLocalizations: utils.getStringLocales('userInfoOptiontargetLocalisedDesc'),
         required: false,

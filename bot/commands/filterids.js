@@ -10,7 +10,7 @@ module.exports = {
     executeSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
         if(args.text_file){
-            if(args.text_file.size > 102400) return await interaction.reply({
+            if(args.text_file.size > 524288) return await interaction.reply({
                 content: channelLanguage.get('fileTooBig'),
                 ephemeral: true,
             });

@@ -18,7 +18,7 @@ module.exports = {
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
         if(!message.member) return;
         const ids = args.map(e => e.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1]);
-        const reasonStart = ids.indexOf(undefined);
+        var reasonStart = ids.indexOf(undefined);
         if(!reasonStart) return message.reply(channelLanguage.get('invUser'));
         if(reasonStart === -1) reasonStart = args.length;
         const reason = message.content.replace(new RegExp(`^(?:\\S+\\s+){${reasonStart}}\\S+\\s*`), '').slice(0, 500);

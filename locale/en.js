@@ -56,6 +56,9 @@ module.exports = {
             case 'permission2': return 'Kick Members';
             case 'permission1099511627776': return 'Moderate Members';
             case 'permission16': return 'Manage Channels';
+            case 'permission8192': return 'Manage Messages';
+            case 'permission1': return 'Create Invite';
+            case 'permission17179869184': return 'Manage Threads';
             case 'invArgs': return `Invalid arguments!\nThe proper usage would be:\n${vars[2].map(e => `\`${vars[0]}${vars[1]} ${e}\``).join('\n')}`;
             case 'permSuccess': return `**${vars[0]}** was ${(vars[1] === 'allow') ? 'allowed to use' : 'denied from using'} these commands`;
             case 'noSpecialPerms': return 'There are no special permissions set to this role';

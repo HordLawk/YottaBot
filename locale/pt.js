@@ -57,6 +57,9 @@ module.exports = {
             case 'permission2': return 'Expulsar Membros';
             case 'permission1099511627776': return 'Moderar Membros';
             case 'permission16': return 'Gerenciar Canais';
+            case 'permission8192': return 'Gerenciar Mensagens';
+            case 'permission1': return 'Criar Convite';
+            case 'permission17179869184': return 'Gerenciar Threads';
             case 'invArgs': return `Argumentos inválidos!\nO uso correto seria:\n${vars[2].map(e => `\`${vars[0]}${vars[1]} ${e}\``).join('\n')}`;
             case 'permSuccess': return `**${vars[0]}** foi ${(vars[1] === 'allow') ? 'permitido a' : 'proibido de'} usar esses comandos`;
             case 'noSpecialPerms': return 'Não há nenhuma permissão especial definida para esse cargo';

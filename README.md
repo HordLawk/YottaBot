@@ -39,10 +39,9 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] command to add a sticker from an attachment
 - [ ] voice channels join and leave logs
 - [ ] add support for more payment methods to buy premium
-- [x] count use of each command by every member
 - [x] add navigation select menus to the help command
 - [ ] make some crypto and hashing fun commands
-- [ ] `userinfo` command
+- [x] `userinfo` command
 - [ ] command to make messages in a chosen channel be autopublished
 - [ ] command to manage invites
 - [ ] invite tracking system
@@ -51,7 +50,7 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] make `massban` accept text attachments
 - [ ] make default vc xp earning state configurable
 - [ ] finish adapting to slash commands
-- [ ] command to mass rename nicknames
+- [ ] anti hoisting
 
 ## Credits
 - [@elloramir](https://github.com/elloramir) for helping me with a lot issues I had in the early stages of development (I was dumb(er))

@@ -4,10 +4,12 @@ const utils = require('../utils.js');
 module.exports = {
     active: true,
     name: 'userinfo',
-    aliases: 'ui',
+    aliases: ['ui'],
     description: (lang) => lang.get('userInfoDescription'),
     cooldown: 5,
     categoryID: 1,
+    usage: lang => [lang.get('userinfoUsage')],
+    example: ['@LordHawk#0001'],
     execute: async (message, args) => {
         const {channelLanguage} = message;
         if(

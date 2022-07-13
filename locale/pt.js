@@ -708,6 +708,7 @@ module.exports = {
             case 'userInfoOptiontargetLocalisedDesc': return 'O usuário para mostrar as informações';
             case 'userInfoOptiontargetLocalisedName': return 'alvo';
             case 'userinfoLocalisedName': return 'usuarioinfo';
+            case 'userinfoUsage': return '[(usuário)]';
         }
     },
 };

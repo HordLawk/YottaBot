@@ -616,6 +616,7 @@ module.exports = {
             case 'userInfoJoinedAt': return 'Joined the server at';
             case 'userInfoRoles': return 'Roles';
             case 'userInfoDescription': return 'Show the specified user\'s info if the user is not specified it will show your info';
+            case 'userinfoUsage': return '[(user)]';
         }
     },
 };

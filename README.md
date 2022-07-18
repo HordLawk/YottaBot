@@ -51,7 +51,6 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] make default vc xp earning state configurable
 - [ ] finish adapting to slash commands
 - [ ] anti hoisting
-
-## Credits
-- [@elloramir](https://github.com/elloramir) for helping me with a lot issues I had in the early stages of development (I was dumb(er))
-- [@Rox0z](https://github.com/Rox0z) for having coded the base of the slash commands handler I use for YottaBot while I was being lazy
+- [ ] giveaway system
+- [ ] member count display on channel topic
+- [ ] channel lockdown command

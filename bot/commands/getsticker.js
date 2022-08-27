@@ -45,7 +45,7 @@ module.exports = {
                 }
                 await interaction.guild.stickers.fetch();
                 const maxStickers = {
-                    NONE: 0,
+                    NONE: 5,
                     TIER_1: 15,
                     TIER_2: 30,
                     TIER_3: 60,
@@ -54,7 +54,7 @@ module.exports = {
                     content: channelLanguage.get('maxStickersReached'),
                     ephemeral: true,
                 });
-                if(reply.attachments.first().size > 512000) return await i.reply({
+                if(reply.attachments.first().size > 524288) return await i.reply({
                     content: channelLanguage.get('stickerTooBig'),
                     ephemeral: true,
                 })

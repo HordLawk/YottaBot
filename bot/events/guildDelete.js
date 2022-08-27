@@ -11,7 +11,7 @@ module.exports = {
                 name: 'Left Guild',
                 iconURL: guild.iconURL({dynamic: true}),
             })
-            .setDescription(`Member count: ${guild.memberCount}\nID: ${guild.id}\nName: ${guild.name}\nOwner: <@${guild.ownerId}>\nLocale: ${guild.preferredLocale}\nFeatures:\`\`\`${guild.features.join('\n')}\`\`\``);
+            .setDescription(`Member count: ${guild.memberCount}\nID: ${guild.id}\nName: ${guild.name}\nOwner: <@${guild.ownerId}>\nLocale: ${guild.preferredLocale}\nFeatures:\`\`\`${guild.features?.join('\n')}\`\`\``);
         await guild.client.channels.cache.get(configs.guildlog).send({embeds: [embed]});
         guild.client.channels.cache.get(configs.guildlog).setTopic(guild.client.guilds.cache.size);
     },

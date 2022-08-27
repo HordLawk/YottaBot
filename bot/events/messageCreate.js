@@ -11,6 +11,7 @@ const commands = require('../commands');
 module.exports = {
     name: 'messageCreate',
     execute: async function(message){
+        if(message.partial) await message.fetch();
         if(message.author.bot || (!['DEFAULT', 'REPLY'].includes(message.type)) || (message.guild && !message.guild.available)) return;
         var prefix = configs.defaultPrefix;
         var roleDocs;

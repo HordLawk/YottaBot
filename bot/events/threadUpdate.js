@@ -6,13 +6,7 @@ module.exports = {
     name: 'threadUpdate',
     execute: async (_, newThread) => {
         if(newThread.partial) await newThread.fetch();
-        if(
-            !newThread.archived
-            ||
-            !newThread.guild.members.me
-                .permissionsIn(newThread)
-                .has(PermissionsBitField.Flags.ManageThreads)
-        ) return;
+        if(!newThread.archived || !newThread.editable) return;
         const channelModel = require('../../schemas/channel.js');
         const threads = await channelModel.find({
             _id: {$in: newThread.guild.channels.cache.map(e => e.id)},

@@ -5,6 +5,7 @@ module.exports = {
     name: 'guildDelete',
     execute: async guild => {
         if(process.env.NODE_ENV === 'development') return;
+        await guild.fetch();
         const embed = new EmbedBuilder()
             .setColor(0xff0000)
             .setAuthor({

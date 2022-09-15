@@ -7,15 +7,29 @@ module.exports = {
     name: 'guildCreate',
     execute: async guild => {
         var content = '';
+        await guild.fetch();
         if(guild.members.me.permissions.has(PermissionsBitField.Flags.ManageGuild)){
             const integrations = await guild.fetchIntegrations({includeApplications: true});
             const adder = integrations.find(e => (e.application?.id === guild.client.application.id))?.user;
             if(adder){
                 content = `Added by: ${adder} (${adder.tag})\n`;
-                let guildLanguage = locale.get(guild.client.guildData.get(guild.id)?.language ?? ((guild.preferredLocale === 'pt-BR') ? 'pt' : 'en'));
+                let guildLanguage = locale.get(
+                    guild.client.guildData.get(guild.id)?.language
+                    ??
+                    ((guild.preferredLocale === 'pt-BR') ? 'pt' : 'en')
+                );
                 let dmEmbed = new EmbedBuilder()
                     .setColor(0x8000ff)
-                    .setDescription(guildLanguage.get('dmBotAdder', [adder, guild.name, guild.client.guildData.get(guild.id)?.prefix ?? 'y!', configs.support]));
+                    .setDescription(
+                        guildLanguage.get(
+                            'dmBotAdder',
+                            [
+                                adder,
+                                guild.name,
+                                guild.client.guildData.get(guild.id)?.prefix ?? configs.defaultPrefix, configs.support,
+                            ],
+                        )
+                    );
                 const buttonLocale = {
                     type: ComponentType.SelectMenu,
                     customId: 'locale',
@@ -35,7 +49,10 @@ module.exports = {
                     const collector = dm.createMessageComponentCollector({time: 600000});
                     collector.on('collect', i => (async i => {
                         if(guild.client.guildData.has(guild.id)){
-                            await guildModel.findByIdAndUpdate(guild.id, {$set: {language: (guild.client.guildData.get(guild.id).language = i.values[0])}});
+                            await guildModel.findByIdAndUpdate(
+                                guild.id,
+                                {$set: {language: (guild.client.guildData.get(guild.id).language = i.values[0])}},
+                            );
                         }
                         else{
                             const guildData = new guildModel({
@@ -46,7 +63,16 @@ module.exports = {
                             guild.client.guildData.set(guildData._id, guildData);
                         }
                         guildLanguage = locale.get(i.values[0]);
-                        dmEmbed.setDescription(guildLanguage.get('dmBotAdder', [adder, guild.name, guild.client.guildData.get(guild.id)?.prefix ?? 'y!', configs.support]));
+                        dmEmbed.setDescription(
+                            guildLanguage.get(
+                                'dmBotAdder',
+                                [
+                                    adder,
+                                    guild.name,
+                                    guild.client.guildData.get(guild.id)?.prefix ?? 'y!', configs.support,
+                                ],
+                            )
+                        );
                         buttonLocale.placeholder = guildLanguage.get('language');
                         buttonLocale.options = locale.map((e, i) => ({
                             label: e.name,
@@ -71,7 +97,14 @@ module.exports = {
                 name: 'Joined Guild',
                 iconURL: guild.iconURL({dynamic: true}),
             })
-            .setDescription(`${content}Member count: ${guild.memberCount}\nID: ${guild.id}\nName: ${guild.name}\nOwner: <@${guild.ownerId}>\nLocale: ${guild.preferredLocale}\nFeatures:\`\`\`${guild.features.join('\n')}\`\`\``);
+            .setDescription(
+                `${content}Member count: ${guild.memberCount}\n` +
+                `ID: ${guild.id}\n` +
+                `Name: ${guild.name}\n` +
+                `Owner: <@${guild.ownerId}>\n` +
+                `Locale: ${guild.preferredLocale}\n` +
+                `Features:\`\`\`${guild.features.join('\n')}\`\`\``
+            );
         await guild.client.channels.cache.get(configs.guildlog).send({embeds: [embed]});
         guild.client.channels.cache.get(configs.guildlog).setTopic(guild.client.guilds.cache.size);
     },

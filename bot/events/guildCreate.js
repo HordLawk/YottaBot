@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, ComponentType} = require('discord.js');
 const guildModel = require('../../schemas/guild.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
@@ -7,17 +7,17 @@ module.exports = {
     name: 'guildCreate',
     execute: async guild => {
         var content = '';
-        if(guild.me.permissions.has(Permissions.FLAGS.MANAGE_GUILD)){
+        if(guild.members.me.permissions.has(PermissionsBitField.Flags.ManageGuild)){
             const integrations = await guild.fetchIntegrations({includeApplications: true});
             const adder = integrations.find(e => (e.application?.id === guild.client.application.id))?.user;
             if(adder){
                 content = `Added by: ${adder} (${adder.tag})\n`;
                 let guildLanguage = locale.get(guild.client.guildData.get(guild.id)?.language ?? ((guild.preferredLocale === 'pt-BR') ? 'pt' : 'en'));
-                let dmEmbed = new MessageEmbed()
+                let dmEmbed = new EmbedBuilder()
                     .setColor(0x8000ff)
                     .setDescription(guildLanguage.get('dmBotAdder', [adder, guild.name, guild.client.guildData.get(guild.id)?.prefix ?? 'y!', configs.support]));
                 const buttonLocale = {
-                    type: 'SELECT_MENU',
+                    type: ComponentType.SelectMenu,
                     customId: 'locale',
                     placeholder: guildLanguage.get('language'),
                     options: locale.map((e, i) => ({
@@ -28,7 +28,7 @@ module.exports = {
                     })),
                 };
                 const components = [{
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [buttonLocale],
                 }];
                 adder.send({embeds: [dmEmbed], components}).then(dm => {
@@ -65,7 +65,7 @@ module.exports = {
             }
         }
         if(process.env.NODE_ENV === 'development') return;
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(0x00ff00)
             .setAuthor({
                 name: 'Joined Guild',

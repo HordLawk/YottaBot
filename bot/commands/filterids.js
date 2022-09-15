@@ -1,5 +1,6 @@
 const utils = require('../utils.js');
 const axios = require('axios');
+const { ApplicationCommandOptionType, TextInputStyle, ComponentType } = require('discord.js');
 
 module.exports = {
     active: true,
@@ -34,13 +35,13 @@ module.exports = {
                 customId: `filterids${interaction.id}`,
                 title: 'Paste text',
                 components: [{
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [{
-                        type: 'TEXT_INPUT',
+                        type: ComponentType.TextInput,
                         customId: 'text',
                         label: channelLanguage.get('filteridsModaltextLabel'),
                         required: true,
-                        style: 'PARAGRAPH',
+                        style: TextInputStyle.Paragraph,
                     }],
                 }],
             });
@@ -64,7 +65,7 @@ module.exports = {
         }
     },
     slashOptions: [{
-        type: 'ATTACHMENT',
+        type: ApplicationCommandOptionType.Attachment,
         name: 'text_file',
         nameLocalizations: utils.getStringLocales('filteridsOptiontext_fileLocalisedName'),
         description: 'A text file with Discord IDs to be filtered',

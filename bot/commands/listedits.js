@@ -1,4 +1,11 @@
-const {Permissions, MessageEmbed, Util} = require('discord.js');
+const {
+    PermissionsBitField,
+    EmbedBuilder,
+    ButtonStyle,
+    ComponentType,
+    escapeCodeBlock,
+    cleanContent,
+} = require('discord.js');
 const {sha256} = require('js-sha256');
 const aesjs = require('aes-js');
 
@@ -7,7 +14,7 @@ module.exports = {
     name: 'listedits',
     description: lang => lang.get('listeditsDescription'),
     cooldown: 5,
-    perm: Permissions.FLAGS.MANAGE_MESSAGES,
+    perm: PermissionsBitField.Flags.ManageMessages,
     guildOnly: true,
     premium: true,
     contextName: 'List previous edits',
@@ -27,8 +34,8 @@ module.exports = {
                 value: channelLanguage.get(
                     'listeditsEmbedVersionValue',
                     [
-                        Util.escapeCodeBlock(
-                            Util.cleanContent(
+                        escapeCodeBlock(
+                            cleanContent(
                                 aesjs.utils.utf8.fromBytes(aesCtr.decrypt(e.content)),
                                 interaction.channel
                             )
@@ -38,7 +45,7 @@ module.exports = {
                 ),
             };
         });
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(0x2f3136)
             .setAuthor({
                 name: channelLanguage.get('listeditsEmbedAuthor'),
@@ -47,23 +54,23 @@ module.exports = {
             .setFields(fields.slice(0, pageSize))
             .setTimestamp();
         const buttonPrevious = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('previous'),
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '⬅',
             customId: 'previous',
             disabled: true,
         };
         const buttonNext = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('next'),
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '➡',
             customId: 'next',
             disabled: (fields.length <= pageSize),
         };
         const components = [{
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [buttonPrevious, buttonNext],
         }];
         const reply = await interaction.reply({
@@ -76,7 +83,7 @@ module.exports = {
         const collector = reply.createMessageComponentCollector({
             filter: componentInteraction => (componentInteraction.user.id === interaction.user.id),
             time: 600000,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
         });
         let page = 0;
         collector.on('collect', i => (async () => {

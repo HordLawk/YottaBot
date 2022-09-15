@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -10,15 +10,15 @@ module.exports = {
     cooldown: 5,
     categoryID: 2,
     args: true,
-    perm: Permissions.FLAGS.ADMINISTRATOR,
+    perm: PermissionsBitField.Flags.Administrator,
     guildOnly: true,
     execute: async function(message, args){
         const commands = require('.');
         const {channelLanguage} = message;
         if(
-            !message.guild.me
+            !message.guild.members.me
                 .permissionsIn(message.channel)
-                .has(Permissions.FLAGS.EMBED_LINKS)
+                .has(PermissionsBitField.Flags.EmbedLinks)
         ) return message.reply(channelLanguage.get('botEmbed'));
         if(args.length < 2) return message.reply(
             channelLanguage.get(
@@ -38,7 +38,7 @@ module.exports = {
         if(
             !discordChannel
             ||
-            !discordChannel.isText()
+            !discordChannel.isTextBased()
         ) return message.reply(
             channelLanguage.get(
                 'invArgs',
@@ -114,8 +114,8 @@ module.exports = {
                     ||
                     !channelDoc.ignoreCommands.length
                 ) return message.reply(channelLanguage.get('noDisabledCmds'));
-                const embed = new MessageEmbed()
-                    .setColor(message.guild.me.displayColor || 0x8000ff)
+                const embed = new EmbedBuilder()
+                    .setColor(message.guild.members.me.displayColor || 0x8000ff)
                     .setAuthor({
                         name: channelLanguage.get('disabledEmbedAuthor'),
                         iconURL: message.guild.iconURL({

@@ -1,6 +1,6 @@
 {
   "name": "yottabot",
-  "version": "2.41.11",
+  "version": "2.41.12",
   "description": "A levelling and moderation focused Discord bot",
   "main": "index.js",
   "engines": {
@@ -24,7 +24,7 @@
   "dependencies": {
     "aes-js": "^3.1.2",
     "axios": "^0.21.2",
-    "discord.js": "^13.10.3",
+    "discord.js": "^14.3.0",
     "express": "^4.17.1",
     "js-sha256": "^0.9.0",
     "mongoose": "^5.12.3",

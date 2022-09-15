@@ -1,3 +1,5 @@
+const { ApplicationCommandOptionType } = require('discord.js');
+
 module.exports = {
     active: true,
     name: 'devbl',
@@ -15,13 +17,13 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             name: 'add',
             description: 'How to do with the user',
             required: true,
         },
         {
-            type: 'USER',
+            type: ApplicationCommandOptionType.User,
             name: 'target',
             description: 'The user to be the target of the action',
             required: true,

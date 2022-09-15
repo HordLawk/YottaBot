@@ -1,3 +1,5 @@
+const { TextInputStyle, ComponentType } = require("discord.js");
+
 module.exports = {
     active: true,
     name: 'eval',
@@ -11,14 +13,14 @@ module.exports = {
             customId: `eval${interaction.id}`,
             title: 'eval',
             components: [{
-                type: 'ACTION_ROW',
+                type: ComponentType.ActionRow,
                 components: [{
-                    type: 'TEXT_INPUT',
+                    type: ComponentType.TextInput,
                     customId: 'code',
                     label: 'Code',
                     placeholder: 'console.log("Hello, World!");',
                     required: true,
-                    style: 'PARAGRAPH',
+                    style: TextInputStyle.Paragraph,
                 }],
             }],
         });

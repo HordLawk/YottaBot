@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -10,15 +10,15 @@ module.exports = {
     cooldown: 5,
     categoryID: 2,
     args: true,
-    perm: Permissions.FLAGS.ADMINISTRATOR,
+    perm: PermissionsBitField.Flags.Administrator,
     guildOnly: true,
     execute: async function(message){
         const commands = require('.');
         const {channelLanguage} = message;
         if(
-            !message.guild.me
+            !message.guild.members.me
                 .permissionsIn(message.channel)
-                .has(Permissions.FLAGS.EMBED_LINKS)
+                .has(PermissionsBitField.Flags.EmbedLinks)
         ) return message.reply(channelLanguage.get('botEmbed'));
         const args = message.content.split(/\s+(?=(?:[^"]*"[^"]*")*[^"]*$)/g).slice(1);
         if(args.length < 2) return message.reply(
@@ -126,8 +126,8 @@ module.exports = {
                     commandPermissions: {$ne: []},
                 });
                 if(!roleDoc) return message.reply(channelLanguage.get('noSpecialPerms'));
-                const embed = new MessageEmbed()
-                    .setColor(message.guild.me.displayColor || 0x8000ff)
+                const embed = new EmbedBuilder()
+                    .setColor(message.guild.members.me.displayColor || 0x8000ff)
                     .setAuthor({
                         name: channelLanguage.get('permsEmbedAuthor'),
                         iconURL: message.guild.iconURL({

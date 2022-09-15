@@ -1,17 +1,17 @@
-const {Permissions} = require('discord.js');
+const {PermissionsBitField, ApplicationCommandOptionType, ButtonStyle, ComponentType} = require('discord.js');
 
 const buildButtons = (channelLanguage, author) => {
     const buttonConfirm = {
-        type: 'BUTTON',
+        type: ComponentType.Button,
         label: channelLanguage.get('confirm'),
-        style: 'SUCCESS',
+        style: ButtonStyle.Success,
         emoji: '✅',
         customId: 'confirm',
     };
     const buttonCancel = {
-        type: 'BUTTON',
+        type: ComponentType.Button,
         label: channelLanguage.get('cancel'),
-        style: 'DANGER',
+        style: ButtonStyle.Danger,
         emoji: '❌',
         customId: 'cancel',
     };
@@ -19,14 +19,14 @@ const buildButtons = (channelLanguage, author) => {
         buttonConfirm,
         buttonCancel,
         components: [{
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [buttonConfirm, buttonCancel],
         }],
         collectorOptions: {
             filter: componentInteraction => (componentInteraction.user.id === author.id),
             idle: 10000,
             max: 1,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
         },
     };
 }
@@ -48,7 +48,7 @@ module.exports = {
     cooldown: 5,
     categoryID: 1,
     args: true,
-    perm: Permissions.FLAGS.ADMINISTRATOR,
+    perm: PermissionsBitField.Flags.Administrator,
     guildOnly: true,
     execute: async function(message, args){
         const {channelLanguage} = message;
@@ -191,35 +191,35 @@ module.exports = {
             ephemeral: true,
         });
         const modlogChannel = interaction.guild.channels.cache.get(interaction.client.guildData.get(interaction.guild.id).modlogs[caseDoc.type]);
-        if(modlogChannel && modlogChannel.viewable && interaction.guild.me.permissionsIn(modlogChannel).has(Permissions.FLAGS.MANAGE_MESSAGES)){
-            const logMessage = await modlogChannel.messages.fetch(caseDoc.logMessage).catch(() => null);
+        if(modlogChannel && modlogChannel.viewable && interaction.guild.members.me.permissionsIn(modlogChannel).has(PermissionsBitField.Flags.ManageMessages)){
+            const logMessage = await modlogChannel.messages.fetch({message: caseDoc.logMessage}).catch(() => null);
             if(logMessage) await logMessage.delete();
         }
         await interaction.reply(channelLanguage.get('caseDeletedSuccess', [caseDoc.id]));
     },
     slashOptions: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'server',
             description: 'Deletes all logged cases from the current server',
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'user',
             description: 'Deletes all logged cases which have the selected user as their target',
             options: [{
-                type: 'USER',
+                type: ApplicationCommandOptionType.User,
                 name: 'target',
                 description: 'The target of the cases to be deleted',
                 required: true,
             }],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'case',
             description: 'Deletes an specific case by its ID',
             options: [{
-                type: 'INTEGER',
+                type: ApplicationCommandOptionType.Integer,
                 name: 'id',
                 description: 'The ID of the case to be deleted',
                 required: true,

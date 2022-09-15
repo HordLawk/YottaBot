@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, ApplicationCommandOptionType} = require('discord.js');
 const utils = require('../utils.js');
 
 module.exports = {
@@ -15,16 +15,16 @@ module.exports = {
         if(
             message.guild
             &&
-            !message.guild.me
+            !message.guild.members.me
                 .permissionsIn(message.channel)
-                .has(Permissions.FLAGS.EMBED_LINKS)
+                .has(PermissionsBitField.Flags.EmbedLinks)
         ) return message.reply(channelLanguage.get('botEmbed'));
-        const id = args ?? args[0]?.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
+        const id = args[0]?.match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
 
         const user = id && await message.client.users.fetch(id).catch(() => null) || message.author;
         const member = user === message.author ? message.member : await message.guild?.members?.fetch(id).catch(() => null);
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(channelLanguage.get('userInfoTitle'))
             .setColor(0x2f3136)
             .addField(channelLanguage.get('userInfoUsername'), '\`\`\`' + user.tag + '\`\`\`');
@@ -49,9 +49,9 @@ module.exports = {
         if(
             interaction.guild
             &&
-            !interaction.guild.me
+            !interaction.guild.members.me
                 .permissionsIn(interaction.channel)
-                .has(Permissions.FLAGS.EMBED_LINKS)
+                .has(PermissionsBitField.Flags.EmbedLinks)
         ) return await interaction.reply({
             content: channelLanguage.get('botEmbed'),
             ephemeral: true,
@@ -59,7 +59,7 @@ module.exports = {
 
         const user = args.target ?? interaction.user;
         const member = args.target ? args.target.member : interaction.member;
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(channelLanguage.get('userInfoTitle'))
             .setColor(0x2f3136)
             .addField(channelLanguage.get('userInfoUsername'), '\`\`\`' + user.tag + '\`\`\`');
@@ -80,7 +80,7 @@ module.exports = {
             interaction.reply({embeds: [embed]});
     },
     slashOptions: [{
-        type: 'USER',
+        type: ApplicationCommandOptionType.User,
         name: 'target',
         nameLocalizations: utils.getStringLocales('userInfoOptiontargetLocalisedName'),
         description: 'The user to show info',

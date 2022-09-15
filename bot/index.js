@@ -1,30 +1,34 @@
 const fs = require('fs');
 const path = require('path');
-const Discord = require('discord.js');
+const Discord = require('discord.js')
 const guild = require('../schemas/guild.js');
 const locale = require('../locale');
 const configs = require('./configs.js');
 
 const client = new Discord.Client({
-    partials: ['REACTION', 'MESSAGE', 'CHANNEL', 'GUILD_MEMBER', 'USER'],
+    partials: [
+        Discord.Partials.Reaction,
+        Discord.Partials.Message,
+        Discord.Partials.Channel,
+        Discord.Partials.GuildMember,
+        Discord.Partials.User,
+    ],
     intents: [
-        Discord.Intents.FLAGS.GUILDS,
-        Discord.Intents.FLAGS.GUILD_MEMBERS,
-        Discord.Intents.FLAGS.GUILD_MESSAGES,
-        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-        Discord.Intents.FLAGS.DIRECT_MESSAGES,
-        Discord.Intents.FLAGS.GUILD_BANS,
-        Discord.Intents.FLAGS.GUILD_VOICE_STATES
+        Discord.GatewayIntentBits.Guilds,
+        Discord.GatewayIntentBits.GuildMembers,
+        Discord.GatewayIntentBits.GuildMessages,
+        Discord.GatewayIntentBits.GuildMessageReactions,
+        Discord.GatewayIntentBits.DirectMessages,
+        Discord.GatewayIntentBits.GuildBans,
+        Discord.GatewayIntentBits.GuildVoiceStates,
+        Discord.GatewayIntentBits.MessageContent,
     ],
     allowedMentions: {repliedUser: false},
     failIfNotExists: false,
 });
-const _transformCommand = Discord.ApplicationCommandManager.transformCommand;
-Discord.ApplicationCommandManager.transformCommand = command => ({
-    ..._transformCommand(command),
-    default_member_permissions: command.default_member_permissions?.toString(),
-    dm_permission: command.dm_permission,
-});
+Discord.EmbedBuilder.prototype.addField = function(name, value, inline = false){
+    return this.addFields([{name, value, inline}]);
+}
 client.cooldowns = new Discord.Collection();
 client.xpcds = new Discord.Collection();
 client.lastdelmsg = new Discord.Collection();

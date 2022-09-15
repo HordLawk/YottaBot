@@ -1,4 +1,4 @@
-const {Permissions} = require('discord.js');
+const {PermissionsBitField, ButtonStyle, ComponentType, StickerFormatType} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -11,16 +11,16 @@ module.exports = {
             content: channelLanguage.get('noStickerFound'),
             ephemeral: true,
         });
-        if(interaction.member.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS)){
+        if(interaction.member.permissions.has(PermissionsBitField.Flags.ManageEmojisAndStickers)){
             const buttonAdd = {
-                type: 'BUTTON',
+                type: ComponentType.Button,
                 label: channelLanguage.get('add'),
                 customId: 'add',
-                style: 'SUCCESS',
+                style: ButtonStyle.Success,
                 emoji: '📥',
             };
             const components = [{
-                type: 'ACTION_ROW',
+                type: ComponentType.ActionRow,
                 components: [buttonAdd],
             }];
             const reply = await interaction.reply({
@@ -34,10 +34,10 @@ module.exports = {
                 filter: componentInteraction => (componentInteraction.user.id === interaction.user.id),
                 idle: 10000,
                 max: 1,
-                componentType: 'BUTTON',
+                componentType: ComponentType.Button,
             });
             collector.on('collect', i => (async i => {
-                if(!interaction.guild.me.permissions.has(Permissions.FLAGS.MANAGE_EMOJIS_AND_STICKERS)){
+                if(!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageEmojisAndStickers)){
                     return await i.reply({
                         content: channelLanguage.get('botCantAddSticker'),
                         ephemeral: true,
@@ -60,7 +60,7 @@ module.exports = {
                 })
                 await interaction.targetMessage.stickers.first().fetch();
                 if(
-                    (interaction.targetMessage.stickers.first().format === 'LOTTIE')
+                    (interaction.targetMessage.stickers.first().format === StickerFormatType.Lottie)
                     &&
                     !interaction.guild.partnered
                     &&
@@ -69,15 +69,13 @@ module.exports = {
                     content: channelLanguage.get('lottieNotPartner'),
                     ephemeral: true,
                 });
-                await interaction.guild.stickers.create(
-                    interaction.targetMessage.stickers.first().url,
-                    interaction.targetMessage.stickers.first().name,
-                    interaction.targetMessage.stickers.first().tags[0],
-                    {
-                        description: interaction.targetMessage.stickers.first().description,
-                        reason: channelLanguage.get('stickerCreator', [interaction.user.tag, interaction.user.id]),
-                    }
-                );
+                await interaction.guild.stickers.create({
+                    description: interaction.targetMessage.stickers.first().description,
+                    reason: channelLanguage.get('stickerCreator', [interaction.user.tag, interaction.user.id]),
+                    file: interaction.targetMessage.stickers.first().url,
+                    name: interaction.targetMessage.stickers.first().name,
+                    tags: interaction.targetMessage.stickers.first().tags,
+                });
                 await i.reply({
                     content: channelLanguage.get('stickerAdded'),
                     ephemeral: true,

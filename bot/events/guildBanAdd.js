@@ -1,7 +1,7 @@
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
 const member = require('../../schemas/member.js');
-const {MessageEmbed, Permissions, Collection, GuildAuditLogs} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, Collection, GuildAuditLogs, AuditLogEvent} = require('discord.js');
 const locale = require('../../locale');
 
 module.exports = {
@@ -29,10 +29,10 @@ module.exports = {
                 await memberDoc.save();
             }
         }
-        if((ban.user.id === ban.client.user.id) || !ban.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG) || !ban.client.guildData.has(ban.guild.id)) return;
+        if((ban.user.id === ban.client.user.id) || !ban.guild.members.me.permissions.has(PermissionsBitField.Flags.ViewAuditLog) || !ban.client.guildData.has(ban.guild.id)) return;
         const audits = await ban.guild.fetchAuditLogs({
             limit: 1,
-            type: GuildAuditLogs.Actions.MEMBER_BAN_ADD,
+            type: AuditLogEvent.MemberBanAdd,
         });
         if(!audits.entries.first() || audits.entries.first().executor.bot) return;
         if(ban.client.guildData.get(ban.guild.id).antiMassBan){
@@ -40,10 +40,10 @@ module.exports = {
                 if(ban.client.guildData.get(ban.guild.id).bantimes.has(audits.entries.first().executor.id)){
                     ban.client.guildData.get(ban.guild.id).bantimes.get(audits.entries.first().executor.id).push(audits.entries.first().createdTimestamp);
                     const notNow = Date.now() - 10000;
-                    if((ban.client.guildData.get(ban.guild.id).bantimes.get(audits.entries.first().executor.id).filter(e => (e > notNow)).length > ban.client.guildData.get(ban.guild.id).antiMassBan) && ban.guild.me.permissions.has(Permissions.FLAGS.MANAGE_ROLES)){
+                    if((ban.client.guildData.get(ban.guild.id).bantimes.get(audits.entries.first().executor.id).filter(e => (e > notNow)).length > ban.client.guildData.get(ban.guild.id).antiMassBan) && ban.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageRoles)){
                         const executorMember = await ban.guild.members.fetch(audits.entries.first().executor.id);
-                        const banRoles = executorMember.roles.cache.filter(e => e.permissions.has(Permissions.FLAGS.BAN_MEMBERS));
-                        if(banRoles.every(e => (e.comparePositionTo(ban.guild.me.roles.highest) < 0))) await executorMember.roles.remove(banRoles);
+                        const banRoles = executorMember.roles.cache.filter(e => e.permissions.has(PermissionsBitField.Flags.BanMembers));
+                        if(banRoles.every(e => (e.comparePositionTo(ban.guild.members.me.roles.highest) < 0))) await executorMember.roles.remove(banRoles);
                     }
                 }
                 else{
@@ -68,9 +68,9 @@ module.exports = {
         });
         await current.save();
         const discordChannel = ban.guild.channels.cache.get(ban.client.guildData.get(ban.guild.id).modlogs.ban);
-        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(ban.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(ban.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
+        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(ban.guild.members.me).has(PermissionsBitField.Flags.SendMessages) || !discordChannel.permissionsFor(ban.guild.members.me).has(PermissionsBitField.Flags.EmbedLinks)) return;
         const channelLanguage = locale.get(ban.client.guildData.get(ban.guild.id).language);
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(0xff0000)
             .setAuthor({
                 name: channelLanguage.get('banEmbedAuthor', [audits.entries.first().executor.tag, ban.user.tag]),

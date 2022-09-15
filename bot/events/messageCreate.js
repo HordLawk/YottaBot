@@ -3,7 +3,7 @@ const role = require('../../schemas/role.js');
 const channel = require('../../schemas/channel.js');
 const member = require('../../schemas/member.js');
 const user = require('../../schemas/user.js');
-const {Collection, Permissions, MessageEmbed} = require('discord.js');
+const {Collection, PermissionsBitField, EmbedBuilder, ApplicationCommandType, MessageType} = require('discord.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
 const commands = require('../commands');
@@ -12,7 +12,7 @@ module.exports = {
     name: 'messageCreate',
     execute: async function(message){
         if(message.partial) await message.fetch();
-        if(message.author.bot || (!['DEFAULT', 'REPLY'].includes(message.type)) || (message.guild && !message.guild.available)) return;
+        if(message.author.bot || ![MessageType.Default, MessageType.Reply].includes(message.type) || (message.guild && !message.guild.available)) return;
         var prefix = configs.defaultPrefix;
         var roleDocs;
         var savedChannel;
@@ -60,7 +60,7 @@ module.exports = {
                 if(!message.client.guildData.get(message.guild.id).xpChannel || (doc.xp >= (lowerRoles[0].xp + multiplier))) return;
                 switch(message.client.guildData.get(message.guild.id).xpChannel){
                     case 'default': {
-                        if(message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.SEND_MESSAGES)) message.reply({
+                        if(message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.SendMessages)) message.reply({
                             content: channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID)]),
                             allowedMentions: {repliedUser: true},
                         });
@@ -72,7 +72,7 @@ module.exports = {
                     break;
                     default: {
                         const notifChannel = message.client.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel);
-                        if(notifChannel && message.guild.me.permissionsIn(notifChannel).has(Permissions.FLAGS.SEND_MESSAGES)) notifChannel.send({
+                        if(notifChannel && message.guild.members.me.permissionsIn(notifChannel).has(PermissionsBitField.Flags.SendMessages)) notifChannel.send({
                             content: channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID)]),
                             allowedMentions: {users: [message.author.id]},
                         });
@@ -80,24 +80,24 @@ module.exports = {
                 }
             })(err, doc).catch(err => message.client.handlers.event(err, this, [message])));
         }
-        if(message.guild && !message.guild.me.permissionsIn(message.channel.id)?.has(Permissions.FLAGS.SEND_MESSAGES)) return;
+        if(message.guild && !message.guild.members.me.permissionsIn(message.channel.id)?.has(PermissionsBitField.Flags.SendMessages)) return;
         if((new RegExp(`<@!?${message.client.user.id}>`)).test(message.content)) return message.reply(channelLanguage.get('mentionHelp', [prefix]));
         if(!message.content.toLowerCase().startsWith(prefix.toLowerCase())) return;
         const userDoc = await user.findById(message.author.id);
         if(userDoc && userDoc.blacklisted) return;
         const [commandName, ...args] = message.content.slice(prefix.length).toLowerCase().split(/\s+/g);
         const command = commands.get(commandName) || commands.find(cmd => (cmd.aliases && cmd.aliases.includes(commandName)));
-        if(!command || (command.dev && (message.author.id !== message.client.application.owner.id)) || (command.alpha && !message.client.guildData.get(message.guild.id).alpha) || (!command.execute && (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === command.name))?.type !== 'CHAT_INPUT'))) return;
+        if(!command || (command.dev && (message.author.id !== message.client.application.owner.id)) || (command.alpha && !message.client.guildData.get(message.guild.id).alpha) || (!command.execute && (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === command.name))?.type !== ApplicationCommandType.ChatInput))) return;
         if(!command.execute) return message.reply(channelLanguage.get('slashOnly', [command.name]));
         if(configs.maintenance && (message.author.id !== message.client.application.owner.id)) return message.reply(channelLanguage.get('maintenance'));
         if(command.guildOnly && !message.guild) return message.reply(channelLanguage.get('guildOnly'));
         if(command.premium && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) return message.reply(channelLanguage.get('premiumCommand', [prefix]));
         if(command.beta && !message.client.guildData.get(message.guild.id).beta) return message.reply(channelLanguage.get('betaCommand'));
         if(command.args && !args.length) return message.reply(channelLanguage.get('noArgs', [message.author, prefix, command.name, command.usage(channelLanguage)]));
-        if(message.guild && !message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
+        if(message.guild && !message.member.permissions.has(PermissionsBitField.Flags.Administrator)){
             const roles = roleDocs.filter(e => (e.commandPermissions.id(command.name) && message.member.roles.cache.has(e.roleID)));
             if((!roles.length && command.perm && !message.member.permissions.has(command.perm)) || (roles.length && roles.some(e => !e.commandPermissions.id(command.name).allow) && !roles.some(e => e.commandPermissions.id(command.name).allow))) return message.reply(channelLanguage.get('forbidden'));
-            if(savedChannel && savedChannel.ignoreCommands.includes(command.name) && message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return await message.react('🚫');
+            if(savedChannel && savedChannel.ignoreCommands.includes(command.name) && message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.AddReactions)) return await message.react('🚫');
         }
         if(!message.client.cooldowns.has(command.name)) message.client.cooldowns.set(command.name, new Collection());
         const now = Date.now();
@@ -136,7 +136,7 @@ module.exports = {
         message.channelLanguage = channelLanguage;
         command.execute(message, args).then(async () => {
             if(Math.floor(Math.random() * 1000) || (message.guild && (message.client.guildData.get(message.guild.id).premiumUntil || message.client.guildData.get(message.guild.id).partner))) return;
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setColor(0x2f3136)
                 .setDescription(channelLanguage.get(`premiumAd${Math.floor(Math.random() * 3)}`, [command.name]));
             await message.channel.send({embeds: [embed]});

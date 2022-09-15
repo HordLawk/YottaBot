@@ -1,3 +1,4 @@
+const { ApplicationCommandOptionType } = require('discord.js');
 const locale = require('../../locale');
 
 module.exports = {
@@ -20,13 +21,13 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             name: 'add',
             description: 'Whether to add this server as partner',
             required: true,
         },
         {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'guild',
             description: 'The guild to issue the partner action on',
             required: true,

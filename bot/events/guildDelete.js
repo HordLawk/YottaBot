@@ -1,11 +1,11 @@
-const {MessageEmbed} = require('discord.js');
+const {EmbedBuilder} = require('discord.js');
 const configs = require('../configs.js');
 
 module.exports = {
     name: 'guildDelete',
     execute: async guild => {
         if(process.env.NODE_ENV === 'development') return;
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(0xff0000)
             .setAuthor({
                 name: 'Left Guild',

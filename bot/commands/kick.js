@@ -1,4 +1,11 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {
+    EmbedBuilder,
+    PermissionsBitField,
+    ApplicationCommandOptionType,
+    ButtonStyle,
+    TextInputStyle,
+    ComponentType,
+} = require('discord.js');
 const utils = require('../utils.js');
 
 module.exports = {
@@ -11,7 +18,7 @@ module.exports = {
     cooldown: 3,
     categoryID: 3,
     args: true,
-    perm: Permissions.FLAGS.KICK_MEMBERS,
+    perm: PermissionsBitField.Flags.KickMembers,
     guildOnly: true,
     execute: async (message, args) => {
         const {channelLanguage} = message;
@@ -54,14 +61,14 @@ module.exports = {
             discordChannel.viewable
             &&
             discordChannel
-                .permissionsFor(message.guild.me)
-                .has(Permissions.FLAGS.SEND_MESSAGES)
+                .permissionsFor(message.guild.members.me)
+                .has(PermissionsBitField.Flags.SendMessages)
             &&
             discordChannel
-                .permissionsFor(message.guild.me)
-                .has(Permissions.FLAGS.EMBED_LINKS)
+                .permissionsFor(message.guild.members.me)
+                .has(PermissionsBitField.Flags.EmbedLinks)
         ){
-            embed = new MessageEmbed()
+            embed = new EmbedBuilder()
                 .setColor(0xffbf00)
                 .setAuthor({
                     name: channelLanguage.get('kickEmbedAuthor', [message.author.tag, member.user.tag]),
@@ -92,14 +99,14 @@ module.exports = {
             await current.save();
         }
         const buttonEdit = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('editReason'),
             customId: 'edit',
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '✏️',
         };
         const components = [{
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [buttonEdit],
         }];
         await reply.edit({components});
@@ -110,20 +117,20 @@ module.exports = {
                 (componentInteraction.customId === 'edit')
             ),
             time: 60_000,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
         });
         collectorEdit.on('collect', i => (async () => {
             await i.showModal({
                 customId: `modalEdit${i.id}`,
                 title: channelLanguage.get('editReasonModalTitle'),
                 components: [{
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [{
-                        type: 'TEXT_INPUT',
+                        type: ComponentType.TextInput,
                         customId: 'reason',
                         label: channelLanguage.get('editReasonModalReasonLabel'),
                         required: true,
-                        style: 'PARAGRAPH',
+                        style: TextInputStyle.Paragraph,
                         value: current.reason,
                         maxLength: 500,
                     }],
@@ -186,13 +193,13 @@ module.exports = {
                 customId: `modalReason${interaction.id}`,
                 title: channelLanguage.get('setReasonModalTitle'),
                 components: [{
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [{
-                        type: 'TEXT_INPUT',
+                        type: ComponentType.TextInput,
                         customId: 'reason',
                         label: channelLanguage.get('setReasonModalReasonLabel'),
                         required: true,
-                        style: 'PARAGRAPH',
+                        style: TextInputStyle.Paragraph,
                         maxLength: 500,
                     }],
                 }],
@@ -244,14 +251,14 @@ module.exports = {
             discordChannel.viewable
             &&
             discordChannel
-                .permissionsFor(lastInteraction.guild.me)
-                .has(Permissions.FLAGS.SEND_MESSAGES)
+                .permissionsFor(lastInteraction.guild.members.me)
+                .has(PermissionsBitField.Flags.SendMessages)
             &&
             discordChannel
-                .permissionsFor(lastInteraction.guild.me)
-                .has(Permissions.FLAGS.EMBED_LINKS)
+                .permissionsFor(lastInteraction.guild.members.me)
+                .has(PermissionsBitField.Flags.EmbedLinks)
         ){
-            embed = new MessageEmbed()
+            embed = new EmbedBuilder()
                 .setColor(0xffbf00)
                 .setAuthor({
                     name: channelLanguage.get('kickEmbedAuthor', [lastInteraction.user.tag, args.target.tag]),
@@ -281,14 +288,14 @@ module.exports = {
             await current.save();
         }
         const buttonEdit = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('editReason'),
             customId: 'edit',
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '✏️',
         };
         const components = [{
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [buttonEdit],
         }];
         await lastInteraction.editReply({components});
@@ -299,20 +306,20 @@ module.exports = {
                 (componentInteraction.customId === 'edit')
             ),
             time: 60_000,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
         });
         collectorEdit.on('collect', i => (async () => {
             await i.showModal({
                 customId: `modalEdit${i.id}`,
                 title: channelLanguage.get('editReasonModalTitle'),
                 components: [{
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [{
-                        type: 'TEXT_INPUT',
+                        type: ComponentType.TextInput,
                         customId: 'reason',
                         label: channelLanguage.get('editReasonModalReasonLabel'),
                         required: true,
-                        style: 'PARAGRAPH',
+                        style: TextInputStyle.Paragraph,
                         value: current.reason,
                         maxLength: 500,
                     }],
@@ -354,7 +361,7 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'USER',
+            type: ApplicationCommandOptionType.User,
             name: 'target',
             nameLocalizations: utils.getStringLocales('kickOptiontargetLocalisedName'),
             description: 'The user to kick',
@@ -362,7 +369,7 @@ module.exports = {
             required: true,
         },
         {
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             name: 'with_reason',
             nameLocalizations: utils.getStringLocales('kickOptionwith_reasonLocalisedName'),
             description: 'Whether to prompt a modal asking for the ban reason',

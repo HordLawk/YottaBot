@@ -1,4 +1,4 @@
-const {Permissions, MessageEmbed} = require('discord.js');
+const {PermissionsBitField, EmbedBuilder} = require('discord.js');
 const configs = require('../configs.js');
 
 module.exports = {
@@ -12,16 +12,16 @@ module.exports = {
         if(
             message.guild
             &&
-            !message.guild.me
+            !message.guild.members.me
                 .permissionsIn(message.channel)
-                .has(Permissions.FLAGS.EMBED_LINKS)
+                .has(PermissionsBitField.Flags.EmbedLinks)
         ) return message.reply(channelLanguage.get('botEmbed'));
         const url = await message.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
             permissions: configs.permissions,
         });
-        const embed = new MessageEmbed()
-            .setColor(message.guild?.me.displayColor || 0x8000ff)
+        const embed = new EmbedBuilder()
+            .setColor(message.guild?.members.me.displayColor || 0x8000ff)
             .setDescription(channelLanguage.get('inviteEmbedDescription', [url]));
         message.reply({embeds: [embed]});
     },
@@ -31,8 +31,8 @@ module.exports = {
             scopes: ['bot', 'applications.commands'],
             permissions: configs.permissions,
         });
-        const embed = new MessageEmbed()
-            .setColor(interaction.guild?.me.displayColor || 0x8000ff)
+        const embed = new EmbedBuilder()
+            .setColor(interaction.guild?.members.me.displayColor || 0x8000ff)
             .setDescription(channelLanguage.get('inviteEmbedDescription', [url]));
         await interaction.reply({embeds: [embed]});
     },

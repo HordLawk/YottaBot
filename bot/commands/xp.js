@@ -1,4 +1,10 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {
+    EmbedBuilder,
+    PermissionsBitField,
+    ApplicationCommandOptionType,
+    ButtonStyle,
+    ComponentType,
+} = require('discord.js');
 const configs = require('../configs.js');
 
 module.exports = {
@@ -13,7 +19,7 @@ module.exports = {
     guildOnly: true,
     execute: async (message, args) => {
         const {channelLanguage} = message;
-        if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
+        if(message.guild && !message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));
         if(!message.client.guildData.get(message.guild.id).gainExp && !message.client.guildData.get(message.guild.id).voiceXpCooldown) return message.reply(channelLanguage.get('xpDisabled'));
         const role = require('../../schemas/role.js');
         const member = require('../../schemas/member.js');
@@ -69,8 +75,8 @@ module.exports = {
                     xp: {$gte: 1},
                 });
                 let memberDocsSliced = memberDocs.slice(0, pageSize);
-                const embed = new MessageEmbed()
-                    .setColor(message.guild.me.displayColor || 0x8000ff)
+                const embed = new EmbedBuilder()
+                    .setColor(message.guild.members.me.displayColor || 0x8000ff)
                     .setAuthor({
                         name: channelLanguage.get('xpRankEmbedAuthor'),
                         iconURL: message.guild.iconURL({dynamic: true}),
@@ -88,23 +94,23 @@ module.exports = {
                 }
                 message.client.guildData.get(message.guild.id).processing = false;
                 const buttonPrevious = {
-                    type: 'BUTTON',
+                    type: ComponentType.Button,
                     label: channelLanguage.get('previous'),
-                    style: 'PRIMARY',
+                    style: ButtonStyle.Primary,
                     emoji: '⬅',
                     customId: 'previous',
                     disabled: true,
                 };
                 const buttonNext = {
-                    type: 'BUTTON',
+                    type: ComponentType.Button,
                     label: channelLanguage.get('next'),
-                    style: 'PRIMARY',
+                    style: ButtonStyle.Primary,
                     emoji: '➡',
                     customId: 'next',
                     disabled: (memberDocs.length <= pageSize),
                 };
                 const components = [{
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [buttonPrevious, buttonNext],
                 }];
                 const reply = await message.reply({embeds: [embed], components});
@@ -112,7 +118,7 @@ module.exports = {
                 const collector = reply.createMessageComponentCollector({
                     filter: componentInteraction => (componentInteraction.user.id === message.author.id),
                     time: 600000,
-                    componentType: 'BUTTON',
+                    componentType: ComponentType.Button,
                 });
                 collector.on('collect', buttonInteraction => (async buttonInteraction => {
                     switch(buttonInteraction.customId){
@@ -158,8 +164,8 @@ module.exports = {
                 if(!roles.length) return message.reply(channelLanguage.get('noXpRoles'));
                 const replyData = {};
                 if((roles.length > configs.xpRolesLimit) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) replyData.content = channelLanguage.get('disabledPremiumXpRolesNoHL');
-                let embed = new MessageEmbed()
-                    .setColor(message.guild.me.displayColor || 0x8000ff)
+                let embed = new EmbedBuilder()
+                    .setColor(message.guild.members.me.displayColor || 0x8000ff)
                     .setAuthor({
                         name: channelLanguage.get('xpRolesEmbedAuthor'),
                         iconURL: message.guild.iconURL({dynamic: true}),
@@ -192,8 +198,8 @@ module.exports = {
                 let next = availableRoles.reverse().find(e => (e.xp > user.xp));
                 let discordMember = await message.guild.members.fetch(user.userID).catch(() => null);
                 let discordUser = discordMember?.user ?? await message.client.users.fetch(id).catch(() => null);
-                let embed = new MessageEmbed()
-                    .setColor(discordMember?.displayColor ?? message.guild.me.displayColor ?? 0x8000ff)
+                let embed = new EmbedBuilder()
+                    .setColor(discordMember?.displayColor ?? message.guild.members.me.displayColor ?? 0x8000ff)
                     .setAuthor({
                         name: discordUser?.tag ?? channelLanguage.get('xpEmbedAuthor'),
                         iconURL: discordUser?.displayAvatarURL({dynamic: true}),
@@ -206,7 +212,7 @@ module.exports = {
     },
     infoSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        if(!args.user) args = {user: interaction.isUserContextMenu() ? (interaction.targetUser.member = interaction.targetMember, interaction.targetUser) : (interaction.user.member = interaction.member, interaction.user)};
+        if(!args.user) args = {user: interaction.isUserContextMenuCommand() ? (interaction.targetUser.member = interaction.targetMember, interaction.targetUser) : (interaction.user.member = interaction.member, interaction.user)};
         if(!interaction.client.guildData.get(interaction.guild.id).gainExp && !interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown) return interaction.reply({
             content: channelLanguage.get('xpDisabled'),
             ephemeral: true,
@@ -232,8 +238,8 @@ module.exports = {
         const availableRoles = ((roleDocs.length > configs.xpRolesLimit) && !interaction.client.guildData.get(interaction.guild.id).premiumUntil && !interaction.client.guildData.get(interaction.guild.id).partner) ? roleDocs.slice(-configs.xpRolesLimit) : roleDocs;
         const current = availableRoles.find(e => (e.xp <= user.xp));
         const next = availableRoles.reverse().find(e => (e.xp > user.xp));
-        let embed = new MessageEmbed()
-            .setColor(args.user.member?.displayColor ?? interaction.guild.me.displayColor ?? 0x8000ff)
+        let embed = new EmbedBuilder()
+            .setColor(args.user.member?.displayColor ?? interaction.guild.members.me.displayColor ?? 0x8000ff)
             .setAuthor({
                 name: args.user.tag ?? channelLanguage.get('xpEmbedAuthor'),
                 iconURL: args.user.displayAvatarURL({dynamic: true}),
@@ -286,8 +292,8 @@ module.exports = {
             xp: {$gte: 1},
         });
         let memberDocsSliced = memberDocs.slice(0, pageSize);
-        const embed = new MessageEmbed()
-            .setColor(interaction.guild.me.displayColor || 0x8000ff)
+        const embed = new EmbedBuilder()
+            .setColor(interaction.guild.members.me.displayColor || 0x8000ff)
             .setAuthor({
                 name: channelLanguage.get('xpRankEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true}),
@@ -305,23 +311,23 @@ module.exports = {
         }
         interaction.client.guildData.get(interaction.guild.id).processing = false;
         const buttonPrevious = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('previous'),
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '⬅',
             customId: 'previous',
             disabled: true,
         };
         const buttonNext = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('next'),
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '➡',
             customId: 'next',
             disabled: (memberDocs.length <= pageSize),
         };
         const components = [{
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [buttonPrevious, buttonNext],
         }];
         const reply = await interaction.editReply({
@@ -333,7 +339,7 @@ module.exports = {
         const collector = reply.createMessageComponentCollector({
             filter: componentInteraction => (componentInteraction.user.id === interaction.user.id),
             time: 600000,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
         });
         collector.on('collect', buttonInteraction => (async buttonInteraction => {
             switch(buttonInteraction.customId){
@@ -387,8 +393,8 @@ module.exports = {
         });
         const replyData = {};
         if((roles.length > configs.xpRolesLimit) && !interaction.client.guildData.get(interaction.guild.id).premiumUntil && !interaction.client.guildData.get(interaction.guild.id).partner) replyData.content = channelLanguage.get('disabledPremiumXpRoles');
-        let embed = new MessageEmbed()
-            .setColor(interaction.guild.me.displayColor || 0x8000ff)
+        let embed = new EmbedBuilder()
+            .setColor(interaction.guild.members.me.displayColor || 0x8000ff)
             .setAuthor({
                 name: channelLanguage.get('xpRolesEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true}),
@@ -406,23 +412,23 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'info',
             description: 'Shows the xp info of a selected user',
             options: [{
-                type: 'USER',
+                type: ApplicationCommandOptionType.User,
                 name: 'user',
                 description: 'The user you want to see the xp info of',
                 required: false,
             }]
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'rank',
             description: 'Lists this server\'s members sorted by their xp',
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'roles',
             description: 'Lists the roles you can aquire by earning xp',
         },

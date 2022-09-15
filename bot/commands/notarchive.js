@@ -1,4 +1,4 @@
-const {Permissions, MessageEmbed} = require('discord.js');
+const {PermissionsBitField, EmbedBuilder, ApplicationCommandOptionType} = require('discord.js');
 const utils = require('../utils.js');
 const configs = require('../configs.js');
 
@@ -8,17 +8,17 @@ module.exports = {
     description: lang => lang.get('notarchiveDescription'),
     cooldown: 5,
     categoryID: 2,
-    perm: Permissions.FLAGS.MANAGE_THREADS,
+    perm: PermissionsBitField.Flags.ManageThreads,
     guildOnly: true,
     slashOptions: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'manage',
             nameLocalizations: utils.getStringLocales('notarchive_manageLocalisedName'),
             description: 'Enables or disables the automatic unarchiving of the current thread',
             descriptionLocalizations: utils.getStringLocales('notarchive_manageLocalisedDesc'),
             options: [{
-                type: 'BOOLEAN',
+                type: ApplicationCommandOptionType.Boolean,
                 name: 'enable',
                 nameLocalizations: utils.getStringLocales('notarchive_manageOptionenableLocalisedName'),
                 description: 'Whether it should be enabled or disabled',
@@ -27,7 +27,7 @@ module.exports = {
             }],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'list',
             nameLocalizations: utils.getStringLocales('notarchive_listLocalisedName'),
             description: 'Lists threads that are set to never archive in this server',
@@ -43,9 +43,9 @@ module.exports = {
         if(
             args.enable
             &&
-            !interaction.guild.me
+            !interaction.guild.members.me
                 .permissionsIn(interaction.channel)
-                .has(Permissions.FLAGS.MANAGE_THREADS)
+                .has(PermissionsBitField.Flags.ManageThreads)
         ) return await interaction.reply({
             content: channelLanguage.get('botCantUnarchive'),
             ephemeral: true,
@@ -103,7 +103,7 @@ module.exports = {
         )];
         const replyData = {}
         if(threads.length >= autoUnarchiveLimits) replyData.content = channelLanguage.get('disabledExtraNotArchiveds');
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(0x2f3136)
             .setAuthor({
                 name: channelLanguage.get('notarchiveEmbedAuthor'),

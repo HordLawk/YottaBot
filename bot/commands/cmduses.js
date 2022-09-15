@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder, ApplicationCommandOptionType } = require("discord.js");
 const locale = require('../../locale');
 
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
             }},
             {$sort: {count: -1}},
         ]);
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setAuthor({
                 name: 'Commands usage stats',
                 iconURL: interaction.client.user.avatarURL(),
@@ -50,7 +50,7 @@ module.exports = {
             content: 'There are no commands usage statistics for this user',
             ephemeral: true,
         });
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setAuthor({
                 name: args.user.tag,
                 iconURL: args.user.avatarURL(),
@@ -81,7 +81,7 @@ module.exports = {
             ephemeral: true,
         });
         const server = interaction.client.guilds.cache.get(args.guild);
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setAuthor({
                 name: server.name,
                 iconURL: server.iconURL({dynamic: true}),
@@ -92,27 +92,27 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'all',
             description: 'Shows stats of the usage of commands throughout all servers',
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'user',
             description: 'Shows stats of the usage of commands for an user',
             options: [{
-                type: 'USER',
+                type: ApplicationCommandOptionType.User,
                 name: 'user',
                 description: 'The user to check command usage stats of',
                 required: true,
             }],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'server',
             description: 'Shows stats of the usage of command for a server',
             options: [{
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'guild',
                 description: 'The server to check command usage stats of',
                 required: true,

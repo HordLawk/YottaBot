@@ -5,7 +5,7 @@ const log = require('../../schemas/log.js');
 const guildModel = require('../../schemas/guild.js');
 const user = require('../../schemas/user.js');
 const member = require('../../schemas/member.js');
-const {MessageEmbed, Collection, Permissions} = require('discord.js');
+const {EmbedBuilder, Collection, PermissionsBitField, ActivityType, ChannelType} = require('discord.js');
 const {AutoPoster} = require('topgg-autoposter');
 const axios = require('axios');
 const locale = require('../../locale');
@@ -15,7 +15,7 @@ module.exports = {
     name: 'ready',
     execute: async client => {
         console.log(`Logged in as ${client.user.tag}!`);
-        client.user.setActivity("your pings", {type:'LISTENING'});
+        client.user.setActivity("your pings", {type: ActivityType.Listening});
         await client.application.fetch();
         await ((process.env.NODE_ENV === 'production') ? client.application : client.guilds.cache.get(process.env.DEV_GUILD)).commands.fetch();
         if(process.env.NODE_ENV === 'production'){
@@ -64,9 +64,9 @@ module.exports = {
                 if(discordMember && discordMember.isCommunicationDisabled()) continue;
                 let discordUser = discordMember?.user ?? await client.users.fetch(unmuteDoc.target).catch(() => {});
                 let discordChannel = guild.channels.cache.get(client.guildData.get(guild.id).modlogs.mute);
-                if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(guild.me).has(Permissions.FLAGS.SEND_MESSAGES) && discordChannel.permissionsFor(guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
+                if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(guild.members.me).has(PermissionsBitField.Flags.SendMessages) && discordChannel.permissionsFor(guild.members.me).has(PermissionsBitField.Flags.EmbedLinks)){
                     let guildLanguage = locale.get(client.guildData.get(guild.id).language);
-                    let embed = new MessageEmbed()
+                    let embed = new EmbedBuilder()
                         .setColor(0x0000ff)
                         .setAuthor({
                             name: discordUser ? guildLanguage.get('autoUnmuteEmbedAuthorMember', [discordUser.tag]) : guildLanguage.get('autoUnmuteEmbedAuthorNoMember'),
@@ -75,7 +75,7 @@ module.exports = {
                         .addField(guildLanguage.get('autoUnmuteEmbedTargetTitle'), guildLanguage.get('autoUnmuteEmbedTargetValue', [unmuteDoc.target]), true)
                         .setTimestamp()
                         .addField(guildLanguage.get('autoUnmuteEmbedReasonTitle'), guildLanguage.get('autoUnmuteEmbedReasonValue'));
-                    let msg = await discordChannel.messages.fetch(unmuteDoc.logMessage).catch(() => null);
+                    let msg = await discordChannel.messages.fetch({message: unmuteDoc.logMessage}).catch(() => null);
                     if(msg) embed.setDescription(guildLanguage.get('autoUnmuteEmbedDescription', [msg.url]));
                     await discordChannel.send({embeds: [embed]});
                 };
@@ -153,7 +153,7 @@ module.exports = {
             for(let voiceGuild of voiceGuilds){
                 let discordGuild = client.guilds.cache.get(voiceGuild._id);
                 let ignoredChannels = await channel.find({
-                    _id: {$in: discordGuild.channels.cache.filter(e => (e.type === 'GUILD_VOICE')).map(e => e.id)},
+                    _id: {$in: discordGuild.channels.cache.filter(e => (e.type === ChannelType.GuildVoice)).map(e => e.id)},
                     ignoreXp: true,
                 });
                 let roleDocs = await role.find({

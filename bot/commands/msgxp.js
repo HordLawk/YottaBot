@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, ButtonStyle, ComponentType} = require('discord.js');
 const configs = require('../configs.js');
 
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
     cooldown: 5,
     categoryID: 4,
     args: true,
-    perm: Permissions.FLAGS.ADMINISTRATOR,
+    perm: PermissionsBitField.Flags.Administrator,
     guildOnly: true,
     execute: async function(message, args){
         const {channelLanguage} = message;
@@ -161,7 +161,7 @@ module.exports = {
                 }
                 else{
                     let discordChannel = message.guild.channels.cache.get((args[3].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[3]);
-                    if(!discordChannel || !discordChannel.isText()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                    if(!discordChannel || !discordChannel.isTextBased()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                     await channel.findOneAndUpdate({
                         _id: discordChannel.id,
                         guild: message.guild.id,
@@ -191,8 +191,8 @@ module.exports = {
                     break;
                     default: {
                         let discordChannel = message.guild.channels.cache.get((args[1].match(/<#(\d{17,19})>/) || [])[1]) || message.client.channels.cache.get(args[1]);
-                        if(!discordChannel || !discordChannel.isText()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                        if(!message.guild.me.permissionsIn(discordChannel).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.viewable) return message.reply(channelLanguage.get('sendMessages'));
+                        if(!discordChannel || !discordChannel.isTextBased()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                        if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.SendMessages) || !discordChannel.viewable) return message.reply(channelLanguage.get('sendMessages'));
                         await guild.findByIdAndUpdate(message.guild.id, {$set: {xpChannel: discordChannel.id}});
                         message.client.guildData.get(message.guild.id).xpChannel = discordChannel.id;
                         message.reply(channelLanguage.get('notifyChannel', [discordChannel]));
@@ -244,7 +244,7 @@ module.exports = {
             }
             break;
             case 'view': {
-                if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
+                if(!message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));
                 let notifs;
                 switch(message.client.guildData.get(message.guild.id).xpChannel){
                     case 'default': notifs = channelLanguage.get('notifyDefaultView');
@@ -253,8 +253,8 @@ module.exports = {
                     break;
                     default: notifs = message.client.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel) || channelLanguage.get('notifyNoneView');
                 }
-                let embed = new MessageEmbed()
-                    .setColor(message.guild.me.displayColor || 0x8000ff)
+                let embed = new EmbedBuilder()
+                    .setColor(message.guild.members.me.displayColor || 0x8000ff)
                     .setAuthor({
                         name: channelLanguage.get('xpViewEmbedAuthor'),
                         iconURL: message.guild.iconURL({
@@ -279,7 +279,7 @@ module.exports = {
                 if(roles.filter(e => (e.xpMultiplier && (e.xpMultiplier > 1))).length) embed.addField(channelLanguage.get('xpViewMultipliedRoles'), roles.filter(e => (e.xpMultiplier && (e.xpMultiplier > 1))).map(e => `<@&${e.roleID}> **-** \`${e.xpMultiplier}x\``).join('\n'));
                 if(roles.filter(e => e.ignoreXp).length) embed.addField(channelLanguage.get('xpViewIgnoredRoles'), roles.filter(e => e.ignoreXp).map(e => `<@&${e.roleID}>`).join(' '));
                 let channels = await channel.find({
-                    _id: {$in: message.guild.channels.cache.filter(e => e.isText()).map(e => e.id)},
+                    _id: {$in: message.guild.channels.cache.filter(e => e.isTextBased()).map(e => e.id)},
                     guild: message.guild.id,
                     ignoreXp: true,
                 });
@@ -290,21 +290,21 @@ module.exports = {
             break;
             case 'reset': {
                 const buttonConfirm = {
-                    type: 'BUTTON',
+                    type: ComponentType.Button,
                     label: channelLanguage.get('confirm'),
-                    style: 'SUCCESS',
+                    style: ButtonStyle.Success,
                     emoji: '✅',
                     customId: 'confirm',
                 };
                 const buttonCancel = {
-                    type: 'BUTTON',
+                    type: ComponentType.Button,
                     label: channelLanguage.get('cancel'),
-                    style: 'DANGER',
+                    style: ButtonStyle.Danger,
                     emoji: '❌',
                     customId: 'cancel',
                 };
                 const components = [{
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [buttonConfirm, buttonCancel],
                 }];
                 const reply = await message.reply({
@@ -315,7 +315,7 @@ module.exports = {
                     filter: componentInteraction => (componentInteraction.user.id === message.author.id),
                     idle: 10000,
                     max: 1,
-                    componentType: 'BUTTON',
+                    componentType: ComponentType.Button,
                 });
                 collector.on('collect', i => (async i => {
                     switch(i.customId){

@@ -1,4 +1,4 @@
-const {Permissions, Collection, MessageEmbed} = require('discord.js');
+const {PermissionsBitField, Collection, EmbedBuilder, ApplicationCommandOptionType} = require('discord.js');
 const locale = require('../../locale');
 
 const chunkFetch = async (maxAmount, channel, authorId, fetched = (new Collection()), count = 0, before) => {
@@ -45,19 +45,19 @@ module.exports = {
     cooldown: 10,
     categoryID: 3,
     args: true,
-    perm: Permissions.FLAGS.MANAGE_CHANNELS,
+    perm: PermissionsBitField.Flags.ManageChannels,
     guildOnly: true,
     execute: async (message, args) => {
         const {channelLanguage} = message;
         if(
             !message.member
                 .permissionsIn(message.channel)
-                .has(Permissions.FLAGS.MANAGE_MESSAGES)
+                .has(PermissionsBitField.Flags.ManageMessages)
         ) return await message.reply(channelLanguage.get('cantPruneMessages'));
         if(
-            !message.guild.me
+            !message.guild.members.me
                 .permissionsIn(message.channel)
-                .has(Permissions.FLAGS.MANAGE_MESSAGES)
+                .has(PermissionsBitField.Flags.ManageMessages)
         ) return await message.reply(channelLanguage.get('botCantPruneMessages'));
         const amount = parseInt(args[0]) + 1;
         if(
@@ -109,7 +109,7 @@ module.exports = {
             )
             .catch(() => null);
         if(!hook) return;
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(0xff0000)
             .setTimestamp()
             .setAuthor({
@@ -158,9 +158,9 @@ module.exports = {
         if(
             !interaction.channel.viewable
             ||
-            !interaction.guild.me
+            !interaction.guild.members.me
                 .permissionsIn(interaction.channel)
-                .has(Permissions.FLAGS.MANAGE_MESSAGES)
+                .has(PermissionsBitField.Flags.ManageMessages)
         ) return await interaction.reply({
             content: channelLanguage.get('botCantPruneMessages'),
             ephemeral: true,
@@ -221,7 +221,7 @@ module.exports = {
             .catch(() => null);
         if(!hook) return;
         const logsLanguage = locale.get(interaction.client.guildData.get(interaction.guild.id).language);
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(0xff0000)
             .setTimestamp()
             .setAuthor({
@@ -267,7 +267,7 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'INTEGER',
+            type: ApplicationCommandOptionType.Integer,
             name: 'amount',
             description: 'The number of messages to delete',
             required: true,
@@ -275,7 +275,7 @@ module.exports = {
             maxValue: 999,
         },
         {
-            type: 'USER',
+            type: ApplicationCommandOptionType.User,
             name: 'author',
             description: 'The author of the messages to delete',
             required: false,

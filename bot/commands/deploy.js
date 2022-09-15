@@ -1,3 +1,4 @@
+const { ApplicationCommandType, ApplicationCommandOptionType } = require('discord.js');
 const locale = require('../../locale');
 
 module.exports = {
@@ -9,9 +10,14 @@ module.exports = {
     addSlash: async (interaction, args) => {
         const commands = require('.');
         const {channelLanguage} = interaction;
+        const type = parseInt(args.type, 10);
         if(
             !args.name ||
-            !['CHAT_INPUT', 'USER', 'MESSAGE'].includes(args.type)
+            ![
+                ApplicationCommandType.ChatInput,
+                ApplicationCommandType.User,
+                ApplicationCommandType.Message,
+            ].includes(type)
         ) throw new Error('Invalid slash command options');
         const command = commands.get(args.name);
         if(!command) return interaction.reply({
@@ -24,12 +30,12 @@ module.exports = {
                 ? interaction.client.application
                 : interaction.guild
             ).commands.create({
-                type: args.type,
-                default_member_permissions: command.perm,
-                dm_permission: !command.guildOnly,
-                ...((args.type === 'CHAT_INPUT') ? {
+                type: type,
+                defaultMemberPermissions: command.perm,
+                dmPermission: !command.guildOnly,
+                ...((type === ApplicationCommandType.ChatInput) ? {
                     name: command.name,
-                    name_localizations: locale
+                    nameLocalizations: locale
                         .filter((_, i) => (i !== 'en'))
                         .reduce((acc, e) => (
                             e.get(`${command.name}LocalisedName`)
@@ -37,13 +43,13 @@ module.exports = {
                             : acc
                         ), {}),
                     description: command.description(locale.get('en')),
-                    description_localizations: locale
+                    descriptionLocalizations: locale
                         .filter((_, i) => (i !== 'en'))
                         .reduce((acc, e) => ({...acc, [e.code]: command.description(e)}), {}),
                     options: command.slashOptions,
                 } : {
                     name: command.contextName,
-                    name_localizations: locale
+                    nameLocalizations: locale
                         .filter((_, i) => (i !== 'en'))
                         .reduce((acc, e) => (
                             e.get(`${command.name}ContextName`)
@@ -56,16 +62,21 @@ module.exports = {
         }
         catch(e){
             console.error(e);
-            await interaction.reply(channelLanguage.get('deployFail', [command.name, args.type]));
+            await interaction.reply(channelLanguage.get('deployFail', [command.name, type]));
         }
     },
     editSlash: async (interaction, args) => {
         const commands = require('.');
         const {channelLanguage} = interaction;
+        const type = parseInt(args.type, 10);
         if(
             !args.slash_name ||
             !args.command_name ||
-            !['CHAT_INPUT', 'USER', 'MESSAGE'].includes(args.type)
+            ![
+                ApplicationCommandType.ChatInput,
+                ApplicationCommandType.User,
+                ApplicationCommandType.Message,
+            ].includes(type)
         ) throw new Error('Invalid slash command options');
         const command = commands.get(args.command_name);
         const slash = (
@@ -79,11 +90,11 @@ module.exports = {
         });
         try{
             await slash.edit({
-                default_member_permissions: command.perm,
-                dm_permission: !command.guildOnly,
-                ...((slash.type === 'CHAT_INPUT') ? {
+                defaultMemberPermissions: command.perm,
+                dmPermission: !command.guildOnly,
+                ...((slash.type === ApplicationCommandType.ChatInput) ? {
                     name: command.name,
-                    name_localizations: locale
+                    nameLocalizations: locale
                         .filter((_, i) => (i !== 'en'))
                         .reduce((acc, e) => (
                             e.get(`${command.name}LocalisedName`)
@@ -91,13 +102,13 @@ module.exports = {
                             : acc
                         ), {}),
                     description: command.description(locale.get('en')),
-                    description_localizations: locale
+                    descriptionLocalizations: locale
                         .filter((_, i) => (i !== 'en'))
                         .reduce((acc, e) => ({...acc, [e.code]: command.description(e)}), {}),
                     options: command.slashOptions,
                 } : {
                     name: command.contextName,
-                    name_localizations: locale
+                    nameLocalizations: locale
                         .filter((_, i) => (i !== 'en'))
                         .reduce((acc, e) => (
                             e.get(`${command.name}ContextName`)
@@ -115,32 +126,32 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'add',
             description: 'Add a new command',
             options: [
                 {
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     name: 'type',
                     description: 'The type of this command',
                     required: true,
                     choices: [
                         {
                             name: 'Chat command',
-                            value: 'CHAT_INPUT',
+                            value: ApplicationCommandType.ChatInput.toString(),
                         },
                         {
                             name: 'User context menu command',
-                            value: 'USER',
+                            value: ApplicationCommandType.User.toString(),
                         },
                         {
                             name: 'Message context menu command',
-                            value: 'MESSAGE',
+                            value: ApplicationCommandType.Message.toString(),
                         },
                     ],
                 },
                 {
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     name: 'name',
                     description: 'The name of this command',
                     required: true,
@@ -149,39 +160,39 @@ module.exports = {
             ],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'edit',
             description: 'Edit an existing command',
             options: [
                 {
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     name: 'type',
                     description: 'The type of this command',
                     required: true,
                     choices: [
                         {
                             name: 'Chat command',
-                            value: 'CHAT_INPUT',
+                            value: ApplicationCommandType.ChatInput.toString(),
                         },
                         {
                             name: 'User context menu command',
-                            value: 'USER',
+                            value: ApplicationCommandType.User.toString(),
                         },
                         {
                             name: 'Message context menu command',
-                            value: 'MESSAGE',
+                            value: ApplicationCommandType.Message.toString(),
                         },
                     ],
                 },
                 {
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     name: 'slash_name',
                     description: 'Registered slash command name',
                     required: true,
                     autocomplete: true,
                 },
                 {
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     name: 'command_name',
                     description: 'Internal command name',
                     required: true,

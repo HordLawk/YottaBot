@@ -3,13 +3,13 @@ const role = require('../../schemas/role.js');
 const channel = require('../../schemas/channel.js');
 const user = require('../../schemas/user.js');
 const member = require('../../schemas/member.js');
-const {Collection} = require('discord.js');
+const {Collection, InteractionType, ApplicationCommandOptionType} = require('discord.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
 const commands = require('../commands');
 
 module.exports = {
-    name: 'APPLICATION_COMMAND',
+    type: InteractionType.ApplicationCommand,
     execute: async function(interaction){
         if(interaction.guild && !interaction.guild.available) throw new Error('Invalid interaction.');
         if(interaction.guild){
@@ -34,7 +34,7 @@ module.exports = {
         const {commandName} = interaction;
         const subCommandGroupName = interaction.options.getSubcommandGroup(false);
         const subCommandName = interaction.options.getSubcommand(false);
-        const command = interaction.isContextMenu() ? commands.find(cmd => (cmd.contextName === commandName)) : commands.get(commandName);
+        const command = interaction.isContextMenuCommand() ? commands.find(cmd => (cmd.contextName === commandName)) : commands.get(commandName);
         if(!command) throw new Error('Invalid command.');
         if((command.dev && (interaction.user.id !== interaction.client.application.owner.id)) || (command.alpha && !interaction.client.guildData.get(interaction.guild.id).alpha)) return interaction.reply({
             content: channelLanguage.get('invalidCommand'),
@@ -93,8 +93,32 @@ module.exports = {
         let options = interaction.options.data;
         if(subCommandName) options = subCommandGroupName ? interaction.options.data[0].options[0].options : interaction.options.data[0].options;
         if(options?.length > 0) options.forEach(opt => {
-            args[opt.name] = opt[opt.type.toLowerCase()] ? opt[opt.type.toLowerCase()] : opt.value;
-            if(opt.type === 'USER' && opt.member) args[opt.name].member = opt.member;
+            switch(opt.type){
+                case ApplicationCommandOptionType.String:
+                case ApplicationCommandOptionType.Boolean:
+                case ApplicationCommandOptionType.Integer:
+                case ApplicationCommandOptionType.Number: {
+                    args[opt.name] = opt.value;
+                }
+                break;
+                case ApplicationCommandOptionType.Attachment: {
+                    args[opt.name] = opt.attachment;
+                }
+                break;
+                case ApplicationCommandOptionType.Channel: {
+                    args[opt.name] = opt.channel;
+                }
+                break;
+                case ApplicationCommandOptionType.Role: {
+                    args[opt.name] = opt.role;
+                }
+                break;
+                case ApplicationCommandOptionType.User: {
+                    args[opt.name] = opt.user;
+                    if(opt.member) args[opt.name].member = opt.member;
+                }
+                break;
+            }
         });
         interaction.channelLanguage = channelLanguage;
         command[`${subCommandName ? `${(subCommandGroupName ?? '')}${subCommandName}` : 'execute'}Slash`](interaction, args).then(async () => {

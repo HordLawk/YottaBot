@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, ApplicationCommandOptionType, ChannelType} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -10,7 +10,7 @@ module.exports = {
     cooldown: 5,
     categoryID: 4,
     args: true,
-    perm: Permissions.FLAGS.ADMINISTRATOR,
+    perm: PermissionsBitField.Flags.Administrator,
     guildOnly: true,
     premium: true,
     execute: async function(message, args){
@@ -69,7 +69,7 @@ module.exports = {
                 if(
                     !discordChannel
                     ||
-                    (discordChannel.type !== 'GUILD_VOICE')
+                    (discordChannel.type !== ChannelType.GuildVoice)
                 ) return message.reply(
                     channelLanguage.get(
                         'invArgs',
@@ -92,12 +92,12 @@ module.exports = {
             break;
             case 'view': {
                 if(
-                    !message.guild.me
+                    !message.guild.members.me
                         .permissionsIn(message.channel)
-                        .has(Permissions.FLAGS.EMBED_LINKS)
+                        .has(PermissionsBitField.Flags.EmbedLinks)
                 ) return message.reply(channelLanguage.get('botEmbed'));
-                let embed = new MessageEmbed()
-                    .setColor(message.guild.me.displayColor ?? 0x8000ff)
+                let embed = new EmbedBuilder()
+                    .setColor(message.guild.members.me.displayColor ?? 0x8000ff)
                     .setAuthor({
                         name: channelLanguage.get('voiceXpEmbedAuthor'),
                         iconURL: message.guild.iconURL({dynamic: true}),
@@ -110,7 +110,7 @@ module.exports = {
                     )
                     .setTimestamp();
                 let channels = await channel.find({
-                    _id: {$in: message.guild.channels.cache.filter(e => (e.type === 'GUILD_VOICE')).map(e => e.id)},
+                    _id: {$in: message.guild.channels.cache.filter(e => (e.type === ChannelType.GuildVoice)).map(e => e.id)},
                     guild: message.guild.id,
                     ignoreXp: true,
                 });
@@ -178,8 +178,8 @@ module.exports = {
     },
     infoSlash: async interaction => {
         const {channelLanguage} = interaction;
-        const embed = new MessageEmbed()
-            .setColor(interaction.guild.me.displayColor ?? 0x8000ff)
+        const embed = new EmbedBuilder()
+            .setColor(interaction.guild.members.me.displayColor ?? 0x8000ff)
             .setAuthor({
                 name: channelLanguage.get('voiceXpEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true}),
@@ -193,7 +193,7 @@ module.exports = {
             .setTimestamp();
         const channel = require('../../schemas/channel.js');
         const channels = await channel.find({
-            _id: {$in: interaction.guild.channels.cache.filter(e => (e.type === 'GUILD_VOICE')).map(e => e.id)},
+            _id: {$in: interaction.guild.channels.cache.filter(e => (e.type === ChannelType.GuildVoice)).map(e => e.id)},
             guild: interaction.guild.id,
             ignoreXp: true,
         });
@@ -207,11 +207,11 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'enable',
             description: 'Enables xp earnings in voice channels',
             options: [{
-                type: 'INTEGER',
+                type: ApplicationCommandOptionType.Integer,
                 name: 'minutes',
                 description: 'How many minutes an user should stay in a voice channel to earn 1 xp',
                 required: true,
@@ -220,32 +220,32 @@ module.exports = {
             }],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'disable',
             description: 'Disables xp earnings in voice channels',
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'ignore',
             description: 'Users won\'t earn xp in these voice channels',
             options: [
                 {
-                    type: 'BOOLEAN',
+                    type: ApplicationCommandOptionType.Boolean,
                     name: 'add',
                     description: 'Whether to add or remove a channel from the ignored list',
                     required: true,
                 },
                 {
-                    type: 'CHANNEL',
+                    type: ApplicationCommandOptionType.Channel,
                     name: 'channel',
                     description: 'The channel to be added or removed from the ignored list',
                     required: true,
-                    channelTypes: ['GUILD_VOICE'],
+                    channelTypes: [ChannelType.GuildVoice],
                 },
             ],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'info',
             description: 'Shows details about the xp earning in voice channels system',
         },

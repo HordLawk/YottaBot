@@ -1,4 +1,4 @@
-const {MessageEmbed} = require('discord.js');
+const {EmbedBuilder, ApplicationCommandOptionType, ButtonStyle, ComponentType} = require('discord.js');
 const axios = require('axios');
 
 module.exports = {
@@ -20,22 +20,22 @@ module.exports = {
         const userDoc = await user.findById(interaction.user.id);
         if(!interaction.guild) return interaction.reply(channelLanguage.get('activatePremium', [userDoc?.premiumKeys]));
         const buttonKey = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('premiumKeysLabel'),
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '🔑',
             customId: 'useKey',
             disabled: !userDoc?.premiumKeys
         };
         const buttonReward = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('premiumPatreonLabel'),
-            style: 'SECONDARY',
+            style: ButtonStyle.Secondary,
             emoji: '943405711243739176',
             customId: 'useReward',
         };
         const components = [{
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [buttonKey, buttonReward],
         }];
         const reply = await interaction.reply({
@@ -48,7 +48,7 @@ module.exports = {
             filter: componentInteraction => (componentInteraction.user.id === interaction.user.id),
             idle: 10000,
             max: 1,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
         });
         collector.on('collect', i => (async i => {
             const guild = require('../../schemas/guild.js');
@@ -101,14 +101,14 @@ module.exports = {
                     }}, {new: true});
                     interaction.client.guildData.set(interaction.guild.id, guildData);
                     const buttonRenew = {
-                        type: 'BUTTON',
+                        type: ComponentType.Button,
                         label: channelLanguage.get('enableRenew'),
-                        style: 'PRIMARY',
+                        style: ButtonStyle.Primary,
                         emoji: '♻️',
                         customId: 'renew',
                     };
                     const components = [{
-                        type: 'ACTION_ROW',
+                        type: ComponentType.ActionRow,
                         components: [buttonRenew],
                     }];
                     const reply2 = await i.editReply({
@@ -120,7 +120,7 @@ module.exports = {
                         filter: componentInteraction => (componentInteraction.user.id === interaction.user.id),
                         idle: 10000,
                         max: 1,
-                        componentType: 'BUTTON',
+                        componentType: ComponentType.Button,
                     });
                     collector2.on('collect', i2 => (async i2 => {
                         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {renewPremium: (interaction.client.guildData.get(interaction.guild.id).renewPremium = true)}});
@@ -153,8 +153,8 @@ module.exports = {
             content: channelLanguage.get('notPatron'),
             ephemeral: true,
         });
-        const embed = new MessageEmbed()
-            .setColor(interaction.guild?.me.displayColor || 0x8000ff)
+        const embed = new EmbedBuilder()
+            .setColor(interaction.guild?.members.me.displayColor || 0x8000ff)
             .addFields(...patronGuilds.map(e => ({
                 name: interaction.client.guilds.cache.get(e.id)?.name ?? channelLanguage.get('unknownGuild'),
                 value: channelLanguage.get('premiumInfoFieldValue', [Math.floor(e.premiumUntil.getTime() / 1000), interaction.client.guilds.cache.has(e.id) && e.renewPremium]),
@@ -184,28 +184,28 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'activate',
             description: 'Enabled premium features in the current server',
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'info',
             description: 'Shows information about which servers you have used Patreon rewards and their renew status',
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'renew',
             description: 'Manages the renew status for servers you have given premium through Patreon rewards',
             options: [
                 {
-                    type: 'BOOLEAN',
+                    type: ApplicationCommandOptionType.Boolean,
                     name: 'enable',
                     description: 'Whether to enable monthly automatic premium renewals for the chosen server',
                     required: true,
                 },
                 {
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     name: 'guild',
                     description: 'The guild to enable or disable automatic premium renewals',
                     required: true,

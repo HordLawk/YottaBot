@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, ApplicationCommandOptionType, ChannelType} = require('discord.js');
 const locale = require('../../locale');
 const configs = require('../configs');
 
@@ -17,7 +17,7 @@ module.exports = {
     cooldown: 5,
     categoryID: 2,
     args: true,
-    perm: Permissions.FLAGS.ADMINISTRATOR,
+    perm: PermissionsBitField.Flags.Administrator,
     guildOnly: true,
     execute: async function(message, args){
         const {channelLanguage} = message;
@@ -28,14 +28,15 @@ module.exports = {
             case 'defaultchannel': {
                 if(!args[1]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 let discordChannel = message.guild.channels.cache.get((args[1].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
-                if(!discordChannel || !discordChannel.isText()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                if(!message.guild.me.permissionsIn(discordChannel).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) return message.reply(channelLanguage.get('botWebhooks'));
-                let hook = await discordChannel.createWebhook(message.client.user.username, {
+                if(!discordChannel || !discordChannel.isTextBased()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.ManageWebhooks)) return message.reply(channelLanguage.get('botWebhooks'));
+                let hook = await discordChannel.createWebhook({
                     avatar: message.client.user.avatarURL({size: 4096}),
                     reason: channelLanguage.get('newDefaultHookReason'),
+                    name: message.client.user.username,
                 });
                 let oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
-                if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldDefaultHookReason'));
+                if(oldHook && message.guild.members.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelId)).has(PermissionsBitField.Flags.ManageWebhooks)) await oldHook.delete(channelLanguage.get('oldDefaultHookReason'));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {
                     defaultLogsHookID: hook.id,
                     defaultLogsHookToken: hook.token,
@@ -51,7 +52,7 @@ module.exports = {
                     let hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
                     if(!hook) return message.reply(channelLanguage.get('noDefaultLog'));
                     let oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
-                    if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [channelLanguage.get(`action${args[1]}`)]));
+                    if(oldHook && message.guild.members.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelId)).has(PermissionsBitField.Flags.ManageWebhooks)) await oldHook.delete(channelLanguage.get('oldHookReason', [channelLanguage.get(`action${args[1]}`)]));
                     let guildDoc = await guild.findById(message.guild.id);
                     if(!guildDoc.actionlogs.id(args[1])){
                         guildDoc.actionlogs.push({_id: args[1]});
@@ -66,14 +67,15 @@ module.exports = {
                 }
                 else{
                     let discordChannel = message.guild.channels.cache.get((args[2].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
-                    if(!discordChannel || !discordChannel.isText()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                    if(!message.guild.me.permissionsIn(discordChannel).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) return message.reply(channelLanguage.get('botWebhooks'));
-                    let hook = await discordChannel.createWebhook(message.client.user.username, {
+                    if(!discordChannel || !discordChannel.isTextBased()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                    if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.ManageWebhooks)) return message.reply(channelLanguage.get('botWebhooks'));
+                    let hook = await discordChannel.createWebhook({
                         avatar: message.client.user.avatarURL({size: 4096}),
                         reason: channelLanguage.get('newHookReason', [channelLanguage.get(`${args[1]}ActionName`)]),
+                        name: message.client.user.username,
                     });
                     let oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
-                    if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [args[1]]));
+                    if(oldHook && message.guild.members.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelId)).has(PermissionsBitField.Flags.ManageWebhooks)) await oldHook.delete(channelLanguage.get('oldHookReason', [args[1]]));
                     let guildDoc = await guild.findById(message.guild.id);
                     if(!guildDoc.actionlogs.id(args[1])){
                         guildDoc.actionlogs.push({
@@ -95,7 +97,7 @@ module.exports = {
             case 'remove': {
                 if(!args[1] || !configs.actions.has(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 let oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
-                if(oldHook && message.guild.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [args[1]]));
+                if(oldHook && message.guild.members.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelId)).has(PermissionsBitField.Flags.ManageWebhooks)) await oldHook.delete(channelLanguage.get('oldHookReason', [args[1]]));
                 let guildDoc = await guild.findById(message.guild.id);
                 if(guildDoc.actionlogs.id(args[1])){
                     guildDoc.actionlogs.id(args[1]).remove();
@@ -109,14 +111,14 @@ module.exports = {
                 if(!['channel', 'role'].includes(args[1]) || (args.length < 4)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 switch(args[2]){
                     case 'view': {
-                        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
+                        if(!message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));
                         if(args[1] === 'channel'){
                             let discordChannel = message.guild.channels.cache.get((args[3].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
                             if(!discordChannel) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                             let channelDoc = await channel.findById(discordChannel.id);
                             if(!channelDoc || !channelDoc.ignoreActions.length) return message.reply(channelLanguage.get('noIgnoredActionsChannel'));
-                            let embed = new MessageEmbed()
-                                .setColor(message.guild.me.displayColor || 0x8000ff)
+                            let embed = new EmbedBuilder()
+                                .setColor(message.guild.members.me.displayColor || 0x8000ff)
                                 .setAuthor({
                                     name: channelLanguage.get('ignoredActionsChannelEmbedAuthor'),
                                     iconURL: message.guild.iconURL({
@@ -140,8 +142,8 @@ module.exports = {
                                 ignoreActions: {$ne: []},
                             });
                             if(!roleDoc) return message.reply(channelLanguage.get('noIgnoredActionsRole'));
-                            let embed = new MessageEmbed()
-                                .setColor(message.guild.me.displayColor || 0x8000ff)
+                            let embed = new EmbedBuilder()
+                                .setColor(message.guild.members.me.displayColor || 0x8000ff)
                                 .setAuthor({
                                     name: channelLanguage.get('ignoredActionsRoleEmbedAuthor'),
                                     iconURL: message.guild.iconURL({
@@ -253,10 +255,10 @@ module.exports = {
             }
             break;
             case 'view': {
-                if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
+                if(!message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));
                 let hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
-                let embed = new MessageEmbed()
-                    .setColor(message.guild.me.displayColor || 0x8000ff)
+                let embed = new EmbedBuilder()
+                    .setColor(message.guild.members.me.displayColor || 0x8000ff)
                     .setAuthor({
                         name: channelLanguage.get('logsViewEmbedAuthor'),
                         iconURL: message.guild.iconURL({
@@ -301,16 +303,17 @@ module.exports = {
     },
     defaultSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        if(!interaction.guild.me.permissionsIn(args.channel).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) return interaction.reply({
+        if(!interaction.guild.members.me.permissionsIn(args.channel).has(PermissionsBitField.Flags.ManageWebhooks)) return interaction.reply({
             content: channelLanguage.get('botWebhooks'),
             ephemeral: true,
         });
-        const hook = await args.channel.createWebhook(interaction.client.user.username, {
+        const hook = await args.channel.createWebhook({
             avatar: interaction.client.user.avatarURL(),
             reason: channelLanguage.get('newDefaultHookReason'),
+            name: interaction.client.user.username,
         });
         const oldHook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
-        if(oldHook && interaction.guild.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldDefaultHookReason'));
+        if(oldHook && interaction.guild.members.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(PermissionsBitField.Flags.ManageWebhooks)) await oldHook.delete(channelLanguage.get('oldDefaultHookReason'));
         const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(interaction.guild.id, {$set: {
             defaultLogsHookID: hook.id,
@@ -327,16 +330,17 @@ module.exports = {
         });
         const guild = require('../../schemas/guild.js');
         if(args.log_channel){
-            if(!interaction.guild.me.permissionsIn(args.log_channel).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) return interaction.reply({
+            if(!interaction.guild.members.me.permissionsIn(args.log_channel).has(PermissionsBitField.Flags.ManageWebhooks)) return interaction.reply({
                 content: channelLanguage.get('botWebhooks'),
                 ephemeral: true,
             });
-            const hook = await args.log_channel.createWebhook(interaction.client.user.username, {
+            const hook = await args.log_channel.createWebhook({
                 avatar: interaction.client.user.avatarURL(),
                 reason: channelLanguage.get('newHookReason', [channelLanguage.get(`${args[1]}ActionName`)]),
+                name: interaction.client.user.username,
             });
             const oldHook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookToken).catch(() => null);
-            if(oldHook && interaction.guild.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [args.action]));
+            if(oldHook && interaction.guild.members.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(PermissionsBitField.Flags.ManageWebhooks)) await oldHook.delete(channelLanguage.get('oldHookReason', [args.action]));
             const guildDoc = await guild.findById(interaction.guild.id);
             if(!guildDoc.actionlogs.id(args.action)){
                 guildDoc.actionlogs.push({
@@ -360,7 +364,7 @@ module.exports = {
                 ephemeral: true,
             });
             const oldHook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookToken).catch(() => null);
-            if(oldHook && interaction.guild.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [channelLanguage.get(`action${args.action}`)]));
+            if(oldHook && interaction.guild.members.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(PermissionsBitField.Flags.ManageWebhooks)) await oldHook.delete(channelLanguage.get('oldHookReason', [channelLanguage.get(`action${args.action}`)]));
             const guildDoc = await guild.findById(interaction.guild.id);
             if(!guildDoc.actionlogs.id(args.action)){
                 guildDoc.actionlogs.push({_id: args.action});
@@ -381,7 +385,7 @@ module.exports = {
             ephemeral: true,
         });
         const oldHook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookToken).catch(() => null);
-        if(oldHook && interaction.guild.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(Permissions.FLAGS.MANAGE_WEBHOOKS)) await oldHook.delete(channelLanguage.get('oldHookReason', [args.action]));
+        if(oldHook && interaction.guild.members.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(PermissionsBitField.Flags.ManageWebhooks)) await oldHook.delete(channelLanguage.get('oldHookReason', [args.action]));
         const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findById(interaction.guild.id);
         if(guildDoc.actionlogs.id(args.action)){
@@ -443,8 +447,8 @@ module.exports = {
             content: channelLanguage.get('noIgnoredActionsChannel'),
             ephemeral: true,
         });
-        const embed = new MessageEmbed()
-            .setColor(interaction.guild.me.displayColor || 0x8000ff)
+        const embed = new EmbedBuilder()
+            .setColor(interaction.guild.members.me.displayColor || 0x8000ff)
             .setAuthor({
                 name: channelLanguage.get('ignoredActionsChannelEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true}),
@@ -525,8 +529,8 @@ module.exports = {
             content: channelLanguage.get('noIgnoredActionsRole'),
             ephemeral: true,
         });
-        const embed = new MessageEmbed()
-            .setColor(interaction.guild.me.displayColor || 0x8000ff)
+        const embed = new EmbedBuilder()
+            .setColor(interaction.guild.members.me.displayColor || 0x8000ff)
             .setAuthor({
                 name: channelLanguage.get('ignoredActionsRoleEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true}),
@@ -540,8 +544,8 @@ module.exports = {
     infoSlash: async interaction => {
         const {channelLanguage} = interaction;
         const hook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
-        const embed = new MessageEmbed()
-            .setColor(interaction.guild.me.displayColor || 0x8000ff)
+        const embed = new EmbedBuilder()
+            .setColor(interaction.guild.members.me.displayColor || 0x8000ff)
             .setAuthor({
                 name: channelLanguage.get('logsViewEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true}),
@@ -581,49 +585,49 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'default',
             description: 'Sets the default channel for logging actions',
             options: [{
-                type: 'CHANNEL',
+                type: ApplicationCommandOptionType.Channel,
                 name: 'channel',
                 description: 'The channel to be set as the default log channel',
                 required: true,
-                channelTypes: ['GUILD_TEXT'],
+                channelTypes: [ChannelType.GuildText],
             }],
         },
         {
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             name: 'actions',
             description: 'Manages action logs',
             options: [
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'set',
                     description: 'Sets actions to be logged',
                     options: [
                         {
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             name: 'action',
                             description: 'The action to be logged',
                             required: true,
                             autocomplete: true,
                         },
                         {
-                            type: 'CHANNEL',
+                            type: ApplicationCommandOptionType.Channel,
                             name: 'log_channel',
                             description: 'The channel to log the selected action (if not specified uses the default channel)',
                             required: false,
-                            channelTypes: ['GUILD_TEXT'],
+                            channelTypes: [ChannelType.GuildText],
                         },
                     ],
                 },
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'remove',
                     description: 'Removes actions from being logged',
                     options: [{
-                        type: 'STRING',
+                        type: ApplicationCommandOptionType.String,
                         name: 'action',
                         description: 'The action to be removed from being logged',
                         required: true,
@@ -633,31 +637,31 @@ module.exports = {
             ],
         },
         {
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             name: 'ignoredchannels',
             description: 'Ignores actions from certain channels from being logged',
             options: [
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'add',
                     description: 'Adds to the list of channels in which actions will be ignored from being logged',
                     options: [
                         {
-                            type: 'CHANNEL',
+                            type: ApplicationCommandOptionType.Channel,
                             name: 'channel',
                             description: 'The channel to be added to the list',
                             required: true,
                             channelTypes: [
-                                'GUILD_TEXT',
-                                'GUILD_NEWS',
-                                'GUILD_NEWS_THREAD',
-                                'GUILD_PUBLIC_THREAD',
-                                'GUILD_PRIVATE_THREAD',
-                                'GUILD_VOICE',
+                                ChannelType.GuildText,
+                                ChannelType.GuildNews,
+                                ChannelType.GuildNewsThread,
+                                ChannelType.GuildPublicThread,
+                                ChannelType.GuildPrivateThread,
+                                ChannelType.GuildVoice,
                             ],
                         },
                         {
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             name: 'action',
                             description: 'The action to be ignored',
                             required: false,
@@ -666,26 +670,26 @@ module.exports = {
                     ],
                 },
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'remove',
                     description: 'Removes from the list of channels in which actions will be ignored from being logged',
                     options: [
                         {
-                            type: 'CHANNEL',
+                            type: ApplicationCommandOptionType.Channel,
                             name: 'channel',
                             description: 'The channel to be removed from the list',
                             required: true,
                             channelTypes: [
-                                'GUILD_TEXT',
-                                'GUILD_NEWS',
-                                'GUILD_NEWS_THREAD',
-                                'GUILD_PUBLIC_THREAD',
-                                'GUILD_PRIVATE_THREAD',
-                                'GUILD_VOICE',
+                                ChannelType.GuildText,
+                                ChannelType.GuildNews,
+                                ChannelType.GuildNewsThread,
+                                ChannelType.GuildPublicThread,
+                                ChannelType.GuildPrivateThread,
+                                ChannelType.GuildVoice,
                             ],
                         },
                         {
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             name: 'action',
                             description: 'The action to start being logged again',
                             required: false,
@@ -694,44 +698,44 @@ module.exports = {
                     ],
                 },
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'info',
                     description: 'Shows which actions are being ignored in a certain channel',
                     options: [{
-                        type: 'CHANNEL',
+                        type: ApplicationCommandOptionType.Channel,
                         name: 'channel',
                         description: 'The channel to show info of',
                         required: true,
                         channelTypes: [
-                            'GUILD_TEXT',
-                            'GUILD_NEWS',
-                            'GUILD_NEWS_THREAD',
-                            'GUILD_PUBLIC_THREAD',
-                            'GUILD_PRIVATE_THREAD',
-                            'GUILD_VOICE',
+                            ChannelType.GuildText,
+                            ChannelType.GuildNews,
+                            ChannelType.GuildNewsThread,
+                            ChannelType.GuildPublicThread,
+                            ChannelType.GuildPrivateThread,
+                            ChannelType.GuildVoice,
                         ],
                     }],
                 },
             ],
         },
         {
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             name: 'ignoredroles',
             description: 'Ignores actions from certain roles from being logged',
             options: [
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'add',
                     description: 'Adds to the list of roles from which actions will be ignored from being logged',
                     options: [
                         {
-                            type: 'ROLE',
+                            type: ApplicationCommandOptionType.Role,
                             name: 'role',
                             description: 'The role to be added to the list',
                             required: true,
                         },
                         {
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             name: 'action',
                             description: 'The action to be ignored',
                             required: false,
@@ -740,18 +744,18 @@ module.exports = {
                     ],
                 },
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'remove',
                     description: 'Removes from the list of roles from which actions will be ignored from being logged',
                     options: [
                         {
-                            type: 'ROLE',
+                            type: ApplicationCommandOptionType.Role,
                             name: 'role',
                             description: 'The role to be removed from the list',
                             required: true,
                         },
                         {
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             name: 'action',
                             description: 'The action to start being logged again',
                             required: false,
@@ -760,11 +764,11 @@ module.exports = {
                     ],
                 },
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'info',
                     description: 'Shows which actions are being ignored from a certain role',
                     options: [{
-                        type: 'ROLE',
+                        type: ApplicationCommandOptionType.Role,
                         name: 'role',
                         description: 'The role to show info of',
                         required: true,
@@ -773,7 +777,7 @@ module.exports = {
             ],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'info',
             description: 'Shows you general information about which actions are being logged and where from and to',
         },

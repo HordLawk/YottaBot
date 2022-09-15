@@ -1,4 +1,4 @@
-const {Permissions} = require('discord.js');
+const {PermissionsBitField} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -10,7 +10,7 @@ module.exports = {
     cooldown: 3,
     categoryID: 3,
     args: true,
-    perm: Permissions.FLAGS.MANAGE_CHANNELS,
+    perm: PermissionsBitField.Flags.ManageChannels,
     guildOnly: true,
     execute: async (message, args) => {
         const {channelLanguage} = message;
@@ -38,7 +38,7 @@ module.exports = {
         if(
             !message.member
                 .permissionsIn(discordChannel)
-                .has(Permissions.FLAGS.MANAGE_CHANNELS)
+                .has(PermissionsBitField.Flags.ManageChannels)
         ) return message.reply(
             channelLanguage.get(
                 'cantEditSlowmode',
@@ -46,9 +46,9 @@ module.exports = {
             )
         );
         if(
-            !message.guild.me
+            !message.guild.members.me
                 .permissionsIn(discordChannel)
-                .has(Permissions.FLAGS.MANAGE_CHANNELS)
+                .has(PermissionsBitField.Flags.ManageChannels)
         ) return message.reply(channelLanguage.get('botCantEditSlowmode'));
         await discordChannel.setRateLimitPerUser(seconds, channelLanguage.get('executor', [message.author]));
         const h = Math.floor((seconds % 86400) / 3600);

@@ -1,4 +1,9 @@
-const {Permissions} = require('discord.js');
+const {
+    PermissionsBitField,
+    ApplicationCommandOptionType,
+    TextInputStyle,
+    ComponentType,
+} = require('discord.js');
 const utils = require('../utils.js');
 
 module.exports = {
@@ -11,7 +16,7 @@ module.exports = {
     cooldown: 5,
     categoryID: 3,
     args: true,
-    perm: Permissions.FLAGS.MODERATE_MEMBERS,
+    perm: PermissionsBitField.Flags.ModerateMembers,
     guildOnly: true,
     execute: async function(message, args){
         const {channelLanguage} = message;
@@ -66,14 +71,14 @@ module.exports = {
             !discordChannel.viewable
             ||
             !discordChannel
-                .permissionsFor(message.guild.me)
-                .has(Permissions.FLAGS.EMBED_LINKS)
+                .permissionsFor(message.guild.members.me)
+                .has(PermissionsBitField.Flags.EmbedLinks)
             ||
             !discordChannel
-                .permissionsFor(message.guild.me)
-                .has(Permissions.FLAGS.SEND_MESSAGES)
+                .permissionsFor(message.guild.members.me)
+                .has(PermissionsBitField.Flags.SendMessages)
         ) return;
-        const msg = await discordChannel.messages.fetch(current.logMessage).catch(() => null);
+        const msg = await discordChannel.messages.fetch({message: current.logMessage}).catch(() => null);
         if(!msg || !msg.editable || !msg.embeds.length) return;
         const embed = msg.embeds[0];
         embed.setFields([{
@@ -141,13 +146,13 @@ module.exports = {
             customId: `modalEdit${interaction.id}`,
             title: channelLanguage.get('editReasonModalTitle'),
             components: [{
-                type: 'ACTION_ROW',
+                type: ComponentType.ActionRow,
                 components: [{
-                    type: 'TEXT_INPUT',
+                    type: ComponentType.TextInput,
                     customId: 'reason',
                     label: channelLanguage.get('editReasonModalReasonLabel'),
                     required: true,
-                    style: 'PARAGRAPH',
+                    style: TextInputStyle.Paragraph,
                     maxLength: 500,
                     value: current.reason,
                 }],
@@ -176,14 +181,14 @@ module.exports = {
             !discordChannel.viewable
             ||
             !discordChannel
-                .permissionsFor(interaction.guild.me)
-                .has(Permissions.FLAGS.EMBED_LINKS)
+                .permissionsFor(interaction.guild.members.me)
+                .has(PermissionsBitField.Flags.EmbedLinks)
             ||
             !discordChannel
-                .permissionsFor(interaction.guild.me)
-                .has(Permissions.FLAGS.SEND_MESSAGES)
+                .permissionsFor(interaction.guild.members.me)
+                .has(PermissionsBitField.Flags.SendMessages)
         ) return;
-        const msg = await discordChannel.messages.fetch(current.logMessage).catch(() => null);
+        const msg = await discordChannel.messages.fetch({message: current.logMessage}).catch(() => null);
         if(!msg?.editable || !msg.embeds.length) return;
         const embed = msg.embeds[0];
         embed.setFields([{
@@ -222,7 +227,7 @@ module.exports = {
         await msg.edit({embeds: [embed]});
     },
     slashOptions: [{
-        type: 'INTEGER',
+        type: ApplicationCommandOptionType.Integer,
         name: 'case_id',
         nameLocalizations: utils.getStringLocales('reasonOptioncase_idLocalisedName'),
         description: 'The ID of the case to edit the reason of',

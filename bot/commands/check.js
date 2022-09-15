@@ -1,4 +1,10 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {
+    EmbedBuilder,
+    PermissionsBitField,
+    ApplicationCommandOptionType,
+    ButtonStyle,
+    ComponentType,
+} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -13,8 +19,8 @@ module.exports = {
     guilOnly: true,
     execute: async function(message, args){
         const {channelLanguage} = message;
-        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
-        if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.ADD_REACTIONS)) return message.reply(channelLanguage.get('botReactions'));
+        if(!message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));
+        if(!message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.AddReactions)) return message.reply(channelLanguage.get('botReactions'));
         if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         const id = args[0].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
         if(!id) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
@@ -36,8 +42,8 @@ module.exports = {
             return [d, h, m];
         }
         const pageSize = 10;
-        const embed = new MessageEmbed()
-            .setColor(discordMember?.displayColor ?? message.guild.me.displayColor ?? 0x8000ff)
+        const embed = new EmbedBuilder()
+            .setColor(discordMember?.displayColor ?? message.guild.members.me.displayColor ?? 0x8000ff)
             .setAuthor({
                 name: discordUser?.tag ?? channelLanguage.get('checkEmbedAuthor'),
                 iconURL: discordUser?.displayAvatarURL({dynamic: true}),
@@ -50,23 +56,23 @@ module.exports = {
                 value: channelLanguage.get('checkEmbedCaseValueTarget', [e, e.duration && formatDuration(Math.round((e.duration.getTime() - e.timeStamp.getTime()) / 60000))]),
             })));
         const buttonPrevious = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('previous'),
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '⬅',
             customId: 'previous',
             disabled: true,
         };
         const buttonNext = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('next'),
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '➡',
             customId: 'next',
             disabled: (logDocs.length <= pageSize),
         };
         const components = [{
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [buttonPrevious, buttonNext],
         }];
         const msg = await message.reply({embeds: [embed], components});
@@ -74,7 +80,7 @@ module.exports = {
         const col = msg.createMessageComponentCollector({
             filter: componentInteraction => (componentInteraction.user.id === message.author.id),
             time: 600000,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
         });
         let page = 0;
         col.on('collect', button => (async button => {
@@ -102,7 +108,7 @@ module.exports = {
     },
     executeSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        if(interaction.isUserContextMenu()) args = {
+        if(interaction.isUserContextMenuCommand()) args = {
             user: (interaction.targetUser.member = interaction.targetMember, interaction.targetUser),
             case_type: 'all',
         };
@@ -127,8 +133,8 @@ module.exports = {
         }
         const pageSize = 10;
         const fieldString = `checkEmbedCaseValue${args.executor ? 'Executor' : 'Target'}`;
-        const embed = new MessageEmbed()
-            .setColor(args.user.member?.displayColor ?? interaction.guild.me.displayColor ?? 0x8000ff)
+        const embed = new EmbedBuilder()
+            .setColor(args.user.member?.displayColor ?? interaction.guild.members.me.displayColor ?? 0x8000ff)
             .setAuthor({
                 name: args.user?.tag ?? channelLanguage.get('checkEmbedAuthor'),
                 iconURL: args.user?.displayAvatarURL({dynamic: true}),
@@ -141,23 +147,23 @@ module.exports = {
                 value: channelLanguage.get(fieldString, [e, e.duration && formatDuration(Math.round((e.duration.getTime() - e.timeStamp.getTime()) / 60000))]),
             })));
         const buttonPrevious = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('previous'),
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '⬅',
             customId: 'previous',
             disabled: true,
         };
         const buttonNext = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('next'),
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '➡',
             customId: 'next',
             disabled: (logDocs.length <= pageSize),
         };
         const components = [{
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [buttonPrevious, buttonNext],
         }];
         const msg = await interaction.reply({
@@ -170,7 +176,7 @@ module.exports = {
         const col = msg.createMessageComponentCollector({
             filter: componentInteraction => (componentInteraction.user.id === interaction.user.id),
             time: 600000,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
         });
         let page = 0;
         col.on('collect', button => (async button => {
@@ -197,13 +203,13 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'USER',
+            type: ApplicationCommandOptionType.User,
             name: 'user',
             description: 'The user to have its cases checked',
             required: true,
         },
         {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'case_type',
             description: 'The type of the cases to be checked',
             required: true,
@@ -231,7 +237,7 @@ module.exports = {
             ],
         },
         {
-            type: 'INTEGER',
+            type: ApplicationCommandOptionType.Integer,
             name: 'time_filter_unit',
             description: 'The unit of how much time ago to check for cases. Defaults to days.',
             required: false,
@@ -255,13 +261,13 @@ module.exports = {
             ]
         },
         {
-            type: 'NUMBER',
+            type: ApplicationCommandOptionType.Number,
             name: 'time_filter_value',
             description: 'How much of the chosen unit. Defaults to 1.',
             required: false,
         },
         {
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             name: 'executor',
             description: 'Whether the selected user should be the executor of the desired cases',
             required: false,

@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -11,9 +11,9 @@ module.exports = {
         if(
             message.guild
             &&
-            !message.guild.me
+            !message.guild.members.me
                 .permissionsIn(message.channel)
-                .has(Permissions.FLAGS.EMBED_LINKS)
+                .has(PermissionsBitField.Flags.EmbedLinks)
         ) return message.reply(channelLanguage.get('botEmbed'));
         const hex = (latency) => {
             if(latency <= 100) return '00ff00';
@@ -28,7 +28,7 @@ module.exports = {
             if(latency >= 100) return channelLanguage.get('normal');
             return channelLanguage.get('good');
         }
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle('🏓 Pong!')
             .setColor(hex(message.client.ws.ping))
             .addField(channelLanguage.get('average'), `${message.client.ws.ping}ms`, true)
@@ -61,7 +61,7 @@ module.exports = {
             if(latency >= 100) return channelLanguage.get('normal');
             return channelLanguage.get('good');
         }
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle('🏓 Pong!')
             .setColor(hex(interaction.client.ws.ping))
             .addField(channelLanguage.get('average'), `${interaction.client.ws.ping}ms`, true)

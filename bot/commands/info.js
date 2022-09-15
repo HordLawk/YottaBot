@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions, version} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, version} = require('discord.js');
 const configs = require('../configs');
 
 module.exports = {
@@ -13,16 +13,16 @@ module.exports = {
         if(
             message.guild
             &&
-            !message.guild.me
+            !message.guild.members.me
                 .permissionsIn(message.channel)
-                .has(Permissions.FLAGS.EMBED_LINKS)
+                .has(PermissionsBitField.Flags.EmbedLinks)
         ) return message.reply(channelLanguage.get('botEmbed'));
         const invite = await message.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
             permissions: configs.permissions,
         });
-        const embed = new MessageEmbed()
-            .setColor(message.guild?.me.displayColor || 0x8000ff)
+        const embed = new EmbedBuilder()
+            .setColor(message.guild?.members.me.displayColor || 0x8000ff)
             .setAuthor({
                 name: channelLanguage.get('infoEmbedAuthor'),
                 iconURL: message.client.user.displayAvatarURL(),
@@ -91,8 +91,8 @@ module.exports = {
             scopes: ['bot', 'applications.commands'],
             permissions: configs.permissions,
         });
-        const embed = new MessageEmbed()
-            .setColor(interaction.guild?.me.displayColor || 0x8000ff)
+        const embed = new EmbedBuilder()
+            .setColor(interaction.guild?.members.me.displayColor || 0x8000ff)
             .setAuthor({
                 name: channelLanguage.get('infoEmbedAuthor'),
                 iconURL: interaction.client.user.displayAvatarURL(),

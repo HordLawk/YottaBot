@@ -1,4 +1,10 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {
+    EmbedBuilder,
+    PermissionsBitField,
+    ApplicationCommandOptionType,
+    TextInputStyle,
+    ComponentType,
+} = require('discord.js');
 const utils = require('../utils.js');
 
 module.exports = {
@@ -11,7 +17,7 @@ module.exports = {
     cooldown: 10,
     categoryID: 3,
     args: true,
-    perm: Permissions.FLAGS.ADMINISTRATOR,
+    perm: PermissionsBitField.Flags.Administrator,
     guildOnly: true,
     execute: async (message, args) => {
         const {channelLanguage} = message;
@@ -47,7 +53,7 @@ module.exports = {
             };
             let realban = await message.guild.members.ban(user.id, {
                 reason: channelLanguage.get('banReason', [message.author.tag, reason]),
-                days: message.client.guildData.get(message.guild.id).pruneBan,
+                deleteMessageDays: message.client.guildData.get(message.guild.id).pruneBan,
             }).catch(() => null);
             if(!realban){
                 invusers++;
@@ -66,8 +72,8 @@ module.exports = {
                 image: message.attachments.first()?.height && message.attachments.first().url,
             });
             caseLogs.push(current);
-            if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) continue;
-            let embed = new MessageEmbed()
+            if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(message.guild.members.me).has(PermissionsBitField.Flags.SendMessages) || !discordChannel.permissionsFor(message.guild.members.me).has(PermissionsBitField.Flags.EmbedLinks)) continue;
+            let embed = new EmbedBuilder()
                 .setColor(0xff0000)
                 .setAuthor({
                     name: channelLanguage.get('banEmbedAuthor', [message.author.tag, user.tag]),
@@ -105,13 +111,13 @@ module.exports = {
                 customId: `modalReason${interaction.id}`,
                 title: channelLanguage.get('setReasonModalTitle'),
                 components: [{
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [{
-                        type: 'TEXT_INPUT',
+                        type: ComponentType.TextInput,
                         customId: 'reason',
                         label: channelLanguage.get('setReasonModalReasonLabel'),
                         required: true,
-                        style: 'PARAGRAPH',
+                        style: TextInputStyle.Paragraph,
                         maxLength: 500,
                     }],
                 }],
@@ -153,7 +159,7 @@ module.exports = {
             };
             const realban = await interaction.guild.members.ban(user.id, {
                 reason: channelLanguage.get('banReason', [interaction.user.tag, reason]),
-                days: interaction.client.guildData.get(interaction.guild.id).pruneBan,
+                deleteMessageDays: interaction.client.guildData.get(interaction.guild.id).pruneBan,
             }).catch(() => null);
             if(!realban){
                 invusers++;
@@ -171,8 +177,8 @@ module.exports = {
                 reason,
             });
             caseLogs.push(current);
-            if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(interaction.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(interaction.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) continue;
-            const embed = new MessageEmbed()
+            if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(interaction.guild.members.me).has(PermissionsBitField.Flags.SendMessages) || !discordChannel.permissionsFor(interaction.guild.members.me).has(PermissionsBitField.Flags.EmbedLinks)) continue;
+            const embed = new EmbedBuilder()
                 .setColor(0xff0000)
                 .setAuthor({
                     name: channelLanguage.get('banEmbedAuthor', [interaction.user.tag, user.tag]),
@@ -197,7 +203,7 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'STRING',
+            type: ApplicationCommandOptionType.String,
             name: 'targets',
             nameLocalizations: utils.getStringLocales('massbanOptiontargetsLocalisedName'),
             description: 'Mentions or IDs of the users to ban separated by spaces',
@@ -205,7 +211,7 @@ module.exports = {
             required: true,
         },
         {
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             name: 'with_reason',
             nameLocalizations: utils.getStringLocales('massbanOptionwith_reasonLocalisedName'),
             description: 'Whether to prompt a modal asking for the ban reason',

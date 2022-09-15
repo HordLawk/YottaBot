@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions, GuildAuditLogs} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, StickerFormatType, AuditLogEvent} = require('discord.js');
 const locale = require('../../locale');
 
 module.exports = {
@@ -10,9 +10,9 @@ module.exports = {
         if(message.partial || !message.guild.available || !message.client.guildData.get(message.guild.id).actionlogs.id('delmsg') || (!message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookID && !message.client.guildData.get(message.guild.id).defaultLogsHookID)) return;
         const channelLanguage = locale.get(message.client.guildData.get(message.guild.id).language);
         let executor = null;
-        if(message.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)){
+        if(message.guild.members.me.permissions.has(PermissionsBitField.Flags.ViewAuditLog)){
             const audits = await message.guild.fetchAuditLogs({
-                type: GuildAuditLogs.Actions.MESSAGE_DELETE,
+                type: AuditLogEvent.MessageDelete,
                 limit: 1,
             });
             if(audits.entries.first()){
@@ -27,7 +27,7 @@ module.exports = {
         const channel = require('../../schemas/channel.js');
         const channelDoc = await channel.findById(message.channel.id);
         if(channelDoc && channelDoc.ignoreActions.includes('delmsg')) return;
-        const memb = executor && await message.guild.members.fetch(executor.id).catch(() => null);
+        const memb = executor ? await message.guild.members.fetch(executor.id).catch(() => null) : message.member;
         if(memb){
             const role = require('../../schemas/role.js');
             let roleDoc = await role.findOne({
@@ -39,7 +39,7 @@ module.exports = {
         }
         const hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookID || message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).actionlogs.id('delmsg').hookToken || message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(0xff0000)
             .setFooter({text: message.author.id})
             .setTimestamp()
@@ -51,14 +51,14 @@ module.exports = {
                 }),
                 url: message.url,
             })
-            .setDescription(message.content)
+            .setDescription(message.content || null)
             .addField(channelLanguage.get('delmsgEmbedAuthorTitle'), message.author.toString(), true)
             .addField(channelLanguage.get('delmsgEmbedChannelTitle'), message.channel.toString(), true);
         if(executor) embed.addField('\u200B', '\u200B', true).addField(channelLanguage.get('delmsgEmbedExecutorTitle'), executor.toString(), true);
         embed.addField(channelLanguage.get('delmsgEmbedSentTitle'), channelLanguage.get('delmsgEmbedSentValue', [Math.floor(message.createdTimestamp / 1000)]), true);
         if(executor) embed.addField('\u200B', '\u200B', true);
         if(message.stickers.size){
-            if(message.stickers.first().format === 'LOTTIE'){
+            if(message.stickers.first().format === StickerFormatType.Lottie){
                 embed.addField(channelLanguage.get('delmsgEmbedStickerTitle'), `[${message.stickers.first().name}](${message.stickers.first().url})`);
             }
             else{

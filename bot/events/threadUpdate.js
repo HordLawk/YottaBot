@@ -1,4 +1,4 @@
-const {Permissions} = require('discord.js');
+const {PermissionsBitField, ThreadAutoArchiveDuration} = require('discord.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
 
@@ -9,9 +9,9 @@ module.exports = {
         if(
             !newThread.archived
             ||
-            !newThread.guild.me
+            !newThread.guild.members.me
                 .permissionsIn(newThread)
-                .has(Permissions.FLAGS.MANAGE_THREADS)
+                .has(PermissionsBitField.Flags.ManageThreads)
         ) return;
         const channelModel = require('../../schemas/channel.js');
         const threads = await channelModel.find({
@@ -31,13 +31,11 @@ module.exports = {
                     )]
                 )
                 .some(e => (e._id === newThread.id))
-        ) await newThread.edit(
-            {
-                archived: false,
-                autoArchiveDuration: 'MAX',
-                locked: false,
-            },
-            channelLanguage.get('threadUnarchiveReason'),
-        );
+        ) await newThread.edit({
+            archived: false,
+            autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
+            locked: false,
+            reason: channelLanguage.get('threadUnarchiveReason'),
+        });
     },
 };

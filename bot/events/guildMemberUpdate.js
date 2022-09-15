@@ -1,7 +1,7 @@
 const user = require('../../schemas/user.js');
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
-const {MessageEmbed, Permissions, GuildAuditLogs} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, GuildAuditLogs, AuditLogEvent} = require('discord.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
 
@@ -25,10 +25,10 @@ module.exports = {
             newMember.send(locale.get(newMember.client.guildData.get(configs.supportID).language).get('firstBoost', [newMember, newMember.guild.name])).catch(() => null);
         }
         else{
-            if(!newMember.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG) || !newMember.client.guildData.has(newMember.guild.id)) return;
+            if(!newMember.guild.members.me.permissions.has(PermissionsBitField.Flags.ViewAuditLog) || !newMember.client.guildData.has(newMember.guild.id)) return;
             const audits = await newMember.guild.fetchAuditLogs({
                 limit: 1,
-                type: GuildAuditLogs.Actions.MEMBER_UPDATE,
+                type: AuditLogEvent.MemberUpdate,
             });
             if(!audits.entries.size || audits.entries.first().executor.bot) return;
             if(audits.entries.first().changes?.some((e) => (e.key === "communication_disabled_until"))){
@@ -51,11 +51,11 @@ module.exports = {
                         duration: newMember.communicationDisabledUntil,
                     });
                     await current.save();
-                    if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(newMember.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(newMember.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
+                    if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(newMember.guild.members.me).has(PermissionsBitField.Flags.SendMessages) || !discordChannel.permissionsFor(newMember.guild.members.me).has(PermissionsBitField.Flags.EmbedLinks)) return;
                     const d = Math.floor(duration / 1440);
                     const h = Math.floor((duration % 1440) / 60);
                     const m = Math.floor(duration % 60);
-                    const embed = new MessageEmbed()
+                    const embed = new EmbedBuilder()
                         .setTimestamp()
                         .setColor(0xff8000)
                         .setAuthor({
@@ -93,8 +93,8 @@ module.exports = {
                         removal: true,
                     });
                     await current.save();
-                    if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(newMember.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(newMember.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
-                    const embed = new MessageEmbed()
+                    if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(newMember.guild.members.me).has(PermissionsBitField.Flags.SendMessages) || !discordChannel.permissionsFor(newMember.guild.members.me).has(PermissionsBitField.Flags.EmbedLinks)) return;
+                    const embed = new EmbedBuilder()
                         .setColor(0x0000ff)
                         .setAuthor({
                             name: channelLanguage.get('unmuteEmbedAuthor', [audits.entries.first().executor.tag, newMember.user.tag]),

@@ -1,4 +1,4 @@
-const {Permissions, MessageEmbed} = require('discord.js');
+const {PermissionsBitField, EmbedBuilder, ApplicationCommandOptionType} = require('discord.js');
 const utils = require('../utils.js');
 const configs = require('../configs.js');
 
@@ -8,18 +8,18 @@ module.exports = {
     description: lang => lang.get('namebansDescription'),
     cooldown: 5,
     categoryID: 3,
-    perm: Permissions.FLAGS.ADMINISTRATOR,
+    perm: PermissionsBitField.Flags.Administrator,
     guildOnly: true,
     slashOptions: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'add',
             nameLocalizations: utils.getStringLocales('namebans_addLocalisedName'),
             description: 'Adds text to the list of banned text in usernames',
             descriptionLocalizations: utils.getStringLocales('namebans_manageLocalisedDesc'),
             options: [
                 {
-                    type: 'STRING',
+                    type: ApplicationCommandOptionType.String,
                     name: 'text',
                     nameLocalizations: utils.getStringLocales('namebans_addOptiontextLocalisedName'),
                     description: 'The piece of text that will be banned partially or not from the server',
@@ -27,7 +27,7 @@ module.exports = {
                     required: true,
                 },
                 {
-                    type: 'BOOLEAN',
+                    type: ApplicationCommandOptionType.Boolean,
                     name: 'partial',
                     nameLocalizations: utils.getStringLocales('namebans_addOptionpartialLocalisedName'),
                     description: 'Whether the usernames should be exact or only contain the selected text',
@@ -35,7 +35,7 @@ module.exports = {
                     required: false,
                 },
                 {
-                    type: 'BOOLEAN',
+                    type: ApplicationCommandOptionType.Boolean,
                     name: 'case_sensitive',
                     nameLocalizations: utils.getStringLocales('namebans_addOptioncase_sensitiveLocalisedName'),
                     description: 'Whether username matching should be sensitive to casing or not',
@@ -45,13 +45,13 @@ module.exports = {
             ],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'remove',
             nameLocalizations: utils.getStringLocales('namebans_removeLocalisedName'),
             description: 'Removes from the list of banned text in usernames',
             descriptionLocalizations: utils.getStringLocales('namebans_removeLocalisedDesc'),
             options: [{
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'text',
                 nameLocalizations: utils.getStringLocales('namebans_removeOptiontextLocalisedName'),
                 description: 'The piece of text to be removed from the list of banned usernames',
@@ -61,7 +61,7 @@ module.exports = {
             }],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'list',
             nameLocalizations: utils.getStringLocales('namebans_listLocalisedName'),
             description: 'Lists info on all currently banned usernames',
@@ -115,7 +115,7 @@ module.exports = {
             interaction.client.guildData.get(interaction.guild.id).partner
         )];
         if(namebanDocs.length >= namebansLimit) replyData.content = channelLanguage.get('disabledExtraNamebans');
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(0x2f3136)
             .setAuthor({
                 name: channelLanguage.get('namebans_listEmbedAuthor'),

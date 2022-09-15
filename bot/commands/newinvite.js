@@ -1,4 +1,4 @@
-const {Permissions} = require('discord.js');
+const {PermissionsBitField, ApplicationCommandOptionType, ChannelType} = require('discord.js');
 const utils = require('../utils.js');
 
 module.exports = {
@@ -7,7 +7,7 @@ module.exports = {
     description: lang => lang.get('newinviteDescription'),
     cooldown: 5,
     categoryID: 5,
-    perm: Permissions.FLAGS.CREATE_INSTANT_INVITE,
+    perm: PermissionsBitField.Flags.CreateInstantInvite,
     guildOnly: true,
     executeSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
@@ -18,10 +18,10 @@ module.exports = {
             ??
             interaction.guild.channels.cache
                 .filter(e => (
-                    e.isVoice()
+                    e.isVoiceBased()
                     ||
                     (
-                        e.isText()
+                        e.isTextBased()
                         &&
                         !e.isThread()
                     )
@@ -39,16 +39,16 @@ module.exports = {
                         )
                     )
                     ||
-                    (a.isVoice() - b.isVoice())
+                    (a.isVoiceBased() - b.isVoiceBased())
                     ||
                     (a.position - b.position)
                 ))
                 .first()
         );
         if(
-            !interaction.guild.me
+            !interaction.guild.members.me
                 .permissionsIn(destination)
-                .has(Permissions.FLAGS.CREATE_INSTANT_INVITE)
+                .has(PermissionsBitField.Flags.CreateInstantInvite)
         ) return await interaction.reply({
             content: channelLanguage.get('botCantCreateInvite', [destination]),
             ephemeral: true,
@@ -56,7 +56,7 @@ module.exports = {
         if(
             !interaction.member
                 .permissionsIn(destination)
-                .has(Permissions.FLAGS.CREATE_INSTANT_INVITE)
+                .has(PermissionsBitField.Flags.CreateInstantInvite)
         ) return await interaction.reply({
             content: channelLanguage.get('memberCantCreateInvite', [destination]),
             ephemeral: true,
@@ -73,15 +73,20 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'CHANNEL',
+            type: ApplicationCommandOptionType.Channel,
             name: 'destination',
             nameLocalizations: utils.getStringLocales('newinviteOptiondestinationLocalisedName'),
             description: 'The channel this invite leads to',
             descriptionLocalizations: utils.getStringLocales('newinviteOptiondestinationLocalisedDesc'),
-            channelTypes: ['GUILD_TEXT', 'GUILD_VOICE', 'GUILD_NEWS', 'GUILD_STAGE_VOICE'],
+            channelTypes: [
+                ChannelType.GuildText,
+                ChannelType.GuildVoice,
+                ChannelType.GuildNews,
+                ChannelType.GuildStageVoice,
+            ],
         },
         {
-            type: 'BOOLEAN',
+            type: ApplicationCommandOptionType.Boolean,
             name: 'require_role',
             nameLocalizations: utils.getStringLocales('newinviteOptionrequire_roleLocalisedName'),
             description: 'Whether members should be automatically kicked after 24 hours if they have not yet ' +
@@ -89,7 +94,7 @@ module.exports = {
             descriptionLocalizations: utils.getStringLocales('newinviteOptionrequire_roleLocalisedDesc'),
         },
         {
-            type: 'INTEGER',
+            type: ApplicationCommandOptionType.Integer,
             name: 'expire_after',
             nameLocalizations: utils.getStringLocales('newinviteOptionexpire_afterLocalisedName'),
             description: 'How long the invite should last for in hours',
@@ -98,7 +103,7 @@ module.exports = {
             maxValue: 168,
         },
         {
-            type: 'INTEGER',
+            type: ApplicationCommandOptionType.Integer,
             name: 'max_uses',
             nameLocalizations: utils.getStringLocales('newinviteOptionmax_usesLocalisedName'),
             description: 'Maximum number of times this invite can be used',

@@ -1,4 +1,4 @@
-const {Permissions, Collection} = require('discord.js');
+const {PermissionsBitField, Collection} = require('discord.js');
 
 module.exports = {
     maintenance: false,
@@ -24,7 +24,7 @@ module.exports = {
     ]),
     support: 'eNcsvsy',
     supportID: '476244157245947904',
-    permissions: Permissions.ALL - (Permissions.FLAGS.START_EMBEDDED_ACTIVITIES + Permissions.FLAGS.VIEW_GUILD_INSIGHTS + Permissions.FLAGS.USE_APPLICATION_COMMANDS + Permissions.FLAGS.STREAM),
+    permissions: PermissionsBitField.All - (PermissionsBitField.Flags.UseEmbeddedActivities + PermissionsBitField.Flags.ViewGuildInsights + PermissionsBitField.Flags.UseApplicationCommands + PermissionsBitField.Flags.Stream),
     xpRolesLimit: 10,
     namebansLimits: [5, 25],
     notarchiveLimits: [5, 50],

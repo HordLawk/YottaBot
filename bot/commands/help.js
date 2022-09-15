@@ -1,4 +1,10 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {
+    EmbedBuilder,
+    PermissionsBitField,
+    ApplicationCommandType,
+    ApplicationCommandOptionType,
+    ComponentType,
+} = require('discord.js');
 const configs = require('../configs');
 
 module.exports = {
@@ -13,7 +19,7 @@ module.exports = {
     execute: async (message, args) => {
         const commands = require('.');
         const {channelLanguage} = message;
-        if(message.guild && !message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
+        if(message.guild && !message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));
         const prefix = message.guild ? message.client.guildData.get(message.guild.id).prefix : configs.defaultPrefix;
         let embed;
         if(!args.length){
@@ -21,8 +27,8 @@ module.exports = {
                 scopes: ['bot', 'applications.commands'],
                 permissions: configs.permissions,
             });
-            embed = new MessageEmbed()
-                .setColor(message.guild ? (message.guild.me.displayColor || 0x8000ff) : 0x8000ff)
+            embed = new EmbedBuilder()
+                .setColor(message.guild ? (message.guild.members.me.displayColor || 0x8000ff) : 0x8000ff)
                 .setAuthor({
                     name: channelLanguage.get('helpEmbedTitle'),
                     iconURL: message.client.user.avatarURL({
@@ -33,11 +39,11 @@ module.exports = {
                 .setDescription(channelLanguage.get('helpEmbedDescription', [configs.support, perms, prefix, message.client.user.id]))
                 .setFooter({text: channelLanguage.get('helpEmbedFooter', [commands.filter(command => !command.dev).size])})
                 .setTimestamp();
-            const categories = commands.filter(cmd => (!cmd.dev && (cmd.execute || (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === cmd.name))?.type === 'CHAT_INPUT')))).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
+            const categories = commands.filter(cmd => (!cmd.dev && (cmd.execute || (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === cmd.name))?.type === ApplicationCommandType.ChatInput)))).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
             categories.forEach((e, i) => embed.addField(channelLanguage.get(`category${i}`), e.map(cmd => `\`${cmd.name}\``).join(' ')));
             const categoryEmojis = [,'ℹ️', '⚙️', '🔨', '📈', '🪣'];
             const menuCategory = {
-                type: 'SELECT_MENU',
+                type: ComponentType.SelectMenu,
                 customId: 'category',
                 placeholder: channelLanguage.get('selectCategory'),
                 options: ([{
@@ -49,10 +55,10 @@ module.exports = {
                     label: channelLanguage.get(`category${i}`),
                     value: i.toString(),
                     emoji: categoryEmojis[i],
-                }))),
+                })).filter(e => e)),
             };
             const menuCommand = {
-                type: 'SELECT_MENU',
+                type: ComponentType.SelectMenu,
                 customId: 'command',
                 placeholder: channelLanguage.get('selectCategoryFirst'),
                 options: [{
@@ -63,11 +69,11 @@ module.exports = {
             };
             const components = [
                 {
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [menuCategory],
                 },
                 {
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [menuCommand],
                 },
             ]
@@ -79,7 +85,7 @@ module.exports = {
             const collectorCategory = reply.createMessageComponentCollector({
                 filter: componentInteraction => ((componentInteraction.user.id === message.author.id) && (componentInteraction.customId === 'category')),
                 time: 600000,
-                componentType: 'SELECT_MENU',
+                componentType: ComponentType.SelectMenu,
             });
             collectorCategory.on('collect', i => (async () => {
                 if(i.values[0] === 'home'){
@@ -97,7 +103,7 @@ module.exports = {
                     }));
                     return await i.update({embeds: [embed], components});
                 }
-                const categoryEmbed = new MessageEmbed()
+                const categoryEmbed = new EmbedBuilder()
                     .setColor(0x2f3136)
                     .setAuthor({
                         name: channelLanguage.get(`EmbedHelpCategory${i.values[0]}Author`),
@@ -131,11 +137,11 @@ module.exports = {
             const collectorCommand = reply.createMessageComponentCollector({
                 filter: componentInteraction => ((componentInteraction.user.id === message.author.id) && (componentInteraction.customId === 'command')),
                 time: 600000,
-                componentType: 'SELECT_MENU',
+                componentType: ComponentType.SelectMenu,
             });
             collectorCommand.on('collect', i => (async () => {
                 const cmd = commands.get(i.values[0]);
-                const commandEmbed = new MessageEmbed()
+                const commandEmbed = new EmbedBuilder()
                     .setColor(0x2f3136)
                     .setAuthor({
                         name: channelLanguage.get('helpCommandEmbedTitle', [cmd.name]),
@@ -171,9 +177,9 @@ module.exports = {
         else{
             const name = args[0];
             const command = commands.get(name) || commands.find(c => (c.aliases && c.aliases.includes(name)));
-            if(!command || command.dev || (!command.execute && (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === command.name))?.type !== 'CHAT_INPUT'))) return message.reply(channelLanguage.get('invalidCommand'));
-            embed = new MessageEmbed()
-                .setColor(message.guild ? (message.guild.me.displayColor || 0x8000ff) : 0x8000ff)
+            if(!command || command.dev || (!command.execute && (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === command.name))?.type !== ApplicationCommandType.ChatInput))) return message.reply(channelLanguage.get('invalidCommand'));
+            embed = new EmbedBuilder()
+                .setColor(message.guild ? (message.guild.members.me.displayColor || 0x8000ff) : 0x8000ff)
                 .setAuthor({
                     name: channelLanguage.get('helpCommandEmbedTitle', [command.name]),
                     iconURL: message.client.user.avatarURL({
@@ -202,8 +208,8 @@ module.exports = {
                 scopes: ['bot', 'applications.commands'],
                 permissions: configs.permissions,
             });
-            embed = new MessageEmbed()
-                .setColor(interaction.guild ? (interaction.guild.me.displayColor || 0x8000ff) : 0x8000ff)
+            embed = new EmbedBuilder()
+                .setColor(interaction.guild ? (interaction.guild.members.me.displayColor || 0x8000ff) : 0x8000ff)
                 .setAuthor({
                     name: channelLanguage.get('helpEmbedTitle'),
                     iconURL: interaction.client.user.avatarURL({
@@ -214,11 +220,11 @@ module.exports = {
                 .setDescription(channelLanguage.get('helpEmbedDescription', [configs.support, perms, prefix, interaction.client.user.id]))
                 .setFooter({text: channelLanguage.get('helpEmbedFooter', [commands.filter(command => !command.dev).size])})
                 .setTimestamp();
-            const categories = commands.filter(cmd => (!cmd.dev && (cmd.execute || (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === cmd.name))?.type === 'CHAT_INPUT')))).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
+            const categories = commands.filter(cmd => (!cmd.dev && (cmd.execute || (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === cmd.name))?.type === ApplicationCommandType.ChatInput)))).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
             categories.forEach((e, i) => embed.addField(channelLanguage.get(`category${i}`), e.map(cmd => `\`${cmd.name}\``).join(' ')));
             const categoryEmojis = [,'ℹ️', '⚙️', '🔨', '📈', '🪣'];
             const menuCategory = {
-                type: 'SELECT_MENU',
+                type: ComponentType.SelectMenu,
                 customId: 'category',
                 placeholder: channelLanguage.get('selectCategory'),
                 options: ([{
@@ -230,10 +236,10 @@ module.exports = {
                     label: channelLanguage.get(`category${i}`),
                     value: i.toString(),
                     emoji: categoryEmojis[i],
-                }))),
+                })).filter(e => e)),
             };
             const menuCommand = {
-                type: 'SELECT_MENU',
+                type: ComponentType.SelectMenu,
                 customId: 'command',
                 placeholder: channelLanguage.get('selectCategoryFirst'),
                 options: [{
@@ -244,11 +250,11 @@ module.exports = {
             };
             const components = [
                 {
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [menuCategory],
                 },
                 {
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [menuCommand],
                 },
             ]
@@ -260,7 +266,7 @@ module.exports = {
             const collectorCategory = reply.createMessageComponentCollector({
                 filter: componentInteraction => ((componentInteraction.user.id === interaction.user.id) && (componentInteraction.customId === 'category')),
                 time: 600000,
-                componentType: 'SELECT_MENU',
+                componentType: ComponentType.SelectMenu,
             });
             collectorCategory.on('collect', i => (async () => {
                 if(i.values[0] === 'home'){
@@ -278,7 +284,7 @@ module.exports = {
                     }));
                     return await i.update({embeds: [embed], components});
                 }
-                const categoryEmbed = new MessageEmbed()
+                const categoryEmbed = new EmbedBuilder()
                     .setColor(0x2f3136)
                     .setAuthor({
                         name: channelLanguage.get(`EmbedHelpCategory${i.values[0]}Author`),
@@ -312,11 +318,11 @@ module.exports = {
             const collectorCommand = reply.createMessageComponentCollector({
                 filter: componentInteraction => ((componentInteraction.user.id === interaction.user.id) && (componentInteraction.customId === 'command')),
                 time: 600000,
-                componentType: 'SELECT_MENU',
+                componentType: ComponentType.SelectMenu,
             });
             collectorCommand.on('collect', i => (async () => {
                 const cmd = commands.get(i.values[0]);
-                const commandEmbed = new MessageEmbed()
+                const commandEmbed = new EmbedBuilder()
                     .setColor(0x2f3136)
                     .setAuthor({
                         name: channelLanguage.get('helpCommandEmbedTitle', [cmd.name]),
@@ -351,12 +357,12 @@ module.exports = {
         }
         else{
             const command = commands.get(args.command);
-            if(!command || command.dev || (!command.execute && (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === command.name))?.type !== 'CHAT_INPUT'))) return interaction.reply({
+            if(!command || command.dev || (!command.execute && (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === command.name))?.type !== ApplicationCommandType.ChatInput))) return interaction.reply({
                 content: channelLanguage.get('invalidCommand'),
                 ephemeral: true,
             });
-            embed = new MessageEmbed()
-                .setColor(interaction.guild ? (interaction.guild.me.displayColor || 0x8000ff) : 0x8000ff)
+            embed = new EmbedBuilder()
+                .setColor(interaction.guild ? (interaction.guild.members.me.displayColor || 0x8000ff) : 0x8000ff)
                 .setAuthor({
                     name: channelLanguage.get('helpCommandEmbedTitle', [command.name]),
                     iconURL: interaction.client.user.avatarURL({
@@ -376,14 +382,14 @@ module.exports = {
         }
     },
     slashOptions: [{
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         name: 'command',
         description: 'The command you need help with',
         required: false,
         autocomplete: true,
     }],
     commandAutocomplete: {
-        command: (interaction, value) => interaction.respond(require('.').filter(e => (e.name.startsWith(value.toLowerCase()) && !e.dev && (e.execute || (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(cmd => (e.name === cmd.name))?.type === 'CHAT_INPUT')))).first(25).map(e => ({
+        command: (interaction, value) => interaction.respond(require('.').filter(e => (e.name.startsWith(value.toLowerCase()) && !e.dev && (e.execute || (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(cmd => (e.name === cmd.name))?.type === ApplicationCommandType.ChatInput)))).first(25).map(e => ({
             name: e.name,
             value: e.name,
         }))),

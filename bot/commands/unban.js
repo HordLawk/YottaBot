@@ -1,4 +1,11 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {
+    EmbedBuilder,
+    PermissionsBitField,
+    ApplicationCommandOptionType,
+    TextInputStyle,
+    ButtonStyle,
+    ComponentType,
+} = require('discord.js');
 const utils = require('../utils.js');
 
 module.exports = {
@@ -11,7 +18,7 @@ module.exports = {
     categoryID: 3,
     args: true,
     guildOnly: true,
-    perm: Permissions.FLAGS.BAN_MEMBERS,
+    perm: PermissionsBitField.Flags.BanMembers,
     execute: async (message, args) => {
         const {channelLanguage} = message;
         if(!message.member) message.member = await message.guild.members.fetch(message.author).catch(() => null);
@@ -21,7 +28,7 @@ module.exports = {
         const ban = await message.guild.bans.fetch(id).catch(() => null);
         if(!ban) return message.reply(channelLanguage.get('invBanned'));
         const reason = message.content.replace(/^\S+\s+\S+\s*/, '').slice(0, 500);
-        if(!message.guild.me.permissions.has(Permissions.FLAGS.BAN_MEMBERS)) return message.reply(channelLanguage.get('cantUnban'));
+        if(!message.guild.members.me.permissions.has(PermissionsBitField.Flags.BanMembers)) return message.reply(channelLanguage.get('cantUnban'));
         const guild = require('../../schemas/guild.js');
         const guildDoc = await guild.findByIdAndUpdate(message.guild.id, {$inc: {counterLogs: 1}});
         message.client.guildData.get(message.guild.id).counterLogs = guildDoc.counterLogs + 1;
@@ -44,8 +51,8 @@ module.exports = {
         const discordChannel = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).modlogs.ban);
         let msg;
         let embed;
-        if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) && discordChannel.permissionsFor(message.guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
-            embed = new MessageEmbed()
+        if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(message.guild.members.me).has(PermissionsBitField.Flags.SendMessages) && discordChannel.permissionsFor(message.guild.members.me).has(PermissionsBitField.Flags.EmbedLinks)){
+            embed = new EmbedBuilder()
                 .setColor(0x00ff00)
                 .setAuthor({
                     name: channelLanguage.get('unbanEmbedAuthor', [message.author.tag, ban.user.tag]),
@@ -66,34 +73,34 @@ module.exports = {
             await current.save();
         }
         const buttonEdit = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('editReason'),
             customId: 'edit',
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '✏️',
         };
         const components = [{
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [buttonEdit],
         }];
         await reply.edit({components});
         const collectorEdit = reply.createMessageComponentCollector({
             filter: componentInteraction => ((componentInteraction.user.id === message.author.id) && (componentInteraction.customId === 'edit')),
             time: 60_000,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
         });
         collectorEdit.on('collect', i => (async () => {
             await i.showModal({
                 customId: `modalEdit${i.id}`,
                 title: channelLanguage.get('editReasonModalTitle'),
                 components: [{
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [{
-                        type: 'TEXT_INPUT',
+                        type: ComponentType.TextInput,
                         customId: 'reason',
                         label: channelLanguage.get('editReasonModalReasonLabel'),
                         required: true,
-                        style: 'PARAGRAPH',
+                        style: TextInputStyle.Paragraph,
                         value: current.reason,
                         maxLength: 500,
                     }],
@@ -144,12 +151,12 @@ module.exports = {
             customId: `modalReason${interaction.id}`,
             title: channelLanguage.get('setReasonModalTitle'),
             components: [{
-                type: 'ACTION_ROW',
+                type: ComponentType.ActionRow,
                 components: [{
-                    type: 'TEXT_INPUT',
+                    type: ComponentType.TextInput,
                     customId: 'reason',
                     label: channelLanguage.get('setReasonModalReasonLabel'),
-                    style: 'PARAGRAPH',
+                    style: TextInputStyle.Paragraph,
                     maxLength: 500,
                     placeholder: channelLanguage.get('optionalInput'),
                 }],
@@ -164,7 +171,7 @@ module.exports = {
             ephemeral: true,
         });
         reason = i.fields.getTextInputValue('reason');
-        if(!interaction.guild.me.permissions.has(Permissions.FLAGS.BAN_MEMBERS)) return await i.reply({
+        if(!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags.BanMembers)) return await i.reply({
             content: channelLanguage.get('cantUnban'),
             ephemeral: true,
         });
@@ -193,8 +200,8 @@ module.exports = {
         const discordChannel = interaction.guild.channels.cache.get(interaction.client.guildData.get(interaction.guild.id).modlogs.ban);
         let msg;
         let embed;
-        if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(interaction.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) && discordChannel.permissionsFor(interaction.guild.me).has(Permissions.FLAGS.EMBED_LINKS)){
-            embed = new MessageEmbed()
+        if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(interaction.guild.members.me).has(PermissionsBitField.Flags.SendMessages) && discordChannel.permissionsFor(interaction.guild.members.me).has(PermissionsBitField.Flags.EmbedLinks)){
+            embed = new EmbedBuilder()
                 .setColor(0x00ff00)
                 .setAuthor({
                     name: channelLanguage.get('unbanEmbedAuthor', [interaction.user.tag, ban.user.tag]),
@@ -214,34 +221,34 @@ module.exports = {
             await current.save();
         }
         const buttonEdit = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('editReason'),
             customId: 'edit',
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '✏️',
         };
         const components = [{
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [buttonEdit],
         }];
         await i.editReply({components});
         const collectorEdit = reply.createMessageComponentCollector({
             filter: componentInteraction => ((componentInteraction.user.id === interaction.user.id) && (componentInteraction.customId === 'edit')),
             time: 60_000,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
         });
         collectorEdit.on('collect', int => (async () => {
             await int.showModal({
                 customId: `modalEdit${int.id}`,
                 title: channelLanguage.get('editReasonModalTitle'),
                 components: [{
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [{
-                        type: 'TEXT_INPUT',
+                        type: ComponentType.TextInput,
                         customId: 'reason',
                         label: channelLanguage.get('editReasonModalReasonLabel'),
                         required: true,
-                        style: 'PARAGRAPH',
+                        style: TextInputStyle.Paragraph,
                         value: current.reason,
                         maxLength: 500,
                     }],
@@ -282,7 +289,7 @@ module.exports = {
         });
     },
     slashOptions: [{
-        type: 'STRING',
+        type: ApplicationCommandOptionType.String,
         name: 'target_id',
         nameLocalizations: utils.getStringLocales('unbanOptiontargetLocalisedName'),
         description: 'The ID of the user to unban',

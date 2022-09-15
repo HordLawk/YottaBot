@@ -1,4 +1,4 @@
-const {Permissions, Collection, MessageEmbed} = require('discord.js');
+const {PermissionsBitField, Collection, EmbedBuilder} = require('discord.js');
 const locale = require('../../locale');
 
 module.exports = {
@@ -6,15 +6,15 @@ module.exports = {
     name: 'pruneafter',
     description: lang => lang.get('pruneafterDescription'),
     cooldown: 10,
-    perm: Permissions.FLAGS.MANAGE_CHANNELS,
+    perm: PermissionsBitField.Flags.ManageChannels,
     executeSlash: async interaction => {
         const {channelLanguage} = interaction;
         if(
             !interaction.channel.viewable
             ||
-            !interaction.guild.me
+            !interaction.guild.members.me
                 .permissionsIn(interaction.channel)
-                .has(Permissions.FLAGS.MANAGE_MESSAGES)
+                .has(PermissionsBitField.Flags.ManageMessages)
         ) return await interaction.reply({
             content: channelLanguage.get('botCantPruneMessages'),
             ephemeral: true,
@@ -67,7 +67,7 @@ module.exports = {
             .catch(() => null);
         if(!hook) return;
         const logsLanguage = locale.get(interaction.client.guildData.get(interaction.guild.id).language);
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(0xff0000)
             .setTimestamp()
             .setAuthor({

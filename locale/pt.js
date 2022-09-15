@@ -635,7 +635,7 @@ module.exports = {
             case 'namebans_removeOptiontextLocalisedDesc': return 'O pedaço de texto à ser removido da lista de usernames ' +
                                                                   'banidos';
             case 'namebans_listLocalisedName': return 'listar';
-            case 'namebans_listLocalisedName': return 'Lista informações sobre todos os usernames banidos atualmente';
+            case 'namebans_listLocalisedDesc': return 'Lista informações sobre todos os usernames banidos atualmente';
             case 'usernameTooLong': return 'O pedaço de texto banido deve ter menos de 33 caracteres';
             case 'tooManyNamebans': return `Você alcançou o limite de ${vars[0]} usernames banidos para esse servidor\n` +
                                            `Se você deseja aumentar esse limite para ${vars[1]} ` +

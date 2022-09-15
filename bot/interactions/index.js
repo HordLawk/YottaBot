@@ -9,7 +9,7 @@ module.exports = fs
     .reduce(
         (acc, e) => (
             acc.set(
-                e.name,
+                e.type,
                 e
             )
         ),

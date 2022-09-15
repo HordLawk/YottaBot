@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions, GuildAuditLogs} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, GuildAuditLogs, UserFlags, GuildFeature, AuditLogEvent} = require('discord.js');
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
 const role = require('../../schemas/role.js');
@@ -19,7 +19,7 @@ module.exports = {
             if(!roleDoc){
                 const hook = await member.client.fetchWebhook(member.client.guildData.get(member.guild.id).actionlogs.id('memberleave').hookID || member.client.guildData.get(member.guild.id).defaultLogsHookID, member.client.guildData.get(member.guild.id).actionlogs.id('memberleave').hookToken || member.client.guildData.get(member.guild.id).defaultLogsHookToken).catch(() => null);
                 if(hook){
-                    const embed = new MessageEmbed()
+                    const embed = new EmbedBuilder()
                         .setColor(0xff0000)
                         .setFooter({text: member.id})
                         .setTimestamp()
@@ -30,7 +30,7 @@ module.exports = {
                         .setThumbnail(member.user.displayAvatarURL({dynamic: true}))
                         .setDescription(member.toString());
                     if(member.nickname) embed.addField(channelLanguage.get('memberleaveEmbedNickTitle'), member.nickname, true);
-                    if((member.user.flags?.toArray().length || member.user.bot) && member.guild.roles.everyone.permissionsIn(hook.channelId).has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)){
+                    if((member.user.flags?.toArray().length || member.user.bot) && member.guild.roles.everyone.permissionsIn(hook.channelId).has(PermissionsBitField.Flags.UseExternalEmojis)){
                         const badges = {
                             DISCORD_EMPLOYEE: '<:staff:967043602012315658>',
                             PARTNERED_SERVER_OWNER: '<:partner:967043547561852978>',
@@ -46,10 +46,10 @@ module.exports = {
                             VERIFIED_BOT: '<:verifiedbot:967049829568090143>',
                         };
                         const userBadges = member.user.flags.toArray().map(e => badges[e]);
-                        if(!member.user.flags.has('VERIFIED_BOT') && member.user.bot) userBadges.push('<:bot:967062591190995004>');
+                        if(!member.user.flags.has(UserFlags.VerifiedBot) && member.user.bot) userBadges.push('<:bot:967062591190995004>');
                         embed.addField(channelLanguage.get('memberjoinEmbedBadgesTitle'), userBadges.join(' '), true);
                     }
-                    if(member.guild.features.includes('MEMBER_VERIFICATION_GATE_ENABLED') && !member.partial) embed.addField(channelLanguage.get('memberleaveEmbedMembershipTitle'), channelLanguage.get('memberleaveEmbedMembershipValue', [member.pending]), true);
+                    if(member.guild.features.includes(GuildFeature.MemberVerificationGateEnabled) && !member.partial) embed.addField(channelLanguage.get('memberleaveEmbedMembershipTitle'), channelLanguage.get('memberleaveEmbedMembershipValue', [member.pending]), true);
                     if(member.joinedTimestamp) embed.addField(channelLanguage.get('memberleaveEmbedJoinedTitle'), channelLanguage.get('memberleaveEmbedJoinedValue', [Math.round(member.joinedTimestamp / 1000)]));
                     if(member.communicationDisabledUntilTimestamp > Date.now()) embed.addField(channelLanguage.get('memberleaveEmbedTimeoutTitle'), channelLanguage.get('memberleaveEmbedTimeoutValue', [Math.round(member.communicationDisabledUntilTimestamp / 1000)]));
                     if(member.premiumSince) embed.addField(channelLanguage.get('memberleaveEmbedBoostTitle'), channelLanguage.get('memberleaveEmbedBoostValue', [Math.round(member.premiumSinceTimestamp / 1000)]));
@@ -63,9 +63,9 @@ module.exports = {
                 }
             }
         }
-        if(!member.guild.me.permissions.has(Permissions.FLAGS.VIEW_AUDIT_LOG)) return;
+        if(!member.guild.members.me.permissions.has(PermissionsBitField.Flags.ViewAuditLog)) return;
         const audits = await member.guild.fetchAuditLogs({limit: 1}).catch(() => null);
-        if(!audits || (audits.entries.first()?.action != GuildAuditLogs.Actions.MEMBER_KICK) || (audits.entries.first()?.target.id !== member.id) || audits.entries.first()?.executor.bot) return;
+        if(!audits || (audits.entries.first()?.action != AuditLogEvent.MemberKick) || (audits.entries.first()?.target.id !== member.id) || audits.entries.first()?.executor.bot) return;
         const reason = audits.entries.first().reason?.slice(0, 500);
         const guildDoc = await guild.findByIdAndUpdate(member.guild.id, {$inc: {counterLogs: 1}});
         member.client.guildData.get(member.guild.id).counterLogs = guildDoc.counterLogs + 1;
@@ -80,8 +80,8 @@ module.exports = {
         });
         await current.save();
         const discordChannel = member.guild.channels.cache.get(member.client.guildData.get(member.guild.id).modlogs.kick);
-        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(member.guild.me).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.permissionsFor(member.guild.me).has(Permissions.FLAGS.EMBED_LINKS)) return;
-        const embed = new MessageEmbed()
+        if(!discordChannel || !discordChannel.viewable || !discordChannel.permissionsFor(member.guild.members.me).has(PermissionsBitField.Flags.SendMessages) || !discordChannel.permissionsFor(member.guild.members.me).has(PermissionsBitField.Flags.EmbedLinks)) return;
+        const embed = new EmbedBuilder()
             .setColor(0xffbf00)
             .setAuthor({
                 name: channelLanguage.get('kickEmbedAuthor', [audits.entries.first().executor.tag, member.user.tag]),

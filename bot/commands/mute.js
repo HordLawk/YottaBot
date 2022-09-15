@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, TextInputStyle, ButtonStyle, ComponentType} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -10,7 +10,7 @@ module.exports = {
     cooldown: 3,
     categoryID: 3,
     args: true,
-    perm: Permissions.FLAGS.MODERATE_MEMBERS,
+    perm: PermissionsBitField.Flags.ModerateMembers,
     guildOnly: true,
     execute: async (message, args) => {
         const {channelLanguage} = message;
@@ -22,7 +22,7 @@ module.exports = {
         if(
             (message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0)
             ||
-            member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)
+            member.permissions.has(PermissionsBitField.Flags.Administrator)
         ) return message.reply(channelLanguage.get('youCantMute'));
         if(!member.moderatable) return message.reply(channelLanguage.get('iCantMute'));
         const duration = (
@@ -81,17 +81,17 @@ module.exports = {
             discordChannel.viewable
             &&
             discordChannel
-                .permissionsFor(message.guild.me)
-                .has(Permissions.FLAGS.SEND_MESSAGES)
+                .permissionsFor(message.guild.members.me)
+                .has(PermissionsBitField.Flags.SendMessages)
             &&
             discordChannel
-                .permissionsFor(message.guild.me)
-                .has(Permissions.FLAGS.EMBED_LINKS)
+                .permissionsFor(message.guild.members.me)
+                .has(PermissionsBitField.Flags.EmbedLinks)
         ){
             const d = Math.floor(duration / 86400000);
             const h = Math.floor((duration % 86400000) / 3600000);
             const m = Math.floor((duration % 3600000) / 60000);
-            embed = new MessageEmbed()
+            embed = new EmbedBuilder()
                 .setTimestamp()
                 .setColor(0xff8000)
                 .setAuthor({
@@ -132,21 +132,21 @@ module.exports = {
             await current.save();
         }
         const buttonUndo = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('undo'),
             customId: 'undo',
-            style: 'DANGER',
+            style: ButtonStyle.Danger,
             emoji: '↩️',
         };
         const buttonEdit = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('editReason'),
             customId: 'edit',
-            style: 'PRIMARY',
+            style: ButtonStyle.Primary,
             emoji: '✏️',
         };
         const components = [{
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [buttonEdit, buttonUndo],
         }];
         await reply.edit({components});
@@ -158,7 +158,7 @@ module.exports = {
             ),
             idle: 10000,
             max: 1,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
         });
         collectorUndo.on('collect', i => (async i => {
             if(!member.isCommunicationDisabled()) return;
@@ -182,20 +182,20 @@ module.exports = {
                 (componentInteraction.customId === 'edit')
             ),
             time: 60_000,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
         });
         collectorEdit.on('collect', i => (async () => {
             await i.showModal({
                 customId: `modalEdit${i.id}`,
                 title: channelLanguage.get('editReasonModalTitle'),
                 components: [{
-                    type: 'ACTION_ROW',
+                    type: ComponentType.ActionRow,
                     components: [{
-                        type: 'TEXT_INPUT',
+                        type: ComponentType.TextInput,
                         customId: 'reason',
                         label: channelLanguage.get('editReasonModalReasonLabel'),
                         required: true,
-                        style: 'PARAGRAPH',
+                        style: TextInputStyle.Paragraph,
                         value: current.reason,
                         maxLength: 500,
                     }],

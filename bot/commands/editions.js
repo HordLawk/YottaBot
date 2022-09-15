@@ -1,4 +1,10 @@
-const {Permissions, MessageEmbed} = require('discord.js');
+const {
+    PermissionsBitField,
+    EmbedBuilder,
+    ApplicationCommandOptionType,
+    ButtonStyle,
+    ComponentType,
+} = require('discord.js');
 
 module.exports = {
     active: true,
@@ -6,7 +12,7 @@ module.exports = {
     description: lang => lang.get('editionsDescription'),
     cooldown: 5,
     categoryID: 2,
-    perm: Permissions.FLAGS.ADMINISTRATOR,
+    perm: PermissionsBitField.Flags.Administrator,
     guildOnly: true,
     storageSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
@@ -24,21 +30,21 @@ module.exports = {
     wipeSlash: async interaction => {
         const {channelLanguage} = interaction;
         const buttonConfirm = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('confirm'),
-            style: 'SUCCESS',
+            style: ButtonStyle.Success,
             emoji: '✅',
             customId: 'confirm',
         };
         const buttonCancel = {
-            type: 'BUTTON',
+            type: ComponentType.Button,
             label: channelLanguage.get('cancel'),
-            style: 'DANGER',
+            style: ButtonStyle.Danger,
             emoji: '❌',
             customId: 'cancel',
         };
         const components = [{
-            type: 'ACTION_ROW',
+            type: ComponentType.ActionRow,
             components: [buttonConfirm, buttonCancel],
         }];
         const reply = await interaction.reply({
@@ -50,7 +56,7 @@ module.exports = {
             filter: componentInteraction => (componentInteraction.user.id === interaction.user.id),
             idle: 10000,
             max: 1,
-            componentType: 'BUTTON',
+            componentType: ComponentType.Button,
         });
         collector.on('collect', i => (async i => {
             switch(i.customId){
@@ -83,7 +89,7 @@ module.exports = {
             ??
             interaction.client.guildData.get(interaction.guild.id).partner
         );
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(0x2f3136)
             .setAuthor({
                 name: channelLanguage.get('editionsinfoEmbedAuthor'),
@@ -106,23 +112,23 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'storage',
             description: 'Sets if edited messages should be stored for later viewing',
             options: [{
-                type: 'BOOLEAN',
+                type: ApplicationCommandOptionType.Boolean,
                 name: 'enable',
                 description: 'Whether edited messages should be stored or not',
                 required: true,
             }],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'wipe',
             description: 'Requests deletion of all stored previously edited messages from this server',
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'info',
             description: 'Shows information on the current state of the edited messages storing functionality in ' +
                          'this server',

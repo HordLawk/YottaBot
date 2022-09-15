@@ -1,7 +1,7 @@
 const channel = require('../../schemas/channel.js');
 const role = require('../../schemas/role.js');
 const edition = require('../../schemas/edition.js');
-const {MessageEmbed, Util} = require('discord.js');
+const {EmbedBuilder, escapeCodeBlock, cleanContent} = require('discord.js');
 const {sha256} = require('js-sha256');
 const aesjs = require('aes-js');
 const locale = require('../../locale');
@@ -41,7 +41,7 @@ module.exports = {
         }
         const hook = await newMessage.client.fetchWebhook(newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg').hookID || newMessage.client.guildData.get(newMessage.guild.id).defaultLogsHookID, newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg').hookToken || newMessage.client.guildData.get(newMessage.guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
-        let [oldContent, newContent] = [Util.escapeCodeBlock(Util.cleanContent(oldMessage.content, newMessage.channel)), Util.escapeCodeBlock(Util.cleanContent(newMessage.content, newMessage.channel))];
+        let [oldContent, newContent] = [escapeCodeBlock(cleanContent(oldMessage.content, newMessage.channel)), escapeCodeBlock(cleanContent(newMessage.content, newMessage.channel))];
         if((oldContent.length > 2000) && (newContent.length > 2000)){
             if(oldContent.slice(0, 2000) === newContent.slice(0, 2000)){
                 oldContent = `[...]\`\`\`${oldContent.slice(-2000)}\`\`\``;
@@ -66,7 +66,7 @@ module.exports = {
                 newContent = newContent && `\`\`\`${newContent}\`\`\``;
             }
         }
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(0x0000ff)
             .setFooter({text: newMessage.author.id})
             .setTimestamp()

@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, ButtonStyle, ComponentType, UserFlags} = require('discord.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
 
@@ -11,7 +11,7 @@ module.exports = {
         if(member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin') && (member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin').hookID || member.client.guildData.get(member.guild.id).defaultLogsHookID)){
             const hook = await member.client.fetchWebhook(member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin').hookID || member.client.guildData.get(member.guild.id).defaultLogsHookID, member.client.guildData.get(member.guild.id).actionlogs.id('memberjoin').hookToken || member.client.guildData.get(member.guild.id).defaultLogsHookToken).catch(() => null);
             if(hook){
-                const embed = new MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setColor(0x00ff00)
                     .setFooter({text: member.id})
                     .setTimestamp()
@@ -21,7 +21,7 @@ module.exports = {
                     })
                     .setThumbnail(member.user.displayAvatarURL({dynamic: true}))
                     .setDescription(member.toString());
-                if((member.user.flags?.toArray().length || member.user.bot) && member.guild.roles.everyone.permissionsIn(hook.channelId).has(Permissions.FLAGS.USE_EXTERNAL_EMOJIS)){
+                if((member.user.flags?.toArray().length || member.user.bot) && member.guild.roles.everyone.permissionsIn(hook.channelId).has(PermissionsBitField.Flags.UseExternalEmojis)){
                     const badges = {
                         DISCORD_EMPLOYEE: '<:staff:967043602012315658>',
                         PARTNERED_SERVER_OWNER: '<:partner:967043547561852978>',
@@ -37,7 +37,7 @@ module.exports = {
                         VERIFIED_BOT: '<:verifiedbot:967049829568090143>',
                     };
                     const userBadges = member.user.flags.toArray().map(e => badges[e]);
-                    if(!member.user.flags.has('VERIFIED_BOT') && member.user.bot) userBadges.push('<:bot:967062591190995004>');
+                    if(!member.user.flags.has(UserFlags.VerifiedBot) && member.user.bot) userBadges.push('<:bot:967062591190995004>');
                     embed.addField(channelLanguage.get('memberjoinEmbedBadgesTitle'), userBadges.join(' '));
                 }
                 embed.addField(channelLanguage.get('memberjoinEmbedCreationTitle'), channelLanguage.get('memberjoinEmbedCreationValue', [Math.round(member.user.createdTimestamp / 1000)]));
@@ -46,12 +46,12 @@ module.exports = {
                     username: member.client.user.username,
                     avatarURL: member.client.user.avatarURL(),
                     components: [{
-                        type: 'ACTION_ROW',
+                        type: ComponentType.ActionRow,
                         components: [{
-                            type: 'BUTTON',
+                            type: ComponentType.Button,
                             label: channelLanguage.get('banButton'),
                             customId: `banjoined${member.id}`,
-                            style: 'DANGER',
+                            style: ButtonStyle.Danger,
                             emoji: '🔨',
                         }],
                     }],

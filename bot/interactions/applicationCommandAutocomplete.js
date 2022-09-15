@@ -1,7 +1,8 @@
+const { InteractionType } = require('discord.js');
 const commands = require('../commands');
 
 module.exports = {
-    name: 'APPLICATION_COMMAND_AUTOCOMPLETE',
+    type: InteractionType.ApplicationCommandAutocomplete,
     execute: async interaction => {
         const subCommandName = interaction.options.getSubcommand(false);
         const subCommandGroupName = interaction.options.getSubcommandGroup(false) ?? '';

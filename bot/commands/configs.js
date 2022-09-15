@@ -1,4 +1,4 @@
-const {MessageEmbed, Permissions} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, ApplicationCommandOptionType, ChannelType} = require('discord.js');
 const utils = require('../utils.js');
 const locale = require('../../locale');
 
@@ -12,7 +12,7 @@ module.exports = {
     cooldown: 5,
     categoryID: 2,
     args: true,
-    perm: Permissions.FLAGS.ADMINISTRATOR,
+    perm: PermissionsBitField.Flags.Administrator,
     guildOnly: true,
     execute: async function(message, args){
         const {channelLanguage} = message;
@@ -55,9 +55,9 @@ module.exports = {
                     case 'logs': {
                         if(!args[3] || args.slice(3, 7).some(e => !['warn', 'mute', 'kick', 'ban'].includes(e))) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                         let discordChannel = message.guild.channels.cache.get(args[2].match(/^(?:<#)?(\d{17,19})>?$/)?.[1]);
-                        if(!discordChannel || !discordChannel.isText()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                        if(!message.guild.me.permissionsIn(discordChannel).has(Permissions.FLAGS.SEND_MESSAGES) || !discordChannel.viewable) return message.reply(channelLanguage.get('sendMessages'));
-                        if(!message.guild.me.permissionsIn(discordChannel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
+                        if(!discordChannel || !discordChannel.isTextBased()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                        if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.SendMessages) || !discordChannel.viewable) return message.reply(channelLanguage.get('sendMessages'));
+                        if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));
                         let guildDoc = await guild.findById(message.guild.id);
                         args.slice(3, 7).forEach(e => (guildDoc.modlogs[e] = discordChannel.id));
                         await guildDoc.save();
@@ -96,9 +96,9 @@ module.exports = {
             }
             break;
             case 'view': {
-                if(!message.guild.me.permissionsIn(message.channel).has(Permissions.FLAGS.EMBED_LINKS)) return message.reply(channelLanguage.get('botEmbed'));
-                let embed = new MessageEmbed()
-                    .setColor(message.guild.me.displayColor || 0x8000ff)
+                if(!message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));
+                let embed = new EmbedBuilder()
+                    .setColor(message.guild.members.me.displayColor || 0x8000ff)
                     .setAuthor({
                         name: channelLanguage.get('configsEmbedAuthor'),
                         iconURL: message.guild.iconURL({
@@ -148,11 +148,11 @@ module.exports = {
     },
     moderationlogsSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        if(!interaction.guild.me.permissionsIn(args.modlog_channel).has(Permissions.FLAGS.SEND_MESSAGES) || !args.modlog_channel.viewable) return interaction.reply({
+        if(!interaction.guild.members.me.permissionsIn(args.modlog_channel).has(PermissionsBitField.Flags.SendMessages) || !args.modlog_channel.viewable) return interaction.reply({
             content: channelLanguage.get('sendMessages'),
             ephemeral: true,
         });
-        if(!interaction.guild.me.permissionsIn(args.modlog_channel).has(Permissions.FLAGS.EMBED_LINKS)) return interaction.reply({
+        if(!interaction.guild.members.me.permissionsIn(args.modlog_channel).has(PermissionsBitField.Flags.EmbedLinks)) return interaction.reply({
             content: channelLanguage.get('botEmbed'),
             ephemeral: true,
         });
@@ -198,8 +198,8 @@ module.exports = {
                 )
                 .catch(() => null)
         );
-        const embed = new MessageEmbed()
-            .setColor(interaction.guild.me.displayColor || 0x8000ff)
+        const embed = new EmbedBuilder()
+            .setColor(interaction.guild.members.me.displayColor || 0x8000ff)
             .setAuthor({
                 name: channelLanguage.get('configsEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true}),
@@ -230,16 +230,17 @@ module.exports = {
             ephemeral: true,
         });
         if(
-            !interaction.guild.me
+            !interaction.guild.members.me
                 .permissionsIn(args.channel)
-                .has(Permissions.FLAGS.MANAGE_WEBHOOKS)
+                .has(PermissionsBitField.Flags.ManageWebhooks)
         ) return await interaction.reply({
             content: channelLanguage.get('botWebhooks'),
             ephemeral: true,
         });
-        const hook = await args.channel.createWebhook(interaction.client.user.username, {
+        const hook = await args.channel.createWebhook({
             avatar: interaction.client.user.avatarURL(),
             reason: channelLanguage.get('newWelcomeHookReason'),
+            name: interaction.client.user.username,
         });
         if(interaction.client.guildData.get(interaction.guild.id).welcomeHook){
             const oldHook = await interaction.client
@@ -251,9 +252,9 @@ module.exports = {
             if(
                 oldHook
                 &&
-                interaction.guild.me
+                interaction.guild.members.me
                     .permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId))
-                    .has(Permissions.FLAGS.MANAGE_WEBHOOKS)
+                    .has(PermissionsBitField.Flags.ManageWebhooks)
             ) await oldHook.delete(channelLanguage.get('WelcomeOldHookDeletedReason'));
         }
         const guildModel = require('../../schemas/guild.js');
@@ -278,9 +279,9 @@ module.exports = {
             if(
                 oldHook
                 &&
-                interaction.guild.me
+                interaction.guild.members.me
                     .permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId))
-                    .has(Permissions.FLAGS.MANAGE_WEBHOOKS)
+                    .has(PermissionsBitField.Flags.ManageWebhooks)
             ) await oldHook.delete(channelLanguage.get('WelcomeOldHookDeletedReason'));
             const guildModel = require('../../schemas/guild.js');
             await guildModel.findByIdAndUpdate(
@@ -292,11 +293,11 @@ module.exports = {
     },
     slashOptions: [
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'language',
             description: 'Sets the server default language',
             options: [{
-                type: 'STRING',
+                type: ApplicationCommandOptionType.String,
                 name: 'language',
                 description: 'The language to set as default',
                 required: true,
@@ -304,35 +305,35 @@ module.exports = {
             }],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'logattachments',
             description: 'Sets whether deleted messages attachments should be attached to the log message or not',
             options: [{
-                type: 'BOOLEAN',
+                type: ApplicationCommandOptionType.Boolean,
                 name: 'enable',
                 description: 'Whether to enable deleted messages attachments being attached to the log messages',
                 required: true,
             }]
         },
         {
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             name: 'moderation',
             description: 'Manages moderation settings',
             options: [
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'logs',
                     description: 'Manages logs for moderation actions',
                     options: [
                         {
-                            type: 'CHANNEL',
+                            type: ApplicationCommandOptionType.Channel,
                             name: 'modlog_channel',
                             description: 'The channel to log moderation actions in',
                             required: true,
-                            channelTypes: ['GUILD_TEXT'],
+                            channelTypes: [ChannelType.GuildText],
                         },
                         {
-                            type: 'STRING',
+                            type: ApplicationCommandOptionType.String,
                             name: 'action_type',
                             description: 'The type of moderation action to be logged in the chosen channel',
                             required: true,
@@ -362,11 +363,11 @@ module.exports = {
                     ],
                 },
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'clearonban',
                     description: 'Manages message pruning on bans issued through YottaBot',
                     options: [{
-                        type: 'INTEGER',
+                        type: ApplicationCommandOptionType.Integer,
                         name: 'days',
                         description: 'How many days of messages to clear when banning an user or 0 if no messages should be cleared',
                         minValue: 0,
@@ -375,18 +376,18 @@ module.exports = {
                     }],
                 },
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'massbanprotection',
                     description: 'Manages the mass ban protection system',
                     options: [
                         {
-                            type: 'BOOLEAN',
+                            type: ApplicationCommandOptionType.Boolean,
                             name: 'enable',
                             description: 'Whether to enable the mass ban protection',
                             required: true,
                         },
                         {
-                            type: 'INTEGER',
+                            type: ApplicationCommandOptionType.Integer,
                             name: 'max_bans',
                             description: 'The maximum amount of bans allowed per moderator per 10 seconds',
                             required: false,
@@ -395,11 +396,11 @@ module.exports = {
                     ],
                 },
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'globalbans',
                     description: 'Manages the global ban system',
                     options: [{
-                        type: 'BOOLEAN',
+                        type: ApplicationCommandOptionType.Boolean,
                         name: 'enable',
                         description: 'Whether to enable the global ban system',
                         required: true,
@@ -408,47 +409,47 @@ module.exports = {
             ],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'beta',
             description: 'Sets the server beta status',
             options: [{
-                type: 'BOOLEAN',
+                type: ApplicationCommandOptionType.Boolean,
                 name: 'enable',
                 description: 'Whether enable beta features in the current server',
                 required: true,
             }],
         },
         {
-            type: 'SUB_COMMAND',
+            type: ApplicationCommandOptionType.Subcommand,
             name: 'info',
             description: 'Lists the current server bot configs',
         },
         {
-            type: 'SUB_COMMAND_GROUP',
+            type: ApplicationCommandOptionType.SubcommandGroup,
             name: 'welcome',
             nameLocalizations: utils.getStringLocales('configs_welcomeLocalisedName'),
             description: 'Sets a channel for a welcome message to be sent when a new user joins the server',
             options: [
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'enable',
                     nameLocalizations: utils.getStringLocales('configs_welcome_enableLocalisedName'),
                     description: 'Sets a channel for a welcome message to be sent when a new user joins the server',
                     descriptionLocalizations: utils.getStringLocales('configs_welcome_enableLocalisedDesc'),
                     options: [{
-                        type: 'CHANNEL',
+                        type: ApplicationCommandOptionType.Channel,
                         name: 'channel',
                         nameLocalizations: utils.getStringLocales('configs_welcome_enableOptionchannelLocalisedName'),
                         description: 'The channel in which to welcome new members',
                         descriptionLocalizations: utils.getStringLocales(
                             'configs_welcome_enableOptionchannelLocalisedDesc'
                         ),
-                        channelTypes: ['GUILD_TEXT', 'GUILD_NEWS'],
+                        channelTypes: [ChannelType.GuildText, ChannelType.GuildNews],
                         required: true,
                     }],
                 },
                 {
-                    type: 'SUB_COMMAND',
+                    type: ApplicationCommandOptionType.Subcommand,
                     name: 'disable',
                     nameLocalizations: utils.getStringLocales('configs_welcome_disableLocalisedName'),
                     description: 'Disables welcome messages for new members',

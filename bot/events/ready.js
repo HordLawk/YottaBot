@@ -20,7 +20,7 @@ module.exports = {
         await ((process.env.NODE_ENV === 'production') ? client.application : client.guilds.cache.get(process.env.DEV_GUILD)).commands.fetch();
         if(process.env.NODE_ENV === 'production'){
             await client.channels.cache.get(configs.bootlog).send(`Connected with ping \`${client.ws.ping}ms\`!`);
-            // await client.guilds.cache.get(configs.supportID).members.fetch();
+            await client.guilds.cache.get(configs.supportID).members.fetch();
             AutoPoster(process.env.TOPGG_TOKEN, client);
             axios({
                 method: 'POST',
@@ -164,6 +164,7 @@ module.exports = {
                     await discordGuild.members.fetch({user: discordGuild.voiceStates.cache.map(e => e.id)});
                 }
                 catch(_){
+                    // This shouldn't happen and I don't know why it occasionally does, therefore I'll only investigate further when people start complaining about it.
                     continue;
                 }
                 let inVoice = discordGuild.voiceStates.cache.filter(e => e.channel && !e.deaf && !e.mute && !e.member.user.bot && (e.channel.members.filter(ee => !ee.voice.deaf && !ee.voice.mute && !ee.user.bot).size > 1) && !ignoredChannels.some(ee => (ee._id === e.channel.id)) && !roleDocs.some(ee => e.member.roles.cache.has(ee.roleID) && ee.ignoreXp));

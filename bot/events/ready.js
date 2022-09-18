@@ -20,7 +20,8 @@ module.exports = {
         await ((process.env.NODE_ENV === 'production') ? client.application : client.guilds.cache.get(process.env.DEV_GUILD)).commands.fetch();
         if(process.env.NODE_ENV === 'production'){
             await client.channels.cache.get(configs.bootlog).send(`Connected with ping \`${client.ws.ping}ms\`!`);
-            await client.guilds.cache.get(configs.supportID).members.fetch();
+            // Fix this later
+            // await client.guilds.cache.get(configs.supportID).members.fetch();
             AutoPoster(process.env.TOPGG_TOKEN, client);
             axios({
                 method: 'POST',

@@ -3,6 +3,7 @@ const {
     ApplicationCommandOptionType,
     TextInputStyle,
     ComponentType,
+    EmbedBuilder,
 } = require('discord.js');
 const utils = require('../utils.js');
 
@@ -80,7 +81,7 @@ module.exports = {
         ) return;
         const msg = await discordChannel.messages.fetch({message: current.logMessage}).catch(() => null);
         if(!msg || !msg.editable || !msg.embeds.length) return;
-        const embed = msg.embeds[0];
+        const embed = new EmbedBuilder(msg.embeds[0].toJSON());
         embed.setFields([{
             name: channelLanguage.get('reasonEmbedTargetTitle'),
             value: channelLanguage.get('reasonEmbedTargetValue', [current.target]),
@@ -190,7 +191,7 @@ module.exports = {
         ) return;
         const msg = await discordChannel.messages.fetch({message: current.logMessage}).catch(() => null);
         if(!msg?.editable || !msg.embeds.length) return;
-        const embed = msg.embeds[0];
+        const embed = new EmbedBuilder(msg.embeds[0].toJSON());
         embed.setFields([{
             name: channelLanguage.get('reasonEmbedTargetTitle'),
             value: channelLanguage.get('reasonEmbedTargetValue', [current.target]),

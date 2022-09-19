@@ -289,7 +289,7 @@ module.exports = {
                 ephemeral: true,
             });
             if(!msg?.editable) return;
-            const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('unmuteEmbedReasonTitle')));
+            const reasonIndex = embed.data.fields.findIndex(e => (e.name === channelLanguage.get('unmuteEmbedReasonTitle')));
             const reasonField = {
                 name: channelLanguage.get('unmuteEmbedReasonTitle'),
                 value: current.reason,

@@ -121,7 +121,7 @@ module.exports = {
                 ephemeral: true,
             });
             if(!msg?.editable) return;
-            const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('unbanEmbedReasonTitle')));
+            const reasonIndex = embed.data.fields.findIndex(e => (e.name === channelLanguage.get('unbanEmbedReasonTitle')));
             const reasonField = {
                 name: channelLanguage.get('unbanEmbedReasonTitle'),
                 value: current.reason,
@@ -269,7 +269,7 @@ module.exports = {
                 ephemeral: true,
             });
             if(!msg?.editable) return;
-            const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('unbanEmbedReasonTitle')));
+            const reasonIndex = embed.data.fields.findIndex(e => (e.name === channelLanguage.get('unbanEmbedReasonTitle')));
             const reasonField = {
                 name: channelLanguage.get('unbanEmbedReasonTitle'),
                 value: current.reason,

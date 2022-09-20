@@ -1,9 +1,8 @@
 const {EmbedBuilder, PermissionsBitField, ApplicationCommandOptionType, ChannelType} = require('discord.js');
-const locale = require('../../locale');
 const configs = require('../configs');
 
-const actionOptionMapper = filter => ((interaction, value) => interaction.respond((filter ? configs.actions.filter(filter) : configs.actions).map((_, i) => ({
-    name: locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en').get(`${i}ActionName`),
+const actionOptionMapper = filter => ((interaction, value, locale) => interaction.respond((filter ? configs.actions.filter(filter) : configs.actions).map((_, i) => ({
+    name: locale.get(`${i}ActionName`),
     value: i,
 })).filter(e => e.name.toLowerCase().startsWith(value.toLowerCase()))));
 

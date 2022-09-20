@@ -121,7 +121,7 @@ module.exports = {
                 ephemeral: true,
             });
             if(!msg?.editable) return;
-            const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('warnEmbedReasonTitle')));
+            const reasonIndex = embed.data.fields.findIndex(e => (e.name === channelLanguage.get('warnEmbedReasonTitle')));
             const reasonField = {
                 name: channelLanguage.get('warnEmbedReasonTitle'),
                 value: current.reason,
@@ -275,7 +275,7 @@ module.exports = {
                 ephemeral: true,
             });
             if(!msg?.editable) return;
-            const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('warnEmbedReasonTitle')));
+            const reasonIndex = embed.data.fields.findIndex(e => (e.name === channelLanguage.get('warnEmbedReasonTitle')));
             const reasonField = {
                 name: channelLanguage.get('warnEmbedReasonTitle'),
                 value: current.reason,

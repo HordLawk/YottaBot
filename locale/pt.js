@@ -709,6 +709,17 @@ module.exports = {
             case 'userInfoOptiontargetLocalisedName': return 'alvo';
             case 'userinfoLocalisedName': return 'usuarioinfo';
             case 'userinfoUsage': return '[(usuário)]';
+            case 'muteOptiontargetLocalisedName': return 'alvo';
+            case 'muteOptiondurationLocalisedName': return 'duracao';
+            case 'muteOptionwith_reasonLocalisedName': return 'com_motivo';
+            case 'muteOptiontargetLocalisedDesc': return 'O membro que deve ser mutado/castigado';
+            case 'muteOptiondurationLocalisedDesc': return 'Por quanto tempo o membro deve permanecer mutado/castigado';
+            case 'muteOptionwith_reasonLocalisedDesc': {
+                return 'Se deve ser apresentado um formulário com um campo para informar o motivo do mute/castigo';
+            }
+            case 'timeAmountDays': return `${vars[0]} dias`;
+            case 'timeAmountHours': return `${vars[0]} horas`;
+            case 'timeAmountMinutes': return `${vars[0]} minutos`;
         }
     },
 };

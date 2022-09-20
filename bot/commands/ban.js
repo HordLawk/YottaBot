@@ -190,7 +190,7 @@ module.exports = {
                 ephemeral: true,
             });
             if(!msg?.editable) return;
-            const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('banEmbedReasonTitle')));
+            const reasonIndex = embed.data.fields.findIndex(e => (e.name === channelLanguage.get('banEmbedReasonTitle')));
             const reasonField = {
                 name: channelLanguage.get('banEmbedReasonTitle'),
                 value: current.reason
@@ -415,7 +415,7 @@ module.exports = {
                 ephemeral: true,
             });
             if(!msg?.editable) return;
-            const reasonIndex = embed.fields.findIndex(e => (e.name === channelLanguage.get('banEmbedReasonTitle')));
+            const reasonIndex = embed.data.fields.findIndex(e => (e.name === channelLanguage.get('banEmbedReasonTitle')));
             const reasonField = {
                 name: channelLanguage.get('banEmbedReasonTitle'),
                 value: current.reason

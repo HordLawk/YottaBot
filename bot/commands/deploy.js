@@ -221,7 +221,7 @@ module.exports = {
             ).commands.cache
                 .filter(e => (
                     e.name.toLowerCase().startsWith(value.toLowerCase()) &&
-                    (e.type === interaction.options.data[0].options.find(ee => (ee.name === 'type')).value)
+                    (e.type === parseInt(interaction.options.data[0].options.find(ee => (ee.name === 'type')).value, 10))
                 ))
                 .first(25)
                 .map(e => ({

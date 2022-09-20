@@ -617,6 +617,9 @@ module.exports = {
             case 'userInfoRoles': return 'Roles';
             case 'userInfoDescription': return 'Show the specified user\'s info if the user is not specified it will show your info';
             case 'userinfoUsage': return '[(user)]';
+            case 'timeAmountDays': return `${vars[0]} days`;
+            case 'timeAmountHours': return `${vars[0]} hours`;
+            case 'timeAmountMinutes': return `${vars[0]} minutes`;
         }
     },
 };

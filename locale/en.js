@@ -615,7 +615,7 @@ module.exports = {
             case 'userInfoCreatedAt': return 'Account created at';
             case 'userInfoJoinedAt': return 'Joined the server at';
             case 'userInfoRoles': return 'Roles';
-            case 'userInfoDescription': return 'Show the specified user\'s info if the user is not specified it will show your info';
+            case 'userInfoDescription': return 'Shows info on an user';
             case 'userinfoUsage': return '[(user)]';
             case 'timeAmountDays': return `${vars[0]} days`;
             case 'timeAmountHours': return `${vars[0]} hours`;

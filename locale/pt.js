@@ -704,7 +704,7 @@ module.exports = {
             case 'userInfoCreatedAt': return 'Conta criada em';
             case 'userInfoJoinedAt': return 'Entrou no servidor em';
             case 'userInfoRoles': return 'Cargos';
-            case 'userInfoDescription': return 'Mostra as informações de um usuário, caso não seja específicado irá mostrar suas informações';
+            case 'userInfoDescription': return 'Mostra informações sobre um membro';
             case 'userInfoOptiontargetLocalisedDesc': return 'O usuário para mostrar as informações';
             case 'userInfoOptiontargetLocalisedName': return 'alvo';
             case 'userinfoLocalisedName': return 'usuarioinfo';

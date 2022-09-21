@@ -620,6 +620,8 @@ module.exports = {
             case 'timeAmountDays': return `${vars[0]} days`;
             case 'timeAmountHours': return `${vars[0]} hours`;
             case 'timeAmountMinutes': return `${vars[0]} minutes`;
+            case 'timeAmountSeconds': return `${vars[0]} seconds`;
+            case 'slowmodeDisable': return 'Disable';
         }
     },
 };

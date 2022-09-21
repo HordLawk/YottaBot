@@ -512,15 +512,15 @@ module.exports = {
             if(!value) return interaction.respond([]);
             const realValue = parseInt(value, 10);
             const choices = [];
-            if(value < 40_321) choices.push({
+            if(realValue < 40_321) choices.push({
                 name: locale.get('timeAmountMinutes', [value]),
-                value: realValue
+                value: realValue,
             });
-            if(value < 673) choices.push({
+            if(realValue < 673) choices.push({
                 name: locale.get('timeAmountHours', [value]),
                 value: realValue * 60,
             });
-            if(value < 29) choices.push({
+            if(realValue < 29) choices.push({
                 name: locale.get('timeAmountDays', [value]),
                 value: realValue * 1_440,
             });

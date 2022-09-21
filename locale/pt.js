@@ -720,6 +720,15 @@ module.exports = {
             case 'timeAmountDays': return `${vars[0]} dias`;
             case 'timeAmountHours': return `${vars[0]} horas`;
             case 'timeAmountMinutes': return `${vars[0]} minutos`;
+            case 'timeAmountSeconds': return `${vars[0]} segundos`;
+            case 'slowmodeDisable': return 'Desativar';
+            case 'slowmodeLocalisedName': return 'modolento';
+            case 'slowmodeOptioncooldownLocalisedName': return 'intervalo';
+            case 'slowmodeOptioncooldownLocalisedDesc': {
+                return 'O intervalo entre cada mensagem que um usuário pode enviar';
+            }
+            case 'slowmodeOptionchannelLocalisedName': return 'canal';
+            case 'slowmodeOptionchannelLocalisedDesc': return 'O canal para aplicar o intervalo do modo lento';
         }
     },
 };

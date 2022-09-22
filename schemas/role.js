@@ -38,6 +38,7 @@ const roleSchema = new Schema({
         type: Number,
         min: 1,
     },
+    ignoreLock: Boolean,
 });
 
 module.exports = model('role', roleSchema);

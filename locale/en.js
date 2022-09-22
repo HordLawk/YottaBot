@@ -622,6 +622,11 @@ module.exports = {
             case 'timeAmountMinutes': return `${vars[0]} minutes`;
             case 'timeAmountSeconds': return `${vars[0]} seconds`;
             case 'slowmodeDisable': return 'Disable';
+            case 'lockDescription': return 'Stops new messages from being sent in the current channel';
+            case 'lockUsage': return '[<on/off>]';
+            case 'botCantLock': return 'I don\'t have permission to manage this channel\'s permissions';
+            case 'lockAuditReason': return `Channel ${vars[0] ? 'un' : ''}locked by ${vars[1]}`;
+            case 'lockSuccess': return `Channel successfully ${vars[0] ? 'un' : ''}locked`;
         }
     },
 };

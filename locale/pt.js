@@ -729,6 +729,14 @@ module.exports = {
             }
             case 'slowmodeOptionchannelLocalisedName': return 'canal';
             case 'slowmodeOptionchannelLocalisedDesc': return 'O canal para aplicar o intervalo do modo lento';
+            case 'lockLocalisedName': return 'trancar';
+            case 'lockDescription': return 'Impede que novas mensagens possam ser enviadas no canal atual';
+            case 'lockUsage': return '[<on/off>]';
+            case 'lockOptiondisableLocalisedName': return 'desativar';
+            case 'lockOptiondisableLocalisedDesc': return 'Verdadeiro para destrancar o canal';
+            case 'botCantLock': return 'Eu não tenho permissão para gerenciar as permissões desse canal';
+            case 'lockAuditReason': return `Canal ${vars[0] ? 'des' : ''}trancado por ${vars[1]}`;
+            case 'lockSuccess': return `Canal ${vars[0] ? 'des' : ''}trancado com sucesso`;
         }
     },
 };

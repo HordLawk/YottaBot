@@ -4,6 +4,7 @@ const {
     ApplicationCommandOptionType,
     ButtonStyle,
     ComponentType,
+    TextInputStyle,
 } = require('discord.js');
 const utils = require('../utils.js');
 

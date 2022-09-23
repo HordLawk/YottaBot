@@ -737,6 +737,28 @@ module.exports = {
             case 'botCantLock': return 'Eu não tenho permissão para gerenciar as permissões desse canal';
             case 'lockAuditReason': return `Canal ${vars[0] ? 'des' : ''}trancado por ${vars[1]}`;
             case 'lockSuccess': return `Canal ${vars[0] ? 'des' : ''}trancado com sucesso`;
+            case 'lockignoreLocalisedName': return 'trancaignorar';
+            case 'lockignoreDescription': return 'Define cargos que serão ignorados pelo comando de lock';
+            case 'lockignore_toggleLocalisedName': return 'alternar';
+            case 'lockignore_toggleLocalisedDesc': {
+                return 'Alterna um comando entre ignorado pelo comando de lock e não ignorado';
+            }
+            case 'lockignore_toggleOptionroleLocalisedName': return 'cargo';
+            case 'lockignore_toggleOptionroleLocalisedDesc': {
+                return 'O cargo que deve ser alternado entre ignorado e não ignorado';
+            }
+            case 'lockignore_listLocalisedName': return 'listar';
+            case 'lockignore_listLocalisedDesc': return 'Lista cargos ignorados pelo comando de lock';
+            case 'lockignoreSuccess': return `O cargo ${vars[0]} será ignorado pelo comando de lock com sucesso`;
+            case 'botCantManageRole': return 'Eu não tenho permissão para generciar esse cargo';
+            case 'lockignoreTooManyRoles': {
+                return (
+                    'Você atingiu o limite de cargos ignorados pelo comando de lock para esse servidor\n' +
+                    'Note que esse limite é de 10 cargos para servidores premium e 1 cargo para servidores não premium'
+                );
+            }
+            case 'lockignoreRemoveSuccess': return `O cargo ${vars[0]} não será mais ignorado pelo comando de lock`;
+            case 'lockignore_listEmbedAuthor': return 'Cargos atualmente ignorados pelo comando de lock';
         }
     },
 };

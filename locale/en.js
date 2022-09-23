@@ -627,6 +627,17 @@ module.exports = {
             case 'botCantLock': return 'I don\'t have permission to manage this channel\'s permissions';
             case 'lockAuditReason': return `Channel ${vars[0] ? 'un' : ''}locked by ${vars[1]}`;
             case 'lockSuccess': return `Channel successfully ${vars[0] ? 'un' : ''}locked`;
+            case 'lockignoreDescription': return 'Sets roles that will be ignored by the lock command';
+            case 'lockignoreSuccess': return `The role ${vars[0]} will be successfully ignored by the lock command`;
+            case 'botCantManageRole': return 'I don\'t have permission to manage this role';
+            case 'lockignoreTooManyRoles': {
+                return (
+                    'You reached the limit of roles ignored by the lock command for this server\n' +
+                    'Note that this limit is 10 roles for premium servers and 1 role for non premium servers'
+                );
+            }
+            case 'lockignoreRemoveSuccess': return `The role ${vars[0]} will be no longer ignored by the lock command`;
+            case 'lockignore_listEmbedAuthor': return 'Roles currently ignored by the lock command';
         }
     },
 };

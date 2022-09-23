@@ -8,7 +8,7 @@ module.exports = {
     aliases: ['l'],
     usage: lang => [lang.get('lockUsage')],
     example: ['on'],
-    cooldown: 5,
+    cooldown: 3,
     categoryID: 3,
     perm: PermissionsBitField.Flags.ManageRoles,
     guildOnly: true,
@@ -35,21 +35,31 @@ module.exports = {
             guild: interaction.guild.id,
             ignoreLock: true,
         });
-        const stateIgnore = args.disable || null;
-        for(const roleDoc of roleDocs){
-            if(
-                interaction.guild.roles.cache
-                    .get(roleDoc.roleID)
-                    ?.comaparePositionTo(interaction.guild.members.me.roles.highest)
-                <
-                0
-            ) await interaction.channel.permissionOverwrites.edit(roleDoc.roleID, {
-                SendMessages: stateIgnore,
-                SendMessagesInThreads: stateIgnore,
-            }, {
-                type: OverwriteType.Role,
-                reason: channelLanguage.get('lockAuditReason', [args.disable, interaction.user.tag]),
-            });
+        const stateIgnore = args.disable ? null : true;
+        for(
+            const discordRole
+            of interaction.guild.roles.cache
+                .filter(r => roleDocs.some(rds => (r.id === rds.roleID)))
+                .sort((ra, rb) => (rb.position - ra.position))
+                .first(
+                    (
+                        interaction.client.guildData.get(interaction.guild.id).premiumUntil
+                        ??
+                        interaction.client.guildData.get(interaction.guild.id).partner
+                    )
+                    ? 10
+                    : 1
+                )
+        ){
+            if(discordRole.comparePositionTo(interaction.guild.members.me.roles.highest) < 0){
+                await interaction.channel.permissionOverwrites.edit(discordRole.id, {
+                    SendMessages: stateIgnore,
+                    SendMessagesInThreads: stateIgnore,
+                }, {
+                    type: OverwriteType.Role,
+                    reason: channelLanguage.get('lockAuditReason', [args.disable, interaction.user.tag]),
+                });
+            }
         }
         const stateEveryone = args.disable ? null : false;
         await interaction.channel.permissionOverwrites.edit(interaction.guild.id, {
@@ -75,20 +85,30 @@ module.exports = {
         });
         const disable = args[0] === 'off';
         const stateIgnore = disable || null;
-        for(const roleDoc of roleDocs){
-            if(
-                message.guild.roles.cache
-                    .get(roleDoc.roleID)
-                    ?.comaparePositionTo(message.guild.members.me.roles.highest)
-                <
-                0
-            ) await message.channel.permissionOverwrites.edit(roleDoc.roleID, {
-                SendMessages: stateIgnore,
-                SendMessagesInThreads: stateIgnore,
-            }, {
-                type: OverwriteType.Role,
-                reason: channelLanguage.get('lockAuditReason', [disable, message.author.tag]),
-            });
+        for(
+            const discordRole
+            of message.guild.roles.cache
+                .filter(r => roleDocs.some(rds => (r.id === rds.roleID)))
+                .sort((ra, rb) => (rb.position - ra.position))
+                .first(
+                    (
+                        message.client.guildData.get(message.guild.id).premiumUntil
+                        ??
+                        message.client.guildData.get(message.guild.id).partner
+                    )
+                    ? 10
+                    : 1
+                )
+        ){
+            if(discordRole.comaparePositionTo(message.guild.members.me.roles.highest) < 0){
+                await message.channel.permissionOverwrites.edit(discordRole.id, {
+                    SendMessages: stateIgnore,
+                    SendMessagesInThreads: stateIgnore,
+                }, {
+                    type: OverwriteType.Role,
+                    reason: channelLanguage.get('lockAuditReason', [disable, message.author.tag]),
+                });
+            }
         }
         const stateEveryone = disable ? null : false;
         await message.channel.permissionOverwrites.edit(message.guild.id, {

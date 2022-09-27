@@ -21,6 +21,18 @@ module.exports = {
         }],
         ['memberjoin', {}],
         ['memberleave', {ignorableRoles: true}],
+        ['voiceconnect', {
+            ignorableChannels: true,
+            ignorableRoles: true,
+        }],
+        ['voicedisconnect', {
+            ignorableChannels: true,
+            ignorableRoles: true,
+        }],
+        ['voicemove', {
+            ignorableChannels: true,
+            ignorableRoles: true,
+        }],
     ]),
     support: 'eNcsvsy',
     supportID: '476244157245947904',

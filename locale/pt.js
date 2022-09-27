@@ -759,6 +759,9 @@ module.exports = {
             }
             case 'lockignoreRemoveSuccess': return `O cargo ${vars[0]} não será mais ignorado pelo comando de lock`;
             case 'lockignore_listEmbedAuthor': return 'Cargos atualmente ignorados pelo comando de lock';
+            case 'voiceconnectActionName': return 'Conexões de voz';
+            case 'voicedisconnectActionName': return 'Desconexões de voz';
+            case 'voicemoveActionName': return 'Movimentos de voz';
         }
     },
 };

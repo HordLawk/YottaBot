@@ -638,6 +638,9 @@ module.exports = {
             }
             case 'lockignoreRemoveSuccess': return `The role ${vars[0]} will be no longer ignored by the lock command`;
             case 'lockignore_listEmbedAuthor': return 'Roles currently ignored by the lock command';
+            case 'voiceconnectActionName': return 'Voice connections';
+            case 'voicedisconnectActionName': return 'Voice disconnections';
+            case 'voicemoveActionName': return 'Voice moves';
         }
     },
 };

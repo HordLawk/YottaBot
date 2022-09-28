@@ -769,8 +769,8 @@ module.exports = {
             case 'voiceconnectEmbedUserTitle': return 'Usuário';
             case 'voiceconnectEmbedChannelTitle': return 'Canal';
             case 'voicedisconnectEmbedAuthor': return `${vars[0]} se desconectou de ${vars[1]}`;
-            case 'voicedisconnectEmbedUserTitle': return 'User';
-            case 'voicedisconnectEmbedChannelTitle': return 'Channel';
+            case 'voicedisconnectEmbedUserTitle': return 'Usuário';
+            case 'voicedisconnectEmbedChannelTitle': return 'Canal';
             case 'voicedisconnectEmbedExecutorTitle': return 'Executor';
             case 'voicemoveEmbedAuthor': return `${vars[0]} trocou de canal de voz`;
             case 'voicemoveEmbedFromTitle': return 'Do canal';

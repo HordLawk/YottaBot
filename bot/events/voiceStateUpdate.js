@@ -44,6 +44,24 @@ const sendLog = async (hook, embed, clientUser) => await hook.send({
     avatarURL: clientUser.avatarURL({size: 4096}),
 });
 
+const fetchEntry = async (guild, auditType) => {
+    const audits = await guild.fetchAuditLogs({
+        type: auditType,
+        limit: 1,
+    });
+    return audits.entries.first();
+}
+
+const isNewAudit = (lastAudit, entry) => (
+    lastAudit && ((entry.id !== lastAudit.id) || (entry.extra.count !== lastAudit.count))
+)
+
+const userField = (title, userTag) => ({
+    name: title,
+    value: userTag,
+    inline: true,
+});
+
 module.exports = {
     name: 'voiceStateUpdate',
     execute: async (oldState, newState) => {
@@ -66,15 +84,11 @@ module.exports = {
                 .setDescription(voiceEmojis(newState))
                 .addFields(
                     {
-                        name: channelLanguage.get('voiceconnectEmbedUserTitle'),
-                        value: user.toString(),
-                        inline: true,
-                    },
-                    {
                         name: channelLanguage.get('voiceconnectEmbedChannelTitle'),
                         value: newState.channel.toString(),
                         inline: true,
                     },
+                    userField(channelLanguage.get('voiceconnectEmbedUserTitle'), user.toString()),
                 );
             await sendLog(hook, embed, newState.client.user);
         }
@@ -94,29 +108,16 @@ module.exports = {
                 .setDescription(voiceEmojis(oldState))
                 .addFields(
                     {
-                        name: channelLanguage.get('voicedisconnectEmbedUserTitle'),
-                        value: user.toString(),
-                        inline: true,
-                    },
-                    {
                         name: channelLanguage.get('voicedisconnectEmbedChannelTitle'),
                         value: oldState.channel.toString(),
                         inline: true,
                     },
+                    userField(channelLanguage.get('voicedisconnectEmbedUserTitle'), user.toString()),
                 );
             if(newState.guild.members.me.permissions.has(PermissionsBitField.Flags.ViewAuditLog)){
-                const audits = await newState.guild.fetchAuditLogs({
-                    type: AuditLogEvent.MemberDisconnect,
-                    limit: 1,
-                });
-                const entry = audits.entries.first();
+                const entry = await fetchEntry(newState.guild, AuditLogEvent.MemberDisconnect);
                 if(entry){
-                    const lastDisconnectAudit = newState.client.lastDisconnectAudit.get(newState.guild.id);
-                    if(
-                        lastDisconnectAudit
-                        &&
-                        ((entry.id !== lastDisconnectAudit.id) || (entry.extra.count !== lastDisconnectAudit.count))
-                    ) embed.addFields({
+                    if(isNewAudit(newState.client.lastDisconnectAudit.get(newState.guild.id), entry)) embed.addFields({
                         name: channelLanguage.get('voicedisconnectEmbedExecutorTitle'),
                         value: entry.executor.toString(),
                         inline: true,
@@ -133,6 +134,58 @@ module.exports = {
             if(await isIgnored(newState, 'voicemove')) return;
             const hook = await fetchHook(newState, 'voicemove');
             if(!hook) return;
+            const user = newState.member?.user ?? await newState.client.users.fetch(newState.id);
+            const embed = new EmbedBuilder()
+                .setColor(0x0000ff)
+                .setAuthor({
+                    name: channelLanguage.get('voicemoveEmbedAuthor', [user.tag]),
+                    iconURL: user.displayAvatarURL({dynamic: true}),
+                })
+                .setTimestamp()
+                .setFooter({text: newState.id})
+                .setDescription(voiceEmojis(newState))
+                .addFields(
+                    {
+                        name: channelLanguage.get('voicemoveEmbedFromTitle'),
+                        value: oldState.channel.toString(),
+                        inline: true,
+                    },
+                    {
+                        name: channelLanguage.get('voicemoveEmbedToTitle'),
+                        value: newState.channel.toString(),
+                        inline: true,
+                    },
+                );
+            let selfMove = true;
+            if(newState.guild.members.me.permissions.has(PermissionsBitField.Flags.ViewAuditLog)){
+                const entry = await fetchEntry(newState.guild, AuditLogEvent.MemberMove);
+                if(entry){
+                    if(isNewAudit(newState.client.lastMoveAudit.get(newState.guild.id), entry)){
+                        const emptyField = {
+                            name: '\u200B',
+                            value: '\u200B',
+                            inline: true,
+                        };
+                        embed.addFields(
+                            emptyField,
+                            userField(channelLanguage.get('voicemoveEmbedTargetTitle'), user.toString()),
+                            {
+                                name: channelLanguage.get('voicemoveEmbedExecutorTitle'),
+                                value: entry.executor.toString(),
+                                inline: true,
+                            },
+                            emptyField,
+                        );
+                        selfMove = false;
+                    }
+                    newState.client.lastMoveAudit.set(newState.guild.id, {
+                        id: entry.id,
+                        count: entry.extra.count,
+                    });
+                }
+            }
+            if(selfMove) embed.addFields(userField(channelLanguage.get('voicemoveEmbedUserTitle'), user.toString()));
+            await sendLog(hook, embed, newState.client.user);
         }
     },
 };

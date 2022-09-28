@@ -648,6 +648,12 @@ module.exports = {
             case 'voicedisconnectEmbedUserTitle': return 'User';
             case 'voicedisconnectEmbedChannelTitle': return 'Channel';
             case 'voicedisconnectEmbedExecutorTitle': return 'Executor';
+            case 'voicemoveEmbedAuthor': return `${vars[0]} moved between channels`;
+            case 'voicemoveEmbedFromTitle': return 'From channel';
+            case 'voicemoveEmbedToTitle': return 'To channel';
+            case 'voicemoveEmbedTargetTitle': return 'Target';
+            case 'voicemoveEmbedExecutorTitle': return 'Executor';
+            case 'voicemoveEmbedUserTitle': return 'User';
         }
     },
 };

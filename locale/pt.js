@@ -769,6 +769,12 @@ module.exports = {
             case 'voicedisconnectEmbedUserTitle': return 'User';
             case 'voicedisconnectEmbedChannelTitle': return 'Channel';
             case 'voicedisconnectEmbedExecutorTitle': return 'Executor';
+            case 'voicemoveEmbedAuthor': return `${vars[0]} trocou de canal de voz`;
+            case 'voicemoveEmbedFromTitle': return 'Do canal';
+            case 'voicemoveEmbedToTitle': return 'Para o canal';
+            case 'voicemoveEmbedTargetTitle': return 'Alvo';
+            case 'voicemoveEmbedExecutorTitle': return 'Executor';
+            case 'voicemoveEmbedUserTitle': return 'Usuário';
         }
     },
 };

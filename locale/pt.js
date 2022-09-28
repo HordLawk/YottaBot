@@ -762,6 +762,9 @@ module.exports = {
             case 'voiceconnectActionName': return 'Conexões de voz';
             case 'voicedisconnectActionName': return 'Desconexões de voz';
             case 'voicemoveActionName': return 'Movimentos de voz';
+            case 'voiceconnectEmbedAuthor': return `${vars[0]} se conectou a ${vars[1]}`;
+            case 'voiceconnectEmbedUserTitle': return 'Usuário';
+            case 'voiceconnectEmbedChannelTitle': return 'Canal';
         }
     },
 };

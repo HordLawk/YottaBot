@@ -1,3 +1,4 @@
+const { EmbedBuilder } = require('discord.js');
 const locale = require('../../locale');
 const channelModel = require('../../schemas/channel.js');
 const roleModel = require('../../schemas/role.js');
@@ -17,11 +18,12 @@ const isIgnored = async (voiceState, logType) => {
     });
 }
 
-const hookCredentials = (guildData, logType) => {
-    return [
-        guildData.actionlogs.id(logType).hookID || guildData.defaultLogsHookID,
-        guildData.actionlogs.id(logType).hookToken || guildData.defaultLogsHookToken,
-    ];
+const fetchHook = async (voiceState, logType) => {
+    const guildData = voiceState.client.guildData.get(voiceState.guild.id);
+    const actionlog = guildData.actionlogs.id(logType);
+    return await voiceState.client.fetchWebhook(
+        actionlog.hookID || guildData.defaultLogsHookID, actionlog.hookToken || guildData.defaultLogsHookToken
+    );
 }
 
 module.exports = {
@@ -31,23 +33,52 @@ module.exports = {
         const channelLanguage = locale.get(newState.client.guildData.get(newState.guild.id).language);
         if(!oldState.channelId && enabledLogs(newState.client.guildData.get(newState.guild.id), 'voiceconnect')){
             if(await isIgnored(newState, 'voiceconnect')) return;
-            const hook = await newState.client.fetchWebhook(
-                ...hookCredentials(newState.client.guildData.get(newState.guild.id), 'voiceconnect')
-            ).catch(() => null);
+            const hook = await fetchHook(newState, 'voiceconnect');
             if(!hook) return;
+            const user = newState.member?.user ?? await newState.client.users.fetch(newState.id);
+            let muteEmoji = '<:unmuted:1024669326055317504>';
+            if(newState.mute){
+                muteEmoji = newState.serverMute ? '<:servermuted:1024669235919728660>' : '<:muted:1024669323178016869>';
+            }
+            let deafEmoji = '<:undeaf:1024669324704755742>';
+            if(newState.deaf){
+                muteEmoji = newState.serverDeaf ? '<:serverdeaf:1024669234569162782>' : '<:deaf:1024669262889091212>';
+            }
+            const embed = new EmbedBuilder()
+                .setColor(0x00ff00)
+                .setAuthor({
+                    name: channelLanguage.get('voiceconnectEmbedAuthor', [user.tag, newState.channel.name]),
+                    iconURL: user.displayAvatarURL({dynamic: true}),
+                })
+                .setTimestamp()
+                .setFooter({text: newState.id})
+                .setDescription(`${muteEmoji} ${deafEmoji}`)
+                .addFields(
+                    {
+                        name: channelLanguage.get('voiceconnectEmbedUserTitle'),
+                        value: user.toString(),
+                        inline: true,
+                    },
+                    {
+                        name: channelLanguage.get('voiceconnectEmbedChannelTitle'),
+                        value: newState.channel.toString(),
+                        inline: true,
+                    },
+                );
+            await hook.send({
+                embeds: [embed],
+                username: newState.client.user.username,
+                avatarURL: newState.client.user.avatarURL({size: 4096}),
+            });
         }
         else if(!newState.channelId && enabledLogs(newState.client.guildData.get(newState.guild.id), 'voicedisconnect')){
             if(await isIgnored(newState, 'voicedisconnect')) return;
-            const hook = await newState.client.fetchWebhook(
-                ...hookCredentials(newState.client.guildData.get(newState.guild.id), 'voicedisconnect')
-            ).catch(() => null);
+            const hook = await fetchHook(newState, 'voicedisconnect');
             if(!hook) return;
         }
         else if(enabledLogs(newState.client.guildData.get(newState.guild.id), 'voicemove')){
             if(await isIgnored(newState, 'voicemove')) return;
-            const hook = await newState.client.fetchWebhook(
-                ...hookCredentials(newState.client.guildData.get(newState.guild.id), 'voicemove')
-            ).catch(() => null);
+            const hook = await fetchHook(newState, 'voicemove');
             if(!hook) return;
         }
     },

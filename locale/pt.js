@@ -775,6 +775,7 @@ module.exports = {
             case 'voicemoveEmbedTargetTitle': return 'Alvo';
             case 'voicemoveEmbedExecutorTitle': return 'Executor';
             case 'voicemoveEmbedUserTitle': return 'Usuário';
+            case 'lockignoreNoRolesToList': return 'Não há nenhum cargo ignorado pelo comando de lock nesse servidor';
         }
     },
 };

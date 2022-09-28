@@ -82,6 +82,10 @@ module.exports = {
             roleID: {$in: interaction.guild.roles.cache.map(r => r.id)},
             ignoreLock: true,
         });
+        if(!roleDocs.length) return await interaction.reply({
+            content: channelLanguage.get('lockignoreNoRolesToList'),
+            ephemeral: true,
+        });
         const replyData = {};
         const rolesLimit = (
             (

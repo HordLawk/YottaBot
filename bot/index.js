@@ -32,6 +32,8 @@ Discord.EmbedBuilder.prototype.addField = function(name, value, inline = false){
 client.cooldowns = new Discord.Collection();
 client.xpcds = new Discord.Collection();
 client.lastdelmsg = new Discord.Collection();
+client.lastMoveAudit = new Discord.Collection();
+client.lastDisconnectAudit = new Discord.Collection();
 client.handlers = {
     button: (err, i) => {
         console.error(err);

@@ -172,10 +172,10 @@ module.exports = {
             case 'delmsgEmbedAttachmentsFile': return `[\`Attachment-${vars[0]}-File\`](${vars[1]})`;
             case 'actionlogsDescription': return 'Manages action logs for the server';
             case 'actionlogsUsage0': return 'defaultchannel (channel)';
-            case 'actionlogsUsage1': return 'set <delmsg/prune/editmsg/memberjoin/memberleave> <(channel)/default>';
-            case 'actionlogsUsage2': return 'ignore channel <add/remove> (channel) <delmsg/prune/editmsg/all>';
+            case 'actionlogsUsage1': return 'set <delmsg/prune/editmsg/memberjoin/memberleave/voiceconnect/voicedisconnect/voicemove> <(channel)/default>';
+            case 'actionlogsUsage2': return 'ignore channel <add/remove> (channel) <delmsg/prune/editmsg/voiceconnect/voicedisconnect/all>';
             case 'actionlogsUsage3': return 'ignore channel view (channel)';
-            case 'actionlogsUsage4': return 'ignore role <add/remove> (role) <delmsg/prune/editmsg/memberleave/all>';
+            case 'actionlogsUsage4': return 'ignore role <add/remove> (role) <delmsg/prune/editmsg/memberleave/voiceconnect/voicedisconnect/all>';
             case 'actionlogsUsage5': return 'ignore role view (role)';
             case 'newDefaultHookReason': return 'Default log channel webhook';
             case 'oldDefaultHookReason': return 'Old default log channel webhook';
@@ -196,6 +196,9 @@ module.exports = {
             case 'actioneditmsg': return '**edited messages**';
             case 'actionmemberjoin': return '**joined members**';
             case 'actionmemberleave': return '**left members**';
+            case 'actionvoiceconnect': return '**voice connections**';
+            case 'actionvoicedisconnect': return '**voice disconnections**';
+            case 'actionvoicemove': return '**voice moves**';
             case 'noIgnoredActionsRole': return 'No actions are being ignored for this role';
             case 'ignoredActionsRoleEmbedAuthor': return 'Ignored role';
             case 'ignoredActionsRoleEmbedDesc': return `Role: ${vars[0]}`;

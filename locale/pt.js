@@ -176,10 +176,10 @@ module.exports = {
             case 'delmsgEmbedAttachmentsFile': return `[\`Anexo-${vars[0]}-Arquivo\`](${vars[1]})`;
             case 'actionlogsDescription': return 'Gerencia registros de ações no servidor';
             case 'actionlogsUsage0': return 'defaultchannel (canal)';
-            case 'actionlogsUsage1': return 'set <delmsg/prune/editmsg/memberjoin/memberleave> <(canal)/default>';
-            case 'actionlogsUsage2': return 'ignore channel <add/remove> (canal) <delmsg/prune/editmsg/all>';
+            case 'actionlogsUsage1': return 'set <delmsg/prune/editmsg/memberjoin/memberleave/voiceconnect/voicedisconnect/voicemove> <(canal)/default>';
+            case 'actionlogsUsage2': return 'ignore channel <add/remove> (canal) <delmsg/prune/editmsg/voiceconnect/voicedisconnect/all>';
             case 'actionlogsUsage3': return 'ignore channel view (canal)';
-            case 'actionlogsUsage4': return 'ignore role <add/remove> (cargo) <delmsg/prune/editmsg/memberleave/all>';
+            case 'actionlogsUsage4': return 'ignore role <add/remove> (cargo) <delmsg/prune/editmsg/memberleave/voiceconnect/voicedisconnect/all>';
             case 'actionlogsUsage5': return 'ignore role view (cargo)';
             case 'newDefaultHookReason': return 'Webhook do canal de registros padrão';
             case 'oldDefaultHookReason': return 'Webhook do canal antigo de registros padrão';
@@ -200,6 +200,9 @@ module.exports = {
             case 'actioneditmsg': return '**mensagens editadas**';
             case 'actionmemberjoin': return '**novos membros**';
             case 'actionmemberleave': return '**saida de membros**';
+            case 'actionvoiceconnect': return '**conexões de voz**';
+            case 'actionvoicedisconnect': return '**desconexões de voz**';
+            case 'actionvoicemove': return '**movimentos de voz**';
             case 'noIgnoredActionsRole': return 'Nenhuma ação está sendo ignorada para esse cargo';
             case 'ignoredActionsRoleEmbedAuthor': return 'Cargo ignorado';
             case 'ignoredActionsRoleEmbedDesc': return `Cargo: ${vars[0]}`;

@@ -29,10 +29,7 @@ module.exports = {
             ignorableChannels: true,
             ignorableRoles: true,
         }],
-        ['voicemove', {
-            ignorableChannels: true,
-            ignorableRoles: true,
-        }],
+        ['voicemove', {}],
     ]),
     support: 'eNcsvsy',
     supportID: '476244157245947904',

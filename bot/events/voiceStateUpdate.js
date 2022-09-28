@@ -68,8 +68,8 @@ module.exports = {
         if((oldState.channelId === newState.channelId) || !newState.client.guildData.has(newState.guild.id)) return;
         const guildData = newState.client.guildData.get(newState.guild.id);
         const channelLanguage = locale.get(guildData.language);
-        if(!oldState.channelId && enabledLogs(guildData, 'voiceconnect')){
-            if(await isIgnored(newState, 'voiceconnect')) return;
+        if(!oldState.channelId || (newState.channelId && (await isIgnored(oldState, 'voicedisconnect')))){
+            if(!enabledLogs(guildData, 'voiceconnect') || (await isIgnored(newState, 'voiceconnect'))) return;
             const hook = await fetchHook(newState, 'voiceconnect');
             if(!hook) return;
             const user = newState.member?.user ?? await newState.client.users.fetch(newState.id);
@@ -92,8 +92,8 @@ module.exports = {
                 );
             await sendLog(hook, embed, newState.client.user);
         }
-        else if(!newState.channelId && enabledLogs(guildData, 'voicedisconnect')){
-            if(await isIgnored(newState, 'voicedisconnect')) return;
+        else if(!newState.channelId || (oldState.channelId && (await isIgnored(newState, 'voiceconnect')))){
+            if(!enabledLogs(guildData, 'voicedisconnect') || (await isIgnored(oldState, 'voicedisconnect'))) return;
             const hook = await fetchHook(newState, 'voicedisconnect');
             if(!hook) return;
             const user = oldState.member?.user ?? await newState.client.users.fetch(newState.id);
@@ -131,7 +131,6 @@ module.exports = {
             await sendLog(hook, embed, newState.client.user);
         }
         else if(enabledLogs(guildData, 'voicemove')){
-            if(await isIgnored(newState, 'voicemove')) return;
             const hook = await fetchHook(newState, 'voicemove');
             if(!hook) return;
             const user = newState.member?.user ?? await newState.client.users.fetch(newState.id);

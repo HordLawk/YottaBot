@@ -11,7 +11,7 @@ module.exports = {
     name: 'actionlogs',
     description: lang => lang.get('actionlogsDescription'),
     aliases: ['logs'],
-    usage: lang => [lang.get('actionlogsUsage0'), lang.get('actionlogsUsage1'), 'remove <delmsg/prune/editmsg/memberjoin>', lang.get('actionlogsUsage2'), lang.get('actionlogsUsage3'), lang.get('actionlogsUsage4'), lang.get('actionlogsUsage5'), 'view'],
+    usage: lang => [lang.get('actionlogsUsage0'), lang.get('actionlogsUsage1'), 'remove <delmsg/prune/editmsg/memberjoin/memberleave/voiceconnect/voicedisconnect/voicemove>', lang.get('actionlogsUsage2'), lang.get('actionlogsUsage3'), lang.get('actionlogsUsage4'), lang.get('actionlogsUsage5'), 'view'],
     example: ['defaultchannel #logs', 'set delmsg #deleted-messages', 'remove delmsg', 'ignore channel add #staff delmsg', 'ignore channel view #staff', 'ignore role remove @Mods all', 'ignore role view @Mods'],
     cooldown: 5,
     categoryID: 2,
@@ -216,11 +216,11 @@ module.exports = {
                                         upsert: true,
                                         setDefaultsOnInsert: true,
                                     });
-                                    message.reply(channelLanguage.get('actionIgnoredChannelSuccess', [channelLanguage.get(`action${args[4]}`), discordChannel]));
+                                    message.reply(channelLanguage.get('actionIgnoredChannelSuccess', [channelLanguage.get(`${args[4]}ActionName`), discordChannel]));
                                 }
                                 else{
                                     await channel.findByIdAndUpdate(discordChannel.id, {$pull: {ignoreActions: args[4]}});
-                                    message.reply(channelLanguage.get('actionNotIgnoredChannelSuccess', [channelLanguage.get(`action${args[4]}`), discordChannel]));
+                                    message.reply(channelLanguage.get('actionNotIgnoredChannelSuccess', [channelLanguage.get(`${args[4]}ActionName`), discordChannel]));
                                 }
                             }
                             else{
@@ -236,14 +236,14 @@ module.exports = {
                                         upsert: true,
                                         setDefaultsOnInsert: true,
                                     });
-                                    message.reply(channelLanguage.get('actionIgnoredRoleSuccess', [channelLanguage.get(`action${args[4]}`), discordRole.name]));
+                                    message.reply(channelLanguage.get('actionIgnoredRoleSuccess', [channelLanguage.get(`${args[4]}ActionName`), discordRole.name]));
                                 }
                                 else{
                                     await role.findOneAndUpdate({
                                         roleID: discordRole.id,
                                         guild: message.guild.id,
                                     }, {$pull: {ignoreActions: args[4]}});
-                                    message.reply(channelLanguage.get('actionNotIgnoredRoleSuccess', [channelLanguage.get(`action${args[4]}`), discordRole.name]));
+                                    message.reply(channelLanguage.get('actionNotIgnoredRoleSuccess', [channelLanguage.get(`${args[4]}ActionName`), discordRole.name]));
                                 }
                             }
                         }
@@ -409,7 +409,7 @@ module.exports = {
                 upsert: true,
                 setDefaultsOnInsert: true,
             });
-            await interaction.reply(channelLanguage.get('actionIgnoredChannelSuccess', [channelLanguage.get(`action${args.action}`), args.channel]));
+            await interaction.reply(channelLanguage.get('actionIgnoredChannelSuccess', [channelLanguage.get(`${args.action}ActionName`), args.channel]));
         }
         else{
             await channel.findOneAndUpdate({
@@ -431,7 +431,7 @@ module.exports = {
                 ephemeral: true,
             });
             await channel.findByIdAndUpdate(args.channel.id, {$pull: {ignoreActions: args.action}});
-            await interaction.reply(channelLanguage.get('actionNotIgnoredChannelSuccess', [channelLanguage.get(`action${args.action}`), args.channel]));
+            await interaction.reply(channelLanguage.get('actionNotIgnoredChannelSuccess', [channelLanguage.get(`${args.action}ActionName`), args.channel]));
         }
         else{
             await channel.findByIdAndUpdate(args.channel.id, {$set: {ignoreActions: []}});
@@ -477,7 +477,7 @@ module.exports = {
                 upsert: true,
                 setDefaultsOnInsert: true,
             });
-            await interaction.reply(channelLanguage.get('actionIgnoredRoleSuccess', [channelLanguage.get(`action${args.action}`), args.role.name]));
+            await interaction.reply(channelLanguage.get('actionIgnoredRoleSuccess', [channelLanguage.get(`${args.action}ActionName`), args.role.name]));
         }
         else{
             await role.findOneAndUpdate({
@@ -506,7 +506,7 @@ module.exports = {
                 roleID: args.role.id,
                 guild: interaction.guild.id,
             }, {$pull: {ignoreActions: args.action}});
-            await interaction.reply(channelLanguage.get('actionNotIgnoredRoleSuccess', [channelLanguage.get(`action${args.action}`), args.role.name]));
+            await interaction.reply(channelLanguage.get('actionNotIgnoredRoleSuccess', [channelLanguage.get(`${args.action}ActionName`), args.role.name]));
         }
         else{
             await role.findOneAndUpdate({

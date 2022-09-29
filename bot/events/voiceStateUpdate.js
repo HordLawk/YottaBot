@@ -54,13 +54,7 @@ const fetchEntry = async (guild, auditType) => {
 
 const isNewAudit = (lastAudit, entry) => (
     lastAudit && ((entry.id !== lastAudit.id) || (entry.extra.count !== lastAudit.count))
-)
-
-const userField = (title, userTag) => ({
-    name: title,
-    value: userTag,
-    inline: true,
-});
+);
 
 module.exports = {
     name: 'voiceStateUpdate',
@@ -88,7 +82,11 @@ module.exports = {
                         value: newState.channel.toString(),
                         inline: true,
                     },
-                    userField(channelLanguage.get('voiceconnectEmbedUserTitle'), user.toString()),
+                    {
+                        name: channelLanguage.get('voiceconnectEmbedUserTitle'),
+                        value: user.toString(),
+                        inline: true,
+                    },
                 );
             await sendLog(hook, embed, newState.client.user);
         }
@@ -112,7 +110,11 @@ module.exports = {
                         value: oldState.channel.toString(),
                         inline: true,
                     },
-                    userField(channelLanguage.get('voicedisconnectEmbedUserTitle'), user.toString()),
+                    {
+                        name: channelLanguage.get('voicedisconnectEmbedUserTitle'),
+                        value: user.toString(),
+                        inline: true,
+                    },
                 );
             if(newState.guild.members.me.permissions.has(PermissionsBitField.Flags.ViewAuditLog)){
                 const entry = await fetchEntry(newState.guild, AuditLogEvent.MemberDisconnect);
@@ -155,6 +157,11 @@ module.exports = {
                         inline: true,
                     },
                 );
+            const userField = {
+                name: channelLanguage.get('voicemoveEmbedTargetTitle'),
+                value: user.toString(),
+                inline: true,
+            };
             let selfMove = true;
             if(newState.guild.members.me.permissions.has(PermissionsBitField.Flags.ViewAuditLog)){
                 const entry = await fetchEntry(newState.guild, AuditLogEvent.MemberMove);
@@ -167,7 +174,7 @@ module.exports = {
                         };
                         embed.addFields(
                             emptyField,
-                            userField(channelLanguage.get('voicemoveEmbedTargetTitle'), user.toString()),
+                            userField,
                             {
                                 name: channelLanguage.get('voicemoveEmbedExecutorTitle'),
                                 value: entry.executor.toString(),
@@ -183,7 +190,7 @@ module.exports = {
                     });
                 }
             }
-            if(selfMove) embed.addFields(userField(channelLanguage.get('voicemoveEmbedUserTitle'), user.toString()));
+            if(selfMove) embed.addFields(userField);
             await sendLog(hook, embed, newState.client.user);
         }
     },

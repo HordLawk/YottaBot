@@ -1,7 +1,7 @@
 const user = require('../../schemas/user.js');
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
-const {EmbedBuilder, PermissionsBitField, GuildAuditLogs, AuditLogEvent} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, AuditLogEvent} = require('discord.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
 

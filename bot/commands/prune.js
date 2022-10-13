@@ -5,6 +5,7 @@ const chunkFetch = async (maxAmount, channel, authorId, fetched = (new Collectio
     if(fetched.size >= maxAmount) return fetched.first(maxAmount);
     if(count >= 1000) return [...fetched.values()];
     const auxFetched = await channel.messages.fetch({limit: 100, before});
+    if(!auxFetched.size) return [...fetched.values()];
     return await chunkFetch(
         maxAmount,
         channel,

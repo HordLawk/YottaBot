@@ -53,3 +53,4 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] giveaway system
 - [ ] member count display on channel topic
 - [ ] channel lockdown command
+- [ ] option in `getsticker` to add to another server

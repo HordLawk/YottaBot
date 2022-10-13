@@ -22,6 +22,7 @@ const client = new Discord.Client({
         Discord.GatewayIntentBits.GuildBans,
         Discord.GatewayIntentBits.GuildVoiceStates,
         Discord.GatewayIntentBits.MessageContent,
+        // Discord.GatewayIntentBits.GuildPresences,
     ],
     allowedMentions: {repliedUser: false},
     failIfNotExists: false,
@@ -29,6 +30,16 @@ const client = new Discord.Client({
 Discord.EmbedBuilder.prototype.addField = function(name, value, inline = false){
     return this.addFields([{name, value, inline}]);
 }
+// const __patch = Discord.Presence.prototype._patch;
+// Discord.Presence.prototype._patch = function(data){
+//     __patch.call(this, data);
+//     this.activities = data.activities?.map(e => {
+//         const activity = new Discord.Activity(this, e);
+//         activity.syncId = e.sync_id;
+//         return activity;
+//     });
+//     return this;
+// }
 client.cooldowns = new Discord.Collection();
 client.xpcds = new Discord.Collection();
 client.lastdelmsg = new Discord.Collection();

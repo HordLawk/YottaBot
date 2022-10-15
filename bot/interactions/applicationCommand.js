@@ -25,7 +25,9 @@ module.exports = {
             if(!interaction.member) throw new Error('Member could not be fetched.');
         }
         const channelLanguage = locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en');
-        if(interaction.channel.partial) await interaction.channel.fetch();
+        if(!interaction.channel || interaction.channel.partial){
+            await interaction.client.channels.fetch(interaction.channelId);
+        }
         const userDoc = await user.findById(interaction.user.id);
         if(userDoc && userDoc.blacklisted) return interaction.reply({
             content: channelLanguage.get('blacklisted'),

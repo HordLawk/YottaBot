@@ -44,12 +44,7 @@ module.exports = {
                     });
                 }
                 await interaction.guild.stickers.fetch();
-                const maxStickers = {
-                    NONE: 5,
-                    TIER_1: 15,
-                    TIER_2: 30,
-                    TIER_3: 60,
-                };
+                const maxStickers = [5, 15, 30, 60];
                 if(interaction.guild.stickers.cache.size >= maxStickers[interaction.guild.premiumTier]) return i.reply({
                     content: channelLanguage.get('maxStickersReached'),
                     ephemeral: true,

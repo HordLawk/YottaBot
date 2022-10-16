@@ -509,7 +509,60 @@ module.exports = {
     },
     commandAutocomplete: {
         duration: (interaction, value, locale) => {
-            if(!value) return interaction.respond([]);
+            if(!value) return interaction.respond([
+                {
+                    name: locale.get('timeAmountMinutes', ['1']),
+                    value: 1,
+                },
+                {
+                    name: locale.get('timeAmountMinutes', ['5']),
+                    value: 5,
+                },
+                {
+                    name: locale.get('timeAmountMinutes', ['10']),
+                    value: 10,
+                },
+                {
+                    name: locale.get('timeAmountMinutes', ['30']),
+                    value: 30,
+                },
+                {
+                    name: locale.get('timeAmountHours', ['1']),
+                    value: 60,
+                },
+                {
+                    name: locale.get('timeAmountHours', ['2']),
+                    value: 2 * 60,
+                },
+                {
+                    name: locale.get('timeAmountHours', ['3']),
+                    value: 3 * 60,
+                },
+                {
+                    name: locale.get('timeAmountHours', ['6']),
+                    value: 6 * 60,
+                },
+                {
+                    name: locale.get('timeAmountHours', ['12']),
+                    value: 12 * 60,
+                },
+                {
+                    name: locale.get('timeAmountDays', ['1']),
+                    value: 24 * 60,
+                },
+                {
+                    name: locale.get('timeAmountDays', ['2']),
+                    value: 2 * 24 * 60,
+                },
+                {
+                    name: locale.get('timeAmountDays', ['3']),
+                    value: 3 * 24 * 60,
+                },
+                {
+                    name: locale.get('timeAmountDays', ['7']),
+                    value: 7 * 24 * 60,
+                },
+            ]);
             const realValue = parseInt(value, 10);
             interaction.respond(utils.timeSpanChoices(realValue, locale, 28 * 24 * 60 * 60, 60));
         },

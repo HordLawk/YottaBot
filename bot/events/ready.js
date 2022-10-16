@@ -70,6 +70,7 @@ module.exports = {
                 code: invite.code,
                 uses: invite.uses,
                 expiresTimestamp: invite.expiresTimestamp,
+                inviterId: invite.inviterId,
             })));
         }
         const guildVoiceXpCd = new Collection();

@@ -314,6 +314,7 @@ module.exports = {
                 code: invite.code,
                 uses: invite.uses,
                 expiresTimestamp: invite.expiresTimestamp,
+                inviterId: invite.inviterId,
             })));
         }
         await interaction.reply(channelLanguage.get('configsTrackInvitesSuccess', [args.enable]));

@@ -6,6 +6,7 @@ module.exports = {
                 code: invite.code,
                 uses: 0,
                 expiresTimestamp: invite.expiresTimestamp,
+                inviterId: invite.inviterId,
             });
         }
     },

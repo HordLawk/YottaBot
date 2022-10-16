@@ -91,11 +91,13 @@ module.exports = {
                         code: e.code,
                         uses: e.uses,
                         expiresTimestamp: e.expiresTimestamp,
+                        inviterId: e.inviterId,
                     })));
                     if(invite){
+                        const inviter = await member.client.users.fetch(invite.inviterId);
                         embed.addFields({
                             name: channelLanguage.get('memberjoinEmbedInviteTitle'),
-                            value: `<https://discord.gg/${invite.code}>`,
+                            value: channelLanguage.get('memberjoinEmbedInviteValue', [invite.code, inviter]),
                         });
                     }
                 }

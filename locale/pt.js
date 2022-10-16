@@ -807,6 +807,10 @@ module.exports = {
                     '[se junte ao Patreon](<https://www.patreon.com/YottaBot>)'
                 );
             }
+            case 'memberjoinEmbedInviteValue': return (
+                `Código: [\`${vars[0]}\`](https://discord.gg/${vars[0]})\n` +
+                `Criado por: ${vars[1]} \`${vars[1].tag}\``
+            );
         }
     },
 };

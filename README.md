@@ -40,10 +40,9 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [x] voice channels join and leave logs
 - [ ] add support for more payment methods to buy premium
 - [ ] make some crypto and hashing fun commands
-- [x] `userinfo` command
 - [ ] command to make messages in a chosen channel be autopublished
 - [ ] command to manage invites
-- [ ] invite tracking system
+- [x] invite tracking system
 - [ ] have an actual website
 - [x] usernames local blacklist
 - [ ] make `massban` accept text attachments

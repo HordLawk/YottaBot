@@ -23,7 +23,7 @@ module.exports = {
             required: true,
             autocomplete: true,
             minValue: 0,
-            maxValue: 21600,
+            maxValue: 6 * 60 * 60,
         },
         {
             type: ApplicationCommandOptionType.Channel,
@@ -202,20 +202,7 @@ module.exports = {
                 name: locale.get('slowmodeDisable'),
                 value: realValue,
             }]);
-            const choices = [];
-            if(realValue < 21601) choices.push({
-                name: locale.get('timeAmountSeconds', [value]),
-                value: realValue,
-            });
-            if(realValue < 361) choices.push({
-                name: locale.get('timeAmountMinutes', [value]),
-                value: realValue * 60,
-            });
-            if(realValue < 7) choices.push({
-                name: locale.get('timeAmountHours', [value]),
-                value: realValue * 3600,
-            });
-            interaction.respond(choices);
+            interaction.respond(utils.timeSpanChoices(realValue, locale, 6 * 60 * 60));
         },
     },
 }

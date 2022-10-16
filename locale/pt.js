@@ -779,6 +779,8 @@ module.exports = {
             case 'voicemoveEmbedExecutorTitle': return 'Executor';
             case 'voicemoveEmbedUserTitle': return 'Usuário';
             case 'lockignoreNoRolesToList': return 'Não há nenhum cargo ignorado pelo comando de lock nesse servidor';
+            case 'checkOptiontime_rangeLocalisedName': return 'intervalo_tempo';
+            case 'checkOptiontime_rangeLocalisedDesc': return 'A partir de quanto tempo atrás os casos devem ser';
         }
     },
 };

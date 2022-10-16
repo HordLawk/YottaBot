@@ -31,7 +31,7 @@ module.exports = {
             required: true,
             autocomplete: true,
             minValue: 1,
-            maxValue: 40320,
+            maxValue: 28 * 24 * 60,
         },
         {
             type: ApplicationCommandOptionType.Boolean,
@@ -511,20 +511,7 @@ module.exports = {
         duration: (interaction, value, locale) => {
             if(!value) return interaction.respond([]);
             const realValue = parseInt(value, 10);
-            const choices = [];
-            if(realValue < 40_321) choices.push({
-                name: locale.get('timeAmountMinutes', [value]),
-                value: realValue,
-            });
-            if(realValue < 673) choices.push({
-                name: locale.get('timeAmountHours', [value]),
-                value: realValue * 60,
-            });
-            if(realValue < 29) choices.push({
-                name: locale.get('timeAmountDays', [value]),
-                value: realValue * 1_440,
-            });
-            interaction.respond(choices);
+            interaction.respond(utils.timeSpanChoices(realValue, locale, 28 * 24 * 60 * 60, 60));
         },
     },
 };

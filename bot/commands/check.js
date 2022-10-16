@@ -5,6 +5,7 @@ const {
     ButtonStyle,
     ComponentType,
 } = require('discord.js');
+const utils = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -108,19 +109,18 @@ module.exports = {
     },
     executeSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        if(interaction.isUserContextMenuCommand()) args = {
-            user: (interaction.targetUser.member = interaction.targetMember, interaction.targetUser),
-            case_type: 'all',
-        };
-        if(!['all', 'warn', 'mute', 'kick', 'ban'].includes(args.case_type)) throw new Error('Invalid slash command options');
-        const filter = (args.time_filter_unit ?? args.time_filter_value) ? (Date.now() - ((args.time_filter_unit ?? 86400000) * (args.time_filter_value ?? 1))) : 0;
+        if(interaction.isUserContextMenuCommand()){
+            args = {user: (interaction.targetUser.member = interaction.targetMember, interaction.targetUser)};
+        }
+        const filter = args.time_range ? (Date.now() - (args.time_range * 1000)) : 0;
         const log = require('../../schemas/log.js');
-        const logDocs = await log.find({
+        const query = {
             guild: interaction.guild.id,
-            type: (args.case_type === 'all') ? {$ne: args.case_type} : {$eq: args.case_type},
             timeStamp: {$gte: filter},
-            ...(args.executor ? {executor: args.user.id} : {target: args.user.id}),
-        }).sort({timeStamp: -1});
+        };
+        if(args.case_type) query.type = {$eq: args.case_type};
+        query[args.executor ? 'executor' : 'target'] = args.user.id;
+        const logDocs = await log.find(query).sort({timeStamp: -1});
         if(!logDocs.length) return interaction.reply({
             content: channelLanguage.get('invLogs'),
             ephemeral: true,
@@ -133,6 +133,26 @@ module.exports = {
         }
         const pageSize = 10;
         const fieldString = `checkEmbedCaseValue${args.executor ? 'Executor' : 'Target'}`;
+        let description = (
+            (!args.case_type || (args.case_type === 'warn'))
+            ? `Warns: \`${logDocs.filter(e => (e.type === 'warn')).length}\`\n`
+            : ''
+        );
+        if(!args.case_type || (args.case_type === 'mute')){
+            description += (
+                `Mutes/Timeouts: \`${logDocs.filter(e => ((e.type === 'mute') && !e.removal)).length}\`\n` +
+                `Unmutes: \`${logDocs.filter(e => ((e.type === 'mute') && e.removal)).length}\`\n`
+            );
+        }
+        if(!args.case_type || (args.case_type === 'kick')){
+            description += `Kicks: \`${logDocs.filter(e => (e.type === 'kick')).length}\`\n`;
+        }
+        if(!args.case_type || (args.case_type === 'ban')){
+            description += (
+                `Bans: \`${logDocs.filter(e => ((e.type === 'ban') && !e.removal)).length}\`\n` +
+                `Unbans: \`${logDocs.filter(e => ((e.type === 'ban') && e.removal)).length}\`\n`
+            );
+        }
         const embed = new EmbedBuilder()
             .setColor(args.user.member?.displayColor ?? interaction.guild.members.me.displayColor ?? 0x8000ff)
             .setAuthor({
@@ -141,7 +161,7 @@ module.exports = {
             })
             .setTimestamp()
             .setFooter({text: channelLanguage.get('checkEmbedFooter', [logDocs.length])})
-            .setDescription(`${['all', 'warn'].includes(args.case_type) ? `Warns: \`${logDocs.filter(e => (e.type === 'warn')).length}\`\n` : ''}${['all', 'mute'].includes(args.case_type) ? `Mutes/Timeouts: \`${logDocs.filter(e => ((e.type === 'mute') && !e.removal)).length}\`\nUnmutes: \`${logDocs.filter(e => ((e.type === 'mute') && e.removal)).length}\`\n` : ''}${['all', 'kick'].includes(args.case_type) ? `Kicks: \`${logDocs.filter(e => (e.type === 'kick')).length}\`\n` : ''}${['all', 'ban'].includes(args.case_type) ? `Bans: \`${logDocs.filter(e => ((e.type === 'ban') && !e.removal)).length}\`\nUnbans: \`${logDocs.filter(e => ((e.type === 'ban') && e.removal)).length}\`\n` : ''}`)
+            .setDescription(description)
             .addFields(logDocs.slice(0, pageSize).map(e => ({
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
                 value: channelLanguage.get(fieldString, [e, e.duration && formatDuration(Math.round((e.duration.getTime() - e.timeStamp.getTime()) / 60000))]),
@@ -212,12 +232,8 @@ module.exports = {
             type: ApplicationCommandOptionType.String,
             name: 'case_type',
             description: 'The type of the cases to be checked',
-            required: true,
+            required: false,
             choices: [
-                {
-                    name: 'Check cases of all types',
-                    value: 'all',
-                },
                 {
                     name: 'Warn cases',
                     value: 'warn',
@@ -238,33 +254,13 @@ module.exports = {
         },
         {
             type: ApplicationCommandOptionType.Integer,
-            name: 'time_filter_unit',
-            description: 'The unit of how much time ago to check for cases. Defaults to days.',
+            name: 'time_range',
+            nameLocalizations: utils.getStringLocales('checkOptiontime_rangeLocalisedName'),
+            description: 'Until how long ago should the cases be from',
+            descriptionLocalizations: utils.getStringLocales('checkOptiontime_rangeLocalisedDesc'),
             required: false,
-            choices: [
-                {
-                    name: 'Days',
-                    value: 86400000,
-                },
-                {
-                    name: 'Hours',
-                    value: 3600000,
-                },
-                {
-                    name: 'Minutes',
-                    value: 60000,
-                },
-                {
-                    name: 'Seconds',
-                    value: 1000,
-                },
-            ]
-        },
-        {
-            type: ApplicationCommandOptionType.Number,
-            name: 'time_filter_value',
-            description: 'How much of the chosen unit. Defaults to 1.',
-            required: false,
+            autocomplete: true,
+            minValue: 1,
         },
         {
             type: ApplicationCommandOptionType.Boolean,
@@ -274,4 +270,11 @@ module.exports = {
         },
     ],
     contextName: 'Check cases',
+    commandAutocomplete: {
+        time_range: (interaction, value, locale) => {
+            if(!value) return interaction.respond([]);
+            const realValue = parseInt(value, 10);
+            interaction.respond(utils.timeSpanChoices(realValue, locale));
+        }
+    },
 };

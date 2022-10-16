@@ -62,6 +62,43 @@ module.exports = {
                     embed.addField(channelLanguage.get('memberjoinEmbedBadgesTitle'), userBadges.join(' '));
                 }
                 embed.addField(channelLanguage.get('memberjoinEmbedCreationTitle'), channelLanguage.get('memberjoinEmbedCreationValue', [Math.round(member.user.createdTimestamp / 1000)]));
+                if(
+                    member.client.inviteUses.has(member.guild.id)
+                    &&
+                    (
+                        member.client.guildData.get(member.guild.id).partner
+                        ||
+                        member.client.guildData.get(member.guild.id).premiumUntil
+                    )
+                ){
+                    await member.guild.invites.fetch();
+                    const invite = member.client.inviteUses.get(member.guild.id).find(e => {
+                        return (
+                            (
+                                !e.expiresTimestamp
+                                ||
+                                (e.expiresTimestamp > Date.now())
+                            )
+                            &&
+                            (
+                                !member.guild.invites.cache.has(e.code)
+                                ||
+                                (member.guild.invites.cache.get(e.code).uses != e.uses)
+                            )
+                        );
+                    });
+                    member.client.inviteUses.set(member.guild.id, member.guild.invites.cache.mapValues(e => ({
+                        code: e.code,
+                        uses: e.uses,
+                        expiresTimestamp: e.expiresTimestamp,
+                    })));
+                    if(invite){
+                        embed.addFields({
+                            name: channelLanguage.get('memberjoinEmbedInviteTitle'),
+                            value: `<https://discord.gg/${invite.code}>`,
+                        });
+                    }
+                }
                 await hook.send({
                     embeds: [embed],
                     username: member.client.user.username,

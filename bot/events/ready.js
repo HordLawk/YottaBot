@@ -49,6 +49,29 @@ module.exports = {
         // const roleDocs = await role.find({guild: {$in: client.guilds.cache.map(e => e.id)}});
         // await role.deleteMany({_id: {$in: roleDocs.filter(e => !client.guilds.cache.get(e.guild).roles.cache.has(e.roleID)).map(e => e._id)}});
         await menu.deleteMany({channelID: {$nin: client.channels.cache.map(e => e.id)}});
+        for(
+            const guildId
+            of client.guildData
+                .filter(e => {
+                    return (
+                        e.trackInvites
+                        &&
+                        (e.partner || e.premiumUntil)
+                        &&
+                        client.guilds.cache
+                            .get(e._id)?.members.me.permissions
+                            .has(PermissionsBitField.Flags.ManageGuild)
+                    )
+                })
+                .keys()
+        ){
+            const invites = await client.guilds.cache.get(guildId).invites.fetch().catch(() => new Collection());
+            client.inviteUses.set(guildId, invites.mapValues(invite => ({
+                code: invite.code,
+                uses: invite.uses,
+                expiresTimestamp: invite.expiresTimestamp,
+            })));
+        }
         const guildVoiceXpCd = new Collection();
         const unmuteTimer = async () => {
             const unmutes = await log.find({

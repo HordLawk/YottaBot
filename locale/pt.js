@@ -781,6 +781,32 @@ module.exports = {
             case 'lockignoreNoRolesToList': return 'Não há nenhum cargo ignorado pelo comando de lock nesse servidor';
             case 'checkOptiontime_rangeLocalisedName': return 'intervalo_tempo';
             case 'checkOptiontime_rangeLocalisedDesc': return 'A partir de quanto tempo atrás os casos devem ser';
+            case 'configs_track_invitesLocalisedName': return 'rastrear_convites';
+            case 'configs_track_invitesLocalisedDesc': {
+                return (
+                    'Mostra qual código de convite um usuário utilizou para entrar no servidor nos registros de entrada'
+                );
+            }
+            case 'configs_track_invitesOptionenableLocalisedName': return 'ativar';
+            case 'configs_track_invitesOptionenableLocalisedDesc': {
+                return 'Se o rastreamento de convites deve ser ativado';
+            }
+            case 'configsTrackInvitesSuccess': {
+                return `Rastreamento de convites **${vars[0] ? 'ativado' : 'desativado'}**`;
+            }
+            case 'memberjoinEmbedInviteTitle': return 'Convite utilizado';
+            case 'configsTrackInvitesCantManageGuild': {
+                return 'Eu preciso da permissão Gerenciar Servidor para rastrear convites';
+            }
+            case 'configsInviteTrackerJoinlogDisabled': {
+                return 'Você precisa ter ativado o registro de novos membros primeiro';
+            }
+            case 'configsTrackInvitesNotPremium': {
+                return (
+                    'Essa é uma função exclusiva premium, para adquirir premium para o seu servidor ' +
+                    '[se junte ao Patreon](<https://www.patreon.com/YottaBot>)'
+                );
+            }
         }
     },
 };

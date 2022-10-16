@@ -291,6 +291,33 @@ module.exports = {
         }
         await interaction.reply(channelLanguage.get('welcomeDisableSuccess'));
     },
+    track_invitesSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
+        const guildData = interaction.client.guildData.get(interaction.guild.id);
+        if(!guildData.partner && !guildData.premiumUntil) return interaction.reply({
+            content: channelLanguage.get('configsTrackInvitesNotPremium'),
+            ephemeral: true,
+        });
+        if(!interaction.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageGuild)) return interaction.reply({
+            content: channelLanguage.get('configsTrackInvitesCantManageGuild'),
+            ephemeral: true,
+        });
+        if(!guildData.actionlogs.id('memberjoin')) return interaction.reply({
+            content: channelLanguage.get('configsInviteTrackerJoinlogDisabled'),
+            ephemeral: true,
+        });
+        const guild = require('../../schemas/guild.js');
+        await guild.findByIdAndUpdate(interaction.guild.id, {$set: {trackInvites: (interaction.client.guildData.get(interaction.guild.id).trackInvites = args.enable)}});
+        if(!interaction.client.inviteUses.has(interaction.guild.id)){
+            await interaction.guild.invites.fetch();
+            interaction.client.inviteUses.set(interaction.guild.id, interaction.guild.invites.cache.mapValues(invite => ({
+                code: invite.code,
+                uses: invite.uses,
+                expiresTimestamp: invite.expiresTimestamp,
+            })));
+        }
+        await interaction.reply(channelLanguage.get('configsTrackInvitesSuccess', [args.enable]));
+    },
     slashOptions: [
         {
             type: ApplicationCommandOptionType.Subcommand,
@@ -415,7 +442,7 @@ module.exports = {
             options: [{
                 type: ApplicationCommandOptionType.Boolean,
                 name: 'enable',
-                description: 'Whether enable beta features in the current server',
+                description: 'Whether to enable beta features in the current server',
                 required: true,
             }],
         },
@@ -457,6 +484,21 @@ module.exports = {
                 },
             ],
         },
+        {
+            type: ApplicationCommandOptionType.Subcommand,
+            name: 'track_invites',
+            nameLocalizations: utils.getStringLocales('configs_track_invitesLocalisedName'),
+            description: 'Shows which invite code an user used to join the server in the join logs',
+            descriptionLocalizations: utils.getStringLocales('configs_track_invitesLocalisedDesc'),
+            options: [{
+                type: ApplicationCommandOptionType.Boolean,
+                name: 'enable',
+                nameLocalizations: utils.getStringLocales('configs_track_invitesOptionenableLocalisedName'),
+                description: 'Whether to enable invite tracking in the current server',
+                descriptionLocalizations: utils.getStringLocales('configs_track_invitesOptionenableLocalisedDesc'),
+                required: true,
+            }],
+        }
     ],
     languageAutocomplete: {
         language: (interaction, value) => interaction.respond(locale.filter(e => e.name.startsWith(value)).map((e, i) => ({

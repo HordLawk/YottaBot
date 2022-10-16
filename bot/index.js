@@ -22,6 +22,7 @@ const client = new Discord.Client({
         Discord.GatewayIntentBits.GuildBans,
         Discord.GatewayIntentBits.GuildVoiceStates,
         Discord.GatewayIntentBits.MessageContent,
+        Discord.GatewayIntentBits.GuildInvites,
         // Discord.GatewayIntentBits.GuildPresences,
     ],
     allowedMentions: {repliedUser: false},
@@ -45,6 +46,7 @@ client.xpcds = new Discord.Collection();
 client.lastdelmsg = new Discord.Collection();
 client.lastMoveAudit = new Discord.Collection();
 client.lastDisconnectAudit = new Discord.Collection();
+client.inviteUses = new Discord.Collection();
 client.handlers = {
     button: (err, i) => {
         console.error(err);

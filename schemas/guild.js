@@ -111,6 +111,7 @@ const guildSchema = new Schema({
             required: true,
         },
     }),
+    trackInvites: Boolean,
 });
 
 module.exports = model("guild", guildSchema);

@@ -658,6 +658,16 @@ module.exports = {
             case 'voicemoveEmbedExecutorTitle': return 'Executor';
             case 'voicemoveEmbedUserTitle': return 'User';
             case 'lockignoreNoRolesToList': return 'There are no roles ignored by the lock command in this server';
+            case 'configsTrackInvitesSuccess': return `Invite tracking turned **${vars[0] ? 'on' : 'off'}**`;
+            case 'memberjoinEmbedInviteTitle': return 'Invite used';
+            case 'configsTrackInvitesCantManageGuild': return 'I need Manage Guild permission to track invites';
+            case 'configsInviteTrackerJoinlogDisabled': return 'You need to have enable joined members logs first';
+            case 'configsTrackInvitesNotPremium': {
+                return (
+                    'This is a premium only feature, to get premium for your server ' +
+                    '[join Patreon](<https://www.patreon.com/YottaBot>)'
+                );
+            }
         }
     },
 };

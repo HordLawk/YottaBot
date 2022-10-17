@@ -23,6 +23,8 @@ The default permission for any command is usually the closest normal Discord per
 * [Privacy Policy](https://github.com/HordLawk/YottaBot/wiki/Privacy-Policy)
 * [Terms of Service](https://github.com/HordLawk/YottaBot/wiki/Terms-of-Service)
 
+P.S.: the features detailed in this wiki are slightly outdated
+
 ## Selfhosting
 You may selfhost (AKA run your own instance of) this bot under the following circumstances:
 - Your instance (referred to as a "clone") must be **private**.

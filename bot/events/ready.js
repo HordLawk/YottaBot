@@ -197,7 +197,7 @@ module.exports = {
                     guildVoiceXpCd.set(voiceGuild._id, inVoice.mapValues(() => 0));
                     continue;
                 }
-                for(let [id, minutes] of inVoice.intersect(guildVoiceXpCd.get(voiceGuild._id))){
+                for(let [id, minutes] of guildVoiceXpCd.get(voiceGuild._id).filter((_, i) => inVoice.has(i))){
                     guildVoiceXpCd.get(voiceGuild._id).set(id, ++minutes);
                     if(minutes % voiceGuild.voiceXpCooldown) continue;
                     let discordMember = inVoice.get(id).member;
@@ -213,14 +213,62 @@ module.exports = {
                     let lowerRoles = roleDocs.filter(e => (discordGuild.roles.cache.get(e.roleID).editable && e.xp && (e.xp <= doc.xp))).sort((a, b) => (b.xp - a.xp));
                     if(!lowerRoles.length || discordMember.roles.cache.has(lowerRoles[0].roleID)) continue;
                     await discordMember.roles.set(discordMember.roles.cache.map(e => e.id).filter(e => !lowerRoles.some(ee => (e === ee.roleID))).concat(lowerRoles.map(e => e.roleID).slice(0, client.guildData.get(voiceGuild._id).dontStack ? 1 : undefined)));
-                    if(!client.guildData.get(voiceGuild._id).xpChannel || (doc.xp >= (lowerRoles[0].xp + multiplier))) continue;
+                    if((client.guildData.get(voiceGuild._id).xpChannel === 'none') || (doc.xp >= (lowerRoles[0].xp + multiplier))) continue;
                     let guildLanguage = locale.get(client.guildData.get(voiceGuild._id).language);
-                    if(client.guildData.get(voiceGuild._id).xpChannel === 'dm'){
-                        discordMember.send(guildLanguage.get('achieveDM', [discordGuild.roles.cache.get(lowerRoles[0].roleID).name, discordGuild.name])).catch(() => null);
-                        continue;
+                    switch(client.guildData.get(voiceGuild._id).xpChannel){
+                        case 'default': {
+                            const voiceChannel = inVoice.get(id).channel;
+                            if(
+                                voiceChannel.viewable
+                                &&
+                                discordGuild.members.me
+                                    .permissionsIn(voiceChannel)
+                                    .has(PermissionsBitField.Flags.SendMessages)
+                            ){
+                                await voiceChannel.send({
+                                    content: guildLanguage.get(
+                                        'achieveGuild',
+                                        [discordMember, discordGuild.roles.cache.get(lowerRoles[0].roleID)],
+                                    ),
+                                    allowedMentions: {users: [discordMember.id]},
+                                });
+                            }
+                        }
+                        break;
+                        case 'dm': {
+                            await discordMember
+                                .send(
+                                    guildLanguage.get(
+                                        'achieveDM',
+                                        [discordGuild.roles.cache.get(lowerRoles[0].roleID).name, discordGuild.name],
+                                    ),
+                                )
+                                .catch(() => null);
+                        }
+                        break;
+                        default: {
+                            let notifChannel = discordGuild.channels.cache.get(
+                                client.guildData.get(voiceGuild._id).xpChannel,
+                            );
+                            if(
+                                notifChannel
+                                &&
+                                notifChannel.viewable
+                                &&
+                                discordGuild.members.me
+                                    .permissionsIn(notifChannel)
+                                    .has(PermissionsBitField.Flags.SendMessages)
+                            ){
+                                await notifChannel.send({
+                                    content: guildLanguage.get(
+                                        'achieveGuild',
+                                        [discordMember, discordGuild.roles.cache.get(lowerRoles[0].roleID)],
+                                    ),
+                                    allowedMentions: {users: [discordMember.id]},
+                                });
+                            }
+                        }
                     }
-                    let notifChannel = discordGuild.channels.cache.get(client.guildData.get(voiceGuild._id).xpChannel);
-                    if(notifChannel) notifChannel.send(guildLanguage.get('achieveGuild', [discordMember, discordGuild.roles.cache.get(lowerRoles[0].roleID)]));
                 }
                 guildVoiceXpCd.set(voiceGuild._id, inVoice.mapValues(() => 0).concat(guildVoiceXpCd.get(voiceGuild._id)));
             }

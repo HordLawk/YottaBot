@@ -80,7 +80,7 @@ module.exports = {
                 .permissionsIn(discordChannel)
                 .has(PermissionsBitField.Flags.ManageChannels)
         ) return message.reply(channelLanguage.get('botCantEditSlowmode'));
-        await discordChannel.setRateLimitPerUser(seconds, channelLanguage.get('executor', [message.author]));
+        await discordChannel.setRateLimitPerUser(seconds, channelLanguage.get('executor', [message.author.tag]));
         const h = Math.floor((seconds % 86400) / 3600);
         const m = Math.floor((seconds % 3600) / 60);
         const s = Math.floor(seconds % 60);
@@ -112,7 +112,7 @@ module.exports = {
             content: channelLanguage.get('botCantEditSlowmode'),
             ephemeral: true,
         });
-        await targetChannel.setRateLimitPerUser(args.cooldown, channelLanguage.get('executor', [interaction.user]));
+        await targetChannel.setRateLimitPerUser(args.cooldown, channelLanguage.get('executor', [interaction.user.tag]));
         const h = Math.floor((args.cooldown % 86400) / 3600);
         const m = Math.floor((args.cooldown % 3600) / 60);
         const s = args.cooldown % 60;

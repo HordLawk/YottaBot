@@ -61,10 +61,9 @@ module.exports = {
                 });
             }
         }
-        const stateEveryone = args.disable ? null : false;
         await interaction.channel.permissionOverwrites.edit(interaction.guild.id, {
-            SendMessages: stateEveryone,
-            SendMessagesInThreads: stateEveryone,
+            SendMessages: !!args.disable,
+            SendMessagesInThreads: !!args.disable,
         }, {
             type: OverwriteType.Role,
             reason: channelLanguage.get('lockAuditReason', [args.disable, interaction.user.tag]),
@@ -110,10 +109,9 @@ module.exports = {
                 });
             }
         }
-        const stateEveryone = disable ? null : false;
         await message.channel.permissionOverwrites.edit(message.guild.id, {
-            SendMessages: stateEveryone,
-            SendMessagesInThreads: stateEveryone,
+            SendMessages: disable,
+            SendMessagesInThreads: disable,
         }, {
             type: OverwriteType.Role,
             reason: channelLanguage.get('lockAuditReason', [disable, message.author.tag]),

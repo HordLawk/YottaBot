@@ -160,6 +160,7 @@ module.exports = {
                                             `Máximo de bans por moderador por 10 segundos: \`${vars[5] ?? '∞'}\`\n` +
                                             `Banimentos globais: \`${vars[6] ? 'ativados' : 'desativados'}\`\n` +
                                             `Canal de boas vindas: ${vars[8] ? `<#${vars[8]}>` : '`nenhum`'}\n` +
+                                            `Rastrear convites: \`${vars[9] ? 'ativado' : 'desativado'}\`\n` +
                                             `Funções beta: \`${vars[7] ? 'ativadas' : 'desativadas'}\``;
             case 'betaCommand': return 'Esse comando atualmente está disponível apenas para servidor que ativaram funcionalidade beta nas configurações do bot';
             case 'premiumCommand': return `Esse comando é uma funcionalidade premium, para adquirir premium [se junte ao Patreon](<https://www.patreon.com/YottaBot>)`;

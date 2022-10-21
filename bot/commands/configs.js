@@ -106,7 +106,31 @@ module.exports = {
                             dynamic: true,
                         }),
                     })
-                    .setDescription(channelLanguage.get('configsEmbedDesc', [message.client.guildData.get(message.guild.id).prefix, message.client.guildData.get(message.guild.id).language, message.client.guildData.get(message.guild.id).logAttachments, message.client.guildData.get(message.guild.id).modlogs, message.client.guildData.get(message.guild.id).pruneBan, message.client.guildData.get(message.guild.id).antiMassBan, message.client.guildData.get(message.guild.id).globalBan, message.client.guildData.get(message.guild.id).beta]))
+                    .setDescription(
+                        channelLanguage.get(
+                            'configsEmbedDesc',
+                            [
+                                message.client.guildData.get(message.guild.id).prefix,
+                                message.client.guildData.get(message.guild.id).language,
+                                message.client.guildData.get(message.guild.id).logAttachments,
+                                message.client.guildData.get(message.guild.id).modlogs,
+                                message.client.guildData.get(message.guild.id).pruneBan,
+                                message.client.guildData.get(message.guild.id).antiMassBan,
+                                message.client.guildData.get(message.guild.id).globalBan,
+                                message.client.guildData.get(message.guild.id).beta,
+                                null,
+                                (
+                                    message.client.guildData.get(message.guild.id).trackInvites
+                                    &&
+                                    (
+                                        message.client.guildData.get(message.guild.id).partner
+                                        ||
+                                        message.client.guildData.get(message.guild.id).premiumUntil
+                                    )
+                                ),
+                            ],
+                        ),
+                    )
                     .setTimestamp();
                 message.reply({embeds: [embed]});
             }
@@ -217,6 +241,15 @@ module.exports = {
                         interaction.client.guildData.get(interaction.guild.id).globalBan,
                         interaction.client.guildData.get(interaction.guild.id).beta,
                         hook?.channelId,
+                        (
+                            interaction.client.guildData.get(interaction.guild.id).trackInvites
+                            &&
+                            (
+                                interaction.client.guildData.get(interaction.guild.id).partner
+                                ||
+                                interaction.client.guildData.get(interaction.guild.id).premiumUntil
+                            )
+                        ),
                     ]
                 )
             )

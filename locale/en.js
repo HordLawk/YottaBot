@@ -156,6 +156,7 @@ module.exports = {
                                             `Max bans per moderator per 10 seconds: \`${vars[5] ?? '∞'}\`\n` +
                                             `Global bans: \`${vars[6] ? 'on' : 'off'}\`\n` +
                                             `Welcome channel: ${vars[8] ? `<#${vars[8]}>` : '`none`'}\n` +
+                                            `Track invites: \`${vars[9] ? 'on' : 'off'}\`\n` +
                                             `Beta features: \`${vars[7] ? 'on' : 'off'}\``;
             case 'betaCommand': return 'This command is currently only available for servers that enabled open beta features in the bot settings';
             case 'premiumCommand': return `This command is a premium feature, to get premium [join Patreon](<https://www.patreon.com/YottaBot>)`;

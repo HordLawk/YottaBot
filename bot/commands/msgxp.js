@@ -1,5 +1,6 @@
-const {EmbedBuilder, PermissionsBitField, ButtonStyle, ComponentType} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, ButtonStyle, ComponentType, ApplicationCommandOptionType} = require('discord.js');
 const configs = require('../configs.js');
+const {getStringLocales} = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -13,6 +14,89 @@ module.exports = {
     args: true,
     perm: PermissionsBitField.Flags.Administrator,
     guildOnly: true,
+    slashOptions: [
+        {
+            type: ApplicationCommandOptionType.Subcommand,
+            name: 'enable',
+            nameLocalizations: getStringLocales('msgxp_enableLocalisedName'),
+            description: 'Whether to enable xp earning in text channels',
+            descriptionLocalizations: getStringLocales('msgxp_enableLocalisedDesc'),
+            options: [{
+                type: ApplicationCommandOptionType.Boolean,
+                name: 'enabled',
+                nameLocalizations: getStringLocales('msgxp_enableOptionenabledLocalisedName'),
+                description: 'True to enable False to disable xp earning in text channels',
+                descriptionLocalizations: getStringLocales('msgxp_enableOptionenabledLocalisedDesc'),
+                required: true,
+            }],
+        },
+        {
+            type: ApplicationCommandOptionType.Subcommand,
+            name: 'stackroles',
+            nameLocalizations: getStringLocales('msgxp_stackrolesLocalisedName'),
+            description: 'Stacks new xp roles instead of removing previous roles when adding higher ranked ones',
+            descriptionLocalizations: getStringLocales('msgxp_stackrolesLocalisedDesc'),
+            options: [{
+                type: ApplicationCommandOptionType.Boolean,
+                name: 'enable',
+                nameLocalizations: getStringLocales('msgxp_stackrolesOptionenableLocalisedName'),
+                description: 'Whether to stack new xp roles or remove previous ones when a higher one is earned',
+                descriptionLocalizations: getStringLocales('msgxp_stackrolesOptionenableLocalisedDesc'),
+                required: true,
+            }],
+        },
+        {
+            type: ApplicationCommandOptionType.SubcommandGroup,
+            name: 'role',
+            description: (
+                'Sets the xp of roles that can be earned through sending messages in text channels or removed these ' + 
+                'roles'
+            ),
+            options: [
+                {
+                    type: ApplicationCommandOptionType.Subcommand,
+                    name: 'set',
+                    nameLocalizations: getStringLocales('msgxp_role_setLocalisedName'),
+                    description: 'Sets an amount of xp that can be achieve to earn an specified role',
+                    descriptionLocalizations: getStringLocales('msgxp_role_setLocalisedDesc'),
+                    options: [
+                        {
+                            type: ApplicationCommandOptionType.Role,
+                            name: 'role',
+                            nameLocalizations: getStringLocales('msgxp_role_setOptionroleLocalisedName'),
+                            description: 'The role that can be achieved by earning xp',
+                            descriptionLocalizations: getStringLocales('msgxp_role_setOptionroleLocalisedDesc'),
+                            required: true,
+                        },
+                        {
+                            type: ApplicationCommandOptionType.Integer,
+                            name: 'xp',
+                            nameLocalizations: getStringLocales('msgxp_role_setOptionxpLocalisedName'),
+                            description: 'The amount of xp needed to achieve the role',
+                            descriptionLocalizations: getStringLocales('msgxp_role_setOptionxpLocalisedDesc'),
+                            minValue: 1,
+                            required: true,
+                        },
+                    ],
+                },
+                {
+                    type: ApplicationCommandOptionType.Subcommand,
+                    name: 'remove',
+                    nameLocalizations: getStringLocales('msgxp_role_removeLocalisedName'),
+                    description: 'Removes a role from being achieveable',
+                    descriptionLocalizations: getStringLocales('msgxp_role_removeLocalisedDesc'),
+                    options: [{
+                        type: ApplicationCommandOptionType.Role,
+                        name: 'role',
+                        nameLocalizations: getStringLocales('msgxp_role_removeLocalisedName'),
+                        description: 'The role to remove',
+                        descriptionLocalizations: getStringLocales('msgxp_role_removeLocalisedDesc'),
+                        required: true,
+                    }],
+                },
+            ],
+        },
+    ],
     execute: async function(message, args){
         const {channelLanguage} = message;
         const member = require('../../schemas/member.js');

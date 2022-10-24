@@ -645,14 +645,14 @@ module.exports = {
             case 'voiceconnectActionName': return 'Voice connections';
             case 'voicedisconnectActionName': return 'Voice disconnections';
             case 'voicemoveActionName': return 'Voice moves';
-            case 'voiceconnectEmbedAuthor': return `${vars[0]} connected to ${vars[1]}`;
+            case 'voiceconnectEmbedAuthor': return `${vars[0]} connected to a voice channel`;
             case 'voiceconnectEmbedUserTitle': return 'User';
             case 'voiceconnectEmbedChannelTitle': return 'Channel';
-            case 'voicedisconnectEmbedAuthor': return `${vars[0]} disconnected from ${vars[1]}`;
+            case 'voicedisconnectEmbedAuthor': return `${vars[0]} disconnected from a voice channel`;
             case 'voicedisconnectEmbedUserTitle': return 'User';
             case 'voicedisconnectEmbedChannelTitle': return 'Channel';
             case 'voicedisconnectEmbedExecutorTitle': return 'Executor';
-            case 'voicemoveEmbedAuthor': return `${vars[0]} moved between channels`;
+            case 'voicemoveEmbedAuthor': return `${vars[0]} moved between voice channels`;
             case 'voicemoveEmbedFromTitle': return 'From channel';
             case 'voicemoveEmbedToTitle': return 'To channel';
             case 'voicemoveEmbedTargetTitle': return 'Target';

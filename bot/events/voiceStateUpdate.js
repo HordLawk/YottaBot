@@ -70,7 +70,7 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setColor(0x00ff00)
                 .setAuthor({
-                    name: channelLanguage.get('voiceconnectEmbedAuthor', [user.tag, newState.channel.name]),
+                    name: channelLanguage.get('voiceconnectEmbedAuthor', [user.tag]),
                     iconURL: user.displayAvatarURL({dynamic: true}),
                 })
                 .setTimestamp()
@@ -98,7 +98,7 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setColor(0xff0000)
                 .setAuthor({
-                    name: channelLanguage.get('voicedisconnectEmbedAuthor', [user.tag, oldState.channel.name]),
+                    name: channelLanguage.get('voicedisconnectEmbedAuthor', [user.tag]),
                     iconURL: user.displayAvatarURL({dynamic: true}),
                 })
                 .setTimestamp()

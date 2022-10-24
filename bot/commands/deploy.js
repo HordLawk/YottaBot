@@ -31,7 +31,7 @@ module.exports = {
                 : interaction.guild
             ).commands.create({
                 type: type,
-                defaultMemberPermissions: command.perm,
+                defaultMemberPermissions: command.perm ?? null,
                 dmPermission: !command.guildOnly,
                 ...((type === ApplicationCommandType.ChatInput) ? {
                     name: command.name,
@@ -90,7 +90,7 @@ module.exports = {
         });
         try{
             await slash.edit({
-                defaultMemberPermissions: command.perm,
+                defaultMemberPermissions: command.perm ?? null,
                 dmPermission: !command.guildOnly,
                 ...((slash.type === ApplicationCommandType.ChatInput) ? {
                     name: command.name,

@@ -71,7 +71,7 @@ module.exports = {
                         member.client.guildData.get(member.guild.id).premiumUntil
                     )
                 ){
-                    await member.guild.invites.fetch();
+                    const cache = await member.guild.invites.fetch();
                     const invite = member.client.inviteUses.get(member.guild.id).find(e => {
                         return (
                             (
@@ -81,13 +81,13 @@ module.exports = {
                             )
                             &&
                             (
-                                !member.guild.invites.cache.has(e.code)
+                                !cache.has(e.code)
                                 ||
-                                (member.guild.invites.cache.get(e.code).uses != e.uses)
+                                (cache.get(e.code).uses != e.uses)
                             )
                         );
                     });
-                    member.client.inviteUses.set(member.guild.id, member.guild.invites.cache.mapValues(e => ({
+                    member.client.inviteUses.set(member.guild.id, cache.mapValues(e => ({
                         code: e.code,
                         uses: e.uses,
                         expiresTimestamp: e.expiresTimestamp,

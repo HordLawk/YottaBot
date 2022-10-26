@@ -95,7 +95,22 @@ module.exports = {
         const guild = require('../../schemas/guild.js');
         await guild.findByIdAndUpdate(message.guild.id, {$set: {counterLogs: message.client.guildData.get(message.guild.id).counterLogs}});
         await log.insertMany(caseLogs);
-        await message.reply(channelLanguage.get('massbanSuccess', [bans, invargs, invusers, banneds]));
+        await message.reply(
+            channelLanguage.get(
+                'massbanSuccess',
+                [
+                    bans,
+                    invargs,
+                    invusers,
+                    banneds,
+                    (
+                        message.client.guildData.get(message.guild.id).premiumUntil
+                        ??
+                        message.client.guildData.get(message.guild.id).partner
+                    ),
+                ],
+            ),
+        );
     },
     executeSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;

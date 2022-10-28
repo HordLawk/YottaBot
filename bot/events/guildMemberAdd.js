@@ -63,6 +63,8 @@ module.exports = {
                 }
                 embed.addField(channelLanguage.get('memberjoinEmbedCreationTitle'), channelLanguage.get('memberjoinEmbedCreationValue', [Math.round(member.user.createdTimestamp / 1000)]));
                 if(
+                    member.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageGuild)
+                    &&
                     member.client.inviteUses.has(member.guild.id)
                     &&
                     (

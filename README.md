@@ -45,7 +45,6 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [x] invite tracking system
 - [ ] have an actual website
 - [x] usernames local blacklist
-- [ ] make `massban` accept text attachments
 - [ ] finish adapting to slash commands
 - [ ] anti hoisting
 - [ ] giveaway system

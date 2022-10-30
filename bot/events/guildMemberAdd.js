@@ -73,7 +73,11 @@ module.exports = {
                         member.client.guildData.get(member.guild.id).premiumUntil
                     )
                 ){
-                    const cache = await member.guild.invites.fetch();
+                    await member.guild.invites.fetch();
+                    if(member.client.guildData.get(member.guild.id).partner){
+                        console.log(member.guild.invites.cache);
+                        console.log(member.client.inviteUses.get(member.guild.id));
+                    }
                     const invite = member.client.inviteUses.get(member.guild.id).find(e => {
                         return (
                             (
@@ -83,13 +87,13 @@ module.exports = {
                             )
                             &&
                             (
-                                !cache.has(e.code)
+                                !member.guild.invites.cache.has(e.code)
                                 ||
-                                (cache.get(e.code).uses != e.uses)
+                                (member.guild.invites.cache.get(e.code).uses != e.uses)
                             )
                         );
                     });
-                    member.client.inviteUses.set(member.guild.id, cache.mapValues(e => ({
+                    member.client.inviteUses.set(member.guild.id, member.guild.invites.cache.mapValues(e => ({
                         code: e.code,
                         uses: e.uses,
                         expiresTimestamp: e.expiresTimestamp,

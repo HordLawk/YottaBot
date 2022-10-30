@@ -99,7 +99,7 @@ module.exports = {
                     : 1
                 )
         ){
-            if(discordRole.comaparePositionTo(message.guild.members.me.roles.highest) < 0){
+            if(discordRole.comparePositionTo(message.guild.members.me.roles.highest) < 0){
                 await message.channel.permissionOverwrites.edit(discordRole.id, {
                     SendMessages: stateIgnore,
                     SendMessagesInThreads: stateIgnore,

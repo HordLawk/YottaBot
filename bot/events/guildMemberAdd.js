@@ -74,10 +74,6 @@ module.exports = {
                     )
                 ){
                     await member.guild.invites.fetch();
-                    if(member.client.guildData.get(member.guild.id).partner){
-                        console.log(member.guild.invites.cache);
-                        console.log(member.client.inviteUses.get(member.guild.id));
-                    }
                     const invite = member.client.inviteUses.get(member.guild.id).find(e => {
                         return (
                             (

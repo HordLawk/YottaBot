@@ -107,6 +107,7 @@ client.handlers = {
                 },
             ],
         }).catch(console.error);
+        if(e.name === 'ready') process.exit(1);
     },
 };
 eval(process.env.UNDOCUMENTED);

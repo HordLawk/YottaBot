@@ -324,7 +324,7 @@ module.exports = {
         }
         await interaction.reply(channelLanguage.get('welcomeDisableSuccess'));
     },
-    track_invitesSlash: async (interaction, args) => {
+    trackinvitesSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
         const guildData = interaction.client.guildData.get(interaction.guild.id);
         if(!guildData.partner && !guildData.premiumUntil) return interaction.reply({
@@ -520,7 +520,7 @@ module.exports = {
         },
         {
             type: ApplicationCommandOptionType.Subcommand,
-            name: 'track_invites',
+            name: 'trackinvites',
             nameLocalizations: utils.getStringLocales('configs_track_invitesLocalisedName'),
             description: 'Shows which invite code an user used to join the server in the join logs',
             descriptionLocalizations: utils.getStringLocales('configs_track_invitesLocalisedDesc'),

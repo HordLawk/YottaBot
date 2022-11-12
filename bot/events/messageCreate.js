@@ -43,7 +43,7 @@ module.exports = {
                 guildData.save();
                 message.client.guildData.set(guildData._id, guildData);
             }
-            guildData = message.client.guildData.get(message.guild.id)
+            guildData = message.client.guildData.get(message.guild.id);
             prefix = guildData.prefix;
             if(!message.member) message.member = await message.guild.members.fetch(message.author.id).catch(() => null);
             roleDocs = await role.find({
@@ -62,7 +62,7 @@ module.exports = {
             (
                 !message.client.xpcds.has(message.guild.id)
                 ||
-                message.client.xpcds.get(message.guild.id).has(message.author.id)
+                !message.client.xpcds.get(message.guild.id).has(message.author.id)
                 ||
                 ((message.client.xpcds.get(message.guild.id).get(message.author.id) + 60000) <= Date.now())
             )

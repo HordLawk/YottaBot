@@ -150,7 +150,11 @@ module.exports = {
                 message.reply({embeds: [embed]});
             }
             break;
-            default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+            default: {
+                await message.reply(
+                    channelLanguage.get('invArgsSlash', {usages: utils.slashCommandUsages(this.name, message.client)}),
+                );
+            }
         }
     },
     languageSlash: async (interaction, args) => {

@@ -21,6 +21,7 @@ const {
     ComponentType,
 } = require('discord.js');
 const configs = require('../configs');
+const { slashCommandUsages } = require('../utils');
 
 module.exports = {
     active: true,
@@ -56,7 +57,7 @@ module.exports = {
                         dynamic: true,
                     }),
                 })
-                .setDescription(channelLanguage.get('helpEmbedDescription', [configs.support, perms, prefix, message.client.user.id]))
+                .setDescription(channelLanguage.get('helpEmbedDescription', [configs.support, perms, message.client.user.id]))
                 .setFooter({text: channelLanguage.get('helpEmbedFooter', [commands.filter(command => !command.dev).size])})
                 .setTimestamp();
             const categories = commands.
@@ -184,36 +185,11 @@ module.exports = {
                     .setDescription(cmd.description(channelLanguage))
                     .setFooter({text: channelLanguage.get('helpCommandEmbedFooter')})
                     .setTimestamp();
-                const slashCmd = commandsManager.find(slash => (slash.name === cmd.name));
-                if(slashCmd){
-                    const subCommands = slashCmd.options.filter(opt => {
-                        return opt.type <= ApplicationCommandOptionType.SubcommandGroup;
-                    });
+                const usages = slashCommandUsages(cmd.name, message.client);
+                if(usages){
                     commandEmbed.addFields({
                         name: channelLanguage.get('syntax'),
-                        value: (
-                            subCommands.length
-                            ? subCommands
-                                .map(subcmd => {
-                                    return (
-                                        (subcmd.type === ApplicationCommandOptionType.Subcommand)
-                                        ? `</${slashCmd.name} ${subcmd.name}:${slashCmd.id}>`
-                                        : subcmd.options
-                                            .filter(opt => {
-                                                return opt.type === ApplicationCommandOptionType.Subcommand;
-                                            })
-                                            .map(subsubcmd => {
-                                                return (
-                                                    `</${slashCmd.name} ${subcmd.name} ${subsubcmd.name}:` +
-                                                    `${slashCmd.id}>`
-                                                );
-                                            })
-                                            .join('\n')
-                                    );
-                                })
-                                .join('\n')
-                            : `</${slashCmd.name}:${slashCmd.id}>`
-                        ),
+                        value: usages,
                     });
                 }
                 else{
@@ -285,36 +261,11 @@ module.exports = {
                 .setDescription(command.description(channelLanguage))
                 .setFooter({text: channelLanguage.get('helpCommandEmbedFooter')})
                 .setTimestamp();
-            const slashCmd = commandsManager.find(slash => (slash.name === command.name));
-            if(slashCmd){
-                const subCommands = slashCmd.options.filter(opt => {
-                    return opt.type <= ApplicationCommandOptionType.SubcommandGroup;
-                });
+            const usages = slashCommandUsages(command.name, message.client);
+            if(usages){
                 embed.addFields({
                     name: channelLanguage.get('syntax'),
-                    value: (
-                        subCommands.length
-                        ? subCommands
-                            .map(subcmd => {
-                                return (
-                                    (subcmd.type === ApplicationCommandOptionType.Subcommand)
-                                    ? `</${slashCmd.name} ${subcmd.name}:${slashCmd.id}>`
-                                    : subcmd.options
-                                        .filter(opt => {
-                                            return opt.type === ApplicationCommandOptionType.Subcommand;
-                                        })
-                                        .map(subsubcmd => {
-                                            return (
-                                                `</${slashCmd.name} ${subcmd.name} ${subsubcmd.name}:` +
-                                                `${slashCmd.id}>`
-                                            );
-                                        })
-                                        .join('\n')
-                                );
-                            })
-                            .join('\n')
-                        : `</${slashCmd.name}:${slashCmd.id}>`
-                    ),
+                    value: usages,
                 });
             }
             else{
@@ -363,7 +314,7 @@ module.exports = {
                         dynamic: true,
                     }),
                 })
-                .setDescription(channelLanguage.get('helpEmbedDescription', [configs.support, perms, prefix, interaction.client.user.id]))
+                .setDescription(channelLanguage.get('helpEmbedDescription', [configs.support, perms, interaction.client.user.id]))
                 .setFooter({text: channelLanguage.get('helpEmbedFooter', [commands.filter(command => !command.dev).size])})
                 .setTimestamp();
             const categories = commands
@@ -491,36 +442,11 @@ module.exports = {
                     .setDescription(cmd.description(channelLanguage))
                     .setFooter({text: channelLanguage.get('helpCommandEmbedFooter')})
                     .setTimestamp();
-                const slashCmd = commandsManager.find(slash => (slash.name === cmd.name));
-                if(slashCmd){
-                    const subCommands = slashCmd.options.filter(opt => {
-                        return opt.type <= ApplicationCommandOptionType.SubcommandGroup;
-                    });
+                const usages = slashCommandUsages(cmd.name, interaction.client);
+                if(usages){
                     commandEmbed.addFields({
                         name: channelLanguage.get('syntax'),
-                        value: (
-                            subCommands.length
-                            ? subCommands
-                                .map(subcmd => {
-                                    return (
-                                        (subcmd.type === ApplicationCommandOptionType.Subcommand)
-                                        ? `</${slashCmd.name} ${subcmd.name}:${slashCmd.id}>`
-                                        : subcmd.options
-                                            .filter(opt => {
-                                                return opt.type === ApplicationCommandOptionType.Subcommand;
-                                            })
-                                            .map(subsubcmd => {
-                                                return (
-                                                    `</${slashCmd.name} ${subcmd.name} ${subsubcmd.name}:` +
-                                                    `${slashCmd.id}>`
-                                                );
-                                            })
-                                            .join('\n')
-                                    );
-                                })
-                                .join('\n')
-                            : `</${slashCmd.name}:${slashCmd.id}>`
-                        ),
+                        value: usages,
                     });
                 }
                 else{
@@ -594,36 +520,11 @@ module.exports = {
                 .setDescription(command.description(channelLanguage))
                 .setFooter({text: channelLanguage.get('helpCommandEmbedFooter')})
                 .setTimestamp();
-            const slashCmd = commandsManager.find(slash => (slash.name === command.name));
-            if(slashCmd){
-                const subCommands = slashCmd.options.filter(opt => {
-                    return opt.type <= ApplicationCommandOptionType.SubcommandGroup;
-                });
+            const usages = slashCommandUsages(command.name, interaction.client);
+            if(usages){
                 embed.addFields({
                     name: channelLanguage.get('syntax'),
-                    value: (
-                        subCommands.length
-                        ? subCommands
-                            .map(subcmd => {
-                                return (
-                                    (subcmd.type === ApplicationCommandOptionType.Subcommand)
-                                    ? `</${slashCmd.name} ${subcmd.name}:${slashCmd.id}>`
-                                    : subcmd.options
-                                        .filter(opt => {
-                                            return opt.type === ApplicationCommandOptionType.Subcommand;
-                                        })
-                                        .map(subsubcmd => {
-                                            return (
-                                                `</${slashCmd.name} ${subcmd.name} ${subsubcmd.name}:` +
-                                                `${slashCmd.id}>`
-                                            );
-                                        })
-                                        .join('\n')
-                                );
-                            })
-                            .join('\n')
-                        : `</${slashCmd.name}:${slashCmd.id}>`
-                    ),
+                    value: usages,
                 });
             }
             else{

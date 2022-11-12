@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const menu = require('../../schemas/menu.js');
 const guild = require('../../schemas/guild.js');
 const {EmbedBuilder, PermissionsBitField} = require('discord.js');
@@ -34,7 +49,17 @@ module.exports = {
                 channelID: {$in: message.client.channels.cache.map(e => e.id)},
             });
             for(let menuDoc of menus) await message.client.channels.cache.get(menuDoc.channelID).messages.fetch({message: menuDoc.messageID}).catch(() => null);
-            if((menus.filter(e => message.client.channels.cache.get(e.channelID).messages.cache.has(e.messageID)) >= 10) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) return message.reply(channelLanguage.get('maxRolemenus', [message.client.guildData.get(message.guild.id).prefix]));
+            if(
+                (
+                    menus.filter(e => message.client.channels.cache.get(e.channelID).messages.cache.has(e.messageID))
+                    >=
+                    10
+                )
+                &&
+                !message.client.guildData.get(message.guild.id).premiumUntil
+                &&
+                !message.client.guildData.get(message.guild.id).partner
+            ) return await message.reply(channelLanguage.get('maxRolemenus'));
             let roles = args.slice(2).filter((e, i) => ((i % 2) === 0)).map(e => (message.guild.roles.cache.get(e.match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(ee => (ee.name.toLowerCase() === e.toLowerCase().replace(/"/g, ''))) ?? message.guild.roles.cache.find(ee => ee.name.toLowerCase().startsWith(e.toLowerCase().replace(/"/g, ''))) ?? message.guild.roles.cache.find(ee => ee.name.toLowerCase().includes(e.toLowerCase().replace(/"/g, '')))));
             if(roles.some(e => (!e || (e.id === message.guild.id)))) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
             if(roles.some(e => (!e.editable || e.managed))) return message.reply(channelLanguage.get('manageRole'));

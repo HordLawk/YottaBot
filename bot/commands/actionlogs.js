@@ -1,5 +1,21 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {EmbedBuilder, PermissionsBitField, ApplicationCommandOptionType, ChannelType} = require('discord.js');
 const configs = require('../configs');
+const { slashCommandUsages } = require('../utils');
 
 const actionOptionMapper = filter => ((interaction, value, locale) => interaction.respond((filter ? configs.actions.filter(filter) : configs.actions).map((_, i) => ({
     name: locale.get(`${i}ActionName`),
@@ -297,7 +313,7 @@ module.exports = {
                 message.reply({embeds: [embed]});
             }
             break;
-            default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+            default: message.reply(channelLanguage.get('invArgsSlash', {usages: slashCommandUsages(this.name, message.client)}));
         }
     },
     defaultSlash: async (interaction, args) => {

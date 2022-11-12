@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 module.exports = {
     lang: 'pt',
     name: 'Português',
@@ -5,9 +20,13 @@ module.exports = {
     code: 'pt-BR',
     get: (line, vars = []) => {
         switch(line){
-            case 'mentionHelp': return `Use \`${vars[0]}help\` para ver todos os meus comandos!`;
+            case 'mentionHelp': return `Use </help:${vars[0]}> para ver todos os meus comandos!`;
             case 'blacklisted': return `Você está proibido de usar este bot!`;
-            case 'noArgs': return `Você não forneceu nenhum argumento, ${vars[0]}!\nO uso correto seria:\n${vars[3].map(e => `\`${vars[1]}${vars[2]} ${e}\``).join('\n')}`;
+            case 'noArgs': return (
+                `Você não forneceu nenhum argumento, ${vars[0]}!\n` +
+                `O uso correto seria:\n` +
+                vars[1]
+            );
             case 'cooldown': return `Por favor espere mais ${vars[0]} segundo(s) antes de usar o comando \`${vars[1]}\` novamente${vars[2] ? '' : `\nDica: Servidores premium tem metade do cooldown para todos os comandos\nPara adquirir premium [se junte ao Patreon](<https://www.patreon.com/YottaBot>)`}`;
             case 'error': return `Houve um erro ao tentar executar o comando \`${vars[0]}\`\nO problema foi enviado à equipe de suporte e será corrigido no futuro proximo`;
             case 'helpDescription': return 'Lista todos os comandos ou mostra informações sobre um específico';
@@ -18,7 +37,13 @@ module.exports = {
             case 'botEmbed': return 'Eu preciso de permissão para enviar links nesse canal';
             case 'botManageMessages': return 'Eu preciso de permissão para gerenciar mensagens nesse canal';
             case 'helpEmbedTitle': return 'Ajuda de comandos';
-            case 'helpEmbedDescription': return `[\`Servidor de suporte\`](https://discord.gg/${vars[0]})\n[\`Me convide\`](${vars[1]})\n[\`Documentação avançada\`](https://github.com/HordLawk/YottaBot#get-started)\n[\`Top.gg\`](https://top.gg/bot/${vars[3]})\n\nUse \`${vars[2]}help (comando)\` para mais informações sobre um comando específico`;
+            case 'helpEmbedDescription': return (
+                `[\`Servidor de suporte\`](https://discord.gg/${vars[0]})\n` +
+                `[\`Me convide\`](${vars[1]})\n` +
+                `[\`Documentação avançada\`](https://github.com/HordLawk/YottaBot#get-started)\n` +
+                `[\`Top.gg\`](https://top.gg/bot/${vars[2]})\n\n` +
+                'Use os menus de seleção abaixo para mais informações sobre um comando específico'
+            );
             case 'helpEmbedFooter': return `${vars[0]} comandos | [] = Opcional - () = Variável - </> = Qualquer`;
             case 'category0': return 'Comandos';
             case 'category1': return 'Informação';
@@ -361,7 +386,7 @@ module.exports = {
             case 'xpEmbedAuthor': return 'Xp';
             case 'xpEmbedDescription': return `${vars[0] ? `Nível atual: <@&${vars[0].roleID}>\n` : ''}${vars[1] ? `Proximo nível: <@&${vars[1].roleID}>\n` : ''}Progresso: **${vars[2]}${vars[1] ? `/${vars[1].xp}` : ''}**`;
             case 'xpEmbedFooter': return `#${vars[0]}`;
-            case 'dmBotAdder': return `Saudações ${vars[0]}! Obrigado por me adicionar a **${vars[1]}**. Como eu sou um bot muito customizável recomendo que comece dando uma olhada em \`${vars[2]}help configs\` e configurando as permissões dos comandos com \`${vars[2]}help perm\`, senão alguns deles podem ter permissões padrão muito restritivas, como o comando \`rolemenu\`, que por padrão só é permitido para usuários com a permissão Gerenciar Cargos\n\nSe precisar de ajuda, não hesite em **[entrar no servidor de suporte](https://discord.gg/${vars[3]})**, você também pode ler a **[documentação completa](https://github.com/HordLawk/YottaBot#get-started)** para informações mais detalhadas`;
+            case 'dmBotAdder': return `Saudações ${vars[0]}! Obrigado por me adicionar a **${vars[1]}**. Como eu sou um bot muito customizável recomendo que comece dando uma olhada em </help:${vars[2]}>\n\nSe precisar de ajuda, não hesite em **[entrar no servidor de suporte](https://discord.gg/${vars[3]})**, você também pode ler a **[documentação completa](https://github.com/HordLawk/YottaBot#get-started)** para informações mais detalhadas`;
             case 'autoUnmuteEmbedAuthorMember': return `${vars[0]} foi desmutado`;
             case 'autoUnmuteEmbedAuthorNoMember': return 'Unmute';
             case 'autoUnmuteEmbedTargetTitle': return 'Alvo';
@@ -718,9 +743,9 @@ module.exports = {
             case 'muteOptionwith_reasonLocalisedName': return 'com_motivo';
             case 'muteOptiontargetLocalisedDesc': return 'O membro que deve ser mutado/castigado';
             case 'muteOptiondurationLocalisedDesc': return 'Por quanto tempo o membro deve permanecer mutado/castigado';
-            case 'muteOptionwith_reasonLocalisedDesc': {
-                return 'Se deve ser apresentado um formulário com um campo para informar o motivo do mute/castigo';
-            }
+            case 'muteOptionwith_reasonLocalisedDesc': return (
+                'Se deve ser apresentado um formulário com um campo para informar o motivo do mute/castigo'
+            );
             case 'timeAmountDays': return `${vars[0]} dias`;
             case 'timeAmountHours': return `${vars[0]} horas`;
             case 'timeAmountMinutes': return `${vars[0]} minutos`;
@@ -728,9 +753,9 @@ module.exports = {
             case 'slowmodeDisable': return 'Desativar';
             case 'slowmodeLocalisedName': return 'modolento';
             case 'slowmodeOptioncooldownLocalisedName': return 'intervalo';
-            case 'slowmodeOptioncooldownLocalisedDesc': {
-                return 'O intervalo entre cada mensagem que um usuário pode enviar';
-            }
+            case 'slowmodeOptioncooldownLocalisedDesc': return (
+                'O intervalo entre cada mensagem que um usuário pode enviar'
+            );
             case 'slowmodeOptionchannelLocalisedName': return 'canal';
             case 'slowmodeOptionchannelLocalisedDesc': return 'O canal para aplicar o intervalo do modo lento';
             case 'lockLocalisedName': return 'trancar';
@@ -744,23 +769,21 @@ module.exports = {
             case 'lockignoreLocalisedName': return 'trancaignorar';
             case 'lockignoreDescription': return 'Define cargos que serão ignorados pelo comando de lock';
             case 'lockignore_toggleLocalisedName': return 'alternar';
-            case 'lockignore_toggleLocalisedDesc': {
-                return 'Alterna um comando entre ignorado pelo comando de lock e não ignorado';
-            }
+            case 'lockignore_toggleLocalisedDesc': return (
+                'Alterna um comando entre ignorado pelo comando de lock e não ignorado'
+            );
             case 'lockignore_toggleOptionroleLocalisedName': return 'cargo';
-            case 'lockignore_toggleOptionroleLocalisedDesc': {
-                return 'O cargo que deve ser alternado entre ignorado e não ignorado';
-            }
+            case 'lockignore_toggleOptionroleLocalisedDesc': return (
+                'O cargo que deve ser alternado entre ignorado e não ignorado'
+            );
             case 'lockignore_listLocalisedName': return 'listar';
             case 'lockignore_listLocalisedDesc': return 'Lista cargos ignorados pelo comando de lock';
             case 'lockignoreSuccess': return `O cargo ${vars[0]} será ignorado pelo comando de lock com sucesso`;
             case 'botCantManageRole': return 'Eu não tenho permissão para generciar esse cargo';
-            case 'lockignoreTooManyRoles': {
-                return (
-                    'Você atingiu o limite de cargos ignorados pelo comando de lock para esse servidor\n' +
-                    'Note que esse limite é de 10 cargos para servidores premium e 1 cargo para servidores não premium'
-                );
-            }
+            case 'lockignoreTooManyRoles': return (
+                'Você atingiu o limite de cargos ignorados pelo comando de lock para esse servidor\n' +
+                'Note que esse limite é de 10 cargos para servidores premium e 1 cargo para servidores não premium'
+            );
             case 'lockignoreRemoveSuccess': return `O cargo ${vars[0]} não será mais ignorado pelo comando de lock`;
             case 'lockignore_listEmbedAuthor': return 'Cargos atualmente ignorados pelo comando de lock';
             case 'voiceconnectActionName': return 'Conexões de voz';
@@ -783,34 +806,35 @@ module.exports = {
             case 'checkOptiontime_rangeLocalisedName': return 'intervalo_tempo';
             case 'checkOptiontime_rangeLocalisedDesc': return 'A partir de quanto tempo atrás os casos devem ser';
             case 'configs_track_invitesLocalisedName': return 'rastrear_convites';
-            case 'configs_track_invitesLocalisedDesc': {
-                return (
-                    'Mostra qual código de convite um usuário utilizou para entrar no servidor nos registros de entrada'
-                );
-            }
+            case 'configs_track_invitesLocalisedDesc': return (
+                'Mostra qual código de convite um usuário utilizou para entrar no servidor nos registros de entrada'
+            );
             case 'configs_track_invitesOptionenableLocalisedName': return 'ativar';
-            case 'configs_track_invitesOptionenableLocalisedDesc': {
-                return 'Se o rastreamento de convites deve ser ativado';
-            }
-            case 'configsTrackInvitesSuccess': {
-                return `Rastreamento de convites **${vars[0] ? 'ativado' : 'desativado'}**`;
-            }
+            case 'configs_track_invitesOptionenableLocalisedDesc': return (
+                'Se o rastreamento de convites deve ser ativado'
+            );
+            case 'configsTrackInvitesSuccess': return (
+                `Rastreamento de convites **${vars[0] ? 'ativado' : 'desativado'}**`
+            );
             case 'memberjoinEmbedInviteTitle': return 'Convite utilizado';
-            case 'configsTrackInvitesCantManageGuild': {
-                return 'Eu preciso da permissão Gerenciar Servidor para rastrear convites';
-            }
-            case 'configsInviteTrackerJoinlogDisabled': {
-                return 'Você precisa ter ativado o registro de novos membros primeiro';
-            }
-            case 'configsTrackInvitesNotPremium': {
-                return (
-                    'Essa é uma função exclusiva premium, para adquirir premium para o seu servidor ' +
-                    '[se junte ao Patreon](<https://www.patreon.com/YottaBot>)'
-                );
-            }
+            case 'configsTrackInvitesCantManageGuild': return (
+                'Eu preciso da permissão Gerenciar Servidor para rastrear convites'
+            );
+            case 'configsInviteTrackerJoinlogDisabled': return (
+                'Você precisa ter ativado o registro de novos membros primeiro'
+            );
+            case 'configsTrackInvitesNotPremium': return (
+                'Essa é uma função exclusiva premium, para adquirir premium para o seu servidor ' +
+                '[se junte ao Patreon](<https://www.patreon.com/YottaBot>)'
+            );
             case 'memberjoinEmbedInviteValue': return (
                 `Código: [\`${vars[0]}\`](https://discord.gg/${vars[0]})\n` +
                 `Criado por: ${vars[1]} \`${vars[1].tag}\``
+            );
+            case 'invArgsSlash': return (
+                `Argumentos inválidos!\n` +
+                `Clique em um comando abaixo para usa-lo corretamente:\n` +
+                vars.usages
             );
         }
     },

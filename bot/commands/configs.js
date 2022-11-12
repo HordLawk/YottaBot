@@ -68,9 +68,23 @@ module.exports = {
             case 'mod': {
                 switch(args[1]){
                     case 'logs': {
-                        if(!args[3] || args.slice(3, 7).some(e => !['warn', 'mute', 'kick', 'ban'].includes(e))) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                        if(!args[3] || args.slice(3, 7).some(e => !['warn', 'mute', 'kick', 'ban'].includes(e))){
+                            return await message.reply(
+                                channelLanguage.get(
+                                    'invArgsSlash',
+                                    {usages: utils.slashCommandUsages(this.name, message.client, 'moderation', 'logs')},
+                                ),
+                            );
+                        }
                         let discordChannel = message.guild.channels.cache.get(args[2].match(/^(?:<#)?(\d{17,19})>?$/)?.[1]);
-                        if(!discordChannel || !discordChannel.isTextBased()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                        if(!discordChannel || !discordChannel.isTextBased()){
+                            return await message.reply(
+                                channelLanguage.get(
+                                    'invArgsSlash',
+                                    {usages: utils.slashCommandUsages(this.name, message.client, 'moderation', 'logs')},
+                                ),
+                            );
+                        }
                         if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.SendMessages) || !discordChannel.viewable) return message.reply(channelLanguage.get('sendMessages'));
                         if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));
                         let guildDoc = await guild.findById(message.guild.id);
@@ -87,25 +101,60 @@ module.exports = {
                         message.reply(channelLanguage.get('clearOnBanDaysSetSuccess', [message.client.guildData.get(message.guild.id).pruneBan]));
                     }
                     break;
-                    default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                    default: {
+                        await message.reply(
+                            channelLanguage.get(
+                                'invArgsSlash',
+                                {usages: utils.slashCommandUsages(this.name, message.client, 'moderation')},
+                            ),
+                        );
+                    }
                 }
             }
             break;
             case 'beta': {
-                if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!['on', 'off'].includes(args[1])){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: utils.slashCommandUsages(this.name, message.client, 'beta')},
+                        ),
+                    );
+                }
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {beta: (message.client.guildData.get(message.guild.id).beta = (args[1] === 'on'))}});
                 message.reply(channelLanguage.get('betaSuccess', [args[1] === 'on']));
             }
             break;
             case 'massbanprotection': {
-                if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!['on', 'off'].includes(args[1])){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {
+                                usages: utils.slashCommandUsages(
+                                    this.name,
+                                    message.client,
+                                    'moderation',
+                                    'massbanprotection',
+                                ),
+                            },
+                        ),
+                    );
+                }
                 if((args[1] === 'on') && args[2] && (isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[2], 10) < 1))) return message.reply(channelLanguage.get('invMassBanProtectionAmount'));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {antiMassBan: (message.client.guildData.get(message.guild.id).antiMassBan = ((args[1] === 'on') ? (parseInt(args[2], 10) || 15) : null))}});
                 message.reply(channelLanguage.get('massBanProtectionSuccess', [args[1]]));
             }
             break;
             case 'globalbans': {
-                if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!['on', 'off'].includes(args[1])){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: utils.slashCommandUsages(this.name, message.client, 'moderation', 'globalbans')},
+                        ),
+                    );
+                }
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {globalBan: (message.client.guildData.get(message.guild.id).globalBan = (args[1] === 'on'))}});
                 message.reply(channelLanguage.get('globalbanSuccess', [args[1]]));
             }

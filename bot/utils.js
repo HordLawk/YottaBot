@@ -38,13 +38,25 @@ const timeSpanChoices = (value, locale, maxSeconds, div = 1) => {
     return choices;
 };
 
-const slashCommandUsages = (name, client) => {
+const slashCommandUsages = (name, client, subcmdname, subsubcmdname) => {
     const slashCmd = (
         (process.env.NODE_ENV === 'production')
         ? client.application
         : client.guilds.cache.get(process.env.DEV_GUILD)
     ).commands.cache.find(slash => (slash.name === name));
     if(!slashCmd) return;
+    if(subcmdname){
+        if(subsubcmdname) return `</${slashCmd.name} ${subcmdname} ${subsubcmdname}:${slashCmd.id}>`;
+        const subCommand = slashCmd.options.find(opt => (opt.name === subcmdname));
+        if(!subCommand) return;
+        return (
+            (subCommand.type === ApplicationCommandOptionType.SubcommandGroup)
+            ? subCommand.options
+                .map(subsubcmd => `</${slashCmd.name} ${subCommand.name} ${subsubcmd.name}:${slashCmd.id}>`)
+                .join('\n')
+            : `</${slashCmd.name} ${subCommand.name}:${slashCmd.id}>`
+        );
+    }
     const subCommands = slashCmd.options.filter(opt => (opt.type <= ApplicationCommandOptionType.SubcommandGroup));
     return (
         subCommands.length
@@ -54,7 +66,6 @@ const slashCommandUsages = (name, client) => {
                     (subcmd.type === ApplicationCommandOptionType.Subcommand)
                     ? `</${slashCmd.name} ${subcmd.name}:${slashCmd.id}>`
                     : subcmd.options
-                        .filter(opt => opt.type === ApplicationCommandOptionType.Subcommand)
                         .map(subsubcmd => `</${slashCmd.name} ${subcmd.name} ${subsubcmd.name}:${slashCmd.id}>`)
                         .join('\n')
                 );

@@ -98,7 +98,14 @@ module.exports = {
             }
             break;
             case 'user': {
-                if(!args[1]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!args[1]){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'user')},
+                        ),
+                    );
+                }
                 const id = args[1].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
                 if(!id) return message.reply(channelLanguage.get('invUser'));
                 const user = await message.client.users.fetch(id).catch(() => null);
@@ -126,7 +133,14 @@ module.exports = {
             break;
             case 'case': {
                 const id = parseInt(args[1]);
-                if(isNaN(id) || !isFinite(id) || (id < 0)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(isNaN(id) || !isFinite(id) || (id < 0)){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'case')},
+                        ),
+                    );
+                }
                 const caseDoc = await log.findOneAndDelete({
                     id: id,
                     guild: message.guild.id,

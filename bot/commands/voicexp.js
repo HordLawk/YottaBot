@@ -71,31 +71,27 @@ module.exports = {
             }
             break;
             case 'ignore': {
-                if(!['add', 'remove'].includes(args[1])) return message.reply(
-                    channelLanguage.get(
-                        'invArgs',
-                        [
-                            message.client.guildData.get(message.guild.id).prefix,
-                            this.name,
-                            this.usage(channelLanguage),
-                        ]
-                    )
-                );
+                if(!['add', 'remove'].includes(args[1])){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'ignore')},
+                        ),
+                    );
+                }
                 let discordChannel = message.guild.channels.cache.get(args[2].match(/^(?:<#)?(\d{17,19})>?$/)?.[1]);
                 if(
                     !discordChannel
                     ||
                     (discordChannel.type !== ChannelType.GuildVoice)
-                ) return message.reply(
-                    channelLanguage.get(
-                        'invArgs',
-                        [
-                            message.client.guildData.get(message.guild.id).prefix,
-                            this.name,
-                            this.usage(channelLanguage),
-                        ]
-                    )
-                );
+                ){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'ignore')},
+                        ),
+                    );
+                }
                 await channel.findOneAndUpdate({
                     _id: discordChannel.id,
                     guild: message.guild.id,

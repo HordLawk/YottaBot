@@ -836,6 +836,7 @@ module.exports = {
                 `Clique em um comando abaixo para usa-lo corretamente:\n` +
                 vars.usages
             );
+            case 'userInfoBadges': return 'Insígnias';
         }
     },
 };

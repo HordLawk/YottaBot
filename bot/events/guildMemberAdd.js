@@ -1,6 +1,22 @@
-const {EmbedBuilder, PermissionsBitField, ButtonStyle, ComponentType, UserFlags} = require('discord.js');
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+const {EmbedBuilder, PermissionsBitField, ButtonStyle, ComponentType} = require('discord.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
+const { userBadgesString } = require('../utils');
 
 module.exports = {
     name: 'guildMemberAdd',
@@ -21,46 +37,14 @@ module.exports = {
                     })
                     .setThumbnail(member.user.displayAvatarURL({dynamic: true}))
                     .setDescription(member.toString());
+                const badges = userBadgesString(member.user);
                 if(
-                    (
-                        member.user.flags?.remove(
-                            UserFlags.Quarantined
-                            +
-                            UserFlags.TeamPseudoUser
-                            +
-                            UserFlags.Spammer
-                        ).bitfield
-                        ||
-                        member.user.bot
-                    )
+                    badges
                     &&
                     member.guild.roles.everyone
                         .permissionsIn(hook.channelId)
                         .has(PermissionsBitField.Flags.UseExternalEmojis)
-                ){
-                    const badges = {
-                        Staff: '<:staff:967043602012315658>',
-                        Partner: '<:partner:967043547561852978>',
-                        Hypesquad: '<:hs:967048946612572160>',
-                        BugHunterLevel1: '<:bughunter:967043119407329311>',
-                        HypeSquadOnlineHouse1: '<:bravery:967043119780610058>',
-                        HypeSquadOnlineHouse2: '<:brilliance:967043119780597860>',
-                        HypeSquadOnlineHouse3: '<:balance:967043119809974272>',
-                        PremiumEarlySupporter: '<:earlysupporter:967043119717699665>',
-                        BugHunterLevel2: '<:bughunter2:967043119759642694>',
-                        VerifiedDeveloper: '<:botdev:967043120984391752>',
-                        CertifiedModerator: '<:mod:967043119788994610>',
-                        VerifiedBot: '<:verifiedbot:967049829568090143>',
-                        BotHTTPInteractions: '<:bot:967062591190995004>',
-                    };
-                    const userBadges = member.user.flags.toArray().map(e => badges[e]);
-                    if(
-                        !member.user.flags.any(UserFlags.VerifiedBot + UserFlags.BotHTTPInteractions)
-                        &&
-                        member.user.bot
-                    ) userBadges.push('<:bot:967062591190995004>');
-                    embed.addField(channelLanguage.get('memberjoinEmbedBadgesTitle'), userBadges.join(' '));
-                }
+                ) embed.addField(channelLanguage.get('memberjoinEmbedBadgesTitle'), badges);
                 embed.addField(channelLanguage.get('memberjoinEmbedCreationTitle'), channelLanguage.get('memberjoinEmbedCreationValue', [Math.round(member.user.createdTimestamp / 1000)]));
                 if(
                     member.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageGuild)

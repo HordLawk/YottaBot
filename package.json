@@ -1,6 +1,6 @@
 {
   "name": "yottabot",
-  "version": "2.46.19",
+  "version": "2.46.20",
   "description": "A levelling and moderation focused Discord bot",
   "main": "index.js",
   "engines": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
+    "start": "node --inspect index.js",
     "dev": "node --trace-deprecation --inspect -r dotenv/config index.js dotenv_config_path=../.env"
   },
   "repository": {

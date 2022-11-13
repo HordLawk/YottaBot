@@ -699,6 +699,7 @@ module.exports = {
                 `Click a command below for the correct usage:\n` +
                 vars.usages
             );
+            case 'userInfoBadges': return 'Badges';
         }
     },
 };

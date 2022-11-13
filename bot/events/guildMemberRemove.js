@@ -1,8 +1,24 @@
-const {EmbedBuilder, PermissionsBitField, UserFlags, GuildFeature, AuditLogEvent} = require('discord.js');
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+const {EmbedBuilder, PermissionsBitField, GuildFeature, AuditLogEvent} = require('discord.js');
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
 const role = require('../../schemas/role.js');
 const locale = require('../../locale');
+const { userBadgesString } = require('../utils.js');
 
 module.exports = {
     name: 'guildMemberRemove',
@@ -30,46 +46,14 @@ module.exports = {
                         .setThumbnail(member.user.displayAvatarURL({dynamic: true}))
                         .setDescription(member.toString());
                     if(member.nickname) embed.addField(channelLanguage.get('memberleaveEmbedNickTitle'), member.nickname, true);
+                    const badges = userBadgesString(member.user);
                     if(
-                        (
-                            member.user.flags?.remove(
-                                UserFlags.Quarantined
-                                +
-                                UserFlags.TeamPseudoUser
-                                +
-                                UserFlags.Spammer
-                            ).bitfield
-                            ||
-                            member.user.bot
-                        )
+                        badges
                         &&
                         member.guild.roles.everyone
                             .permissionsIn(hook.channelId)
                             .has(PermissionsBitField.Flags.UseExternalEmojis)
-                    ){
-                        const badges = {
-                            Staff: '<:staff:967043602012315658>',
-                            Partner: '<:partner:967043547561852978>',
-                            Hypesquad: '<:hs:967048946612572160>',
-                            BugHunterLevel1: '<:bughunter:967043119407329311>',
-                            HypeSquadOnlineHouse1: '<:bravery:967043119780610058>',
-                            HypeSquadOnlineHouse2: '<:brilliance:967043119780597860>',
-                            HypeSquadOnlineHouse3: '<:balance:967043119809974272>',
-                            PremiumEarlySupporter: '<:earlysupporter:967043119717699665>',
-                            BugHunterLevel2: '<:bughunter2:967043119759642694>',
-                            VerifiedDeveloper: '<:botdev:967043120984391752>',
-                            CertifiedModerator: '<:mod:967043119788994610>',
-                            VerifiedBot: '<:verifiedbot:967049829568090143>',
-                            BotHTTPInteractions: '<:bot:967062591190995004>',
-                        };
-                        const userBadges = member.user.flags.toArray().map(e => badges[e]);
-                        if(
-                            !member.user.flags.any(UserFlags.VerifiedBot + UserFlags.BotHTTPInteractions)
-                            &&
-                            member.user.bot
-                        ) userBadges.push('<:bot:967062591190995004>');
-                        embed.addField(channelLanguage.get('memberjoinEmbedBadgesTitle'), userBadges.join(' '), true);
-                    }
+                    ) embed.addField(channelLanguage.get('memberjoinEmbedBadgesTitle'), badges, true);
                     if(member.guild.features.includes(GuildFeature.MemberVerificationGateEnabled) && !member.partial) embed.addField(channelLanguage.get('memberleaveEmbedMembershipTitle'), channelLanguage.get('memberleaveEmbedMembershipValue', [member.pending]), true);
                     if(member.joinedTimestamp) embed.addField(channelLanguage.get('memberleaveEmbedJoinedTitle'), channelLanguage.get('memberleaveEmbedJoinedValue', [Math.round(member.joinedTimestamp / 1000)]));
                     if(member.communicationDisabledUntilTimestamp > Date.now()) embed.addField(channelLanguage.get('memberleaveEmbedTimeoutTitle'), channelLanguage.get('memberleaveEmbedTimeoutValue', [Math.round(member.communicationDisabledUntilTimestamp / 1000)]));

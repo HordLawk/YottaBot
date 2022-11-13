@@ -1,4 +1,5 @@
-const { TextInputStyle, ComponentType } = require("discord.js");
+const { TextInputStyle, ComponentType, EmbedBuilder } = require("discord.js");
+const {inspect} = require('node:util');
 
 module.exports = {
     active: true,
@@ -7,7 +8,22 @@ module.exports = {
     dev: true,
     args: true,
     usage: () => ['(code)'],
-    execute: async message => eval(message.content.replace(/^\S+\s+/, '')),
+    execute: async message => {
+        const embed = new EmbedBuilder()
+            .setColor(0x2f3136)
+            .setAuthor({
+                name: 'eval',
+                iconURL: message.client.user.avatarURL(),
+            })
+            .setDescription(`\`\`\`ansi\n${inspect(eval(message.content.replace(/^\S+\s+/, '')), {
+                depth: 1,
+                colors: true,
+                maxArrayLength: 3,
+                breakLength: 62,
+                numericSeparator: true,
+            })}\`\`\``);
+        await message.reply({embeds: [embed]});
+    },
     executeSlash: async interaction => {
         await interaction.showModal({
             customId: `eval${interaction.id}`,
@@ -36,10 +52,27 @@ module.exports = {
             content: 'Modal timed out!',
             ephemeral: true,
         });
+        const code = i.fields.getTextInputValue('code');
+        const embed = new EmbedBuilder()
+            .setColor(0x2f3136)
+            .setAuthor({
+                name: 'eval',
+                iconURL: interaction.client.user.avatarURL(),
+            })
+            .setDescription(`\`\`\`ansi\n${inspect(eval(code), {
+                depth: 1,
+                colors: true,
+                maxArrayLength: 3,
+                breakLength: 62,
+                numericSeparator: true,
+            })}\`\`\``)
+            .addFields({
+                name: 'Code',
+                value: `\`\`\`js\n${code}\`\`\``,
+            });
         await i.reply({
-            content: 'Executing code...',
+            embeds: [embed],
             ephemeral: true,
         });
-        eval(i.fields.getTextInputValue('code'));
     },
 };

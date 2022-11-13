@@ -528,10 +528,15 @@ module.exports = {
         });
         const guild = require('../../schemas/guild.js');
         if(args.log_channel){
-            if(!interaction.guild.members.me.permissionsIn(args.log_channel).has(PermissionsBitField.Flags.ManageWebhooks)) return interaction.reply({
+            if(
+                !interaction.guild.members.me
+                    .permissionsIn(args.log_channel)
+                    .has(PermissionsBitField.Flags.ManageWebhooks)
+            ) return await interaction.reply({
                 content: channelLanguage.get('botWebhooks'),
                 ephemeral: true,
             });
+            await interaction.deferReply();
             const hook = await args.log_channel.createWebhook({
                 avatar: interaction.client.user.avatarURL(),
                 reason: channelLanguage.get('newHookReason', [channelLanguage.get(`${args[1]}ActionName`)]),
@@ -553,11 +558,11 @@ module.exports = {
             }
             await guildDoc.save();
             interaction.client.guildData.get(interaction.guild.id).actionlogs = guildDoc.actionlogs;
-            await interaction.reply(channelLanguage.get('newLogSuccess', [args.log_channel]));
+            await interaction.editReply(channelLanguage.get('newLogSuccess', [args.log_channel]));
         }
         else{
             const hook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
-            if(!hook) return interaction.reply({
+            if(!hook) return await interaction.reply({
                 content: channelLanguage.get('noDefaultLog'),
                 ephemeral: true,
             });
@@ -573,7 +578,7 @@ module.exports = {
             }
             await guildDoc.save();
             interaction.client.guildData.get(interaction.guild.id).actionlogs = guildDoc.actionlogs;
-            await interaction.reply(channelLanguage.get('newDefaultLogSuccess'));
+            await interaction.editReply(channelLanguage.get('newDefaultLogSuccess'));
         }
     },
     actionsremoveSlash: async (interaction, args) => {

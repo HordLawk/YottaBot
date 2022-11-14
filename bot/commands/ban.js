@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {
     EmbedBuilder,
     PermissionsBitField,
@@ -41,7 +56,7 @@ module.exports = {
         }
         const newban = await message.guild.members.ban(user.id, {
             reason: channelLanguage.get('banReason', [message.author.tag, reason]),
-            deleteMessageDays: message.client.guildData.get(message.guild.id).pruneBan,
+            deleteMessageSeconds: message.client.guildData.get(message.guild.id).pruneBan * 24 * 60 * 60,
         }).catch(() => null);
         if(!newban) return message.reply(channelLanguage.get('cantBan'));
         const guild = require('../../schemas/guild.js');
@@ -261,7 +276,11 @@ module.exports = {
         }
         const newban = await lastInteraction.guild.members.ban(args.target.id, {
             reason: channelLanguage.get('banReason', [lastInteraction.user.tag, reason]),
-            deleteMessageDays: args.prune_days ?? lastInteraction.client.guildData.get(lastInteraction.guild.id).pruneBan,
+            deleteMessageSeconds: (
+                args.prune_days
+                ??
+                lastInteraction.client.guildData.get(lastInteraction.guild.id).pruneBan
+            ) * 24 * 60 * 60,
         }).catch(() => null);
         if(!newban) return await lastInteraction.reply({
             content: channelLanguage.get('cantBan'),

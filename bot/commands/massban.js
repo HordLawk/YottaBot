@@ -68,7 +68,7 @@ module.exports = {
             };
             let realban = await message.guild.members.ban(user.id, {
                 reason: channelLanguage.get('banReason', [message.author.tag, reason]),
-                deleteMessageDays: message.client.guildData.get(message.guild.id).pruneBan,
+                deleteMessageSeconds: message.client.guildData.get(message.guild.id).pruneBan * 24 * 60 * 60,
             }).catch(() => null);
             if(!realban){
                 invusers++;
@@ -189,7 +189,7 @@ module.exports = {
             };
             const realban = await interaction.guild.members.ban(user.id, {
                 reason: channelLanguage.get('banReason', [interaction.user.tag, reason]),
-                deleteMessageDays: interaction.client.guildData.get(interaction.guild.id).pruneBan,
+                deleteMessageSeconds: interaction.client.guildData.get(interaction.guild.id).pruneBan * 24 * 60 * 60,
             }).catch(() => null);
             if(!realban){
                 invusers++;

@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {PermissionsBitField, EmbedBuilder, ApplicationCommandOptionType} = require('discord.js');
 const utils = require('../utils.js');
 const configs = require('../configs.js');
@@ -77,11 +92,11 @@ module.exports = {
         const namebanModel = require('../../schemas/nameban.js');
         const namebanDocsCount = await namebanModel.countDocuments({guild: interaction.guild.id});
         if(namebanDocsCount >= configs.namebansLimits[+!!(
-            interaction.client.guildData.get(interaction.guild.id).premiumUntil ??
+            interaction.client.guildData.get(interaction.guild.id).premiumUntil ||
             interaction.client.guildData.get(interaction.guild.id).partner
         )]) return await interaction.reply({
             content: channelLanguage.get((
-                interaction.client.guildData.get(interaction.guild.id).premiumUntil ??
+                interaction.client.guildData.get(interaction.guild.id).premiumUntil ||
                 interaction.client.guildData.get(interaction.guild.id).partner
             ) ? 'tooManyNamebansPremium' : 'tooManyNamebans', [configs.namebansLimits[0], configs.namebansLimits[1]]),
             ephemeral: true,
@@ -111,7 +126,7 @@ module.exports = {
         const namebanDocs = await namebanModel.find({guild: interaction.guild.id}).sort({createdAt: 1});
         const replyData = {};
         const namebansLimit = configs.namebansLimits[+!!(
-            interaction.client.guildData.get(interaction.guild.id).premiumUntil ??
+            interaction.client.guildData.get(interaction.guild.id).premiumUntil ||
             interaction.client.guildData.get(interaction.guild.id).partner
         )];
         if(namebanDocs.length >= namebansLimit) replyData.content = channelLanguage.get('disabledExtraNamebans');

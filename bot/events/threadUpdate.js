@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const {PermissionsBitField, ThreadAutoArchiveDuration} = require('discord.js');
+const {ThreadAutoArchiveDuration} = require('discord.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
 
@@ -32,7 +32,7 @@ module.exports = {
         const channelLanguage = locale.get(guildData.language);
         if(
             threads
-                .slice(0, configs.notarchiveLimits[+!!(guildData.premiumUntil ?? guildData.partner)])
+                .slice(0, configs.notarchiveLimits[+!!(guildData.premiumUntil || guildData.partner)])
                 .some(e => (e._id === newThread.id))
         ) await newThread.edit({
             archived: false,

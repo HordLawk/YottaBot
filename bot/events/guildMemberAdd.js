@@ -122,9 +122,11 @@ module.exports = {
         const namebanModel = require('../../schemas/nameban.js');
         const namebanDocs = await namebanModel.find({guild: member.guild.id}).sort({createdAt: 1});
         if(namebanDocs.slice(0, configs.namebansLimits[+!!(
-            member.client.guildData.get(member.guild.id).premiumUntil ?? member.client.guildData.get(member.guild.id).partner
+            member.client.guildData.get(member.guild.id).premiumUntil
+            ||
+            member.client.guildData.get(member.guild.id).partner
         )]).some(e => {
-            const username = e.caseSensitive ? member.user.username.toLowerCase() : member.user.username;
+            const username = e.caseSensitive ? member.user.username : member.user.username.toLowerCase();
             return (username === e.text) || (e.partial && username.includes(e.text));
         })){
             if(memberDoc){

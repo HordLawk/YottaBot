@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const fs = require('fs');
 const path = require('path');
 const Discord = require('discord.js')
@@ -23,24 +38,17 @@ const client = new Discord.Client({
         Discord.GatewayIntentBits.GuildVoiceStates,
         Discord.GatewayIntentBits.MessageContent,
         Discord.GatewayIntentBits.GuildInvites,
-        // Discord.GatewayIntentBits.GuildPresences,
     ],
     allowedMentions: {repliedUser: false},
     failIfNotExists: false,
+    presence: {activities: [{
+        name: '/help',
+        type: Discord.ActivityType.Listening,
+    }]},
 });
 Discord.EmbedBuilder.prototype.addField = function(name, value, inline = false){
     return this.addFields([{name, value, inline}]);
 }
-// const __patch = Discord.Presence.prototype._patch;
-// Discord.Presence.prototype._patch = function(data){
-//     __patch.call(this, data);
-//     this.activities = data.activities?.map(e => {
-//         const activity = new Discord.Activity(this, e);
-//         activity.syncId = e.sync_id;
-//         return activity;
-//     });
-//     return this;
-// }
 client.cooldowns = new Discord.Collection();
 client.xpcds = new Discord.Collection();
 client.lastdelmsg = new Discord.Collection();

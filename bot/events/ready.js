@@ -5,7 +5,7 @@ const log = require('../../schemas/log.js');
 const guildModel = require('../../schemas/guild.js');
 const user = require('../../schemas/user.js');
 const member = require('../../schemas/member.js');
-const {EmbedBuilder, Collection, PermissionsBitField, ActivityType, ChannelType} = require('discord.js');
+const {EmbedBuilder, Collection, PermissionsBitField, ChannelType} = require('discord.js');
 const {AutoPoster} = require('topgg-autoposter');
 const axios = require('axios');
 const locale = require('../../locale');
@@ -15,7 +15,6 @@ module.exports = {
     name: 'ready',
     execute: async client => {
         console.log(`Logged in as ${client.user.tag}!`);
-        client.user.setActivity("your pings", {type: ActivityType.Listening});
         await client.application.fetch();
         await ((process.env.NODE_ENV === 'production') ? client.application : client.guilds.cache.get(process.env.DEV_GUILD)).commands.fetch();
         if(process.env.NODE_ENV === 'production'){

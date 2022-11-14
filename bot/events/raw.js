@@ -14,53 +14,55 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 const { PermissionsBitField } = require('discord.js');
+const locale = require('../../locale');
 const configs = require('../configs');
 
 module.exports = {
-    name: 'presenceUpdate',
-    execute: async (oldPresence, newPresence) => {
-        const guildData = newPresence.client.guildData.get(newPresence.guild.id);
+    name: 'raw',
+    execute: async (event, _, client) => {
+        if(event.t !== 'PRESENCE_UPDATE') return;
+        const username = client.users.cache.get(event.d.user.id)?.username;
+        const guild = client.guilds.cache.get(event.d.guild_id);
+        const guildData = client.guildData.get(guild.id);
         if(
-            !oldPresence?.user
+            !username
             ||
-            oldPresence.user.partial
+            !event.d.user.username
             ||
-            !newPresence.user
-            ||
-            !newPresence.guild.available
+            !guild.available
             ||
             !guildData
             ||
-            !newPresence.guild.members.me.permissions.has(PermissionsBitField.Flags.BanMembers)
+            !guild.members.me.permissions.has(PermissionsBitField.Flags.BanMembers)
+            ||
+            (username === event.d.user.username)
         ) return;
-        if(newPresence.user.partial) await newPresence.user.fetch();
-        if(oldPresence.user.username === newPresence.user.username) return;
         const memberModel = require('../../schemas/member.js');
         let memberDoc = await memberModel.findOne({
-            guild: newPresence.guild.id,
-            userID: newPresence.user.id,
+            guild: guild.id,
+            userID: event.d.user.id,
         });
         if(memberDoc?.autoBanned) return;
         const namebanModel = require('../../schemas/nameban.js');
         const namebanDocs = await namebanModel
-            .find({guild: newPresence.guild.id})
+            .find({guild: guild.id})
             .sort({createdAt: 1})
             .limit(configs.namebansLimits[+Boolean(guildData.premiumUntil || guildData.partner)]);
         if(namebanDocs.every(doc => {
-            const username = doc.caseSensitive ? newPresence.user.username.toLowerCase() : newPresence.user.username;
-            return doc.partial ? !username.includes(doc.text) : (username !== doc.text);
+            const parsedUsername = doc.caseSensitive ? event.d.user.username : event.d.user.username.toLowerCase();
+            return doc.partial ? !parsedUsername.includes(doc.text) : (parsedUsername !== doc.text);
         })) return;
         if(memberDoc){
             memberDoc.autoBanned = true;
         }
         else{
             memberDoc = new memberModel({
-                guild: newPresence.guild.id,
-                userID: newPresence.user.id,
+                guild: guild.id,
+                userID: event.d.user.id,
                 autoBanned: true,
             });
         }
         await memberDoc.save();
-        await newPresence.member.ban({reason: channelLanguage.get('namebanReason')});
+        await guild.members.ban(event.d.user.id, {reason: locale.get(guildData.language).get('namebanReason')});
     },
 };

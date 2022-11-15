@@ -163,7 +163,7 @@ module.exports = {
             const msgUnban = await discordChannel.send({embeds: [embedUnban]});
             currentUnban.logMessage = msgUnban.id;
             await currentUnban.save();
-        })(i).catch(err => message.client.handlers.button(err, i)))
+        })(i).catch(async err => await utils.handleComponentError(err, i)))
         collectorUndo.on('end', async () => {
             if(!reply.editable) return;
             buttonUndo.disabled = true;
@@ -218,7 +218,7 @@ module.exports = {
                 embed.spliceFields(reasonIndex, 1, reasonField);
             }
             await msg.edit({embeds: [embed]});
-        })().catch(err => message.client.handlers.button(err, i)));
+        })().catch(async err => await utils.handleComponentError(err, i)));
         collectorEdit.on('end', async () => {
             if(!reply.editable) return;
             buttonEdit.disabled = true;
@@ -392,7 +392,7 @@ module.exports = {
             const msgUnban = await discordChannel.send({embeds: [embedUnban]});
             currentUnban.logMessage = msgUnban.id;
             await currentUnban.save();
-        })().catch(err => lastInteraction.client.handlers.button(err, i)));
+        })().catch(async err => await utils.handleComponentError(err, i)));
         collectorUndo.on('end', async () => {
             if(!reply.editable) return;
             buttonUndo.disabled = true;
@@ -447,7 +447,7 @@ module.exports = {
                 embed.spliceFields(reasonIndex, 1, reasonField);
             }
             await msg.edit({embeds: [embed]});
-        })().catch(err => lastInteraction.client.handlers.button(err, i)));
+        })().catch(async err => await utils.handleComponentError(err, i)));
         collectorEdit.on('end', async () => {
             if(!reply.editable) return;
             buttonEdit.disabled = true;

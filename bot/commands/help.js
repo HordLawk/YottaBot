@@ -21,7 +21,7 @@ const {
     ComponentType,
 } = require('discord.js');
 const configs = require('../configs');
-const { slashCommandUsages } = require('../utils');
+const { slashCommandUsages, handleComponentError } = require('../utils');
 
 module.exports = {
     active: true,
@@ -163,7 +163,7 @@ module.exports = {
                     default: (e.value === i.values[0]),
                 }));
                 await i.update({embeds: [categoryEmbed], components});
-            })().catch(err => message.client.handlers.button(err, i)));
+            })().catch(async err => await handleComponentError(err, i)));
             collectorCategory.on('end', async () => {
                 if(!reply.editable) return;
                 menuCategory.disabled = true;
@@ -226,7 +226,7 @@ module.exports = {
                     emoji: e.emoji,
                 }));
                 await i.update({embeds: [commandEmbed], components});
-            })().catch(err => message.client.handlers.button(err, i)));
+            })().catch(async err => await handleComponentError(err, i)));
             collectorCommand.on('end', async () => {
                 if(!reply.editable) return;
                 menuCommand.disabled = true;
@@ -420,7 +420,7 @@ module.exports = {
                     default: (e.value === i.values[0]),
                 }));
                 await i.update({embeds: [categoryEmbed], components});
-            })().catch(err => interaction.client.handlers.button(err, i)));
+            })().catch(async err => await handleComponentError(err, i)));
             collectorCategory.on('end', async () => {
                 if(!reply.editable) return;
                 menuCategory.disabled = true;
@@ -483,7 +483,7 @@ module.exports = {
                     emoji: e.emoji,
                 }));
                 await i.update({embeds: [commandEmbed], components});
-            })().catch(err => interaction.client.handlers.button(err, i)));
+            })().catch(async err => await handleComponentError(err, i)));
             collectorCommand.on('end', async () => {
                 if(!reply.editable) return;
                 menuCommand.disabled = true;

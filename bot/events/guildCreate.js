@@ -17,6 +17,7 @@ const {EmbedBuilder, PermissionsBitField, ComponentType} = require('discord.js')
 const guildModel = require('../../schemas/guild.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
+const { handleComponentError } = require('../utils.js');
 
 module.exports = {
     name: 'guildCreate',
@@ -103,7 +104,7 @@ module.exports = {
                             default: (i === guildLanguage.lang),
                         }));
                         await i.update({embeds: [dmEmbed], components});
-                    })(i).catch(err => guild.client.handlers.button(err, i)));
+                    })(i).catch(async err => await handleComponentError(err, i)));
                     collector.on('end', async () => {
                         if(!dm.editable) return;
                         buttonLocale.disabled = true;

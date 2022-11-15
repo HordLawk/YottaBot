@@ -1,5 +1,21 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {EmbedBuilder, ApplicationCommandOptionType, ButtonStyle, ComponentType} = require('discord.js');
 const axios = require('axios');
+const { handleComponentError } = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -128,7 +144,7 @@ module.exports = {
                             content: channelLanguage.get('renewEnabled'),
                             components: [],
                         });
-                    })(i2).catch(err => interaction.client.handlers.button(err, i2)));
+                    })(i2).catch(async err => await handleComponentError(err, i2)));
                     collector2.on('end', async collected => {
                         if(!reply2.editable) return;
                         if(collected.size) return;
@@ -138,7 +154,7 @@ module.exports = {
                 }
                 break;
             }
-        })(i).catch(err => interaction.client.handlers.button(err, i)));
+        })(i).catch(async err => await handleComponentError(err, i)));
         collector.on('end', async collected => {
             if(!reply.editable) return;
             if(collected.size) return;

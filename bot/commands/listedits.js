@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {
     PermissionsBitField,
     EmbedBuilder,
@@ -8,6 +23,7 @@ const {
 } = require('discord.js');
 const {sha256} = require('js-sha256');
 const aesjs = require('aes-js');
+const { handleComponentError } = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -99,7 +115,7 @@ module.exports = {
             buttonPrevious.disabled = !page;
             buttonNext.disabled = (!fields.slice((page + 1) * pageSize).length);
             await i.update({embeds: [embed], components});
-        })().catch(err => interaction.client.handlers.button(err, i)));
+        })().catch(async err => await handleComponentError(err, i)));
         collector.on('end', async () => {
             if(!reply.editable) return;
             buttonNext.disabled = buttonPrevious.disabled = true;

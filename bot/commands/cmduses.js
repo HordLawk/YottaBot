@@ -80,14 +80,19 @@ module.exports = {
             content: 'There are no commands usage statistics for this server',
             ephemeral: true,
         });
-        const server = interaction.client.guilds.cache.get(args.guild);
-        const embed = new EmbedBuilder()
-            .setAuthor({
-                name: server.name,
-                iconURL: server.iconURL({dynamic: true}),
-            })
-            .setColor(0x2f3136)
-            .setDescription(commandUses.map(e => `${e._id}: \`${e.count}\``).join('\n'));
+        const embed = (await interaction.client.shard.broadcastEval(async (c, {guildId, commandUsesStr}) => {
+            const guild = c.guilds.cache.get(guildId);
+            if(guild) return new EmbedBuilder()
+                .setAuthor({
+                    name: guild.name,
+                    iconURL: guild.iconURL({dynamic: true}),
+                })
+                .setColor(0x2f3136)
+                .setDescription(commandUsesStr);
+        }, {context: {
+            guildId: args.guild,
+            commandUsesStr: commandUses.map(e => `${e._id}: \`${e.count}\``).join('\n'),
+        }})).find(e => e);
         await interaction.reply({embeds: [embed]});
     },
     slashOptions: [

@@ -118,7 +118,7 @@ module.exports = {
             buttonPrevious.disabled = !page;
             buttonNext.disabled = !logDocs.slice((page + 1) * pageSize).length;
             await button.update({embeds: [embed], components});
-        })(button).catch(err => message.client.handlers.button(err, button)));
+        })(button).catch(async err => await utils.handleComponentError(err, button)));
         col.on('end', async () => {
             if(!msg.editable) return;
             buttonNext.disabled = buttonPrevious.disabled = true;
@@ -233,7 +233,7 @@ module.exports = {
             buttonPrevious.disabled = !page;
             buttonNext.disabled = (!logDocs.slice((page + 1) * pageSize).length);
             await button.update({embeds: [embed], components});
-        })(button).catch(err => interaction.client.handlers.button(err, button)));
+        })(button).catch(async err => await utils.handleComponentError(err, button)));
         col.on('end', async () => {
             buttonNext.disabled = buttonPrevious.disabled = true;
             await interaction.editReply({embeds: [embed], components});

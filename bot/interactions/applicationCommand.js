@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const guild = require('../../schemas/guild.js');
 const role = require('../../schemas/role.js');
 const channel = require('../../schemas/channel.js');
@@ -7,6 +22,7 @@ const {Collection, InteractionType, ApplicationCommandOptionType} = require('dis
 const locale = require('../../locale');
 const configs = require('../configs.js');
 const commands = require('../commands');
+const { handleEventError } = require('../utils.js');
 
 module.exports = {
     type: InteractionType.ApplicationCommand,
@@ -89,7 +105,7 @@ module.exports = {
                     upsert: true,
                     setDefaultsOnInsert: true,
                 });
-            }).catch(err => interaction.client.handlers.event(err, this, [interaction]));
+            }).catch(async err => await handleEventError(err, this, [interaction], interaction.client));
         }
         const args = {};
         let options = interaction.options.data;

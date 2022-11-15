@@ -22,7 +22,7 @@ const {Collection, PermissionsBitField, EmbedBuilder, ApplicationCommandType, Me
 const locale = require('../../locale');
 const configs = require('../configs.js');
 const commands = require('../commands');
-const { slashCommandUsages } = require('../utils.js');
+const { slashCommandUsages, handleEventError } = require('../utils.js');
 
 module.exports = {
     name: 'messageCreate',
@@ -143,7 +143,7 @@ module.exports = {
                         }
                     }
                 }
-            })(err, doc).catch(err => message.client.handlers.event(err, this, [message])));
+            })(err, doc).catch(async err => await handleEventError(err, this, [message], message.client)));
         }
         if(message.guild && !message.guild.members.me.permissionsIn(message.channel.id)?.has(PermissionsBitField.Flags.SendMessages)) return;
         const commandsManager = (
@@ -241,7 +241,7 @@ module.exports = {
                     upsert: true,
                     setDefaultsOnInsert: true,
                 });
-            }).catch(err => message.client.handlers.event(err, this, [message]));
+            }).catch(async err => await handleEventError(err, this, [message], message.client));
         }
         message.channel.sendTyping();
         message.channelLanguage = channelLanguage;

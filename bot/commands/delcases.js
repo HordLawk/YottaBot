@@ -14,7 +14,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 const {PermissionsBitField, ApplicationCommandOptionType, ButtonStyle, ComponentType} = require('discord.js');
-const { slashCommandUsages } = require('../utils.js');
+const { slashCommandUsages, handleComponentError } = require('../utils.js');
 
 const buildButtons = (channelLanguage, author) => {
     const buttonConfirm = {
@@ -93,7 +93,7 @@ module.exports = {
                         }
                         break;
                     }
-                })(i).catch(err => message.client.handlers.button(err, i)));
+                })(i).catch(async err => await handleComponentError(err, i)));
                 collector.on('end', collectorEnd(reply));
             }
             break;
@@ -127,7 +127,7 @@ module.exports = {
                         }
                         break;
                     }
-                })(i).catch(err => message.client.handlers.button(err, i)));
+                })(i).catch(async err => await handleComponentError(err, i)));
                 collector.on('end', collectorEnd(reply));
             }
             break;
@@ -178,7 +178,7 @@ module.exports = {
                 }
                 break;
             }
-        })(i).catch(err => interaction.client.handlers.button(err, i)));
+        })(i).catch(async err => await handleComponentError(err, i)));
         collector.on('end', slashCollectorEnd(buttonConfirm, buttonCancel, components, channelLanguage, interaction, reply));
     },
     userSlash: async (interaction, args) => {
@@ -206,7 +206,7 @@ module.exports = {
                 }
                 break;
             }
-        })(i).catch(err => interaction.client.handlers.button(err, i)));
+        })(i).catch(async err => await handleComponentError(err, i)));
         collector.on('end', slashCollectorEnd(buttonConfirm, buttonCancel, components, channelLanguage, interaction, reply));
     },
     caseSlash: async function(interaction, args){

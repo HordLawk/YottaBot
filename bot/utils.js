@@ -15,6 +15,8 @@
 
 const { ApplicationCommandOptionType, UserFlags } = require('discord.js');
 const locale = require('../locale');
+const configs = require('./configs');
+const {inspect} = require('node:util');
 
 const getStringLocales = key => locale.reduce((acc, e) => e.get(key) ? {...acc, [e.code]: e.get(key)} : acc, {});
 
@@ -105,4 +107,70 @@ const userBadgesString = user => {
     return userBadges.join(' ').trim();
 }
 
-module.exports = {getStringLocales, timeSpanChoices, slashCommandUsages, userBadgesString};
+const handleComponentError = async (err, i) => {
+    console.error(err);
+    if(process.env.NODE_ENV === 'production') await i.client.channels.cache.get(configs.errorlog).send({
+        content: `Error: *${err.message}*\n` +
+                 `Component ID: ${i.customId}\n` +
+                 `Interaction User: ${i.user}\n` +
+                 `Interaction ID: ${i.id}`,
+        files: [{
+            name: 'stack.log',
+            attachment: Buffer.from(err.stack),
+        }],
+    }).catch(console.error);
+    const channelLanguage = locale.get((i.locale === 'pt-BR') ? 'pt' : 'en');
+    const msgData = {
+        content: channelLanguage.get('componentError'),
+        ephemeral: true,
+    };
+    if(i.deferred){
+        await i.editReply({
+            content: channelLanguage.get('componentError'),
+            files: [],
+            embeds: [],
+            components: [],
+        }).catch(() => {});
+    }
+    else if(i.replied){
+        await i.followUp(msgData).catch(() => {});
+    }
+    else{
+        await i.reply(msgData).catch(() => {});
+    }
+}
+
+const handleEventError = async (err, e, args, client) => {
+    console.error(err);
+    console.log(e.name);
+    console.log(args);
+    if(process.env.NODE_ENV === 'production') await client.channels.cache.get(configs.errorlog).send({
+        content: `Error: *${err.message}*\nEvent: ${e.name}`,
+        files: [
+            {
+                name: 'args.js',
+                attachment: Buffer.from(inspect(args, {
+                    depth: Infinity,
+                    maxArrayLength: Infinity,
+                    maxStringLength: Infinity,
+                    breakLength: 98,
+                    numericSeparator: true,
+                })),
+            },
+            {
+                name: 'stack.log',
+                attachment: Buffer.from(err.stack),
+            },
+        ],
+    }).catch(console.error);
+    if(e.name === 'ready') process.exit(1);
+}
+
+module.exports = {
+    getStringLocales,
+    timeSpanChoices,
+    slashCommandUsages,
+    userBadgesString,
+    handleComponentError,
+    handleEventError,
+};

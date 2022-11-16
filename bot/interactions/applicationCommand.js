@@ -14,8 +14,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 const guild = require('../../schemas/guild.js');
-const role = require('../../schemas/role.js');
-const channel = require('../../schemas/channel.js');
 const user = require('../../schemas/user.js');
 const member = require('../../schemas/member.js');
 const {Collection, InteractionType, ApplicationCommandOptionType} = require('discord.js');
@@ -30,12 +28,15 @@ module.exports = {
         if(interaction.guild && !interaction.guild.available) throw new Error('Invalid interaction.');
         if(interaction.guild){
             if(!interaction.client.guildData.has(interaction.guild.id)){
-                let guildData = new guild({
-                    _id: interaction.guild.id,
-                    language: (interaction.guild.preferredLocale === 'pt-BR') ? 'pt' : 'en',
-                });
-                guildData.save();
-                interaction.client.guildData.set(guildData._id, guildData);
+                let guildDoc = await guild.findById(interaction.guild.id);
+                if(!guildDoc){
+                    guildDoc = new guild({
+                        _id: interaction.guild.id,
+                        language: (interaction.guild.preferredLocale === 'pt-BR') ? 'pt' : 'en',
+                    });
+                    await guildDoc.save();
+                }
+                interaction.client.guildData.set(interaction.guild.id, guildDoc);
             }
             if(!interaction.member) interaction.member = await interaction.guild.members.fetch(interaction.user.id).catch(() => null);
             if(!interaction.member) throw new Error('Member could not be fetched.');

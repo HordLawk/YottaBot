@@ -36,12 +36,15 @@ module.exports = {
         let guildData;
         if(message.guild){
             if(!message.client.guildData.has(message.guild.id)){
-                let guildData = new guild({
-                    _id: message.guild.id,
-                    language: (message.guild.preferredLocale === 'pt-BR') ? 'pt' : 'en',
-                });
-                guildData.save();
-                message.client.guildData.set(guildData._id, guildData);
+                let guildDoc = await guild.findById(message.guild.id);
+                if(!guildDoc){
+                    guildDoc = new guild({
+                        _id: message.guild.id,
+                        language: (message.guild.preferredLocale === 'pt-BR') ? 'pt' : 'en',
+                    });
+                    await guildDoc.save();
+                }
+                message.client.guildData.set(message.guild.id, guildDoc);
             }
             guildData = message.client.guildData.get(message.guild.id);
             prefix = guildData.prefix;

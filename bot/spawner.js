@@ -73,10 +73,18 @@ client.once('ready', async () => {
         );
     });
     if(process.env.NODE_ENV === 'production'){
-        await client.channels.cache.get(configs.bootlog).send(`Connected with ping \`${client.ws.ping}ms\`!`);
+        await client.shard.broadcastEval(async (c, {channelId, shardId, ping}) => {
+            const channel = c.channels.cache.get(channelId);
+            if(channel) await channel.send(`Shard ${shardId} connected with ping \`${ping}ms\`!`);
+        }, {context: {
+            channelId: configs.bootlog,
+            shardId: client.shard.ids[0],
+            ping: client.ws.ping,
+        }});
         // Fix this later
         // await client.guilds.cache.get(configs.supportID).members.fetch();
         AutoPoster(process.env.TOPGG_TOKEN, client);
+        const guildCount = (await client.shard.fetchClientValues('guilds.cache.size')).reduce((acc, e) => acc + e, 0);
         axios({
             method: 'POST',
             url: `https://discord.bots.gg/api/v1/bots/${client.user.id}/stats`,
@@ -84,7 +92,7 @@ client.once('ready', async () => {
                 authorization: process.env.DISCORDBOTS_TOKEN,
                 'content-type': 'application/json',
             },
-            data: {guildCount: client.guilds.cache.size},
+            data: {guildCount},
         });
         axios({
             method: 'POST',
@@ -93,7 +101,7 @@ client.once('ready', async () => {
                 authorization: process.env.BOTSFORDISCORD_TOKEN,
                 'content-type': 'application/json',
             },
-            data: {server_count: client.guilds.cache.size},
+            data: {server_count: guildCount},
         });
     }
     const channelModel = require('../schemas/channel.js');
@@ -104,7 +112,8 @@ client.once('ready', async () => {
     // const roleDocs = await role.find({guild: {$in: client.guilds.cache.map(e => e.id)}});
     // await role.deleteMany({_id: {$in: roleDocs.filter(e => !client.guilds.cache.get(e.guild).roles.cache.has(e.roleID)).map(e => e._id)}});
     const menuModel = require('../schemas/menu.js');
-    await menuModel.deleteMany({channelID: {$nin: client.channels.cache.map(e => e.id)}});
+    const channelIds = (await client.shard.broadcastEval(c => [...c.channels.cache.keys()])).flat();
+    await menuModel.deleteMany({channelID: {$nin: channelIds}});
     for(
         const guildId
         of client.guildData
@@ -138,10 +147,11 @@ client.once('ready', async () => {
             ongoing: true,
         });
         if(!unmutes.length) return;
-        await logModel.updateMany({_id: {$in: unmutes.map(e => e._id)}}, {$set: {ongoing: false}});
+        const haveEnded = [];
         for(let unmuteDoc of unmutes){
             let guild = client.guilds.cache.get(unmuteDoc.guild);
             if(!guild) continue;
+            haveEnded.push(unmuteDoc._id);
             let discordMember = await guild.members.fetch(unmuteDoc.target).catch(() => null);
             if(discordMember && discordMember.isCommunicationDisabled()) continue;
             let discordUser = discordMember?.user ?? await client.users.fetch(unmuteDoc.target).catch(() => {});
@@ -162,13 +172,12 @@ client.once('ready', async () => {
                 await discordChannel.send({embeds: [embed]});
             };
         }
+        await logModel.updateMany({_id: {$in: haveEnded}}, {$set: {ongoing: false}});
     }
-    const removePremium = async currentGuild => {
+    const removePremium = currentGuild => {
         currentGuild.premiumUntil = null;
         currentGuild.patron = null;
         currentGuild.renewPremium = false;
-        await currentGuild.save();
-        client.guildData.set(currentGuild._id, currentGuild);
     }
     const searchPledge = async (url, patron) => {
         const pledges = await axios({
@@ -184,30 +193,49 @@ client.once('ready', async () => {
         return pledges.data.find(e => ((e.type === 'pledge') && (e.relationships.patron.data.id === patreonUser.id)));
     }
     const unpremiumTimer = async () => {
-        const endedPremium = await guildModel.find({premiumUntil: {$lt: Date.now()}});
-        if(!endedPremium.length) return;
+        const now = new Date();
+        const endedPremium = client.guildData.filter(data => (data.premiumUntil < now));
+        if(!endedPremium.size) return;
         const rewardTotal = {
             '8304182': 1,
             '8307567': 2,
             '8307569': 3,
         };
-        for(guildDoc of endedPremium){
-            if(!guildDoc.patron || !guildDoc.renewPremium || !client.guilds.cache.has(guildDoc._id)){
-                await removePremium(guildDoc);
+        const nextRenewal = new Date(now.getTime() + (32 * 24 * 60 * 60 * 1000));
+        const haveRenewed = [];
+        const haveEnded = [];
+        for([guildId, guildData] of endedPremium){
+            if(!guildData.patron || !guildData.renewPremium || !client.guilds.cache.has(guildId)){
+                removePremium(guildData);
+                haveEnded.push(guildId);
                 continue;
             }
-            const pledge = await searchPledge('https://www.patreon.com/api/oauth2/api/campaigns/8230487/pledges', guildDoc.patron);
+            const pledge = await searchPledge('https://www.patreon.com/api/oauth2/api/campaigns/8230487/pledges', guildData.patron);
             if(!pledge){
-                await removePremium(guildDoc);
+                removePremium(guildData);
+                haveEnded.push(guildId);
                 continue;
             }
-            if(client.guildData.filter(e => (e.patron === guildDoc.patron)).size > rewardTotal[pledge.relationships.reward.data.id]){
-                await removePremium(guildDoc);
+            const patronCount = (
+                await client.shard.broadcastEval(
+                    (c, {patronId}) => c.guildData.filter(data => (data.patron === patronId)).size,
+                    {context: {patronId: guildData.patron}},
+                )
+            ).reduce((acc, e) => acc + e, 0);
+            if(patronCount > rewardTotal[pledge.relationships.reward.data.id]){
+                removePremium(guildData);
+                haveEnded.push(guildId);
                 continue;
             }
-            guildDoc.premiumUntil = new Date(Date.now() + 2764800000);
-            await guildDoc.save();
+            guildData.premiumUntil = nextRenewal;
+            haveRenewed.push(guildId);
         }
+        await guildModel.updateMany({_id: {$in: haveRenewed}}, {$set: {premiumUntil: nextRenewal}});
+        await guildModel.updateMany({_id: {$in: haveEnded}}, {$set: {
+            premiumUntil: null,
+            patron: null,
+            renewPremium: false,
+        }});
     }
     const userModel = require('../schemas/user.js');
     const renewBoost = async () => {
@@ -215,12 +243,22 @@ client.once('ready', async () => {
         const endedBoost = await userModel.find({boostUntil: {$lt: Date.now()}});
         if(!endedBoost.length) return;
         for(userDoc of endedBoost){
-            let discordMember = await client.guilds.cache.get(configs.supportID).members.fetch(userDoc._id).catch(() => null);
-            userDoc.boostUntil = discordMember?.premiumSince && new Date(userDoc.boostUntil.getTime() + 2592000000);
-            if(discordMember?.premiumSince){
-                userDoc.boostUntil = new Date(userDoc.boostUntil.getTime() + 2592000000);
+            const premiumSince = await client.shard.broadcastEval(async (c, {guildId, userId, enLocale}) => {
+                const guild = c.guilds.cache.get(guildId);
+                if(!guild) return;
+                const member = await guild.members.fetch(userId).catch(() => null);
+                if(member?.premiumSince){
+                    await member.send(enLocale.get('renewBoost', [guild.name])).catch(() => {});
+                }
+                return member?.premiumSinceTimestamp;
+            }, {context: {
+                guildId: configs.supportID,
+                userId: userDoc._id,
+                enLocale: locale.get('en'),
+            }});
+            if(premiumSince){
+                userDoc.boostUntil = new Date(userDoc.boostUntil.getTime() + (30 * 24 * 60 * 60 * 1000));
                 userDoc.premiumKeys++;
-                discordMember.send(locale.get('en').get('renewBoost', [discordMember.guild.name])).catch(() => null);
             }
             else{
                 userDoc.boostUntil = null;

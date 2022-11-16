@@ -17,21 +17,9 @@ const { ShardingManager } = require('discord.js');
 const configs = require('./configs');
 const path = require('path')
 
-const manager = new ShardingManager(path.join(__dirname, 'spawner.js'), {execArgv: ['-r', './connection.js'], mode: 'process'});
-manager.on('shardCreate', async shard => {
-    console.log(`Launched shard ${shard.id}`);
-    shard.process.send({
-        name: 'inheritedData',
-        env: {
-            NODE_ENV: process.env.NODE_ENV,
-            MONGOURL: process.env.MONGOURL,
-            DEV_GUILD: process.env.DEV_GUILD,
-            PATREON_TOKEN: process.env.PATREON_TOKEN,
-            CRYPT_PASSWD: process.env.CRYPT_PASSWD,
-        },
-    });
-});
-manager.spawn().then(shards => console.log(shards)).catch(console.error);
+const manager = new ShardingManager(path.join(__dirname, 'spawner.js'), {execArgv: ['-r', './connection.js']});
+manager.on('shardCreate', async shard => console.log(`Launched shard ${shard.id}`));
+manager.spawn();
 process.on('unhandledRejection', async error => {
     console.error('Unhandled promise rejection:', error);
     try{

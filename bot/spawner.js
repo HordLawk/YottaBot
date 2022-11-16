@@ -12,7 +12,7 @@
 
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-try{
+
 const Discord = require('discord.js')
 const { handleEventError } = require('./utils.js');
 const configs = require('./configs.js');
@@ -60,14 +60,15 @@ eval(process.env.UNDOCUMENTED);
 client.once('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
     const guildModel = require('../schemas/guild.js');
-    client.guildData = await guildModel.find({_id: {$in: [...client.guilds.cache.keys()]}});
+    const guildDocs = await guildModel.find({_id: {$in: [...client.guilds.cache.keys()]}});
+    client.guildData = guildDocs.reduce((acc, e) => acc.set(e._id, e), new Discord.Collection());
     await client.application.fetch();
     await ((process.env.NODE_ENV === 'production') ? client.application : client.guilds.cache.get(process.env.DEV_GUILD)).commands.fetch();
-    events.forEach(event => {
+    events.forEach(e => {
         client.on(
-            event.name,
+            e.name,
             async (...args) => {
-                await event.execute(...args).catch(async err => await handleEventError(err, e, args, client));
+                await e.execute(...args).catch(async err => await handleEventError(err, e, args, client));
             },
         );
     });
@@ -343,11 +344,6 @@ client.once('ready', async () => {
     }
     tick(0);
 });
-process.once('message', async ({name, env}) => {
-    if(name !== 'inheritedData') return;
-    Object.entries(env).forEach(([key, value]) => process.env[key] = value);
-    await client.login();
-});
 process.on('unhandledRejection', async error => {
     console.error('Unhandled promise rejection:', error);
     try{
@@ -366,8 +362,4 @@ process.on('unhandledRejection', async error => {
         console.error(err);
     }
 });
-}
-catch(supererror){
-    console.error(supererror);
-    throw supererror;
-}
+client.login();

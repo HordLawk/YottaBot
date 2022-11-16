@@ -18,5 +18,5 @@ const path = require('path');
 
 module.exports = fs
     .readdirSync(path.join(__dirname))
-    .filter(fileName => (fileName !== __filename))
+    .filter(fileName => (fileName !== path.basename(__filename)))
     .map(fileName => require(`./${fileName}`));

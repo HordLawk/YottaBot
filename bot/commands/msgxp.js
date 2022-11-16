@@ -205,7 +205,7 @@ module.exports = {
                     }
                     break;
                     default: {
-                        let discordChannel = message.guild.channels.cache.get((args[1].match(/<#(\d{17,19})>/) || [])[1]) || message.client.channels.cache.get(args[1]);
+                        let discordChannel = message.guild.channels.cache.get((args[1].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[1]);
                         if(!discordChannel || !discordChannel.isTextBased()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                         if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.SendMessages) || !discordChannel.viewable) return message.reply(channelLanguage.get('sendMessages'));
                         await guild.findByIdAndUpdate(message.guild.id, {$set: {xpChannel: discordChannel.id}});
@@ -266,7 +266,7 @@ module.exports = {
                     break;
                     case 'dm': notifs = channelLanguage.get('notifyDMView');
                     break;
-                    default: notifs = message.client.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel) || channelLanguage.get('notifyNoneView');
+                    default: notifs = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel) || channelLanguage.get('notifyNoneView');
                 }
                 let embed = new EmbedBuilder()
                     .setColor(message.guild.members.me.displayColor || 0x8000ff)

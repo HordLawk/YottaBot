@@ -123,7 +123,7 @@ module.exports = {
                     }
                     break;
                     default: {
-                        const notifChannel = message.client.channels.cache.get(guildData.xpChannel);
+                        const notifChannel = message.guild.channels.cache.get(guildData.xpChannel);
                         if(
                             notifChannel
                             &&

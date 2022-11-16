@@ -126,7 +126,7 @@ module.exports = {
                     }
                     break;
                     default: {
-                        const notifChannel = message.client.channels.cache.get(guildData.xpChannel);
+                        const notifChannel = message.guild.channels.cache.get(guildData.xpChannel);
                         if(
                             notifChannel
                             &&
@@ -256,24 +256,32 @@ module.exports = {
                 .setColor(0x2f3136)
                 .setDescription(channelLanguage.get(`premiumAd${Math.floor(Math.random() * 3)}`, [command.name]));
             await message.channel.send({embeds: [embed]});
-        }).catch(error => {
+        }).catch(async error => {
             console.error(error);
-            message.reply(channelLanguage.get('error', [command.name]));
-            if(process.env.NODE_ENV === 'production') message.client.channels.cache.get(configs.errorlog).send({
-                content: `Error: *${error.message}*\n` +
-                         `Message Author: ${message.author}\n` +
-                         `Message URL: ${message.url}\n`,
-                files: [
-                    {
-                        name: 'content.txt',
-                        attachment: Buffer.from(message.content),
+            if(process.env.NODE_ENV === 'production'){
+                await message.client.shard.broadcastEval(async (c, {channelId, msgData}) => {
+                    const channel = c.channels.cache.get(channelId);
+                    if(channel) await channel.send(msgData).catch(console.error);
+                }, {context: {
+                    channelId: configs.errorlog,
+                    msgData: {
+                        content: `Error: *${error.message}*\n` +
+                                `Message Author: ${message.author}\n` +
+                                `Message URL: ${message.url}\n`,
+                        files: [
+                            {
+                                name: 'content.txt',
+                                attachment: Buffer.from(message.content),
+                            },
+                            {
+                                name: 'stack.log',
+                                attachment: Buffer.from(error.stack),
+                            },
+                        ],
                     },
-                    {
-                        name: 'stack.log',
-                        attachment: Buffer.from(error.stack),
-                    },
-                ],
-            }).catch(console.error);
+                }});
+            }
+            await message.reply(channelLanguage.get('error', [command.name]));
         });
     },
 };

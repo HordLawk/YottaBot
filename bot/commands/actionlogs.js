@@ -478,7 +478,7 @@ module.exports = {
                     embed.addField(channelLanguage.get('logsViewEmbedActionsTitle'), activeLogs.map(e => channelLanguage.get('logsViewEmbedActions', [channelLanguage.get(`action${e.id}`), e.channelID])).join('\n'));
                 }
                 let channels = await channel.find({
-                    _id: {$in: message.client.channels.cache.map(e => e.id)},
+                    _id: {$in: [...message.guild.channels.cache.keys()]},
                     guild: message.guild.id,
                     ignoreActions: {$ne: []},
                 });
@@ -772,7 +772,7 @@ module.exports = {
         }
         const channel = require('../../schemas/channel.js');
         const channels = await channel.find({
-            _id: {$in: interaction.client.channels.cache.map(e => e.id)},
+            _id: {$in: [...interaction.guild.channels.cache.keys()]},
             guild: interaction.guild.id,
             ignoreActions: {$ne: []},
         });

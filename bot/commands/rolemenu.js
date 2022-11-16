@@ -46,12 +46,12 @@ module.exports = {
             if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));
             let menus = await menu.find({
                 guild: message.guild.id,
-                channelID: {$in: message.client.channels.cache.map(e => e.id)},
+                channelID: {$in: [...message.guild.channels.cache.keys()]},
             });
-            for(let menuDoc of menus) await message.client.channels.cache.get(menuDoc.channelID).messages.fetch({message: menuDoc.messageID}).catch(() => null);
+            for(let menuDoc of menus) await message.guild.channels.cache.get(menuDoc.channelID).messages.fetch({message: menuDoc.messageID}).catch(() => null);
             if(
                 (
-                    menus.filter(e => message.client.channels.cache.get(e.channelID).messages.cache.has(e.messageID))
+                    menus.filter(e => message.guild.channels.cache.get(e.channelID).messages.cache.has(e.messageID))
                     >=
                     10
                 )
@@ -102,12 +102,12 @@ module.exports = {
             let menuDoc = await menu.findOne({
                 id: parseInt(args[1], 10),
                 guild: message.guild.id,
-                channelID: {$in: message.client.channels.cache.map(e => e.id)},
+                channelID: {$in: [...message.guild.channels.cache.keys()]},
             });
             if(!menuDoc) return message.reply(channelLanguage.get('menu404'));
-            let msg = await message.client.channels.cache.get(menuDoc.channelID).messages.fetch({message: menuDoc.messageID}).catch(() => null);
+            let msg = await message.guild.channels.cache.get(menuDoc.channelID).messages.fetch({message: menuDoc.messageID}).catch(() => null);
             if(!msg) return message.reply(channelLanguage.get('menu404'));
-            let discordChannel = message.client.channels.cache.get(menuDoc.channelID);
+            let discordChannel = message.guild.channels.cache.get(menuDoc.channelID);
             if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.SendMessages)) return message.reply(channelLanguage.get('sendMessages'));
             if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.AddReactions)) return message.reply(channelLanguage.get('botReactions'));
             if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));

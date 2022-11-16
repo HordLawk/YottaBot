@@ -17,6 +17,7 @@ const {EmbedBuilder, PermissionsBitField, ComponentType} = require('discord.js')
 const guildModel = require('../../schemas/guild.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
+const { handleComponentError } = require('../utils.js');
 
 module.exports = {
     name: 'guildCreate',
@@ -28,8 +29,16 @@ module.exports = {
             const adder = integrations.find(e => (e.application?.id === guild.client.application.id))?.user;
             if(adder){
                 content = `Added by: ${adder} (${adder.tag})\n`;
+                let guildData = guild.client.guildData.get(guild.id);
+                if(!guildData){
+                    const guildDoc = await guildModel.findById(guild.id);
+                    if(guildDoc){
+                        guild.client.guildData.set(guild.id, guildDoc);
+                        guildData = guildDoc;
+                    };
+                }
                 let guildLanguage = locale.get(
-                    guild.client.guildData.get(guild.id)?.language
+                    guildData?.language
                     ??
                     ((guild.preferredLocale === 'pt-BR') ? 'pt' : 'en')
                 );
@@ -69,19 +78,20 @@ module.exports = {
                 adder.send({embeds: [dmEmbed], components}).then(dm => {
                     const collector = dm.createMessageComponentCollector({time: 600000});
                     collector.on('collect', i => (async i => {
-                        if(guild.client.guildData.has(guild.id)){
+                        if(guildData){
                             await guildModel.findByIdAndUpdate(
                                 guild.id,
-                                {$set: {language: (guild.client.guildData.get(guild.id).language = i.values[0])}},
+                                {$set: {language: (guildData.language = i.values[0])}},
                             );
                         }
                         else{
-                            const guildData = new guildModel({
+                            const guildDoc = new guildModel({
                                 _id: guild.id,
                                 language: i.values[0],
                             });
-                            await guildData.save();
-                            guild.client.guildData.set(guildData._id, guildData);
+                            await guildDoc.save();
+                            guild.client.guildData.set(guild.id, guildDoc);
+                            guildData = guildDoc;
                         }
                         guildLanguage = locale.get(i.values[0]);
                         dmEmbed.setDescription(
@@ -103,7 +113,7 @@ module.exports = {
                             default: (i === guildLanguage.lang),
                         }));
                         await i.update({embeds: [dmEmbed], components});
-                    })(i).catch(err => guild.client.handlers.button(err, i)));
+                    })(i).catch(async err => await handleComponentError(err, i)));
                     collector.on('end', async () => {
                         if(!dm.editable) return;
                         buttonLocale.disabled = true;
@@ -113,21 +123,31 @@ module.exports = {
             }
         }
         if(process.env.NODE_ENV === 'development') return;
-        const embed = new EmbedBuilder()
-            .setColor(0x00ff00)
-            .setAuthor({
+        await guild.client.shard.broadcastEval(async (c, {channelId, authorData, description}) => {
+            const {EmbedBuilder} = require('discord.js');
+            const channel = c.channels.cache.get(channelId);
+            if(!channel) return;
+            const embed = new EmbedBuilder()
+                .setColor(0x00ff00)
+                .setAuthor(authorData)
+                .setDescription(description);
+            await channel.send({embeds: [embed]});
+            const guildCount = (await c.shard.fetchClientValues('guilds.cache.size')).reduce((acc, n) => acc + n, 0);
+            await channel.setTopic(guildCount);
+        }, {context: {
+            channelId: configs.guildlog,
+            authorData: {
                 name: 'Joined Guild',
                 iconURL: guild.iconURL({dynamic: true}),
-            })
-            .setDescription(
+            },
+            description: (
                 `${content}Member count: ${guild.memberCount}\n` +
                 `ID: ${guild.id}\n` +
                 `Name: ${guild.name}\n` +
                 `Owner: <@${guild.ownerId}>\n` +
                 `Locale: ${guild.preferredLocale}\n` +
                 `Features:\`\`\`${guild.features.join('\n')}\`\`\``
-            );
-        await guild.client.channels.cache.get(configs.guildlog).send({embeds: [embed]});
-        guild.client.channels.cache.get(configs.guildlog).setTopic(guild.client.guilds.cache.size);
+            ),
+        }});
     },
 };

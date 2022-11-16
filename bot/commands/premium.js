@@ -1,5 +1,22 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {EmbedBuilder, ApplicationCommandOptionType, ButtonStyle, ComponentType} = require('discord.js');
 const axios = require('axios');
+const { handleComponentError } = require('../utils.js');
+const path = require('path');
 
 module.exports = {
     active: true,
@@ -128,7 +145,7 @@ module.exports = {
                             content: channelLanguage.get('renewEnabled'),
                             components: [],
                         });
-                    })(i2).catch(err => interaction.client.handlers.button(err, i2)));
+                    })(i2).catch(async err => await handleComponentError(err, i2)));
                     collector2.on('end', async collected => {
                         if(!reply2.editable) return;
                         if(collected.size) return;
@@ -138,7 +155,7 @@ module.exports = {
                 }
                 break;
             }
-        })(i).catch(err => interaction.client.handlers.button(err, i)));
+        })(i).catch(async err => await handleComponentError(err, i)));
         collector.on('end', async collected => {
             if(!reply.editable) return;
             if(collected.size) return;
@@ -148,17 +165,33 @@ module.exports = {
     },
     infoSlash: async interaction => {
         const {channelLanguage} = interaction;
-        const patronGuilds = interaction.client.guildData.filter(e => (e.patron === interaction.user.id));
-        if(!patronGuilds.size) return interaction.reply({
+        const fields = (
+            await interaction.client.shard.broadcastEval(async (c, {userId, localePath, localeCode}) => {
+                const locale = require(localePath);
+                const guildLocale = locale.get(localeCode);
+                return c.guildData.filter(e => (e.patron === userId)).map(e => {
+                    const guild = c.guilds.cache.get(e.id);
+                    return {
+                        name: guild?.name ?? guildLocale.get('unknownGuild'),
+                        value: guildLocale.get(
+                            'premiumInfoFieldValue',
+                            [Math.floor(e.premiumUntil.getTime() / 1000), guild && e.renewPremium],
+                        ),
+                    };
+                })
+            }, {context: {
+                userId: interaction.user.id,
+                localePath: path.join(__dirname, '..', '..', 'locale'),
+                localeCode: channelLanguage.lang,
+            }})
+        ).flat();
+        if(!fields.length) return interaction.reply({
             content: channelLanguage.get('notPatron'),
             ephemeral: true,
         });
         const embed = new EmbedBuilder()
             .setColor(interaction.guild?.members.me.displayColor || 0x8000ff)
-            .addFields(...patronGuilds.map(e => ({
-                name: interaction.client.guilds.cache.get(e.id)?.name ?? channelLanguage.get('unknownGuild'),
-                value: channelLanguage.get('premiumInfoFieldValue', [Math.floor(e.premiumUntil.getTime() / 1000), interaction.client.guilds.cache.has(e.id) && e.renewPremium]),
-            })));
+            .addFields(fields);
         await interaction.reply({
             embeds: [embed],
             ephemeral: true,
@@ -166,7 +199,13 @@ module.exports = {
     },
     renewSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        if(!interaction.client.guilds.cache.has(args.guild)) return interaction.reply({
+        const guildName = (
+            await interaction.client.shard.broadcastEval(
+                (c, {guildId}) => c.guilds.cache.get(guildId)?.name,
+                {context: {guildId: args.guild}},
+            )
+        ).find(name => name);
+        if(!guildName) return interaction.reply({
             content: channelLanguage.get('invGuild'),
             ephemeral: true,
         });
@@ -176,9 +215,15 @@ module.exports = {
             content: channelLanguage.get('invGuild'),
             ephemeral: true,
         });
-        interaction.client.guildData.get(guildDoc._id).renewPremium = guildDoc.renewPremium;
+        await interaction.client.shard.broadcastEval((c, {guildId, renewPremium}) => {
+            const guildData = c.guildData.get(guildId);
+            if(guildData) guildData.renewPremium = renewPremium;
+        }, {context: {
+            guildId: guildDoc._id,
+            renewPremium: guildDoc.renewPremium,
+        }});
         await interaction.reply({
-            content: channelLanguage.get('renewChangeSuccess', [interaction.client.guilds.cache.get(args.guild).name, guildDoc.renewPremium]),
+            content: channelLanguage.get('renewChangeSuccess', [guildName, guildDoc.renewPremium]),
             ephemeral: true,
         });
     },
@@ -215,9 +260,24 @@ module.exports = {
         },
     ],
     renewAutocomplete: {
-        guild: (interaction, value) => interaction.respond(interaction.client.guilds.cache.filter(e => ((interaction.client.guildData.get(e.id)?.patron === interaction.user.id) && e.name.toLowerCase().startsWith(value.toLowerCase()))).first(25).map(e => ({
-            name: e.name,
-            value: e.id,
-        }))),
+        guild: (interaction, value) => {
+            interaction.client.shard.broadcastEval(
+                (c, {userId, value}) => {
+                    return c.guilds.cache
+                        .filter(guild => {
+                            return (
+                                (c.guildData.get(guild.id)?.patron === userId)
+                                &&
+                                guild.name.toLowerCase().startsWith(value.toLowerCase())
+                            );
+                        })
+                        .map(guild => ({
+                            name: guild.name,
+                            value: guild.id,
+                        }));
+                },
+                {context: {userId: interaction.user.id, value}},
+            ).then(guildOptions => interaction.respond(guildOptions.flat().slice(0, 25)));
+        },
     },
 };

@@ -1,12 +1,27 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const guild = require('../../schemas/guild.js');
-const role = require('../../schemas/role.js');
-const channel = require('../../schemas/channel.js');
 const user = require('../../schemas/user.js');
 const member = require('../../schemas/member.js');
 const {Collection, InteractionType, ApplicationCommandOptionType} = require('discord.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
 const commands = require('../commands');
+const { handleEventError } = require('../utils.js');
+const {inspect} = require('node:util');
 
 module.exports = {
     type: InteractionType.ApplicationCommand,
@@ -14,12 +29,15 @@ module.exports = {
         if(interaction.guild && !interaction.guild.available) throw new Error('Invalid interaction.');
         if(interaction.guild){
             if(!interaction.client.guildData.has(interaction.guild.id)){
-                let guildData = new guild({
-                    _id: interaction.guild.id,
-                    language: (interaction.guild.preferredLocale === 'pt-BR') ? 'pt' : 'en',
-                });
-                guildData.save();
-                interaction.client.guildData.set(guildData._id, guildData);
+                let guildDoc = await guild.findById(interaction.guild.id);
+                if(!guildDoc){
+                    guildDoc = new guild({
+                        _id: interaction.guild.id,
+                        language: (interaction.guild.preferredLocale === 'pt-BR') ? 'pt' : 'en',
+                    });
+                    await guildDoc.save();
+                }
+                interaction.client.guildData.set(interaction.guild.id, guildDoc);
             }
             if(!interaction.member) interaction.member = await interaction.guild.members.fetch(interaction.user.id).catch(() => null);
             if(!interaction.member) throw new Error('Member could not be fetched.');
@@ -89,7 +107,7 @@ module.exports = {
                     upsert: true,
                     setDefaultsOnInsert: true,
                 });
-            }).catch(err => interaction.client.handlers.event(err, this, [interaction]));
+            }).catch(async err => await handleEventError(err, this, [interaction], interaction.client));
         }
         const args = {};
         let options = interaction.options.data;
@@ -129,10 +147,39 @@ module.exports = {
                 content: channelLanguage.get(`premiumAd${Math.floor(Math.random() * 3)}`, [command.name]),
                 ephemeral: true,
             });
-        }).catch(error => {
+        }).catch(async error => {
             console.error(error);
+            if(process.env.NODE_ENV === 'production'){
+                await interaction.client.shard.broadcastEval(async (c, {channelId, msgData}) => {
+                    const channel = c.channels.cache.get(channelId);
+                    if(channel) await channel.send(msgData).catch(console.error);
+                }, {context: {
+                    channelId: configs.errorlog,
+                    msgData: {
+                        content: `Error: *${error.message}*\n` +
+                                `Interaction User: ${interaction.user}\n` +
+                                `Interaction Channel: ${interaction.channel}`,
+                        files: [
+                            {
+                                name: 'args.js',
+                                attachment: Buffer.from(inspect(interaction.options.data, {
+                                    depth: Infinity,
+                                    maxArrayLength: Infinity,
+                                    maxStringLength: Infinity,
+                                    breakLength: 98,
+                                    numericSeparator: true,
+                                })),
+                            },
+                            {
+                                name: 'stack.log',
+                                attachment: Buffer.from(error.stack),
+                            },
+                        ],
+                    },
+                }});
+            }
             if(interaction.deferred){
-                interaction.editReply({
+                await interaction.editReply({
                     content: channelLanguage.get('error', [command.name]),
                     files: [],
                     embeds: [],
@@ -140,26 +187,11 @@ module.exports = {
                 }).catch(console.error);
             }
             else{
-                interaction[interaction.replied ? 'followUp' : 'reply']({
+                await interaction[interaction.replied ? 'followUp' : 'reply']({
                     content: channelLanguage.get('error', [command.name]),
                     ephemeral: true,
                 }).catch(console.error);
             }
-            if(process.env.NODE_ENV === 'production') interaction.client.channels.cache.get(configs.errorlog).send({
-                content: `Error: *${error.message}*\n` +
-                         `Interaction User: ${interaction.user}\n` +
-                         `Interaction Channel: ${interaction.channel}`,
-                files: [
-                    {
-                        name: 'args.json',
-                        attachment: Buffer.from(JSON.stringify(interaction.options.data, (key, value) => ((typeof value === 'bigint') ? `${value}n` : value), 4)),
-                    },
-                    {
-                        name: 'stack.log',
-                        attachment: Buffer.from(error.stack),
-                    },
-                ],
-            }).catch(console.error);
         });
     },
 };

@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "node --trace-deprecation --inspect -r dotenv/config index.js dotenv_config_path=../.env"
+    "dev": "node --trace-warnings --trace-deprecation --inspect -r dotenv/config index.js dotenv_config_path=../.env"
   },
   "repository": {
     "type": "git",

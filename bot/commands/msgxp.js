@@ -15,6 +15,7 @@
 
 const {EmbedBuilder, PermissionsBitField, ButtonStyle, ComponentType} = require('discord.js');
 const configs = require('../configs.js');
+const { handleComponentError } = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -347,7 +348,7 @@ module.exports = {
                         }
                         break;
                     }
-                })(i).catch(err => message.client.handlers.button(err, i)));
+                })(i).catch(async err => await handleComponentError(err, i)));
                 collector.on('end', async collected => {
                     if(!reply.editable) return;
                     buttonCancel.disabled = buttonConfirm.disabled = true;

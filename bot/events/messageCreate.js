@@ -22,7 +22,7 @@ const {Collection, PermissionsBitField, EmbedBuilder, ApplicationCommandType, Me
 const locale = require('../../locale');
 const configs = require('../configs.js');
 const commands = require('../commands');
-const { slashCommandUsages } = require('../utils.js');
+const { slashCommandUsages, handleEventError } = require('../utils.js');
 
 module.exports = {
     name: 'messageCreate',
@@ -36,12 +36,15 @@ module.exports = {
         let guildData;
         if(message.guild){
             if(!message.client.guildData.has(message.guild.id)){
-                let guildData = new guild({
-                    _id: message.guild.id,
-                    language: (message.guild.preferredLocale === 'pt-BR') ? 'pt' : 'en',
-                });
-                guildData.save();
-                message.client.guildData.set(guildData._id, guildData);
+                let guildDoc = await guild.findById(message.guild.id);
+                if(!guildDoc){
+                    guildDoc = new guild({
+                        _id: message.guild.id,
+                        language: (message.guild.preferredLocale === 'pt-BR') ? 'pt' : 'en',
+                    });
+                    await guildDoc.save();
+                }
+                message.client.guildData.set(message.guild.id, guildDoc);
             }
             guildData = message.client.guildData.get(message.guild.id);
             prefix = guildData.prefix;
@@ -143,7 +146,7 @@ module.exports = {
                         }
                     }
                 }
-            })(err, doc).catch(err => message.client.handlers.event(err, this, [message])));
+            })(err, doc).catch(async err => await handleEventError(err, this, [message], message.client)));
         }
         if(message.guild && !message.guild.members.me.permissionsIn(message.channel.id)?.has(PermissionsBitField.Flags.SendMessages)) return;
         const commandsManager = (
@@ -241,7 +244,7 @@ module.exports = {
                     upsert: true,
                     setDefaultsOnInsert: true,
                 });
-            }).catch(err => message.client.handlers.event(err, this, [message]));
+            }).catch(async err => await handleEventError(err, this, [message], message.client));
         }
         message.channel.sendTyping();
         message.channelLanguage = channelLanguage;
@@ -253,24 +256,32 @@ module.exports = {
                 .setColor(0x2f3136)
                 .setDescription(channelLanguage.get(`premiumAd${Math.floor(Math.random() * 3)}`, [command.name]));
             await message.channel.send({embeds: [embed]});
-        }).catch(error => {
+        }).catch(async error => {
             console.error(error);
-            message.reply(channelLanguage.get('error', [command.name]));
-            if(process.env.NODE_ENV === 'production') message.client.channels.cache.get(configs.errorlog).send({
-                content: `Error: *${error.message}*\n` +
-                         `Message Author: ${message.author}\n` +
-                         `Message URL: ${message.url}\n`,
-                files: [
-                    {
-                        name: 'content.txt',
-                        attachment: Buffer.from(message.content),
+            if(process.env.NODE_ENV === 'production'){
+                await message.client.shard.broadcastEval(async (c, {channelId, msgData}) => {
+                    const channel = c.channels.cache.get(channelId);
+                    if(channel) await channel.send(msgData).catch(console.error);
+                }, {context: {
+                    channelId: configs.errorlog,
+                    msgData: {
+                        content: `Error: *${error.message}*\n` +
+                                `Message Author: ${message.author}\n` +
+                                `Message URL: ${message.url}\n`,
+                        files: [
+                            {
+                                name: 'content.txt',
+                                attachment: Buffer.from(message.content),
+                            },
+                            {
+                                name: 'stack.log',
+                                attachment: Buffer.from(error.stack),
+                            },
+                        ],
                     },
-                    {
-                        name: 'stack.log',
-                        attachment: Buffer.from(error.stack),
-                    },
-                ],
-            }).catch(console.error);
+                }});
+            }
+            await message.reply(channelLanguage.get('error', [command.name]));
         });
     },
 };

@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const { EmbedBuilder, ApplicationCommandOptionType } = require("discord.js");
 const locale = require('../../locale');
 
@@ -80,12 +95,15 @@ module.exports = {
             content: 'There are no commands usage statistics for this server',
             ephemeral: true,
         });
-        const server = interaction.client.guilds.cache.get(args.guild);
+        const authorData = (await interaction.client.shard.broadcastEval((c, {guildId}) => {
+            const guild = c.guilds.cache.get(guildId);
+            if(guild) return {
+                name: guild.name,
+                iconURL: guild.iconURL({dynamic: true}),
+            };
+        }, {context: {guildId: args.guild}})).find(e => e);
         const embed = new EmbedBuilder()
-            .setAuthor({
-                name: server.name,
-                iconURL: server.iconURL({dynamic: true}),
-            })
+            .setAuthor(authorData)
             .setColor(0x2f3136)
             .setDescription(commandUses.map(e => `${e._id}: \`${e.count}\``).join('\n'));
         await interaction.reply({embeds: [embed]});
@@ -121,19 +139,19 @@ module.exports = {
         },
     ],
     serverAutocomplete: {
-        guild: (interaction, value) => interaction.respond(
-            (interaction.user.id === interaction.client.application.owner.id)
-            ? interaction.client.guilds.cache
-                .filter(e => e.name.toLowerCase().startsWith(value.toLowerCase()))
-                .first(25)
-                .map(e => ({
-                    name: e.name,
-                    value: e.id,
-                }))
-            : [{
-                name: locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en').get('forbidden'),
-                value: '',
-            }]
-        ),
+        guild: (interaction, value) => {
+            if(interaction.user.id === interaction.client.application.owner.id){
+                interaction.client.shard.broadcastEval((c, {value}) => c.guilds.cache.filter(guild => guild.name.toLowerCase().startsWith(value.toLowerCase())).first(25).map(guild => ({
+                    name: guild.name,
+                    value: guild.id,
+                })), {context: {value}}).then(guilds => interaction.respond(guilds.flat()));
+            }
+            else{
+                interaction.respond([{
+                    name: locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en').get('forbidden'),
+                    value: '',
+                }]);
+            }
+        },
     },
 };

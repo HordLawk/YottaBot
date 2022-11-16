@@ -17,6 +17,7 @@ const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
 const {PermissionsBitField, EmbedBuilder, TextInputStyle, ButtonStyle, ComponentType, InteractionType} = require('discord.js');
 const locale = require('../../locale');
+const { handleComponentError } = require('../utils.js');
 
 module.exports = {
     type: InteractionType.MessageComponent,
@@ -168,7 +169,7 @@ module.exports = {
                 const msgUnban = await discordChannel.send({embeds: [embedUnban]});
                 currentUnban.logMessage = msgUnban.id;
                 await currentUnban.save();
-            })(i).catch(err => interaction.client.handlers.button(err, i)))
+            })(i).catch(async err => await handleComponentError(err, i)))
             collectorUndo.on('end', async () => {
                 if(!reply.editable) return;
                 buttonUndo.disabled = true;
@@ -223,7 +224,7 @@ module.exports = {
                     banLogEmbed.spliceFields(reasonIndex, 1, reasonField);
                 }
                 await banLogMsg.edit({embeds: [banLogEmbed]});
-            })().catch(err => interaction.client.handlers.button(err, i)));
+            })().catch(async err => await handleComponentError(err, i)));
             collectorEdit.on('end', async () => {
                 if(!reply.editable) return;
                 buttonEdit.disabled = true;

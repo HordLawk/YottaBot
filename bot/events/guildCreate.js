@@ -123,26 +123,31 @@ module.exports = {
             }
         }
         if(process.env.NODE_ENV === 'development') return;
-        const embed = new EmbedBuilder()
-            .setColor(0x00ff00)
-            .setAuthor({
+        await guild.client.shard.broadcastEval(async (c, {channelId, authorData, description}) => {
+            const {EmbedBuilder} = require('discord.js');
+            const channel = c.channels.cache.get(channelId);
+            if(!channel) return;
+            const embed = new EmbedBuilder()
+                .setColor(0x00ff00)
+                .setAuthor(authorData)
+                .setDescription(description);
+            await channel.send({embeds: [embed]});
+            const guildCount = (await c.shard.fetchClientValues('guilds.cache.size')).reduce((acc, n) => acc + n, 0);
+            await channel.setTopic(guildCount);
+        }, {context: {
+            channelId: configs.guildlog,
+            authorData: {
                 name: 'Joined Guild',
                 iconURL: guild.iconURL({dynamic: true}),
-            })
-            .setDescription(
+            },
+            description: (
                 `${content}Member count: ${guild.memberCount}\n` +
                 `ID: ${guild.id}\n` +
                 `Name: ${guild.name}\n` +
                 `Owner: <@${guild.ownerId}>\n` +
                 `Locale: ${guild.preferredLocale}\n` +
                 `Features:\`\`\`${guild.features.join('\n')}\`\`\``
-            );
-        await guild.client.shard.broadcastEval(async (c, {channelId, embed}) => {
-            const channel = c.channels.cache.get(channelId);
-            if(!channel) return;
-            await channel.send({embeds: [embed]});
-            const guildCount = (await c.shard.fetchClientValues('guilds.cache.size')).reduce((acc, n) => acc + n, 0);
-            await channel.setTopic(guildCount);
-        }, {context: {channelId: configs.guildlog, embed}});
+            ),
+        }});
     },
 };

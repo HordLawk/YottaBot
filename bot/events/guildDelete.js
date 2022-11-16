@@ -20,19 +20,31 @@ module.exports = {
     name: 'guildDelete',
     execute: async guild => {
         if(process.env.NODE_ENV === 'development') return;
-        const embed = new EmbedBuilder()
-            .setColor(0xff0000)
-            .setAuthor({
-                name: 'Left Guild',
-                iconURL: guild.iconURL({dynamic: true}),
-            })
-            .setDescription(`Member count: ${guild.memberCount}\nID: ${guild.id}\nName: ${guild.name}\nOwner: <@${guild.ownerId}>\nLocale: ${guild.preferredLocale}\nFeatures:\`\`\`${guild.features?.join('\n')}\`\`\``);
-        await guild.client.shard.broadcastEval(async (c, {channelId, embed}) => {
+        await guild.client.shard.broadcastEval(async (c, {channelId, authorData, description}) => {
+            const {EmbedBuilder} = require('discord.js');
             const channel = c.channels.cache.get(channelId);
             if(!channel) return;
+            const embed = new EmbedBuilder()
+                .setColor(0xff0000)
+                .setAuthor(authorData)
+                .setDescription(description);
             await channel.send({embeds: [embed]});
             const guildCount = (await c.shard.fetchClientValues('guilds.cache.size')).reduce((acc, n) => acc + n, 0);
             await channel.setTopic(guildCount);
-        }, {context: {channelId: configs.guildlog, embed}});
+        }, {context: {
+            channelId: configs.guildlog,
+            authorData: {
+                name: 'Left Guild',
+                iconURL: guild.iconURL({dynamic: true}),
+            },
+            description: (
+                `Member count: ${guild.memberCount}\n` +
+                `ID: ${guild.id}\n` +
+                `Name: ${guild.name}\n` +
+                `Owner: <@${guild.ownerId}>\n` +
+                `Locale: ${guild.preferredLocale}\n` +
+                `Features:\`\`\`${guild.features?.join('\n')}\`\`\``
+            )
+        }});
     },
 };

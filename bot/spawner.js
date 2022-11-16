@@ -20,6 +20,7 @@ const events = require('./events');
 const { AutoPoster } = require('topgg-autoposter');
 const axios = require('axios');
 const locale = require('../locale');
+const path = require('path');
 
 Discord.EmbedBuilder.prototype.addField = function(name, value, inline = false){
     return this.addFields([{name, value, inline}]);
@@ -243,18 +244,19 @@ client.once('ready', async () => {
         const endedBoost = await userModel.find({boostUntil: {$lt: Date.now()}});
         if(!endedBoost.length) return;
         for(userDoc of endedBoost){
-            const premiumSince = await client.shard.broadcastEval(async (c, {guildId, userId, enLocale}) => {
+            const premiumSince = await client.shard.broadcastEval(async (c, {guildId, userId, localePath}) => {
+                const locale = require(localePath);
                 const guild = c.guilds.cache.get(guildId);
                 if(!guild) return;
                 const member = await guild.members.fetch(userId).catch(() => null);
                 if(member?.premiumSince){
-                    await member.send(enLocale.get('renewBoost', [guild.name])).catch(() => {});
+                    await member.send(locale.get('en').get('renewBoost', [guild.name])).catch(() => {});
                 }
                 return member?.premiumSinceTimestamp;
             }, {context: {
                 guildId: configs.supportID,
                 userId: userDoc._id,
-                enLocale: locale.get('en'),
+                localePath: path.join(__dirname, '..', 'locale'),
             }});
             if(premiumSince){
                 userDoc.boostUntil = new Date(userDoc.boostUntil.getTime() + (30 * 24 * 60 * 60 * 1000));

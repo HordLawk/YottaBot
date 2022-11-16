@@ -16,6 +16,7 @@
 const {EmbedBuilder, ApplicationCommandOptionType, ButtonStyle, ComponentType} = require('discord.js');
 const axios = require('axios');
 const { handleComponentError } = require('../utils.js');
+const path = require('path');
 
 module.exports = {
     active: true,
@@ -165,18 +166,24 @@ module.exports = {
     infoSlash: async interaction => {
         const {channelLanguage} = interaction;
         const fields = (
-            await interaction.client.shard.broadcastEval(async (c, {userId, channelLanguage}) => {
+            await interaction.client.shard.broadcastEval(async (c, {userId, localePath, localeCode}) => {
+                const locale = require(localePath);
+                const guildLocale = locale.get(localeCode);
                 return c.guildData.filter(e => (e.patron === userId)).map(e => {
                     const guild = c.guilds.cache.get(e.id);
                     return {
-                        name: guild?.name ?? channelLanguage.get('unknownGuild'),
-                        value: channelLanguage.get(
+                        name: guild?.name ?? guildLocale.get('unknownGuild'),
+                        value: guildLocale.get(
                             'premiumInfoFieldValue',
                             [Math.floor(e.premiumUntil.getTime() / 1000), guild && e.renewPremium],
                         ),
                     };
                 })
-            }, {context: {userId: interaction.user.id, channelLanguage}})
+            }, {context: {
+                userId: interaction.user.id,
+                localePath: path.join(__dirname, '..', '..', 'locale'),
+                localeCode: channelLanguage.lang,
+            }})
         ).flat();
         if(!fields.length) return interaction.reply({
             content: channelLanguage.get('notPatron'),

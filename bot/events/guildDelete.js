@@ -13,7 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const {EmbedBuilder} = require('discord.js');
 const configs = require('../configs.js');
 
 module.exports = {

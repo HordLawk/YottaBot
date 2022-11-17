@@ -373,9 +373,12 @@ client.once('ready', async () => {
             guildVoiceXpCd.set(voiceGuild._id, inVoice.mapValues(() => 0).concat(guildVoiceXpCd.get(voiceGuild._id)));
         }
     }
-    const clearCache = () => client.xpcds.forEach(guildXpCd => guildXpCd.forEach((memberXpCd, memberId) => {
-        if((memberXpCd + (60 * 1000)) < Date.now()) guildXpCd.delete(memberId);
-    }))
+    const clearCache = () => client.xpcds.forEach((guildXpCd, guildId) => {
+        guildXpCd.forEach((memberXpCd, memberId) => {
+            if((memberXpCd + (60 * 1000)) < Date.now()) guildXpCd.delete(memberId);
+        })
+        if(!guildXpCd.size) client.xpcds.delete(guildId);
+    });
     const tick = i => {
         setTimeout(() => {
             unmuteTimer();

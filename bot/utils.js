@@ -77,6 +77,22 @@ const slashCommandUsages = (name, client, subcmdname, subsubcmdname) => {
     );
 }
 
+const badges = {
+    Staff: '<:staff:967043602012315658>',
+    Partner: '<:partner:967043547561852978>',
+    Hypesquad: '<:hs:967048946612572160>',
+    BugHunterLevel1: '<:bughunter:967043119407329311>',
+    HypeSquadOnlineHouse1: '<:bravery:967043119780610058>',
+    HypeSquadOnlineHouse2: '<:brilliance:967043119780597860>',
+    HypeSquadOnlineHouse3: '<:balance:967043119809974272>',
+    PremiumEarlySupporter: '<:earlysupporter:967043119717699665>',
+    BugHunterLevel2: '<:bughunter2:967043119759642694>',
+    VerifiedDeveloper: '<:botdev:967043120984391752>',
+    CertifiedModerator: '<:mod:967043119788994610>',
+    VerifiedBot: '<:verifiedbot:967049829568090143>',
+    BotHTTPInteractions: '<:bot:967062591190995004>',
+};
+
 const userBadgesString = user => {
     const validFlagsArray = (
         user.flags
@@ -85,21 +101,6 @@ const userBadgesString = user => {
         ??
         []
     );
-    const badges = {
-        Staff: '<:staff:967043602012315658>',
-        Partner: '<:partner:967043547561852978>',
-        Hypesquad: '<:hs:967048946612572160>',
-        BugHunterLevel1: '<:bughunter:967043119407329311>',
-        HypeSquadOnlineHouse1: '<:bravery:967043119780610058>',
-        HypeSquadOnlineHouse2: '<:brilliance:967043119780597860>',
-        HypeSquadOnlineHouse3: '<:balance:967043119809974272>',
-        PremiumEarlySupporter: '<:earlysupporter:967043119717699665>',
-        BugHunterLevel2: '<:bughunter2:967043119759642694>',
-        VerifiedDeveloper: '<:botdev:967043120984391752>',
-        CertifiedModerator: '<:mod:967043119788994610>',
-        VerifiedBot: '<:verifiedbot:967049829568090143>',
-        BotHTTPInteractions: '<:bot:967062591190995004>',
-    };
     const userBadges = validFlagsArray.map(e => badges[e]);
     if(!user.flags.any(UserFlags.VerifiedBot + UserFlags.BotHTTPInteractions) && user.bot){
         userBadges.push('<:bot:967062591190995004>');

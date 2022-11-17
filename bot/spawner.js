@@ -373,12 +373,18 @@ client.once('ready', async () => {
             guildVoiceXpCd.set(voiceGuild._id, inVoice.mapValues(() => 0).concat(guildVoiceXpCd.get(voiceGuild._id)));
         }
     }
+    const clearCache = () => client.xpcds.forEach(guildXpCd => guildXpCd.forEach((memberXpCd, memberId) => {
+        if((memberXpCd + (60 * 1000)) < Date.now()) guildXpCd.delete(memberId);
+    }))
     const tick = i => {
         setTimeout(() => {
             unmuteTimer();
             unpremiumTimer();
             renewBoost();
-            if((i % 6) === 0) earnVoiceXp();
+            if((i % 6) === 0){
+                earnVoiceXp();
+                clearCache();
+            }
             tick(++i);
         }, 10000);
     }

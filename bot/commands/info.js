@@ -69,7 +69,7 @@ module.exports = {
                 channelLanguage.get('infoEmbedRAMTitle'),
                 channelLanguage.get(
                     'infoEmbedRAMValue',
-                    [process.memoryUsage().heapUsed]
+                    [process.memoryUsage.rss()]
                 ),
                 true
             )
@@ -139,7 +139,7 @@ module.exports = {
                 channelLanguage.get('infoEmbedRAMTitle'),
                 channelLanguage.get(
                     'infoEmbedRAMValue',
-                    [process.memoryUsage().heapUsed]
+                    [process.memoryUsage.rss()]
                 ),
                 true
             )

@@ -64,7 +64,9 @@ client.once('ready', async () => {
     const guildDocs = await guildModel.find({_id: {$in: [...client.guilds.cache.keys()]}});
     client.guildData = guildDocs.reduce((acc, e) => acc.set(e._id, e), new Discord.Collection());
     await client.application.fetch();
-    await ((process.env.NODE_ENV === 'production') ? client.application : client.guilds.cache.get(process.env.DEV_GUILD)).commands.fetch();
+    await (
+        (process.env.NODE_ENV === 'production') ? client.application : client.guilds.cache.get(process.env.DEV_GUILD)
+    ).commands.fetch();
     events.forEach(e => {
         client.on(
             e.name,
@@ -157,17 +159,36 @@ client.once('ready', async () => {
             if(discordMember && discordMember.isCommunicationDisabled()) continue;
             let discordUser = discordMember?.user ?? await client.users.fetch(unmuteDoc.target).catch(() => {});
             let discordChannel = guild.channels.cache.get(client.guildData.get(guild.id).modlogs.mute);
-            if(discordChannel && discordChannel.viewable && discordChannel.permissionsFor(guild.members.me).has(Discord.PermissionsBitField.Flags.SendMessages) && discordChannel.permissionsFor(guild.members.me).has(Discord.PermissionsBitField.Flags.EmbedLinks)){
+            if(
+                discordChannel
+                &&
+                discordChannel.viewable
+                &&
+                discordChannel.permissionsFor(guild.members.me).has(Discord.PermissionsBitField.Flags.SendMessages)
+                &&
+                discordChannel.permissionsFor(guild.members.me).has(Discord.PermissionsBitField.Flags.EmbedLinks)
+            ){
                 let guildLanguage = locale.get(client.guildData.get(guild.id).language);
                 let embed = new Discord.EmbedBuilder()
                     .setColor(0x0000ff)
                     .setAuthor({
-                        name: discordUser ? guildLanguage.get('autoUnmuteEmbedAuthorMember', [discordUser.tag]) : guildLanguage.get('autoUnmuteEmbedAuthorNoMember'),
+                        name: (
+                            discordUser
+                            ? guildLanguage.get('autoUnmuteEmbedAuthorMember', [discordUser.tag])
+                            : guildLanguage.get('autoUnmuteEmbedAuthorNoMember')
+                        ),
                         iconURL: discordUser?.displayAvatarURL({dynamic: true}),
                     })
-                    .addField(guildLanguage.get('autoUnmuteEmbedTargetTitle'), guildLanguage.get('autoUnmuteEmbedTargetValue', [unmuteDoc.target]), true)
+                    .addField(
+                        guildLanguage.get('autoUnmuteEmbedTargetTitle'),
+                        guildLanguage.get('autoUnmuteEmbedTargetValue', [unmuteDoc.target]),
+                        true,
+                    )
                     .setTimestamp()
-                    .addField(guildLanguage.get('autoUnmuteEmbedReasonTitle'), guildLanguage.get('autoUnmuteEmbedReasonValue'));
+                    .addField(
+                        guildLanguage.get('autoUnmuteEmbedReasonTitle'),
+                        guildLanguage.get('autoUnmuteEmbedReasonValue'),
+                    );
                 let msg = await discordChannel.messages.fetch({message: unmuteDoc.logMessage}).catch(() => null);
                 if(msg) embed.setDescription(guildLanguage.get('autoUnmuteEmbedDescription', [msg.url]));
                 await discordChannel.send({embeds: [embed]});
@@ -186,7 +207,9 @@ client.once('ready', async () => {
             url: url,
             headers: {Authorization: `Bearer ${process.env.PATREON_TOKEN}`},
         }).then(res => res.data);
-        const patreonUser = pledges.included.find(e => ((e.type === 'user') && (e.attributes.social_connections.discord?.user_id === patron)));
+        const patreonUser = pledges.included.find(e => {
+            return (e.type === 'user') && (e.attributes.social_connections.discord?.user_id === patron);
+        });
         if(!patreonUser){
             if(!pledges.links.next) return null;
             return await searchPledge(pledges.links.next, patron);
@@ -211,7 +234,10 @@ client.once('ready', async () => {
                 haveEnded.push(guildId);
                 continue;
             }
-            const pledge = await searchPledge('https://www.patreon.com/api/oauth2/api/campaigns/8230487/pledges', guildData.patron);
+            const pledge = await searchPledge(
+                'https://www.patreon.com/api/oauth2/api/campaigns/8230487/pledges',
+                guildData.patron,
+            );
             if(!pledge){
                 removePremium(guildData);
                 haveEnded.push(guildId);
@@ -278,7 +304,11 @@ client.once('ready', async () => {
         for(let voiceGuild of voiceGuilds){
             let discordGuild = client.guilds.cache.get(voiceGuild._id);
             let ignoredChannels = await channelModel.find({
-                _id: {$in: discordGuild.channels.cache.filter(e => (e.type === Discord.ChannelType.GuildVoice)).map(e => e.id)},
+                _id: {
+                    $in: discordGuild.channels.cache
+                        .filter(e => (e.type === Discord.ChannelType.GuildVoice))
+                        .map(e => e.id),
+                },
                 ignoreXp: true,
             });
             let roleDocs = await roleModel.find({
@@ -289,10 +319,27 @@ client.once('ready', async () => {
                 await discordGuild.members.fetch({user: discordGuild.voiceStates.cache.map(e => e.id)});
             }
             catch(_){
-                // This shouldn't happen and I don't know why it occasionally does, therefore I'll only investigate further when people start complaining about it.
+                // This shouldn't happen and I don't know why it occasionally does, therefore I'll only investigate
+                // further when people start complaining about it.
                 continue;
             }
-            let inVoice = discordGuild.voiceStates.cache.filter(e => e.channel && !e.deaf && !e.mute && !e.member.user.bot && (e.channel.members.filter(ee => !ee.voice.deaf && !ee.voice.mute && !ee.user.bot).size > 1) && !ignoredChannels.some(ee => (ee._id === e.channel.id)) && !roleDocs.some(ee => e.member.roles.cache.has(ee.roleID) && ee.ignoreXp));
+            let inVoice = discordGuild.voiceStates.cache.filter(e => {
+                return (
+                    e.channel
+                    &&
+                    !e.deaf
+                    &&
+                    !e.mute
+                    &&
+                    !e.member.user.bot
+                    &&
+                    (e.channel.members.filter(ee => !ee.voice.deaf && !ee.voice.mute && !ee.user.bot).size > 1)
+                    &&
+                    !ignoredChannels.some(ee => (ee._id === e.channel.id))
+                    &&
+                    !roleDocs.some(ee => e.member.roles.cache.has(ee.roleID) && ee.ignoreXp)
+                );
+            });
             if(!guildVoiceXpCd.has(voiceGuild._id)){
                 guildVoiceXpCd.set(voiceGuild._id, inVoice.mapValues(() => 0));
                 continue;
@@ -301,7 +348,13 @@ client.once('ready', async () => {
                 guildVoiceXpCd.get(voiceGuild._id).set(id, ++minutes);
                 if(minutes % voiceGuild.voiceXpCooldown) continue;
                 let discordMember = inVoice.get(id).member;
-                let multiplier = roleDocs.filter(e => (e.xpMultiplier && discordMember.roles.cache.has(e.roleID))).sort((a, b) => (b.xpMultiplier - a.xpMultiplier))[0]?.xpMultiplier ?? 1;
+                let multiplier = (
+                    roleDocs
+                        .filter(e => (e.xpMultiplier && discordMember.roles.cache.has(e.roleID)))
+                        .sort((a, b) => (b.xpMultiplier - a.xpMultiplier))[0]?.xpMultiplier
+                    ??
+                    1
+                );
                 let doc = await memberModel.findOneAndUpdate({
                     guild: voiceGuild._id,
                     userID: id,
@@ -310,10 +363,25 @@ client.once('ready', async () => {
                     upsert: true,
                     setDefaultsOnInsert: true,
                 });
-                let lowerRoles = roleDocs.filter(e => (discordGuild.roles.cache.get(e.roleID).editable && e.xp && (e.xp <= doc.xp))).sort((a, b) => (b.xp - a.xp));
+                let lowerRoles = roleDocs
+                    .filter(e => (discordGuild.roles.cache.get(e.roleID).editable && e.xp && (e.xp <= doc.xp)))
+                    .sort((a, b) => (b.xp - a.xp));
                 if(!lowerRoles.length || discordMember.roles.cache.has(lowerRoles[0].roleID)) continue;
-                await discordMember.roles.set(discordMember.roles.cache.map(e => e.id).filter(e => !lowerRoles.some(ee => (e === ee.roleID))).concat(lowerRoles.map(e => e.roleID).slice(0, client.guildData.get(voiceGuild._id).dontStack ? 1 : undefined)));
-                if((client.guildData.get(voiceGuild._id).xpChannel === 'none') || (doc.xp >= (lowerRoles[0].xp + multiplier))) continue;
+                await discordMember.roles.set(
+                    discordMember.roles.cache
+                        .map(e => e.id)
+                        .filter(e => !lowerRoles.some(ee => (e === ee.roleID)))
+                        .concat(
+                            lowerRoles
+                                .map(e => e.roleID)
+                                .slice(0, client.guildData.get(voiceGuild._id).dontStack ? 1 : undefined),
+                        ),
+                );
+                if(
+                    (client.guildData.get(voiceGuild._id).xpChannel === 'none')
+                    ||
+                    (doc.xp >= (lowerRoles[0].xp + multiplier))
+                ) continue;
                 let guildLanguage = locale.get(client.guildData.get(voiceGuild._id).language);
                 switch(client.guildData.get(voiceGuild._id).xpChannel){
                     case 'default': {

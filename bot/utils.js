@@ -175,7 +175,6 @@ const handleEventError = async (err, e, args, client) => {
             ],
         },
     }});
-    if(e.name === 'ready') process.exit(1);
 }
 
 module.exports = {

@@ -52,10 +52,18 @@ module.exports = {
     commandAutocomplete: {
         guild: (interaction, value) => {
             if(interaction.user.id === interaction.client.application.owner.id){
-                interaction.client.shard.broadcastEval((c, {value}) => c.guilds.cache.filter(guild => guild.name.toLowerCase().startsWith(value.toLowerCase())).first(25).map(guild => ({
-                    name: guild.name,
-                    value: guild.id,
-                })), {context: {value}}).then(guilds => interaction.respond(guilds.flat()));
+                interaction.client.shard.broadcastEval(
+                    (c, {value}) => {
+                        return c.guilds.cache
+                            .filter(guild => guild.name.toLowerCase().startsWith(value.toLowerCase()))
+                            .first(25)
+                            .map(guild => ({
+                                name: guild.name,
+                                value: guild.id,
+                            }));
+                    },
+                    {context: {value}},
+                ).then(guilds => interaction.respond(guilds.flat()));
             }
             else{
                 interaction.respond([{

@@ -150,32 +150,36 @@ module.exports = {
         }).catch(async error => {
             console.error(error);
             if(process.env.NODE_ENV === 'production'){
-                await interaction.client.shard.broadcastEval(async (c, {channelId, msgData}) => {
+                await interaction.client.shard.broadcastEval(async (c, {channelId, content, argsStr, stack}) => {
                     const channel = c.channels.cache.get(channelId);
-                    if(channel) await channel.send(msgData).catch(console.error);
-                }, {context: {
-                    channelId: configs.errorlog,
-                    msgData: {
-                        content: `Error: *${error.message}*\n` +
-                                `Interaction User: ${interaction.user}\n` +
-                                `Interaction Channel: ${interaction.channel}`,
+                    if(channel) await channel.send({
+                        content,
                         files: [
                             {
                                 name: 'args.js',
-                                attachment: Buffer.from(inspect(interaction.options.data, {
-                                    depth: Infinity,
-                                    maxArrayLength: Infinity,
-                                    maxStringLength: Infinity,
-                                    breakLength: 98,
-                                    numericSeparator: true,
-                                })),
+                                attachment: Buffer.from(argsStr),
                             },
                             {
                                 name: 'stack.log',
-                                attachment: Buffer.from(error.stack),
+                                attachment: Buffer.from(stack),
                             },
                         ],
-                    },
+                    }).catch(console.error);
+                }, {context: {
+                    channelId: configs.errorlog,
+                    content: (
+                        `Error: *${error.message}*\n` +
+                        `Interaction User: ${interaction.user}\n` +
+                        `Interaction Channel: ${interaction.channel}`
+                    ),
+                    argsStr: inspect(interaction.options.data, {
+                        depth: Infinity,
+                        maxArrayLength: Infinity,
+                        maxStringLength: Infinity,
+                        breakLength: 98,
+                        numericSeparator: true,
+                    }),
+                    stack: error.stack,
                 }});
             }
             if(interaction.deferred){

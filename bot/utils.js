@@ -110,22 +110,27 @@ const userBadgesString = user => {
 
 const handleComponentError = async (err, i) => {
     console.error(err);
-    if(process.env.NODE_ENV === 'production') await i.client.shard.broadcastEval(async (c, {channelId, msgData}) => {
-        const channel = c.channels.cache.get(channelId);
-        if(channel) await channel.send(msgData).catch(console.error);
-    }, {context: {
-        channelId: configs.errorlog,
-        msgData: {
-            content: `Error: *${err.message}*\n` +
-                    `Component ID: ${i.customId}\n` +
-                    `Interaction User: ${i.user}\n` +
-                    `Interaction ID: ${i.id}`,
-            files: [{
-                name: 'stack.log',
-                attachment: Buffer.from(err.stack),
-            }],
-        },
-    }});
+    if(process.env.NODE_ENV === 'production'){
+        await i.client.shard.broadcastEval(async (c, {channelId, content, stack}) => {
+            const channel = c.channels.cache.get(channelId);
+            if(channel) await channel.send({
+                content,
+                files: [{
+                    name: 'stack.log',
+                    attachment: Buffer.from(stack),
+                }],
+            }).catch(console.error);
+        }, {context: {
+            channelId: configs.errorlog,
+            content: (
+                `Error: *${err.message}*\n` +
+                `Component ID: ${i.customId}\n` +
+                `Interaction User: ${i.user}\n` +
+                `Interaction ID: ${i.id}`
+            ),
+            stack: err.stack,
+        }});
+    }
     const channelLanguage = locale.get((i.locale === 'pt-BR') ? 'pt' : 'en');
     const msgData = {
         content: channelLanguage.get('componentError'),
@@ -151,31 +156,38 @@ const handleEventError = async (err, e, args, client) => {
     console.error(err);
     console.log(e.name);
     console.log(args);
-    if(process.env.NODE_ENV === 'production') await client.shard.broadcastEval(async (c, {channelId, msgData}) => {
-        const channel = c.channels.cache.get(channelId);
-        if(channel) await channel.send(msgData).catch(console.error);
-    }, {context: {
-        channelId: configs.errorlog,
-        msgData: {
-            content: `Error: *${err.message}*\nEvent: ${e.name}`,
-            files: [
-                {
-                    name: 'args.js',
-                    attachment: Buffer.from(inspect(args, {
-                        depth: Infinity,
-                        maxArrayLength: Infinity,
-                        maxStringLength: Infinity,
-                        breakLength: 98,
-                        numericSeparator: true,
-                    })),
-                },
-                {
-                    name: 'stack.log',
-                    attachment: Buffer.from(err.stack),
-                },
-            ],
-        },
-    }});
+    if(process.env.NODE_ENV === 'production'){
+        await client.shard.broadcastEval(async (c, {channelId, content, argsStr, stack}) => {
+            const channel = c.channels.cache.get(channelId);
+            if(channel) await channel.send({
+                content,
+                files: [
+                    {
+                        name: 'args.js',
+                        attachment: Buffer.from(argsStr),
+                    },
+                    {
+                        name: 'stack.log',
+                        attachment: Buffer.from(stack),
+                    },
+                ],
+            }).catch(console.error);
+        }, {context: {
+            channelId: configs.errorlog,
+            content: (
+                `Error: *${err.message}*\n` +
+                `Event: ${e.name}`
+            ),
+            argsStr: inspect(args, {
+                depth: Infinity,
+                maxArrayLength: Infinity,
+                maxStringLength: Infinity,
+                breakLength: 98,
+                numericSeparator: true,
+            }),
+            stack: err.stack,
+        }});
+    }
 }
 
 module.exports = {

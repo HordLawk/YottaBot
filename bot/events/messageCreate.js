@@ -259,26 +259,30 @@ module.exports = {
         }).catch(async error => {
             console.error(error);
             if(process.env.NODE_ENV === 'production'){
-                await message.client.shard.broadcastEval(async (c, {channelId, msgData}) => {
+                await message.client.shard.broadcastEval(async (c, {channelId, content, msgContent, stack}) => {
                     const channel = c.channels.cache.get(channelId);
-                    if(channel) await channel.send(msgData).catch(console.error);
-                }, {context: {
-                    channelId: configs.errorlog,
-                    msgData: {
-                        content: `Error: *${error.message}*\n` +
-                                `Message Author: ${message.author}\n` +
-                                `Message URL: ${message.url}\n`,
+                    if(channel) await channel.send({
+                        content,
                         files: [
                             {
                                 name: 'content.txt',
-                                attachment: Buffer.from(message.content),
+                                attachment: Buffer.from(msgContent),
                             },
                             {
                                 name: 'stack.log',
-                                attachment: Buffer.from(error.stack),
+                                attachment: Buffer.from(stack),
                             },
                         ],
-                    },
+                    }).catch(console.error);
+                }, {context: {
+                    channelId: configs.errorlog,
+                    content: (
+                        `Error: *${error.message}*\n` +
+                        `Message Author: ${message.author}\n` +
+                        `Message URL: ${message.url}\n`
+                    ),
+                    msgContent: message.content,
+                    stack: error.stack,
                 }});
             }
             await message.reply(channelLanguage.get('error', [command.name]));

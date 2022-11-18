@@ -566,6 +566,7 @@ module.exports = {
                 content: channelLanguage.get('noDefaultLog'),
                 ephemeral: true,
             });
+            await interaction.deferReply();
             const oldHook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookToken).catch(() => null);
             if(oldHook && interaction.guild.members.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(PermissionsBitField.Flags.ManageWebhooks)) await oldHook.delete(channelLanguage.get('oldHookReason', [channelLanguage.get(`action${args.action}`)]));
             const guildDoc = await guild.findById(interaction.guild.id);

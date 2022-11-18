@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const channel = require('../../schemas/channel.js');
 const role = require('../../schemas/role.js');
 const edition = require('../../schemas/edition.js');
@@ -5,6 +20,7 @@ const {EmbedBuilder, escapeCodeBlock, cleanContent} = require('discord.js');
 const {sha256} = require('js-sha256');
 const aesjs = require('aes-js');
 const locale = require('../../locale');
+const Diff = require('diff');
 
 module.exports = {
     name: 'messageUpdate',
@@ -41,29 +57,40 @@ module.exports = {
         }
         const hook = await newMessage.client.fetchWebhook(newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg').hookID || newMessage.client.guildData.get(newMessage.guild.id).defaultLogsHookID, newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg').hookToken || newMessage.client.guildData.get(newMessage.guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
-        let [oldContent, newContent] = [escapeCodeBlock(cleanContent(oldMessage.content, newMessage.channel)), escapeCodeBlock(cleanContent(newMessage.content, newMessage.channel))];
+        const [oldContent, newContent] = [escapeCodeBlock(cleanContent(oldMessage.content, newMessage.channel)), escapeCodeBlock(cleanContent(newMessage.content, newMessage.channel))];
+        const diff = Diff.diffChars(oldContent ?? '', newContent ?? '');
+        let oldContentDiff = diff.map(part => {
+            if(part.added) return '';
+            if(part.removed) return `\u001b[41m${part.value}`;
+            return `\u001b[0m${part.value}`;
+        }).join('');
+        let newContentDiff = diff.map(part => {
+            if(part.added) return `\u001b[45m${part.value}`;
+            if(part.removed) return '';
+            return `\u001b[0m${part.value}`;
+        }).join('');
         if((oldContent.length > 2000) && (newContent.length > 2000)){
             if(oldContent.slice(0, 2000) === newContent.slice(0, 2000)){
-                oldContent = `[...]\`\`\`${oldContent.slice(-2000)}\`\`\``;
-                newContent = `[...]\`\`\`${newContent.slice(-2000)}\`\`\``;
+                oldContentDiff = `[...]\`\`\`ansi\n${oldContentDiff.slice(-2000)}\`\`\``;
+                newContentDiff = `[...]\`\`\`ansi\n${newContentDiff.slice(-2000)}\`\`\``;
             }
             else{
-                oldContent = `\`\`\`${oldContent.slice(0, 2000)}\`\`\`[...]\n`;
-                newContent = `\`\`\`${newContent.slice(0, 2000)}\`\`\`[...]\n`;
+                oldContentDiff = `\`\`\`ansi\n${oldContentDiff.slice(0, 2000)}\`\`\`[...]\n`;
+                newContentDiff = `\`\`\`ansi\n${newContentDiff.slice(0, 2000)}\`\`\`[...]\n`;
             }
         }
         else{
             if(oldContent.length > 2000){
-                oldContent = `\`\`\`${oldContent.slice(0, 2000)}\`\`\`[...]\n`;
+                oldContentDiff = `\`\`\`ansi\n${oldContentDiff.slice(0, 2000)}\`\`\`[...]\n`;
             }
             else{
-                oldContent = oldContent && `\`\`\`${oldContent}\`\`\``;
+                oldContentDiff = oldContent && `\`\`\`ansi\n${oldContentDiff}\`\`\``;
             }
             if(newContent.length > 2000){
-                newContent = `\`\`\`${newContent.slice(0, 2000)}\`\`\`[...]\n`;
+                newContentDiff = `\`\`\`ansi\n${newContentDiff.slice(0, 2000)}\`\`\`[...]\n`;
             }
             else{
-                newContent = newContent && `\`\`\`${newContent}\`\`\``;
+                newContentDiff = newContent && `\`\`\`ansi\n${newContentDiff}\`\`\``;
             }
         }
         const embed = new EmbedBuilder()
@@ -78,7 +105,7 @@ module.exports = {
                 }),
                 url: newMessage.url,
             })
-            .setDescription(channelLanguage.get('editmsgEmbedDescription', [oldContent, newContent]))
+            .setDescription(channelLanguage.get('editmsgEmbedDescription', [oldContentDiff, newContentDiff]))
             .addField(channelLanguage.get('delmsgEmbedAuthorTitle'), newMessage.author.toString(), true)
             .addField(channelLanguage.get('delmsgEmbedChannelTitle'), newMessage.channel.toString(), true)
             .addField(channelLanguage.get('delmsgEmbedSentTitle'), channelLanguage.get('delmsgEmbedSentValue', [Math.floor(newMessage.createdTimestamp / 1000)]), true);

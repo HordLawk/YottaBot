@@ -57,8 +57,7 @@ module.exports = {
         }
         const hook = await newMessage.client.fetchWebhook(newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg').hookID || newMessage.client.guildData.get(newMessage.guild.id).defaultLogsHookID, newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg').hookToken || newMessage.client.guildData.get(newMessage.guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
-        const [oldContent, newContent] = [escapeCodeBlock(cleanContent(oldMessage.content, newMessage.channel)), escapeCodeBlock(cleanContent(newMessage.content, newMessage.channel))];
-        const diff = Diff.diffChars(oldContent ?? '', newContent ?? '');
+        const diff = Diff.diffChars(escapeCodeBlock(cleanContent(oldMessage.content, newMessage.channel)), escapeCodeBlock(cleanContent(newMessage.content, newMessage.channel)));
         let oldContentDiff = diff.map(part => {
             if(part.added) return '';
             if(part.removed) return `\u001b[41m${part.value}`;
@@ -69,8 +68,8 @@ module.exports = {
             if(part.removed) return '';
             return `\u001b[0m${part.value}`;
         }).join('');
-        if((oldContent.length > 2000) && (newContent.length > 2000)){
-            if(oldContent.slice(0, 2000) === newContent.slice(0, 2000)){
+        if((oldContentDiff.length > 2000) && (newContentDiff.length > 2000)){
+            if(oldContentDiff.slice(0, 2000) === newContentDiff.slice(0, 2000)){
                 oldContentDiff = `[...]\`\`\`ansi\n${oldContentDiff.slice(-2000)}\`\`\``;
                 newContentDiff = `[...]\`\`\`ansi\n${newContentDiff.slice(-2000)}\`\`\``;
             }
@@ -80,17 +79,17 @@ module.exports = {
             }
         }
         else{
-            if(oldContent.length > 2000){
+            if(oldContentDiff.length > 2000){
                 oldContentDiff = `\`\`\`ansi\n${oldContentDiff.slice(0, 2000)}\`\`\`[...]\n`;
             }
             else{
-                oldContentDiff = oldContent && `\`\`\`ansi\n${oldContentDiff}\`\`\``;
+                oldContentDiff = oldContentDiff && `\`\`\`ansi\n${oldContentDiff}\`\`\``;
             }
-            if(newContent.length > 2000){
+            if(newContentDiff.length > 2000){
                 newContentDiff = `\`\`\`ansi\n${newContentDiff.slice(0, 2000)}\`\`\`[...]\n`;
             }
             else{
-                newContentDiff = newContent && `\`\`\`ansi\n${newContentDiff}\`\`\``;
+                newContentDiff = newContentDiff && `\`\`\`ansi\n${newContentDiff}\`\`\``;
             }
         }
         const embed = new EmbedBuilder()

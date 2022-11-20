@@ -837,6 +837,10 @@ module.exports = {
                 vars.usages
             );
             case 'userInfoBadges': return 'Insígnias';
+            case 'noRankedMembers': return (
+                'Parece que não há nenhum membro com xp nesse servidor ainda\n' +
+                'Vá conversar um tempo e seja o primeiro a ganhar um pouco!'
+            );
         }
     },
 };

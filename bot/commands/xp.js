@@ -55,6 +55,7 @@ module.exports = {
                 }
                 const members = await message.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)});
                 parcialMemberDocs = parcialMemberDocs.filter(e => members.has(e.userID));
+                if(!parcialMemberDocs.length) return await message.reply(channelLanguage.get('noRankedMembers'));
                 if(verbose){
                     console.log('interception database and discord members:');
                     console.log(`length: ${parcialMemberDocs.length}`);
@@ -285,6 +286,10 @@ module.exports = {
         }, 'userID xp').sort({xp: -1}).limit(cachePageSize);
         const members = await interaction.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)});
         parcialMemberDocs = parcialMemberDocs.filter(e => members.has(e.userID));
+        if(!parcialMemberDocs.length) return await interaction.reply({
+            content: channelLanguage.get('noRankedMembers'),
+            ephemeral: true,
+        });
         let page = 0;
         const pageSize = 20;
         const memberDocsSize = await member.countDocuments({

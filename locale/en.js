@@ -700,6 +700,10 @@ module.exports = {
                 vars.usages
             );
             case 'userInfoBadges': return 'Badges';
+            case 'noRankedMembers': return (
+                'It looks like there aren\'t any members with xp in this server yet\n' +
+                'Go talk for a bit and be the first to earn some!'
+            );
         }
     },
 };

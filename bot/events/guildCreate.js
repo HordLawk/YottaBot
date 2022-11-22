@@ -78,6 +78,7 @@ module.exports = {
                 adder.send({embeds: [dmEmbed], components}).then(dm => {
                     const collector = dm.createMessageComponentCollector({time: 600000});
                     collector.on('collect', i => (async i => {
+                        guildData = guild.client.guildData.get(guild.id);
                         if(guildData){
                             await guildModel.findByIdAndUpdate(
                                 guild.id,

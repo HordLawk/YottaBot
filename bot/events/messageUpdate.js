@@ -57,7 +57,7 @@ module.exports = {
         }
         const hook = await newMessage.client.fetchWebhook(newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg').hookID || newMessage.client.guildData.get(newMessage.guild.id).defaultLogsHookID, newMessage.client.guildData.get(newMessage.guild.id).actionlogs.id('editmsg').hookToken || newMessage.client.guildData.get(newMessage.guild.id).defaultLogsHookToken).catch(() => null);
         if(!hook) return;
-        const diff = Diff.diffChars(escapeCodeBlock(cleanContent(oldMessage.content, newMessage.channel)), escapeCodeBlock(cleanContent(newMessage.content, newMessage.channel)));
+        const diff = Diff.diffChars(cleanContent(oldMessage.content, newMessage.channel).replaceAll('```', '``ˋ'), cleanContent(newMessage.content, newMessage.channel).replaceAll('```', '``ˋ'));
         let oldContentDiff = diff.map(part => {
             if(part.added) return '';
             if(part.removed) return `\u001b[41m${part.value}`;

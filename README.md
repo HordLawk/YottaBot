@@ -48,3 +48,4 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] finish adapting to slash commands
 - [ ] anti hoisting
 - [ ] giveaway system
+- [ ] ticket system with private threads

@@ -50,6 +50,13 @@ const client = new Discord.Client({
         name: '/help',
         type: Discord.ActivityType.Listening,
     }]},
+    makeCache: Discord.Options.cacheWithLimits({
+        ...Discord.Options.DefaultMakeCacheSettings,
+        GuildEmojiManager: 0,
+        GuildScheduledEventManager: 0,
+        GuildStickerManager: 0,
+        StageInstanceManager: 0,
+    }),
 });
 client.cooldowns = new Discord.Collection();
 client.xpcds = new Discord.Collection();

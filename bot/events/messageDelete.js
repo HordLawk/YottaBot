@@ -67,7 +67,11 @@ module.exports = {
         }
         var files = [];
         if(message.attachments.size){
-            if(message.client.guildData.get(message.guild.id).logAttachments){
+            if(
+                message.client.guildData.get(message.guild.id).logAttachments
+                &&
+                message.attachments.every(attach => (attach.size <= (8 * 1024 * 1024)))
+            ){
                 files = message.attachments.map(e => ({name: e.name, attachment: e.url}));
             }
             else{

@@ -23,16 +23,22 @@ manager.spawn();
 process.on('unhandledRejection', async error => {
     console.error('Unhandled promise rejection:', error);
     try{
-        if(process.env.NODE_ENV === 'production') await manager.broadcastEval(async (c, {channelId, error}) => {
-            const channel = c.channels.cache.get(channelId);
-            if(channel) await channel.send({
-                content: `Error: *${error.message}*`,
-                files: [{
-                    name: 'stack.log',
-                    attachment: Buffer.from(error.stack),
-                }],
-            }).catch(console.error);
-        }, {context: {channelId: configs.errorlog, error}}).catch(console.error);
+        if(process.env.NODE_ENV === 'production'){
+            await manager.broadcastEval(async (c, {channelId, errorMessage, errorStack}) => {
+                const channel = c.channels.cache.get(channelId);
+                if(channel) await channel.send({
+                    content: `Error: *${errorMessage}*`,
+                    files: [{
+                        name: 'stack.log',
+                        attachment: Buffer.from(errorStack),
+                    }],
+                }).catch(console.error);
+            }, {context: {
+                channelId: configs.errorlog,
+                errorMessage: error.message,
+                errorStack: error.stack,
+            }}).catch(console.error);
+        }
     }
     catch(err){
         console.error(err);

@@ -16,7 +16,7 @@
 const guild = require('../../schemas/guild.js');
 const user = require('../../schemas/user.js');
 const member = require('../../schemas/member.js');
-const {Collection, InteractionType, ApplicationCommandOptionType} = require('discord.js');
+const {InteractionType, ApplicationCommandOptionType} = require('discord.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
 const commands = require('../commands');
@@ -73,7 +73,7 @@ module.exports = {
             content: channelLanguage.get('betaCommand'),
             ephemeral: true,
         });
-        if(!interaction.client.cooldowns.has(command.name)) interaction.client.cooldowns.set(command.name, new Collection());
+        if(!interaction.client.cooldowns.has(command.name)) interaction.client.cooldowns.set(command.name, new Map());
         const now = Date.now();
         const timestamps = interaction.client.cooldowns.get(command.name);
         const cooldownAmount = (command.cooldown / (1 + (!!interaction.client.guildData.get(interaction.guild?.id)?.premiumUntil || !!interaction.client.guildData.get(interaction.guild?.id)?.partner))) * 1000;

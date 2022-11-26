@@ -18,7 +18,7 @@ const role = require('../../schemas/role.js');
 const channel = require('../../schemas/channel.js');
 const member = require('../../schemas/member.js');
 const user = require('../../schemas/user.js');
-const {Collection, PermissionsBitField, EmbedBuilder, ApplicationCommandType, MessageType} = require('discord.js');
+const {PermissionsBitField, EmbedBuilder, ApplicationCommandType, MessageType} = require('discord.js');
 const locale = require('../../locale');
 const configs = require('../configs.js');
 const commands = require('../commands');
@@ -88,7 +88,7 @@ module.exports = {
                     message.client.xpcds.get(message.guild.id).set(message.author.id, Date.now());
                 }
                 else{
-                    message.client.xpcds.set(message.guild.id, new Collection([[message.author.id, Date.now()]]));
+                    message.client.xpcds.set(message.guild.id, new Map([[message.author.id, Date.now()]]));
                 }
                 if(!message.member) return;
                 const lowerRoles = roleDocs.filter(e => (e.xp && (e.xp <= doc.xp))).sort((a, b) => (b.xp - a.xp));
@@ -208,7 +208,7 @@ module.exports = {
             if((!roles.length && command.perm && !message.member.permissions.has(command.perm)) || (roles.length && roles.some(e => !e.commandPermissions.id(command.name).allow) && !roles.some(e => e.commandPermissions.id(command.name).allow))) return message.reply(channelLanguage.get('forbidden'));
             if(savedChannel && savedChannel.ignoreCommands.includes(command.name) && message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.AddReactions)) return await message.react('🚫');
         }
-        if(!message.client.cooldowns.has(command.name)) message.client.cooldowns.set(command.name, new Collection());
+        if(!message.client.cooldowns.has(command.name)) message.client.cooldowns.set(command.name, new Map());
         const now = Date.now();
         const timestamps = message.client.cooldowns.get(command.name);
         const cooldownAmount = (command.cooldown / (1 + (!!message.client.guildData.get(message.guild?.id)?.premiumUntil || !!message.client.guildData.get(message.guild?.id)?.partner))) * 1000;

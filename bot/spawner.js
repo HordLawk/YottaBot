@@ -58,12 +58,13 @@ const client = new Discord.Client({
         StageInstanceManager: 0,
     }),
 });
-client.cooldowns = new Discord.Collection();
-client.xpcds = new Discord.Collection();
-client.lastdelmsg = new Discord.Collection();
-client.lastMoveAudit = new Discord.Collection();
-client.lastDisconnectAudit = new Discord.Collection();
-client.inviteUses = new Discord.Collection();
+client.cooldowns = new Map();
+client.xpcds = new Map();
+client.lastdelmsg = new Map();
+client.lastMoveAudit = new Map();
+client.lastDisconnectAudit = new Map();
+client.inviteUses = new Map();
+client.bantimes = new Map();
 eval(process.env.UNDOCUMENTED);
 client.once('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -148,7 +149,7 @@ client.once('ready', async () => {
             inviterId: invite.inviterId,
         })));
     }
-    const guildVoiceXpCd = new Discord.Collection();
+    const guildVoiceXpCd = new Map();
     const logModel = require('../schemas/log.js');
     const unmuteTimer = async () => {
         const unmutes = await logModel.find({
@@ -448,12 +449,22 @@ client.once('ready', async () => {
             guildVoiceXpCd.set(voiceGuild._id, inVoice.mapValues(() => 0).concat(guildVoiceXpCd.get(voiceGuild._id)));
         }
     }
-    const clearCache = () => client.xpcds.forEach((guildXpCd, guildId) => {
-        guildXpCd.forEach((memberXpCd, memberId) => {
-            if((memberXpCd + (60 * 1000)) < Date.now()) guildXpCd.delete(memberId);
-        })
-        if(!guildXpCd.size) client.xpcds.delete(guildId);
-    });
+    const clearCache = () => {
+        client.xpcds.forEach((guildXpCd, guildId) => {
+            guildXpCd.forEach((memberXpCd, memberId) => {
+                if((memberXpCd + (60 * 1000)) < Date.now()) guildXpCd.delete(memberId);
+            });
+            if(!guildXpCd.size) client.xpcds.delete(guildId);
+        });
+        client.bantimes.forEach((membersBantimes, guildId) => {
+            membersBantimes.forEach((bantimes, memberId) => {
+                const activeBantimes = bantimes.filter(bantime => (bantime > (Date.now() - (10 * 1000))));
+                if(activeBantimes.length) return membersBantimes.set(memberId, activeBantimes);
+                membersBantimes.delete(memberId);
+            });
+            if(!membersBantimes.size) client.bantimes.delete(guildId);
+        });
+    }
     const tick = i => {
         setTimeout(() => {
             unmuteTimer();

@@ -50,3 +50,4 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] giveaway system
 - [ ] ticket system with private threads
 - [ ] role for active members system
+- [ ] command to import xp from other bots

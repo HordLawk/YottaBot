@@ -56,6 +56,23 @@ const client = new Discord.Client({
         GuildScheduledEventManager: 0,
         GuildStickerManager: 0,
         StageInstanceManager: 0,
+        ReactionManager: 0,
+        GuildMemberManager: {
+            maxSize: -1,
+            keepOverLimit: member => {
+                return (member.id === client.user.id) || (process.memoryUsage.rss() < (300 * 1024 * 1024));
+            },
+        },
+        UserManager: {
+            maxSize: -1,
+            keepOverLimit: user => {
+                return (
+                    (user.id === client.user.id)
+                    ||
+                    (client.guilds.cache.some(guild => guild.members.cache.has(user.id)))
+                );
+            },
+        },
     }),
 });
 client.cooldowns = new Map();

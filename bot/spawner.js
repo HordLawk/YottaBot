@@ -60,7 +60,7 @@ const client = new Discord.Client({
         GuildMemberManager: {
             maxSize: -1,
             keepOverLimit: member => {
-                return (member.id === client.user.id) || (process.memoryUsage.rss() < (300 * 1024 * 1024));
+                return (member.id === client.user.id) || (process.memoryUsage.rss() < (320 * 1024 * 1024));
             },
         },
         UserManager: {

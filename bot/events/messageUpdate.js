@@ -70,26 +70,26 @@ module.exports = {
         }).join('');
         if((oldContentDiff.length > 2000) && (newContentDiff.length > 2000)){
             if(oldContentDiff.slice(0, 2000) === newContentDiff.slice(0, 2000)){
-                oldContentDiff = `[...]\`\`\`ansi\n${oldContentDiff.slice(-2000)}\`\`\``;
-                newContentDiff = `[...]\`\`\`ansi\n${newContentDiff.slice(-2000)}\`\`\``;
+                oldContentDiff = `[...]\`\`\`ansi\n${oldContentDiff.slice(-2000)}\n\`\`\``;
+                newContentDiff = `[...]\`\`\`ansi\n${newContentDiff.slice(-2000)}\n\`\`\``;
             }
             else{
-                oldContentDiff = `\`\`\`ansi\n${oldContentDiff.slice(0, 2000)}\`\`\`[...]\n`;
-                newContentDiff = `\`\`\`ansi\n${newContentDiff.slice(0, 2000)}\`\`\`[...]\n`;
+                oldContentDiff = `\`\`\`ansi\n${oldContentDiff.slice(0, 2000)}\n\`\`\`[...]\n`;
+                newContentDiff = `\`\`\`ansi\n${newContentDiff.slice(0, 2000)}\n\`\`\`[...]\n`;
             }
         }
         else{
             if(oldContentDiff.length > 2000){
-                oldContentDiff = `\`\`\`ansi\n${oldContentDiff.slice(0, 2000)}\`\`\`[...]\n`;
+                oldContentDiff = `\`\`\`ansi\n${oldContentDiff.slice(0, 2000)}\n\`\`\`[...]\n`;
             }
             else{
-                oldContentDiff = oldContentDiff && `\`\`\`ansi\n${oldContentDiff}\`\`\``;
+                oldContentDiff = oldContentDiff && `\`\`\`ansi\n${oldContentDiff}\n\`\`\``;
             }
             if(newContentDiff.length > 2000){
-                newContentDiff = `\`\`\`ansi\n${newContentDiff.slice(0, 2000)}\`\`\`[...]\n`;
+                newContentDiff = `\`\`\`ansi\n${newContentDiff.slice(0, 2000)}\n\`\`\`[...]\n`;
             }
             else{
-                newContentDiff = newContentDiff && `\`\`\`ansi\n${newContentDiff}\`\`\``;
+                newContentDiff = newContentDiff && `\`\`\`ansi\n${newContentDiff}\n\`\`\``;
             }
         }
         const embed = new EmbedBuilder()

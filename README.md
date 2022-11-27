@@ -49,3 +49,4 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] anti hoisting
 - [ ] giveaway system
 - [ ] ticket system with private threads
+- [ ] role for active members system

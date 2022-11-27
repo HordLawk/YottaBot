@@ -29,7 +29,7 @@ module.exports = {
     aliases: ['mb'],
     usage: lang => [lang.get('massbanUsage')],
     example: ['@LordHawk#0001 @Kamikat#7358 annoying raiders'],
-    cooldown: 10,
+    cooldown: 60,
     categoryID: 3,
     args: true,
     perm: PermissionsBitField.Flags.Administrator,

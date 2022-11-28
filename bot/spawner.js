@@ -58,20 +58,6 @@ const client = new Discord.Client({
         StageInstanceManager: 0,
         ReactionManager: 0,
     }),
-    sweepers: {
-        users: {
-            interval: 60,
-            filter: () => user => client.guilds.cache.every(guild => !guild.members.cache.has(user.id)),
-        },
-        guildMembers: {
-            interval: 60,
-            filter: () => {
-                const ramIsFull = () => (process.memoryUsage.rss() > (320 * 1_024 * 1_024));
-                if(ramIsFull()) console.log(`RAM at ${process.memoryUsage.rss() / (1024 * 1024)} MB - Sweeping ${client.guilds.cache.reduce((acc, g) => acc + g.members.cache.size, 0)} members...`);
-                return ramIsFull() ? member => ((member.id !== client.user.id) && ramIsFull()) : null;
-            },
-        },
-    },
 });
 client.cooldowns = new Map();
 client.xpcds = new Map();

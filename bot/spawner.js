@@ -57,23 +57,21 @@ const client = new Discord.Client({
         GuildStickerManager: 0,
         StageInstanceManager: 0,
         ReactionManager: 0,
-        // GuildMemberManager: {
-        //     maxSize: -1,
-        //     keepOverLimit: member => {
-        //         return (member.id === client.user.id) || (process.memoryUsage.rss() < (320 * 1024 * 1024));
-        //     },
-        // },
-        // UserManager: {
-        //     maxSize: -1,
-        //     keepOverLimit: user => {
-        //         return (
-        //             (user.id === client.user.id)
-        //             ||
-        //             (client.guilds.cache.some(guild => guild.members.cache.has(user.id)))
-        //         );
-        //     },
-        // },
     }),
+    sweepers: {
+        users: {
+            interval: 60,
+            filter: () => user => client.guilds.cache.every(guild => !guild.members.cache.has(user.id)),
+        },
+        guildMembers: {
+            interval: 60,
+            filter: () => {
+                const ramIsFull = () => (process.memoryUsage.rss() > (320 * 1_024 * 1_024));
+                if(ramIsFull()) console.log(`RAM at ${process.memoryUsage.rss() / (1024 * 1024)} MB - Sweeping ${client.guilds.cache.reduce((acc, g) => acc + g.members.cache.size, 0)} members...`);
+                return ramIsFull() ? member => ((member.id !== client.user.id) && ramIsFull()) : null;
+            },
+        },
+    },
 });
 client.cooldowns = new Map();
 client.xpcds = new Map();
@@ -481,6 +479,12 @@ client.once('ready', async () => {
             });
             if(!membersBantimes.size) client.bantimes.delete(guildId);
         });
+        // const ramIsFull = () => (process.memoryUsage.rss() > (320 * 1_024 * 1_024));
+        // if(ramIsFull()){
+        //     console.log(`RAM at ${process.memoryUsage.rss() / (1024 * 1024)} MB - Sweeping ${client.guilds.cache.reduce((acc, g) => acc + g.members.cache.size, 0)} members...`);
+        //     const swept = client.sweepers.sweepGuildMembers(member => ((member.id !== client.user.id) && ramIsFull()));
+        //     console.log(`Swept ${swept} members - RAM at ${process.memoryUsage.rss() / (1024 * 1024)} MB`);
+        // }
     }
     const tick = i => {
         setTimeout(() => {

@@ -52,8 +52,8 @@ module.exports = {
         if(!audits.entries.first() || audits.entries.first().executor.bot) return;
         if(ban.client.guildData.get(ban.guild.id).antiMassBan){
             const bantimes = ban.client.bantimes.get(ban.guild.id);
+            const entry = audits.entries.first();
             if(bantimes){
-                const entry = audits.entries.first();
                 const bantime = bantimes.get(entry.executor.id);
                 if(bantime){
                     bantime.push(entry.createdTimestamp);

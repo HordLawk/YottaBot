@@ -41,7 +41,8 @@ const rankPage = (docs, page, pageSize, userId, guild) => `\`\`\`ansi\n${docs.ma
             docs.map(d => guild.members.cache.get(d.userID).user.tag.length).sort((a, b) => (b - a))[0],
             ' ',
         ) +
-        `${resetColour}m | \u001b[36m${Math.floor(doc.xp).toString().padStart(Math.floor(docs[0].xp).toString().length, ' ')}xp`
+        `${resetColour}m | \u001b[36m` +
+        `${Math.floor(doc.xp).toString().padStart(Math.floor(docs[0].xp).toString().length, ' ')}xp`
     );
 }).join('\n')}\`\`\``;
 

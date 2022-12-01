@@ -23,6 +23,28 @@ const {
 const configs = require('../configs.js');
 const { handleComponentError } = require('../utils.js');
 
+const rankPage = (docs, page, pageSize, userId, guild) => `\`\`\`ansi\n${docs.map((doc, i) => {
+    let posColour = '\u001b[';
+    let resetColour = '\u001b[0';
+    if(doc.userID === userId){
+        posColour += '1;40;';
+        resetColour += ';1;40';
+    }
+    else{
+        posColour += '0;'
+    }
+    return (
+        `${posColour}35m#` +
+        ((page * pageSize) + i + 1).toString().padEnd((pageSize * (page + 1)).toString().length, ' ') +
+        `${resetColour}m - \u001b[37m` +
+        guild.members.cache.get(doc.userID).user.tag.padEnd(
+            docs.map(d => guild.members.cache.get(d.userID).user.tag.length).sort((a, b) => (b - a))[0],
+            ' ',
+        ) +
+        `${resetColour}m | \u001b[36m${Math.floor(doc.xp).toString().padStart(Math.floor(docs[0].xp).toString().length, ' ')}xp`
+    );
+}).join('\n')}\`\`\``;
+
 module.exports = {
     active: true,
     name: 'xp',
@@ -99,7 +121,7 @@ module.exports = {
                         iconURL: message.guild.iconURL({dynamic: true}),
                     })
                     .setTimestamp()
-                    .setDescription(memberDocsSliced.map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}\`#${i + 1}${i < 9 ? ' ' : ''} - ${message.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => message.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - message.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
+                    .setDescription(rankPage(memberDocsSliced, page, pageSize, message.author.id, message.guild));
                 if(memberDoc){
                     const queryFilter = {
                         guild: message.guild.id,
@@ -157,7 +179,7 @@ module.exports = {
                         break;
                     }
                     memberDocsSliced = memberDocs.slice(0, pageSize);
-                    embed.setDescription(memberDocsSliced.map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}\`#${page * pageSize + (i + 1)}${Array((pageSize * (page + 1)).toString().length - (page * pageSize + (i + 1)).toString().length).fill(' ').join('')} - ${message.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => message.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - message.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
+                    embed.setDescription(rankPage(memberDocsSliced, page, pageSize, message.author.id, message.guild));
                     buttonPrevious.disabled = !page;
                     buttonNext.disabled = (memberDocs.length <= pageSize);
                     await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({embeds: [embed], components});
@@ -320,7 +342,7 @@ module.exports = {
                 iconURL: interaction.guild.iconURL({dynamic: true}),
             })
             .setTimestamp()
-            .setDescription(memberDocsSliced.map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}\`#${i + 1}${i < 9 ? ' ' : ''} - ${interaction.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => interaction.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - interaction.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
+            .setDescription(rankPage(memberDocsSliced, page, pageSize, interaction.user.id, interaction.guild));
         if(memberDoc){
             const queryFilter = {
                 guild: interaction.guild.id,
@@ -382,7 +404,8 @@ module.exports = {
                 break;
             }
             memberDocsSliced = memberDocs.slice(0, pageSize);
-            embed.setDescription(memberDocsSliced.map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}\`#${page * pageSize + (i + 1)}${Array((pageSize * (page + 1)).toString().length - (page * pageSize + (i + 1)).toString().length).fill(' ').join('')} - ${interaction.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => interaction.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - interaction.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
+            embed.setDescription(rankPage(memberDocsSliced, page, pageSize, interaction.user.id, interaction.guild));
+            // embed.setDescription(memberDocsSliced.map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}\`#${page * pageSize + (i + 1)}${Array((pageSize * (page + 1)).toString().length - (page * pageSize + (i + 1)).toString().length).fill(' ').join('')} - ${interaction.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => interaction.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - interaction.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
             buttonPrevious.disabled = !page;
             buttonNext.disabled = (memberDocs.length <= pageSize);
             await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({embeds: [embed], components});

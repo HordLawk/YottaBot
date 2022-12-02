@@ -27,10 +27,12 @@ const rankPage = (docs, page, pageSize, userId, guild) => `\`\`\`ansi\n${docs.ma
     let posColour = '\u001b[';
     let resetColour = '\u001b[0';
     let tagColour = '';
+    let tagResetColour = '';
     if(doc.userID === userId){
         posColour += '1;40;';
         resetColour += ';1;40';
         tagColour = '\u001b[37m';
+        tagResetColour = '\u001b[0;1;40m';
     }
     else{
         posColour += '0;'
@@ -43,7 +45,7 @@ const rankPage = (docs, page, pageSize, userId, guild) => `\`\`\`ansi\n${docs.ma
             Math.max(...docs.map(d => guild.members.cache.get(d.userID).user.tag.length)),
             ' ',
         ) +
-        `${resetColour}m | \u001b[36m` +
+        `${tagResetColour} | \u001b[36m` +
         `${Math.floor(doc.xp).toString().padStart(Math.floor(docs[0].xp).toString().length, ' ')}xp`
     );
 }).join('\n')}\`\`\``;
@@ -408,7 +410,6 @@ module.exports = {
             }
             memberDocsSliced = memberDocs.slice(0, pageSize);
             embed.setDescription(rankPage(memberDocsSliced, page, pageSize, interaction.user.id, interaction.guild));
-            // embed.setDescription(memberDocsSliced.map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}\`#${page * pageSize + (i + 1)}${Array((pageSize * (page + 1)).toString().length - (page * pageSize + (i + 1)).toString().length).fill(' ').join('')} - ${interaction.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => interaction.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - interaction.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
             buttonPrevious.disabled = !page;
             buttonNext.disabled = (memberDocs.length <= pageSize);
             await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({embeds: [embed], components});

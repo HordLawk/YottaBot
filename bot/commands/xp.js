@@ -26,9 +26,11 @@ const { handleComponentError } = require('../utils.js');
 const rankPage = (docs, page, pageSize, userId, guild) => `\`\`\`ansi\n${docs.map((doc, i) => {
     let posColour = '\u001b[';
     let resetColour = '\u001b[0';
+    let tagColour = '';
     if(doc.userID === userId){
         posColour += '1;40;';
         resetColour += ';1;40';
+        tagColour = '\u001b[37m';
     }
     else{
         posColour += '0;'
@@ -36,9 +38,9 @@ const rankPage = (docs, page, pageSize, userId, guild) => `\`\`\`ansi\n${docs.ma
     return (
         `${posColour}35m#` +
         ((page * pageSize) + i + 1).toString().padEnd((pageSize * (page + 1)).toString().length, ' ') +
-        `${resetColour}m - \u001b[37m` +
+        `${resetColour}m - ${tagColour}` +
         guild.members.cache.get(doc.userID).user.tag.padEnd(
-            docs.map(d => guild.members.cache.get(d.userID).user.tag.length).sort((a, b) => (b - a))[0],
+            Math.max(...docs.map(d => guild.members.cache.get(d.userID).user.tag.length)),
             ' ',
         ) +
         `${resetColour}m | \u001b[36m` +

@@ -88,9 +88,10 @@ const badges = {
     PremiumEarlySupporter: '<:earlysupporter:967043119717699665>',
     BugHunterLevel2: '<:bughunter2:967043119759642694>',
     VerifiedDeveloper: '<:botdev:967043120984391752>',
-    CertifiedModerator: '<:mod:967043119788994610>',
+    CertifiedModerator: '<:modcertified:1048102520590974988>',
     VerifiedBot: '<:verifiedbot:967049829568090143>',
     BotHTTPInteractions: '<:bot:967062591190995004>',
+    ActiveDeveloper: '<:activedev:1048103388556050483>',
 };
 
 const userBadgesString = user => {

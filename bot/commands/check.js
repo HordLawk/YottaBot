@@ -228,7 +228,7 @@ module.exports = {
             }
             embed.setFields(logDocs.slice(page * pageSize, (page + 1) * pageSize).map(e => ({
                 name: channelLanguage.get('checkEmbedCaseTitle', [e.id]),
-                value: channelLanguage.get(fieldString, [e, e.duration && formatDuration(e.duration.getTime() - e.timeStamp.getTime())]),
+                value: channelLanguage.get(fieldString, [e, e.duration && formatDuration(Math.round((e.duration.getTime() - e.timeStamp.getTime()) / (60 * 1_000)))]),
             })));
             buttonPrevious.disabled = !page;
             buttonNext.disabled = (!logDocs.slice((page + 1) * pageSize).length);

@@ -62,7 +62,7 @@ module.exports = {
     usage: lang => ['server', lang.get('delcasesUsage0'), lang.get('delcasesUsage1')], 
     example: ['user @LordHawk#0001', 'case 123'],
     cooldown: 5,
-    categoryID: 1,
+    categoryID: 2,
     args: true,
     perm: PermissionsBitField.Flags.Administrator,
     guildOnly: true,

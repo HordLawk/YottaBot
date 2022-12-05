@@ -107,7 +107,7 @@ module.exports = {
                 .addFields(
                     {
                         name: channelLanguage.get('voicedisconnectEmbedChannelTitle'),
-                        value: oldState.channel.toString(),
+                        value: `<#${oldState.channelId}>`,
                         inline: true,
                     },
                     {

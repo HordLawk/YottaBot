@@ -505,6 +505,7 @@ module.exports = {
             content: channelLanguage.get('botWebhooks'),
             ephemeral: true,
         });
+        await interaction.deferReply();
         const hook = await args.channel.createWebhook({
             avatar: interaction.client.user.avatarURL(),
             reason: channelLanguage.get('newDefaultHookReason'),
@@ -518,7 +519,7 @@ module.exports = {
             defaultLogsHookToken: hook.token,
         }}, {new: true});
         interaction.client.guildData.set(interaction.guild.id, guildDoc);
-        await interaction.reply(channelLanguage.get('newDefaultLog', [args.channel]));
+        await interaction.editReply(channelLanguage.get('newDefaultLog', [args.channel]));
     },
     actionssetSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;

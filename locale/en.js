@@ -448,7 +448,12 @@ module.exports = {
             case 'invCooldown': return 'Cooldown minutes has to be an integer between 1 and 59';
             case 'voicexpEnableSuccess': return `Xp earning in voice channels was enabled and its cooldown was set to ${vars[0]}`;
             case 'voicexpDisableSuccess': return 'Xp earning in voice channels disabled';
-            case 'slashOnly': return `The \`${vars[0]}\` command can only be executed through Discord's built in slash commands feature\nType \`/${vars[0]}\` to use it`;
+            case 'slashOnly': return (
+                `The \`${vars.commandName}\` command can only be executed through Discord's built in slash commands` +
+                ` feature\n` +
+                `Click a command below for the correct usage:\n` +
+                vars.usages
+            );
             case 'processing': return 'This command is currently already being processed somewhere in this server\nTry again later';
             case 'invMassBanProtectionAmount': return 'Invalid amount of bans in 10 seconds';
             case 'massBanProtectionSuccess': return `Mass ban protection setting was turned \`${vars[0]}\``;

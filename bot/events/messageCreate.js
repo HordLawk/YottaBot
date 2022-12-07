@@ -177,7 +177,10 @@ module.exports = {
                 (commandsManager.find(e => (e.name === command.name))?.type !== ApplicationCommandType.ChatInput)
             )
         ) return;
-        if(!command.execute) return message.reply(channelLanguage.get('slashOnly', [command.name]));
+        if(!command.execute) return await message.reply(channelLanguage.get('slashOnly', {
+            commandName: command.name,
+            usages: slashCommandUsages(command.name, message.client),
+        }));
         if(configs.maintenance && (message.author.id !== message.client.application.owner.id)) return message.reply(channelLanguage.get('maintenance'));
         if(command.guildOnly && !message.guild) return message.reply(channelLanguage.get('guildOnly'));
         if(

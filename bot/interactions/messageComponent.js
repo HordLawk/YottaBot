@@ -204,7 +204,7 @@ module.exports = {
                     ephemeral: true,
                 });
                 if(!banLogMsg?.editable) return;
-                const reasonIndex = banLogEmbed.fields.findIndex(e => (e.name === channelLanguage.get('banEmbedReasonTitle')));
+                const reasonIndex = banLogEmbed.data.fields.findIndex(e => (e.name === channelLanguage.get('banEmbedReasonTitle')));
                 const reasonField = {
                     name: channelLanguage.get('banEmbedReasonTitle'),
                     value: current.reason

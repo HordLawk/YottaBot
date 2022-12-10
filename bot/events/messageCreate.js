@@ -115,7 +115,15 @@ module.exports = {
                 if((guildData.xpChannel === 'none') || (doc.xp >= (lowerRoles[0].xp + multiplier))) return;
                 switch(guildData.xpChannel){
                     case 'default': {
-                        if(message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.SendMessages)) await message.reply({
+                        if(
+                            message.guild.members.me
+                                .permissionsIn(message.channel)
+                                .has(
+                                    PermissionsBitField.Flags.SendMessages
+                                    +
+                                    PermissionsBitField.Flags.ReadMessageHistory
+                                )
+                        ) await message.reply({
                             content: channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID)]),
                             allowedMentions: {repliedUser: true},
                         });
@@ -148,7 +156,13 @@ module.exports = {
                 }
             })(err, doc).catch(async err => await handleEventError(err, this, [message], message.client)));
         }
-        if(message.guild && !message.guild.members.me.permissionsIn(message.channel.id)?.has(PermissionsBitField.Flags.SendMessages)) return;
+        if(
+            message.guild
+            &&
+            !message.guild.members.me
+                .permissionsIn(message.channel.id)
+                ?.has(PermissionsBitField.Flags.SendMessages + PermissionsBitField.Flags.ReadMessageHistory)
+        ) return;
         const commandsManager = (
             (process.env.NODE_ENV === 'production')
             ? message.client.application

@@ -118,11 +118,15 @@ module.exports = {
                         if(
                             message.guild.members.me
                                 .permissionsIn(message.channel)
-                                .has(
-                                    PermissionsBitField.Flags.SendMessages
-                                    +
-                                    PermissionsBitField.Flags.ReadMessageHistory
-                                )
+                                .has(PermissionsBitField.Flags.ReadMessageHistory)
+                            &&
+                            (
+                                message.channel.isThread()
+                                ? message.channel.sendable
+                                : message.guild.members.me
+                                    .permissionsIn(message.channel)
+                                    .has(PermissionsBitField.Flags.SendMessages)
+                            )
                         ) await message.reply({
                             content: channelLanguage.get('achieveGuild', [message.author, message.guild.roles.cache.get(lowerRoles[0].roleID)]),
                             allowedMentions: {repliedUser: true},
@@ -159,9 +163,19 @@ module.exports = {
         if(
             message.guild
             &&
-            !message.guild.members.me
-                .permissionsIn(message.channel.id)
-                ?.has(PermissionsBitField.Flags.SendMessages + PermissionsBitField.Flags.ReadMessageHistory)
+            (
+                !message.guild.members.me
+                    .permissionsIn(message.channel.id)
+                    ?.has(PermissionsBitField.Flags.ReadMessageHistory)
+                ||
+                (
+                    message.channel.isThread()
+                    ? !message.channel.sendable
+                    : !message.guild.members.me
+                        .permissionsIn(message.channel.id)
+                        ?.has(PermissionsBitField.Flags.SendMessages)
+                )
+            )
         ) return;
         const commandsManager = (
             (process.env.NODE_ENV === 'production')

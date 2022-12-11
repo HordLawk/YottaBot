@@ -29,35 +29,29 @@ module.exports = {
                 content: channelLanguage.get('forbidden'),
                 ephemeral: true,
             });
+            const reply = await interaction.deferReply({
+                ephemeral: true,
+                fetchReply: true,
+            });
             const user = await interaction.client.users.fetch(banid).catch(() => null);
             if(!user) throw new Error('User not found');
             const member = await interaction.guild.members.fetch(user.id).catch(() => null);
             if(member){
-                if(!member.bannable) return await interaction.reply({
-                    content: channelLanguage.get('cantBan'),
-                    ephemeral: true,
-                });
-                if(interaction.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return await interaction.reply({
-                    content: channelLanguage.get('youCantBan'),
-                    ephemeral: true,
-                });
+                if(!member.bannable) return await interaction.editReply(channelLanguage.get('cantBan'));
+                if(interaction.member.roles.highest.comparePositionTo(member.roles.highest) <= 0){
+                    return await interaction.editReply(channelLanguage.get('youCantBan'));
+                }
                 await member.send(channelLanguage.get('dmBanned', [interaction.guild.name])).catch(() => null);
             }
             else{
                 const ban = await interaction.guild.bans.fetch(user.id).catch(() => null);
-                if(ban) return await interaction.reply({
-                    content: channelLanguage.get('alreadyBanned'),
-                    ephemeral: true,
-                });
+                if(ban) return await interaction.editReply(channelLanguage.get('alreadyBanned'));
             }
             const newban = await interaction.guild.members.ban(user.id, {
                 reason: channelLanguage.get('banReason', [interaction.user.tag]),
                 deleteMessageSeconds: interaction.client.guildData.get(interaction.guild.id).pruneBan * 24 * 60 * 60,
             }).catch(() => null);
-            if(!newban) return await interaction.reply({
-                content: channelLanguage.get('cantBan'),
-                ephemeral: true,
-            });
+            if(!newban) return await interaction.editReply(channelLanguage.get('cantBan'));
             const guildDoc = await guild.findByIdAndUpdate(interaction.guild.id, {$inc: {counterLogs: 1}});
             interaction.client.guildData.get(interaction.guild.id).counterLogs = guildDoc.counterLogs + 1;
             const current = new log({
@@ -70,11 +64,7 @@ module.exports = {
                 actionMessage: interaction.message.url,
             });
             await current.save();
-            const reply = await interaction.reply({
-                content: channelLanguage.get('memberBanSuccess', [current.id]),
-                ephemeral: true,
-                fetchReply: true,
-            });
+            await interaction.editReply(channelLanguage.get('memberBanSuccess', [current.id]));
             const discordChannel = interaction.guild.channels.cache.get(interaction.client.guildData.get(interaction.guild.id).modlogs.ban);
             let banLogMsg;
             let banLogEmbed;

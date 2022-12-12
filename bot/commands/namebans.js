@@ -124,6 +124,10 @@ module.exports = {
         const {channelLanguage} = interaction;
         const namebanModel = require('../../schemas/nameban.js');
         const namebanDocs = await namebanModel.find({guild: interaction.guild.id}).sort({createdAt: 1});
+        if(!namebanDocs.length) return await interaction.reply({
+            content: channelLanguage.get('noBannedUsernames'),
+            ephemeral: true,
+        });
         const replyData = {};
         const namebansLimit = configs.namebansLimits[+!!(
             interaction.client.guildData.get(interaction.guild.id).premiumUntil ||

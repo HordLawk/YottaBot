@@ -846,6 +846,7 @@ module.exports = {
                 'Parece que não há nenhum membro com xp nesse servidor ainda\n' +
                 'Vá conversar um tempo e seja o primeiro a ganhar um pouco!'
             );
+            case 'noBannedUsernames': return 'Não há usernames banidos nesse servidor';
         }
     },
 };

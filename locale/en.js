@@ -709,6 +709,7 @@ module.exports = {
                 'It looks like there aren\'t any members with xp in this server yet\n' +
                 'Go talk for a bit and be the first to earn some!'
             );
+            case 'noBannedUsernames': return 'There are no banned usernames in this server';
         }
     },
 };

@@ -459,7 +459,14 @@ module.exports = {
                             name: 'modlog_channel',
                             description: 'The channel to log moderation actions in',
                             required: true,
-                            channelTypes: [ChannelType.GuildText],
+                            channelTypes: [
+                                ChannelType.GuildText,
+                                ChannelType.GuildAnnouncement,
+                                ChannelType.AnnouncementThread,
+                                ChannelType.GuildVoice,
+                                ChannelType.PrivateThread,
+                                ChannelType.PublicThread,
+                            ],
                         },
                         {
                             type: ApplicationCommandOptionType.String,

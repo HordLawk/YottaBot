@@ -82,7 +82,10 @@ module.exports = {
                 }
                 const members = await message.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)});
                 parcialMemberDocs = parcialMemberDocs.filter(e => members.has(e.userID));
-                if(!parcialMemberDocs.length) return await message.reply(channelLanguage.get('noRankedMembers'));
+                if(!parcialMemberDocs.length){
+                    message.client.guildData.get(message.guild.id).processing = false;
+                    return await message.reply(channelLanguage.get('noRankedMembers'));
+                }
                 if(verbose){
                     console.log('interception database and discord members:');
                     console.log(`length: ${parcialMemberDocs.length}`);
@@ -294,11 +297,15 @@ module.exports = {
     },
     rankSlash: async interaction => {
         const {channelLanguage} = interaction;
-        if(!interaction.client.guildData.get(interaction.guild.id).gainExp && !interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown) return interaction.reply({
+        if(
+            !interaction.client.guildData.get(interaction.guild.id).gainExp
+            &&
+            !interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown
+        ) return await interaction.reply({
             content: channelLanguage.get('xpDisabled'),
             ephemeral: true,
         });
-        if(interaction.client.guildData.get(interaction.guild.id).processing) return interaction.reply({
+        if(interaction.client.guildData.get(interaction.guild.id).processing) return await interaction.reply({
             content: channelLanguage.get('processing'),
             ephemeral: true,
         });
@@ -313,10 +320,10 @@ module.exports = {
         }, 'userID xp').sort({xp: -1}).limit(cachePageSize);
         const members = await interaction.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)});
         parcialMemberDocs = parcialMemberDocs.filter(e => members.has(e.userID));
-        if(!parcialMemberDocs.length) return await interaction.reply({
-            content: channelLanguage.get('noRankedMembers'),
-            ephemeral: true,
-        });
+        if(!parcialMemberDocs.length){
+            interaction.client.guildData.get(interaction.guild.id).processing = false;
+            return await interaction.editReply(channelLanguage.get('noRankedMembers'));
+        }
         let page = 0;
         const pageSize = 20;
         const memberDocsSize = await member.countDocuments({

@@ -49,7 +49,11 @@ module.exports = {
         if(
             badges
             &&
-            message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.UseExternalEmojis)
+            (
+                !message.guild
+                ||
+                message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.UseExternalEmojis)
+            )
         ) embed.addFields({name: channelLanguage.get('userInfoBadges'), value: badges});
         
         if(member && member.nickname) embed.addField(channelLanguage.get('userInfoNickname'), '\`\`\`' + member.nickname + '\`\`\`');
@@ -94,9 +98,13 @@ module.exports = {
         if(
             badges
             &&
-            interaction.guild.members.me
-                .permissionsIn(interaction.channel)
-                .has(PermissionsBitField.Flags.UseExternalEmojis)
+            (
+                !interaction.guild
+                ||
+                interaction.guild.members.me
+                    .permissionsIn(interaction.channel)
+                    .has(PermissionsBitField.Flags.UseExternalEmojis)
+            )
         ) embed.addFields({name: channelLanguage.get('userInfoBadges'), value: badges});
 
         if(member && member.nickname) embed.addField(channelLanguage.get('userInfoNickname'), '\`\`\`' + member.nickname + '\`\`\`');

@@ -801,10 +801,7 @@ module.exports = {
                 channelTypes: [
                     ChannelType.GuildText,
                     ChannelType.GuildAnnouncement,
-                    ChannelType.AnnouncementThread,
                     ChannelType.GuildVoice,
-                    ChannelType.PrivateThread,
-                    ChannelType.PublicThread,
                 ],
             }],
         },
@@ -833,10 +830,7 @@ module.exports = {
                             channelTypes: [
                                 ChannelType.GuildText,
                                 ChannelType.GuildAnnouncement,
-                                ChannelType.AnnouncementThread,
                                 ChannelType.GuildVoice,
-                                ChannelType.PrivateThread,
-                                ChannelType.PublicThread,
                             ],
                         },
                     ],
@@ -873,9 +867,6 @@ module.exports = {
                             channelTypes: [
                                 ChannelType.GuildText,
                                 ChannelType.GuildAnnouncement,
-                                ChannelType.AnnouncementThread,
-                                ChannelType.PublicThread,
-                                ChannelType.PrivateThread,
                                 ChannelType.GuildVoice,
                             ],
                         },
@@ -901,9 +892,6 @@ module.exports = {
                             channelTypes: [
                                 ChannelType.GuildText,
                                 ChannelType.GuildAnnouncement,
-                                ChannelType.AnnouncementThread,
-                                ChannelType.PublicThread,
-                                ChannelType.PrivateThread,
                                 ChannelType.GuildVoice,
                             ],
                         },
@@ -928,9 +916,6 @@ module.exports = {
                         channelTypes: [
                             ChannelType.GuildText,
                             ChannelType.GuildAnnouncement,
-                            ChannelType.AnnouncementThread,
-                            ChannelType.PublicThread,
-                            ChannelType.PrivateThread,
                             ChannelType.GuildVoice,
                         ],
                     }],

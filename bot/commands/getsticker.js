@@ -14,6 +14,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 const {PermissionsBitField, ButtonStyle, ComponentType, StickerFormatType} = require('discord.js');
+const { handleComponentError } = require('../utils');
 
 module.exports = {
     active: true,

@@ -79,7 +79,7 @@ module.exports = {
                 .addFields(
                     {
                         name: channelLanguage.get('voiceconnectEmbedChannelTitle'),
-                        value: newState.channel.toString(),
+                        value: `<#${newState.channelId}>`,
                         inline: true,
                     },
                     {

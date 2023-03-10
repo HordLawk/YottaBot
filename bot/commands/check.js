@@ -32,7 +32,7 @@ module.exports = {
     cooldown: 5,
     categoryID: 3,
     args: true,
-    guilOnly: true,
+    guildOnly: true,
     execute: async function(message, args){
         const {channelLanguage} = message;
         if(!message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));

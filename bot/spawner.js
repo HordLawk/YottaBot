@@ -93,8 +93,7 @@ client.once('ready', async () => {
             shardId: client.shard.ids[0],
             ping: client.ws.ping,
         }});
-        // Fix this later
-        // await client.guilds.cache.get(configs.supportID).members.fetch();
+        await client.guilds.cache.get(configs.supportID).members.fetch().catch(console.error);
         AutoPoster(process.env.TOPGG_TOKEN, client);
         const guildCount = (await client.shard.fetchClientValues('guilds.cache.size')).reduce((acc, e) => acc + e, 0);
         axios({

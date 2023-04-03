@@ -46,7 +46,6 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] have an actual website
 - [x] usernames local blacklist
 - [ ] finish adapting to slash commands
-- [ ] anti hoisting
 - [ ] giveaway system
 - [ ] ticket system with private threads
 - [ ] role for active members system

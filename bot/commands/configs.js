@@ -143,7 +143,7 @@ module.exports = {
                 }
                 if((args[1] === 'on') && args[2] && (isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[2], 10) < 1))) return message.reply(channelLanguage.get('invMassBanProtectionAmount'));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {antiMassBan: (message.client.guildData.get(message.guild.id).antiMassBan = ((args[1] === 'on') ? (parseInt(args[2], 10) || 15) : null))}});
-                message.reply(channelLanguage.get('massBanProtectionSuccess', [args[1]]));
+                message.reply(channelLanguage.get('massBanProtectionSuccess', [args[1] === 'on']));
             }
             break;
             case 'globalbans': {

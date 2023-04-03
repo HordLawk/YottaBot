@@ -456,7 +456,7 @@ module.exports = {
             );
             case 'processing': return 'This command is currently already being processed somewhere in this server\nTry again later';
             case 'invMassBanProtectionAmount': return 'Invalid amount of bans in 10 seconds';
-            case 'massBanProtectionSuccess': return `Mass ban protection setting was turned \`${vars[0]}\``;
+            case 'massBanProtectionSuccess': return `Mass ban protection setting was turned \`${vars[0] ? 'on' : 'off'}\``;
             case 'multiplierSuccess': return `The xp multiplier for ${vars[0]} was successfully set to \`${vars[1]}\``;
             case 'editmsgEmbedAuthor': return 'Edited message';
             case 'editmsgEmbedDescription': return `**Old content:**\n${vars[0] || '*Empty*\n'}\n**New content:**\n${vars[1] || '*Empty*'}`;

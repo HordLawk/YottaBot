@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {
     EmbedBuilder,
     PermissionsBitField,
@@ -6,6 +21,7 @@ const {
     ComponentType,
 } = require('discord.js');
 const configs = require('../configs');
+const { slashCommandUsages, handleComponentError } = require('../utils');
 
 module.exports = {
     active: true,
@@ -22,6 +38,11 @@ module.exports = {
         if(message.guild && !message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));
         const prefix = message.guild ? message.client.guildData.get(message.guild.id).prefix : configs.defaultPrefix;
         let embed;
+        const commandsManager = (
+            (process.env.NODE_ENV === 'production')
+            ? message.client.application
+            : message.client.guilds.cache.get(process.env.DEV_GUILD)
+        ).commands.cache;
         if(!args.length){
             let perms = await message.client.generateInvite({
                 scopes: ['bot', 'applications.commands'],
@@ -36,11 +57,25 @@ module.exports = {
                         dynamic: true,
                     }),
                 })
-                .setDescription(channelLanguage.get('helpEmbedDescription', [configs.support, perms, prefix, message.client.user.id]))
+                .setDescription(channelLanguage.get('helpEmbedDescription', [configs.support, perms, message.client.user.id]))
                 .setFooter({text: channelLanguage.get('helpEmbedFooter', [commands.filter(command => !command.dev).size])})
                 .setTimestamp();
-            const categories = commands.filter(cmd => (!cmd.dev && (cmd.execute || (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === cmd.name))?.type === ApplicationCommandType.ChatInput)))).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
-            categories.forEach((e, i) => embed.addField(channelLanguage.get(`category${i}`), e.map(cmd => `\`${cmd.name}\``).join(' ')));
+            const categories = commands.
+                filter(cmd => {
+                    return (
+                        !cmd.dev
+                        &&
+                        (
+                            cmd.execute
+                            ||
+                            (commandsManager.find(e => e.name === cmd.name)?.type === ApplicationCommandType.ChatInput)
+                        )
+                    );
+                })
+                .reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
+            categories.forEach((e, i) => {
+                embed.addField(channelLanguage.get(`category${i}`), e.map(cmd => `\`${cmd.name}\``).join(' '));
+            });
             const categoryEmojis = [,'ℹ️', '⚙️', '🔨', '📈', '🪣'];
             const menuCategory = {
                 type: ComponentType.SelectMenu,
@@ -128,7 +163,7 @@ module.exports = {
                     default: (e.value === i.values[0]),
                 }));
                 await i.update({embeds: [categoryEmbed], components});
-            })().catch(err => message.client.handlers.button(err, i)));
+            })().catch(async err => await handleComponentError(err, i)));
             collectorCategory.on('end', async () => {
                 if(!reply.editable) return;
                 menuCategory.disabled = true;
@@ -150,9 +185,33 @@ module.exports = {
                     .setDescription(cmd.description(channelLanguage))
                     .setFooter({text: channelLanguage.get('helpCommandEmbedFooter')})
                     .setTimestamp();
-                if(cmd.usage) commandEmbed.addField(channelLanguage.get('syntax'), `${cmd.usage(channelLanguage).map(e => `\`${prefix}${cmd.name} ${e}\``).join('\n')}`);
-                if(cmd.example) commandEmbed.addField(channelLanguage.get('example'), `${cmd.example.map(e => `\`${prefix}${cmd.name} ${e}\``).join('\n')}`);
-                if(cmd.aliases) commandEmbed.addField(channelLanguage.get('aliases'), cmd.aliases.map(a => `\`${a}\``).join(' '));
+                const usages = slashCommandUsages(cmd.name, message.client);
+                if(usages){
+                    commandEmbed.addFields({
+                        name: channelLanguage.get('syntax'),
+                        value: usages,
+                    });
+                }
+                else{
+                    if(cmd.usage){
+                        commandEmbed.addField(
+                            channelLanguage.get('syntax'),
+                            `${cmd.usage(channelLanguage).map(e => `\`${prefix}${cmd.name} ${e}\``).join('\n')}`,
+                        );
+                    }
+                    if(cmd.example){
+                        commandEmbed.addField(
+                            channelLanguage.get('example'),
+                            `${cmd.example.map(e => `\`${prefix}${cmd.name} ${e}\``).join('\n')}`,
+                        );
+                    }
+                    if(cmd.aliases){
+                        commandEmbed.addField(
+                            channelLanguage.get('aliases'),
+                            cmd.aliases.map(a => `\`${a}\``).join(' '),
+                        );
+                    }
+                }
                 if(cmd.perm) commandEmbed.addField(channelLanguage.get('permissionLevel'), channelLanguage.get(`permission${cmd.perm}`), true);
                 commandEmbed.addField('Cooldown', channelLanguage.get('helpCommandCooldown', [cmd.cooldown]), true);
                 menuCommand.options = categories[cmd.categoryID].map(e => ({
@@ -167,7 +226,7 @@ module.exports = {
                     emoji: e.emoji,
                 }));
                 await i.update({embeds: [commandEmbed], components});
-            })().catch(err => message.client.handlers.button(err, i)));
+            })().catch(async err => await handleComponentError(err, i)));
             collectorCommand.on('end', async () => {
                 if(!reply.editable) return;
                 menuCommand.disabled = true;
@@ -177,7 +236,19 @@ module.exports = {
         else{
             const name = args[0];
             const command = commands.get(name) || commands.find(c => (c.aliases && c.aliases.includes(name)));
-            if(!command || command.dev || (!command.execute && (((process.env.NODE_ENV === 'production') ? message.client.application : message.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === command.name))?.type !== ApplicationCommandType.ChatInput))) return message.reply(channelLanguage.get('invalidCommand'));
+            if(
+                !command
+                ||
+                command.dev
+                ||
+                (
+                    !command.execute
+                    &&
+                    (commandsManager.find(e => (e.name === command.name))?.type !== ApplicationCommandType.ChatInput)
+                )
+            ){
+                return message.reply(channelLanguage.get('invalidCommand'));
+            }
             embed = new EmbedBuilder()
                 .setColor(message.guild ? (message.guild.members.me.displayColor || 0x8000ff) : 0x8000ff)
                 .setAuthor({
@@ -190,9 +261,30 @@ module.exports = {
                 .setDescription(command.description(channelLanguage))
                 .setFooter({text: channelLanguage.get('helpCommandEmbedFooter')})
                 .setTimestamp();
-            if(command.usage) embed.addField(channelLanguage.get('syntax'), `${command.usage(channelLanguage).map(e => `\`${prefix}${command.name} ${e}\``).join('\n')}`);
-            if(command.example) embed.addField(channelLanguage.get('example'), `${command.example.map(e => `\`${prefix}${command.name} ${e}\``).join('\n')}`);
-            if(command.aliases) embed.addField(channelLanguage.get('aliases'), command.aliases.map(a => `\`${a}\``).join(' '));
+            const usages = slashCommandUsages(command.name, message.client);
+            if(usages){
+                embed.addFields({
+                    name: channelLanguage.get('syntax'),
+                    value: usages,
+                });
+            }
+            else{
+                if(command.usage){
+                    embed.addField(
+                        channelLanguage.get('syntax'),
+                        `${command.usage(channelLanguage).map(e => `\`${prefix}${command.name} ${e}\``).join('\n')}`,
+                    );
+                }
+                if(command.example){
+                    embed.addField(
+                        channelLanguage.get('example'),
+                        `${command.example.map(e => `\`${prefix}${command.name} ${e}\``).join('\n')}`,
+                    );
+                }
+                if(command.aliases){
+                    embed.addField(channelLanguage.get('aliases'), command.aliases.map(a => `\`${a}\``).join(' '));
+                }
+            }
             if(command.perm) embed.addField(channelLanguage.get('permissionLevel'), channelLanguage.get(`permission${command.perm}`), true);
             embed.addField('Cooldown', channelLanguage.get('helpCommandCooldown', [command.cooldown]), true);
             message.reply({embeds: [embed]});
@@ -203,6 +295,11 @@ module.exports = {
         const {channelLanguage} = interaction;
         const prefix = interaction.guild ? interaction.client.guildData.get(interaction.guild.id).prefix : configs.defaultPrefix;
         let embed;
+        const commandsManager = (
+            (process.env.NODE_ENV === 'production')
+            ? interaction.client.application
+            : interaction.client.guilds.cache.get(process.env.DEV_GUILD)
+        ).commands.cache;
         if(!args.command){
             let perms = await interaction.client.generateInvite({
                 scopes: ['bot', 'applications.commands'],
@@ -217,11 +314,25 @@ module.exports = {
                         dynamic: true,
                     }),
                 })
-                .setDescription(channelLanguage.get('helpEmbedDescription', [configs.support, perms, prefix, interaction.client.user.id]))
+                .setDescription(channelLanguage.get('helpEmbedDescription', [configs.support, perms, interaction.client.user.id]))
                 .setFooter({text: channelLanguage.get('helpEmbedFooter', [commands.filter(command => !command.dev).size])})
                 .setTimestamp();
-            const categories = commands.filter(cmd => (!cmd.dev && (cmd.execute || (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === cmd.name))?.type === ApplicationCommandType.ChatInput)))).reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
-            categories.forEach((e, i) => embed.addField(channelLanguage.get(`category${i}`), e.map(cmd => `\`${cmd.name}\``).join(' ')));
+            const categories = commands
+                .filter(cmd => {
+                    return (
+                        !cmd.dev
+                        &&
+                        (
+                            cmd.execute
+                            ||
+                            (commandsManager.find(e => e.name === cmd.name)?.type === ApplicationCommandType.ChatInput)
+                        )
+                    );
+                })
+                .reduce((arr, cmd) => (arr[cmd.categoryID] = [...(arr[cmd.categoryID] || []), cmd], arr), []);
+            categories.forEach((e, i) => {
+                embed.addField(channelLanguage.get(`category${i}`), e.map(cmd => `\`${cmd.name}\``).join(' '));
+            });
             const categoryEmojis = [,'ℹ️', '⚙️', '🔨', '📈', '🪣'];
             const menuCategory = {
                 type: ComponentType.SelectMenu,
@@ -309,7 +420,7 @@ module.exports = {
                     default: (e.value === i.values[0]),
                 }));
                 await i.update({embeds: [categoryEmbed], components});
-            })().catch(err => interaction.client.handlers.button(err, i)));
+            })().catch(async err => await handleComponentError(err, i)));
             collectorCategory.on('end', async () => {
                 if(!reply.editable) return;
                 menuCategory.disabled = true;
@@ -331,9 +442,33 @@ module.exports = {
                     .setDescription(cmd.description(channelLanguage))
                     .setFooter({text: channelLanguage.get('helpCommandEmbedFooter')})
                     .setTimestamp();
-                if(cmd.usage) commandEmbed.addField(channelLanguage.get('syntax'), `${cmd.usage(channelLanguage).map(e => `\`${prefix}${cmd.name} ${e}\``).join('\n')}`);
-                if(cmd.example) commandEmbed.addField(channelLanguage.get('example'), `${cmd.example.map(e => `\`${prefix}${cmd.name} ${e}\``).join('\n')}`);
-                if(cmd.aliases) commandEmbed.addField(channelLanguage.get('aliases'), cmd.aliases.map(a => `\`${a}\``).join(' '));
+                const usages = slashCommandUsages(cmd.name, interaction.client);
+                if(usages){
+                    commandEmbed.addFields({
+                        name: channelLanguage.get('syntax'),
+                        value: usages,
+                    });
+                }
+                else{
+                    if(cmd.usage){
+                        commandEmbed.addField(
+                            channelLanguage.get('syntax'),
+                            `${cmd.usage(channelLanguage).map(e => `\`${prefix}${cmd.name} ${e}\``).join('\n')}`,
+                        );
+                    }
+                    if(cmd.example){
+                        commandEmbed.addField(
+                            channelLanguage.get('example'),
+                            `${cmd.example.map(e => `\`${prefix}${cmd.name} ${e}\``).join('\n')}`,
+                        );
+                    }
+                    if(cmd.aliases){
+                        commandEmbed.addField(
+                            channelLanguage.get('aliases'),
+                            cmd.aliases.map(a => `\`${a}\``).join(' '),
+                        );
+                    }
+                }
                 if(cmd.perm) commandEmbed.addField(channelLanguage.get('permissionLevel'), channelLanguage.get(`permission${cmd.perm}`), true);
                 commandEmbed.addField('Cooldown', channelLanguage.get('helpCommandCooldown', [cmd.cooldown]), true);
                 menuCommand.options = categories[cmd.categoryID].map(e => ({
@@ -348,7 +483,7 @@ module.exports = {
                     emoji: e.emoji,
                 }));
                 await i.update({embeds: [commandEmbed], components});
-            })().catch(err => interaction.client.handlers.button(err, i)));
+            })().catch(async err => await handleComponentError(err, i)));
             collectorCommand.on('end', async () => {
                 if(!reply.editable) return;
                 menuCommand.disabled = true;
@@ -357,10 +492,22 @@ module.exports = {
         }
         else{
             const command = commands.get(args.command);
-            if(!command || command.dev || (!command.execute && (((process.env.NODE_ENV === 'production') ? interaction.client.application : interaction.client.guilds.cache.get(process.env.DEV_GUILD)).commands.cache.find(e => (e.name === command.name))?.type !== ApplicationCommandType.ChatInput))) return interaction.reply({
-                content: channelLanguage.get('invalidCommand'),
-                ephemeral: true,
-            });
+            if(
+                !command
+                ||
+                command.dev
+                ||
+                (
+                    !command.execute
+                    &&
+                    (commandsManager.find(e => (e.name === command.name))?.type !== ApplicationCommandType.ChatInput)
+                )
+            ){
+                return interaction.reply({
+                    content: channelLanguage.get('invalidCommand'),
+                    ephemeral: true,
+                });
+            }
             embed = new EmbedBuilder()
                 .setColor(interaction.guild ? (interaction.guild.members.me.displayColor || 0x8000ff) : 0x8000ff)
                 .setAuthor({
@@ -373,9 +520,30 @@ module.exports = {
                 .setDescription(command.description(channelLanguage))
                 .setFooter({text: channelLanguage.get('helpCommandEmbedFooter')})
                 .setTimestamp();
-            if(command.usage) embed.addField(channelLanguage.get('syntax'), `${command.usage(channelLanguage).map(e => `\`${prefix}${command.name} ${e}\``).join('\n')}`);
-            if(command.example) embed.addField(channelLanguage.get('example'), `${command.example.map(e => `\`${prefix}${command.name} ${e}\``).join('\n')}`);
-            if(command.aliases) embed.addField(channelLanguage.get('aliases'), command.aliases.map(a => `\`${a}\``).join(' '));
+            const usages = slashCommandUsages(command.name, interaction.client);
+            if(usages){
+                embed.addFields({
+                    name: channelLanguage.get('syntax'),
+                    value: usages,
+                });
+            }
+            else{
+                if(command.usage){
+                    embed.addField(
+                        channelLanguage.get('syntax'),
+                        `${command.usage(channelLanguage).map(e => `\`${prefix}${command.name} ${e}\``).join('\n')}`,
+                    );
+                }
+                if(command.example){
+                    embed.addField(
+                        channelLanguage.get('example'),
+                        `${command.example.map(e => `\`${prefix}${command.name} ${e}\``).join('\n')}`,
+                    );
+                }
+                if(command.aliases){
+                    embed.addField(channelLanguage.get('aliases'), command.aliases.map(a => `\`${a}\``).join(' '));
+                }
+            }
             if(command.perm) embed.addField(channelLanguage.get('permissionLevel'), channelLanguage.get(`permission${command.perm}`), true);
             embed.addField('Cooldown', channelLanguage.get('helpCommandCooldown', [command.cooldown]), true);
             await interaction.reply({embeds: [embed]});

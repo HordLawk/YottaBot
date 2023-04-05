@@ -70,7 +70,7 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setColor(0x00ff00)
                 .setAuthor({
-                    name: channelLanguage.get('voiceconnectEmbedAuthor', [user.tag, newState.channel.name]),
+                    name: channelLanguage.get('voiceconnectEmbedAuthor', [user.tag]),
                     iconURL: user.displayAvatarURL({dynamic: true}),
                 })
                 .setTimestamp()
@@ -79,7 +79,7 @@ module.exports = {
                 .addFields(
                     {
                         name: channelLanguage.get('voiceconnectEmbedChannelTitle'),
-                        value: newState.channel.toString(),
+                        value: `<#${newState.channelId}>`,
                         inline: true,
                     },
                     {
@@ -98,7 +98,7 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setColor(0xff0000)
                 .setAuthor({
-                    name: channelLanguage.get('voicedisconnectEmbedAuthor', [user.tag, oldState.channel.name]),
+                    name: channelLanguage.get('voicedisconnectEmbedAuthor', [user.tag]),
                     iconURL: user.displayAvatarURL({dynamic: true}),
                 })
                 .setTimestamp()
@@ -107,7 +107,7 @@ module.exports = {
                 .addFields(
                     {
                         name: channelLanguage.get('voicedisconnectEmbedChannelTitle'),
-                        value: oldState.channel.toString(),
+                        value: `<#${oldState.channelId}>`,
                         inline: true,
                     },
                     {

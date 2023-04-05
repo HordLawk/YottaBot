@@ -1,12 +1,31 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 module.exports = {
     lang: 'en',
     name: 'English',
     flag: '🇬🇧',
     get: (line, vars = []) => {
         switch(line){
-            case 'mentionHelp': return `Use \`${vars[0]}help\` to see all my commands!`;
+            case 'mentionHelp': return `Use </help:${vars[0]}> to see all my commands!`;
             case 'blacklisted': return 'You are blacklisted from using me!';
-            case 'noArgs': return `You didn't provide any arguments, ${vars[0]}!\nThe proper usage would be:\n${vars[3].map(e => `\`${vars[1]}${vars[2]} ${e}\``).join('\n')}`;
+            case 'noArgs': return (
+                `You didn't provide any arguments, ${vars[0]}!\n` +
+                `The proper usage would be:\n` +
+                vars[1]
+            );
             case 'cooldown': return `Please wait ${vars[0]} more second(s) before reusing the \`${vars[1]}\` command${vars[2] ? '' : `\nTip: Premium servers have half the cooldown for all commands\nTo get premium [join Patreon](<https://www.patreon.com/YottaBot>)`}`;
             case 'error': return `There was an error trying to execute the command \`${vars[0]}\`\nThe issue was sent to the support team and will be fixed in the near future`;
             case 'helpDescription': return 'Lists all commands or gives info about a specific one';
@@ -17,7 +36,13 @@ module.exports = {
             case 'botEmbed': return 'I need permission to embed links in this channel';
             case 'botManageMessages': return 'I need permission to manage messages in this channel';
             case 'helpEmbedTitle': return 'Commands help';
-            case 'helpEmbedDescription': return `[\`Support server\`](https://discord.gg/${vars[0]})\n[\`Invite me\`](${vars[1]})\n[\`Extended documentation\`](https://github.com/HordLawk/YottaBot#get-started)\n[\`Top.gg\`](https://top.gg/bot/${vars[3]})\n\nUse \`${vars[2]}help (command)\` for more info about a specific command`;
+            case 'helpEmbedDescription': return (
+                `[\`Support server\`](https://discord.gg/${vars[0]})\n` +
+                `[\`Invite me\`](${vars[1]})\n` +
+                `[\`Extended documentation\`](https://github.com/HordLawk/YottaBot#get-started)\n` +
+                `[\`Top.gg\`](https://top.gg/bot/${vars[2]})\n\n` +
+                'Use the select menus below for more info about a specific command'
+            );
             case 'helpEmbedFooter': return `${vars[0]} commands | [] = Optional - () = Variable - </> = Either`;
             case 'category0': return 'Commands';
             case 'category1': return 'Information';
@@ -357,7 +382,7 @@ module.exports = {
             case 'xpEmbedAuthor': return 'Xp';
             case 'xpEmbedDescription': return `${vars[0] ? `Current level: <@&${vars[0].roleID}>\n` : ''}${vars[1] ? `Next level: <@&${vars[1].roleID}>\n` : ''}Progress: **${vars[2]}${vars[1] ? `/${vars[1].xp}` : ''}**`;
             case 'xpEmbedFooter': return `#${vars[0]}`;
-            case 'dmBotAdder': return `Greetings ${vars[0]}! Thank you for adding me to **${vars[1]}**. Since I am a highly customizable bot, I recommend that you start by having a look at \`${vars[2]}help configs\` and setting up command permissions with \`${vars[2]}help perm\`, otherwise, some of them might have too restrictive default permissions, like the \`rolemenu\` command, which by default is only allowed to users with the Manage Roles permission\n\nIf you need any help, don\'t hesitate to **[join my support server](https://discord.gg/${vars[3]})**, you can also read the **[full documentation](https://github.com/HordLawk/YottaBot#get-started)** for more detailed information`;
+            case 'dmBotAdder': return `Greetings ${vars[0]}! Thank you for adding me to **${vars[1]}**. Since I am a highly customizable bot, I recommend that you start by having a look at </help:${vars[2]}>\n\nIf you need any help, don\'t hesitate to **[join my support server](https://discord.gg/${vars[3]})**, you can also read the **[full documentation](https://github.com/HordLawk/YottaBot#get-started)** for more detailed information`;
             case 'autoUnmuteEmbedAuthorMember': return `${vars[0]} was unmuted`;
             case 'autoUnmuteEmbedAuthorNoMember': return 'Unmute';
             case 'autoUnmuteEmbedTargetTitle': return 'Target';
@@ -423,10 +448,15 @@ module.exports = {
             case 'invCooldown': return 'Cooldown minutes has to be an integer between 1 and 59';
             case 'voicexpEnableSuccess': return `Xp earning in voice channels was enabled and its cooldown was set to ${vars[0]}`;
             case 'voicexpDisableSuccess': return 'Xp earning in voice channels disabled';
-            case 'slashOnly': return `The \`${vars[0]}\` command can only be executed through Discord's built in slash commands feature\nType \`/${vars[0]}\` to use it`;
+            case 'slashOnly': return (
+                `The \`${vars.commandName}\` command can only be executed through Discord's built in slash commands` +
+                ` feature\n` +
+                `Click a command below for the correct usage:\n` +
+                vars.usages
+            );
             case 'processing': return 'This command is currently already being processed somewhere in this server\nTry again later';
             case 'invMassBanProtectionAmount': return 'Invalid amount of bans in 10 seconds';
-            case 'massBanProtectionSuccess': return `Mass ban protection setting was turned \`${vars[0]}\``;
+            case 'massBanProtectionSuccess': return `Mass ban protection setting was turned \`${vars[0] ? 'on' : 'off'}\``;
             case 'multiplierSuccess': return `The xp multiplier for ${vars[0]} was successfully set to \`${vars[1]}\``;
             case 'editmsgEmbedAuthor': return 'Edited message';
             case 'editmsgEmbedDescription': return `**Old content:**\n${vars[0] || '*Empty*\n'}\n**New content:**\n${vars[1] || '*Empty*'}`;
@@ -634,25 +664,23 @@ module.exports = {
             case 'lockignoreDescription': return 'Sets roles that will be ignored by the lock command';
             case 'lockignoreSuccess': return `The role ${vars[0]} will be successfully ignored by the lock command`;
             case 'botCantManageRole': return 'I don\'t have permission to manage this role';
-            case 'lockignoreTooManyRoles': {
-                return (
-                    'You reached the limit of roles ignored by the lock command for this server\n' +
-                    'Note that this limit is 10 roles for premium servers and 1 role for non premium servers'
-                );
-            }
+            case 'lockignoreTooManyRoles': return (
+                'You reached the limit of roles ignored by the lock command for this server\n' +
+                'Note that this limit is 10 roles for premium servers and 1 role for non premium servers'
+            );
             case 'lockignoreRemoveSuccess': return `The role ${vars[0]} will be no longer ignored by the lock command`;
             case 'lockignore_listEmbedAuthor': return 'Roles currently ignored by the lock command';
             case 'voiceconnectActionName': return 'Voice connections';
             case 'voicedisconnectActionName': return 'Voice disconnections';
             case 'voicemoveActionName': return 'Voice moves';
-            case 'voiceconnectEmbedAuthor': return `${vars[0]} connected to ${vars[1]}`;
+            case 'voiceconnectEmbedAuthor': return `${vars[0]} connected to a voice channel`;
             case 'voiceconnectEmbedUserTitle': return 'User';
             case 'voiceconnectEmbedChannelTitle': return 'Channel';
-            case 'voicedisconnectEmbedAuthor': return `${vars[0]} disconnected from ${vars[1]}`;
+            case 'voicedisconnectEmbedAuthor': return `${vars[0]} disconnected from a voice channel`;
             case 'voicedisconnectEmbedUserTitle': return 'User';
             case 'voicedisconnectEmbedChannelTitle': return 'Channel';
             case 'voicedisconnectEmbedExecutorTitle': return 'Executor';
-            case 'voicemoveEmbedAuthor': return `${vars[0]} moved between channels`;
+            case 'voicemoveEmbedAuthor': return `${vars[0]} moved between voice channels`;
             case 'voicemoveEmbedFromTitle': return 'From channel';
             case 'voicemoveEmbedToTitle': return 'To channel';
             case 'voicemoveEmbedTargetTitle': return 'Target';
@@ -663,16 +691,25 @@ module.exports = {
             case 'memberjoinEmbedInviteTitle': return 'Invite used';
             case 'configsTrackInvitesCantManageGuild': return 'I need Manage Guild permission to track invites';
             case 'configsInviteTrackerJoinlogDisabled': return 'You need to have enable joined members logs first';
-            case 'configsTrackInvitesNotPremium': {
-                return (
-                    'This is a premium only feature, to get premium for your server ' +
-                    '[join Patreon](<https://www.patreon.com/YottaBot>)'
-                );
-            }
+            case 'configsTrackInvitesNotPremium': return (
+                'This is a premium only feature, to get premium for your server ' +
+                '[join Patreon](<https://www.patreon.com/YottaBot>)'
+            );
             case 'memberjoinEmbedInviteValue': return (
                 `Code: [\`${vars[0]}\`](https://discord.gg/${vars[0]})\n` +
                 `Inviter: ${vars[1]} \`${vars[1].tag}\``
             );
+            case 'invArgsSlash': return (
+                `Invalid arguments!\n` +
+                `Click a command below for the correct usage:\n` +
+                vars.usages
+            );
+            case 'userInfoBadges': return 'Badges';
+            case 'noRankedMembers': return (
+                'It looks like there aren\'t any members with xp in this server yet\n' +
+                'Go talk for a bit and be the first to earn some!'
+            );
+            case 'noBannedUsernames': return 'There are no banned usernames in this server';
         }
     },
 };

@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {EmbedBuilder, PermissionsBitField, ApplicationCommandOptionType} = require('discord.js');
 const utils = require('../utils.js');
 
@@ -27,13 +42,27 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle(channelLanguage.get('userInfoTitle'))
             .setColor(0x2f3136)
-            .addField(channelLanguage.get('userInfoUsername'), '\`\`\`' + user.tag + '\`\`\`');
+            .addField("ID", '\`\`\`' + user.id + '\`\`\`')
+            .addField(channelLanguage.get('userInfoUsername'), '\`\`\`' + user.tag + '\`\`\`')
+        
+        const badges = utils.userBadgesString(user);
+        if(
+            badges
+            &&
+            (
+                !message.guild
+                ||
+                message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.UseExternalEmojis)
+            )
+        ) embed.addFields({name: channelLanguage.get('userInfoBadges'), value: badges});
         
         if(member && member.nickname) embed.addField(channelLanguage.get('userInfoNickname'), '\`\`\`' + member.nickname + '\`\`\`');
 
-        embed
-            .addField("ID", '\`\`\`' + user.id + '\`\`\`')
-            .addField(channelLanguage.get('userInfoCreatedAt'), '<t:' + Math.floor(user.createdAt.getTime() / 1000) + ':R>', true);
+        embed.addField(
+            channelLanguage.get('userInfoCreatedAt'),
+            '<t:' + Math.floor(user.createdAt.getTime() / 1000) + ':R>',
+            true,
+        );
         
         if (member) embed.addField(channelLanguage.get('userInfoJoinedAt'), '<t:' + Math.floor(member.joinedTimestamp / 1000) + ':R>', true);
         if (member && member.roles.cache) embed.addField(channelLanguage.get('userInfoRoles'), '\`\`\`' + member.roles.cache.filter(c => c.id !== message.guild.id).map(c => c.name).join(', ').slice(0, 1012) + '\`\`\`');
@@ -62,13 +91,29 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle(channelLanguage.get('userInfoTitle'))
             .setColor(0x2f3136)
+            .addField("ID", '\`\`\`' + user.id + '\`\`\`')
             .addField(channelLanguage.get('userInfoUsername'), '\`\`\`' + user.tag + '\`\`\`');
         
+        const badges = utils.userBadgesString(user);
+        if(
+            badges
+            &&
+            (
+                !interaction.guild
+                ||
+                interaction.guild.members.me
+                    .permissionsIn(interaction.channel)
+                    .has(PermissionsBitField.Flags.UseExternalEmojis)
+            )
+        ) embed.addFields({name: channelLanguage.get('userInfoBadges'), value: badges});
+
         if(member && member.nickname) embed.addField(channelLanguage.get('userInfoNickname'), '\`\`\`' + member.nickname + '\`\`\`');
 
-        embed
-            .addField("ID", '\`\`\`' + user.id + '\`\`\`')
-            .addField(channelLanguage.get('userInfoCreatedAt'), '<t:' + Math.floor(user.createdAt.getTime() / 1000) + ':R>', true);
+        embed.addField(
+            channelLanguage.get('userInfoCreatedAt'),
+            '<t:' + Math.floor(user.createdAt.getTime() / 1000) + ':R>',
+            true,
+        );
         
         if (member) embed.addField(channelLanguage.get('userInfoJoinedAt'), '<t:' + Math.floor(member.joinedTimestamp / 1000) + ':R>', true);
         if (member && member.roles.cache) embed.addField(channelLanguage.get('userInfoRoles'), '\`\`\`' + member.roles.cache.filter(c => c.id !== interaction.guild.id).map(c => c.name).join(', ').slice(0, 1012) + '\`\`\`');

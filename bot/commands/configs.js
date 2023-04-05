@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {EmbedBuilder, PermissionsBitField, ApplicationCommandOptionType, ChannelType} = require('discord.js');
 const utils = require('../utils.js');
 const locale = require('../../locale');
@@ -53,9 +68,23 @@ module.exports = {
             case 'mod': {
                 switch(args[1]){
                     case 'logs': {
-                        if(!args[3] || args.slice(3, 7).some(e => !['warn', 'mute', 'kick', 'ban'].includes(e))) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                        if(!args[3] || args.slice(3, 7).some(e => !['warn', 'mute', 'kick', 'ban'].includes(e))){
+                            return await message.reply(
+                                channelLanguage.get(
+                                    'invArgsSlash',
+                                    {usages: utils.slashCommandUsages(this.name, message.client, 'moderation', 'logs')},
+                                ),
+                            );
+                        }
                         let discordChannel = message.guild.channels.cache.get(args[2].match(/^(?:<#)?(\d{17,19})>?$/)?.[1]);
-                        if(!discordChannel || !discordChannel.isTextBased()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                        if(!discordChannel || !discordChannel.isTextBased()){
+                            return await message.reply(
+                                channelLanguage.get(
+                                    'invArgsSlash',
+                                    {usages: utils.slashCommandUsages(this.name, message.client, 'moderation', 'logs')},
+                                ),
+                            );
+                        }
                         if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.SendMessages) || !discordChannel.viewable) return message.reply(channelLanguage.get('sendMessages'));
                         if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));
                         let guildDoc = await guild.findById(message.guild.id);
@@ -72,25 +101,60 @@ module.exports = {
                         message.reply(channelLanguage.get('clearOnBanDaysSetSuccess', [message.client.guildData.get(message.guild.id).pruneBan]));
                     }
                     break;
-                    default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                    default: {
+                        await message.reply(
+                            channelLanguage.get(
+                                'invArgsSlash',
+                                {usages: utils.slashCommandUsages(this.name, message.client, 'moderation')},
+                            ),
+                        );
+                    }
                 }
             }
             break;
             case 'beta': {
-                if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!['on', 'off'].includes(args[1])){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: utils.slashCommandUsages(this.name, message.client, 'beta')},
+                        ),
+                    );
+                }
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {beta: (message.client.guildData.get(message.guild.id).beta = (args[1] === 'on'))}});
                 message.reply(channelLanguage.get('betaSuccess', [args[1] === 'on']));
             }
             break;
             case 'massbanprotection': {
-                if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!['on', 'off'].includes(args[1])){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {
+                                usages: utils.slashCommandUsages(
+                                    this.name,
+                                    message.client,
+                                    'moderation',
+                                    'massbanprotection',
+                                ),
+                            },
+                        ),
+                    );
+                }
                 if((args[1] === 'on') && args[2] && (isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[2], 10) < 1))) return message.reply(channelLanguage.get('invMassBanProtectionAmount'));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {antiMassBan: (message.client.guildData.get(message.guild.id).antiMassBan = ((args[1] === 'on') ? (parseInt(args[2], 10) || 15) : null))}});
-                message.reply(channelLanguage.get('massBanProtectionSuccess', [args[1]]));
+                message.reply(channelLanguage.get('massBanProtectionSuccess', [args[1] === 'on']));
             }
             break;
             case 'globalbans': {
-                if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!['on', 'off'].includes(args[1])){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: utils.slashCommandUsages(this.name, message.client, 'moderation', 'globalbans')},
+                        ),
+                    );
+                }
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {globalBan: (message.client.guildData.get(message.guild.id).globalBan = (args[1] === 'on'))}});
                 message.reply(channelLanguage.get('globalbanSuccess', [args[1]]));
             }
@@ -135,7 +199,11 @@ module.exports = {
                 message.reply({embeds: [embed]});
             }
             break;
-            default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+            default: {
+                await message.reply(
+                    channelLanguage.get('invArgsSlash', {usages: utils.slashCommandUsages(this.name, message.client)}),
+                );
+            }
         }
     },
     languageSlash: async (interaction, args) => {
@@ -324,7 +392,7 @@ module.exports = {
         }
         await interaction.reply(channelLanguage.get('welcomeDisableSuccess'));
     },
-    track_invitesSlash: async (interaction, args) => {
+    trackinvitesSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
         const guildData = interaction.client.guildData.get(interaction.guild.id);
         if(!guildData.partner && !guildData.premiumUntil) return interaction.reply({
@@ -391,7 +459,14 @@ module.exports = {
                             name: 'modlog_channel',
                             description: 'The channel to log moderation actions in',
                             required: true,
-                            channelTypes: [ChannelType.GuildText],
+                            channelTypes: [
+                                ChannelType.GuildText,
+                                ChannelType.GuildAnnouncement,
+                                ChannelType.AnnouncementThread,
+                                ChannelType.GuildVoice,
+                                ChannelType.PrivateThread,
+                                ChannelType.PublicThread,
+                            ],
                         },
                         {
                             type: ApplicationCommandOptionType.String,
@@ -520,7 +595,7 @@ module.exports = {
         },
         {
             type: ApplicationCommandOptionType.Subcommand,
-            name: 'track_invites',
+            name: 'trackinvites',
             nameLocalizations: utils.getStringLocales('configs_track_invitesLocalisedName'),
             description: 'Shows which invite code an user used to join the server in the join logs',
             descriptionLocalizations: utils.getStringLocales('configs_track_invitesLocalisedDesc'),

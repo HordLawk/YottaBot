@@ -1,6 +1,21 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {EmbedBuilder, PermissionsBitField, ButtonStyle, ComponentType, ApplicationCommandOptionType} = require('discord.js');
 const configs = require('../configs.js');
-const {getStringLocales} = require('../utils.js');
+const {handleComponentError, getStringLocales} = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -316,7 +331,7 @@ module.exports = {
                             await oldRole.save();
                         }
                         else{
-                            if((roleDocs.length >= 10) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) return message.reply(channelLanguage.get('maxXpRoles', [message.client.guildData.get(message.guild.id).prefix]));
+                            if((roleDocs.length >= 10) && !message.client.guildData.get(message.guild.id).premiumUntil && !message.client.guildData.get(message.guild.id).partner) return message.reply(channelLanguage.get('maxXpRoles'));
                             let newRole = new role({
                                 guild: message.guild.id,
                                 roleID: discordRole.id,
@@ -448,7 +463,7 @@ module.exports = {
                     }
                     break;
                     default: {
-                        let discordChannel = message.guild.channels.cache.get((args[1].match(/<#(\d{17,19})>/) || [])[1]) || message.client.channels.cache.get(args[1]);
+                        let discordChannel = message.guild.channels.cache.get((args[1].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[1]);
                         if(!discordChannel || !discordChannel.isTextBased()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                         if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.SendMessages) || !discordChannel.viewable) return message.reply(channelLanguage.get('sendMessages'));
                         await guild.findByIdAndUpdate(message.guild.id, {$set: {xpChannel: discordChannel.id}});
@@ -509,7 +524,7 @@ module.exports = {
                     break;
                     case 'dm': notifs = channelLanguage.get('notifyDMView');
                     break;
-                    default: notifs = message.client.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel) || channelLanguage.get('notifyNoneView');
+                    default: notifs = message.guild.channels.cache.get(message.client.guildData.get(message.guild.id).xpChannel) || channelLanguage.get('notifyNoneView');
                 }
                 let embed = new EmbedBuilder()
                     .setColor(message.guild.members.me.displayColor || 0x8000ff)
@@ -590,7 +605,7 @@ module.exports = {
                         }
                         break;
                     }
-                })(i).catch(err => message.client.handlers.button(err, i)));
+                })(i).catch(async err => await handleComponentError(err, i)));
                 collector.on('end', async collected => {
                     if(!reply.editable) return;
                     buttonCancel.disabled = buttonConfirm.disabled = true;

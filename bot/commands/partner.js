@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const { ApplicationCommandOptionType } = require('discord.js');
 const locale = require('../../locale');
 
@@ -35,21 +50,27 @@ module.exports = {
         },
     ],
     commandAutocomplete: {
-        guild: (interaction, value) => interaction.respond(
-            (interaction.user.id === interaction.client.application.owner.id)
-            ? interaction.client.guilds.cache
-                .filter(e => e.name
-                    .toLowerCase()
-                    .startsWith(value.toLowerCase()))
-                .first(25)
-                .map(e => ({
-                    name: e.name,
-                    value: e.id,
-                }))
-            : [{
-                name: locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en').get('forbidden'),
-                value: '',
-            }]
-        ),
+        guild: (interaction, value) => {
+            if(interaction.user.id === interaction.client.application.owner.id){
+                interaction.client.shard.broadcastEval(
+                    (c, {value}) => {
+                        return c.guilds.cache
+                            .filter(guild => guild.name.toLowerCase().startsWith(value.toLowerCase()))
+                            .first(25)
+                            .map(guild => ({
+                                name: guild.name,
+                                value: guild.id,
+                            }));
+                    },
+                    {context: {value}},
+                ).then(guilds => interaction.respond(guilds.flat()));
+            }
+            else{
+                interaction.respond([{
+                    name: locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en').get('forbidden'),
+                    value: '',
+                }]);
+            }
+        },
     },
 };

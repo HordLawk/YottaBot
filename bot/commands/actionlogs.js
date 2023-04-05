@@ -1,5 +1,21 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {EmbedBuilder, PermissionsBitField, ApplicationCommandOptionType, ChannelType} = require('discord.js');
 const configs = require('../configs');
+const { slashCommandUsages } = require('../utils');
 
 const actionOptionMapper = filter => ((interaction, value, locale) => interaction.respond((filter ? configs.actions.filter(filter) : configs.actions).map((_, i) => ({
     name: locale.get(`${i}ActionName`),
@@ -25,9 +41,23 @@ module.exports = {
         const guild = require('../../schemas/guild.js');
         switch(args[0]){
             case 'defaultchannel': {
-                if(!args[1]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!args[1]){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'default')},
+                        ),
+                    );
+                }
                 let discordChannel = message.guild.channels.cache.get((args[1].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
-                if(!discordChannel || !discordChannel.isTextBased()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!discordChannel || !discordChannel.isTextBased()){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'default')},
+                        ),
+                    );
+                }
                 if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.ManageWebhooks)) return message.reply(channelLanguage.get('botWebhooks'));
                 let hook = await discordChannel.createWebhook({
                     avatar: message.client.user.avatarURL({size: 4096}),
@@ -46,7 +76,14 @@ module.exports = {
             }
             break;
             case 'set': {
-                if((args.length < 3) || !configs.actions.has(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if((args.length < 3) || !configs.actions.has(args[1])){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'actions', 'set')},
+                        ),
+                    );
+                }
                 if(args[2] === 'default'){
                     let hook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).defaultLogsHookID, message.client.guildData.get(message.guild.id).defaultLogsHookToken).catch(() => null);
                     if(!hook) return message.reply(channelLanguage.get('noDefaultLog'));
@@ -66,7 +103,14 @@ module.exports = {
                 }
                 else{
                     let discordChannel = message.guild.channels.cache.get((args[2].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
-                    if(!discordChannel || !discordChannel.isTextBased()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                    if(!discordChannel || !discordChannel.isTextBased()){
+                        return await message.reply(
+                            channelLanguage.get(
+                                'invArgsSlash',
+                                {usages: slashCommandUsages(this.name, message.client, 'actions', 'set')},
+                            ),
+                        );
+                    }
                     if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.ManageWebhooks)) return message.reply(channelLanguage.get('botWebhooks'));
                     let hook = await discordChannel.createWebhook({
                         avatar: message.client.user.avatarURL({size: 4096}),
@@ -94,7 +138,14 @@ module.exports = {
             }
             break;
             case 'remove': {
-                if(!args[1] || !configs.actions.has(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!args[1] || !configs.actions.has(args[1])){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'actions', 'remove')},
+                        ),
+                    );
+                }
                 let oldHook = await message.client.fetchWebhook(message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookID, message.client.guildData.get(message.guild.id).actionlogs.id(args[1])?.hookToken).catch(() => null);
                 if(oldHook && message.guild.members.me.permissionsIn(message.guild.channels.cache.get(oldHook.channelId)).has(PermissionsBitField.Flags.ManageWebhooks)) await oldHook.delete(channelLanguage.get('oldHookReason', [args[1]]));
                 let guildDoc = await guild.findById(message.guild.id);
@@ -107,13 +158,39 @@ module.exports = {
             }
             break;
             case 'ignore': {
-                if(!['channel', 'role'].includes(args[1]) || (args.length < 4)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!['channel', 'role'].includes(args[1]) || (args.length < 4)){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {
+                                usages: (
+                                    `${slashCommandUsages(this.name, message.client, 'ignoredchannels')}\n` +
+                                    slashCommandUsages(this.name, message.client, 'ignoredroles')
+                                ),
+                            },
+                        ),
+                    );
+                }
                 switch(args[2]){
                     case 'view': {
                         if(!message.guild.members.me.permissionsIn(message.channel).has(PermissionsBitField.Flags.EmbedLinks)) return message.reply(channelLanguage.get('botEmbed'));
                         if(args[1] === 'channel'){
                             let discordChannel = message.guild.channels.cache.get((args[3].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
-                            if(!discordChannel) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                            if(!discordChannel){
+                                return await message.reply(
+                                    channelLanguage.get(
+                                        'invArgsSlash',
+                                        {
+                                            usages: slashCommandUsages(
+                                                this.name,
+                                                message.client,
+                                                `ignoredchannels`,
+                                                'info',
+                                            ),
+                                        },
+                                    ),
+                                );
+                            }
                             let channelDoc = await channel.findById(discordChannel.id);
                             if(!channelDoc || !channelDoc.ignoreActions.length) return message.reply(channelLanguage.get('noIgnoredActionsChannel'));
                             let embed = new EmbedBuilder()
@@ -134,7 +211,14 @@ module.exports = {
                         else{
                             let roleName = message.content.toLowerCase().replace(/^(?:\S+\s+){4}/, '');
                             let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
-                            if(!discordRole || (discordRole.id === message.guild.id)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                            if(!discordRole || (discordRole.id === message.guild.id)){
+                                return await message.reply(
+                                    channelLanguage.get(
+                                        'invArgsSlash',
+                                        {usages: slashCommandUsages(this.name, message.client, 'ignoredroles', 'info')},
+                                    ),
+                                );
+                            }
                             let roleDoc = await role.findOne({
                                 guild: message.guild.id,
                                 roleID: discordRole.id,
@@ -160,11 +244,39 @@ module.exports = {
                     break;
                     case 'add':
                     case 'remove': {
-                        if(!args[4]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                        if(!args[4]){
+                            return await message.reply(
+                                channelLanguage.get(
+                                    'invArgsSlash',
+                                    {
+                                        usages: slashCommandUsages(
+                                            this.name,
+                                            message.client,
+                                            (args[1] === 'channel') ? 'ignoredchannels' : 'ignoredroles',
+                                            args[2],
+                                        ),
+                                    },
+                                ),
+                            );
+                        }
                         if(args[4] === 'all'){
                             if(args[1] === 'channel'){
                                 let discordChannel = message.guild.channels.cache.get((args[3].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
-                                if(!discordChannel) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                                if(!discordChannel){
+                                    return await message.reply(
+                                        channelLanguage.get(
+                                            'invArgsSlash',
+                                            {
+                                                usages: slashCommandUsages(
+                                                    this.name,
+                                                    message.client,
+                                                    'ignoredchannels',
+                                                    args[2],
+                                                ),
+                                            },
+                                        ),
+                                    );
+                                }
                                 if(args[2] === 'add'){
                                     await channel.findOneAndUpdate({
                                         _id: discordChannel.id,
@@ -183,7 +295,21 @@ module.exports = {
                             else{
                                 let roleName = message.content.toLowerCase().replace(/^(?:\S+\s+){4}/, '');
                                 let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
-                                if(!discordRole || (discordRole.id === message.guild.id)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                                if(!discordRole || (discordRole.id === message.guild.id)){
+                                    return await message.reply(
+                                        channelLanguage.get(
+                                            'invArgsSlash',
+                                            {
+                                                usages: slashCommandUsages(
+                                                    this.name,
+                                                    message.client,
+                                                    'ignoredroles',
+                                                    args[2],
+                                                ),
+                                            },
+                                        ),
+                                    );
+                                }
                                 if(args[2] === 'add'){
                                     await role.findOneAndUpdate({
                                         roleID: discordRole.id,
@@ -205,9 +331,37 @@ module.exports = {
                         }
                         else{
                             if(args[1] === 'channel'){
-                                if(!configs.actions.filter(e => e.ignorableChannels).has(args[4])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                                if(!configs.actions.filter(e => e.ignorableChannels).has(args[4])){
+                                    return await message.reply(
+                                        channelLanguage.get(
+                                            'invArgsSlash',
+                                            {
+                                                usages: slashCommandUsages(
+                                                    this.name,
+                                                    message.client,
+                                                    'ignoredchannels',
+                                                    args[2],
+                                                ),
+                                            },
+                                        ),
+                                    );
+                                }
                                 let discordChannel = message.guild.channels.cache.get((args[3].match(/^(?:<#)?(\d{17,19})>?$/) || [])[1]);
-                                if(!discordChannel) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                                if(!discordChannel){
+                                    return await message.reply(
+                                        channelLanguage.get(
+                                            'invArgsSlash',
+                                            {
+                                                usages: slashCommandUsages(
+                                                    this.name,
+                                                    message.client,
+                                                    'ignoredchannels',
+                                                    args[2],
+                                                ),
+                                            },
+                                        ),
+                                    );
+                                }
                                 if(args[2] === 'add'){
                                     await channel.findOneAndUpdate({
                                         _id: discordChannel.id,
@@ -224,10 +378,38 @@ module.exports = {
                                 }
                             }
                             else{
-                                if(!configs.actions.filter(e => e.ignorableRoles).has(args[4])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                                if(!configs.actions.filter(e => e.ignorableRoles).has(args[4])){
+                                    return await message.reply(
+                                        channelLanguage.get(
+                                            'invArgsSlash',
+                                            {
+                                                usages: slashCommandUsages(
+                                                    this.name,
+                                                    message.client,
+                                                    'ignoredroles',
+                                                    args[2],
+                                                ),
+                                            },
+                                        ),
+                                    );
+                                }
                                 let roleName = message.content.toLowerCase().replace(/^(?:\S+\s+){4}/, '');
                                 let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
-                                if(!discordRole || (discordRole.id === message.guild.id)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                                if(!discordRole || (discordRole.id === message.guild.id)){
+                                    return await message.reply(
+                                        channelLanguage.get(
+                                            'invArgsSlash',
+                                            {
+                                                usages: slashCommandUsages(
+                                                    this.name,
+                                                    message.client,
+                                                    'ignoredroles',
+                                                    args[2],
+                                                ),
+                                            },
+                                        ),
+                                    );
+                                }
                                 if(args[2] === 'add'){
                                     await role.findOneAndUpdate({
                                         roleID: discordRole.id,
@@ -249,7 +431,20 @@ module.exports = {
                         }
                     }
                     break;
-                    default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                    default: {
+                        await message.reply(
+                            channelLanguage.get(
+                                'invArgsSlash',
+                                {
+                                    usages: slashCommandUsages(
+                                        this.name,
+                                        message.client,
+                                        (args[1] === 'channel') ? 'ignoredchannels' : 'ignoredroles',
+                                    ),
+                                },
+                            ),
+                        );
+                    }
                 }
             }
             break;
@@ -283,7 +478,7 @@ module.exports = {
                     embed.addField(channelLanguage.get('logsViewEmbedActionsTitle'), activeLogs.map(e => channelLanguage.get('logsViewEmbedActions', [channelLanguage.get(`action${e.id}`), e.channelID])).join('\n'));
                 }
                 let channels = await channel.find({
-                    _id: {$in: message.client.channels.cache.map(e => e.id)},
+                    _id: {$in: [...message.guild.channels.cache.keys()]},
                     guild: message.guild.id,
                     ignoreActions: {$ne: []},
                 });
@@ -297,7 +492,11 @@ module.exports = {
                 message.reply({embeds: [embed]});
             }
             break;
-            default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+            default: {
+                await message.reply(
+                    channelLanguage.get('invArgsSlash', {usages: slashCommandUsages(this.name, message.client)}),
+                );
+            }
         }
     },
     defaultSlash: async (interaction, args) => {
@@ -306,6 +505,7 @@ module.exports = {
             content: channelLanguage.get('botWebhooks'),
             ephemeral: true,
         });
+        await interaction.deferReply();
         const hook = await args.channel.createWebhook({
             avatar: interaction.client.user.avatarURL(),
             reason: channelLanguage.get('newDefaultHookReason'),
@@ -319,7 +519,7 @@ module.exports = {
             defaultLogsHookToken: hook.token,
         }}, {new: true});
         interaction.client.guildData.set(interaction.guild.id, guildDoc);
-        await interaction.reply(channelLanguage.get('newDefaultLog', [args.channel]));
+        await interaction.editReply(channelLanguage.get('newDefaultLog', [args.channel]));
     },
     actionssetSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
@@ -329,10 +529,15 @@ module.exports = {
         });
         const guild = require('../../schemas/guild.js');
         if(args.log_channel){
-            if(!interaction.guild.members.me.permissionsIn(args.log_channel).has(PermissionsBitField.Flags.ManageWebhooks)) return interaction.reply({
+            if(
+                !interaction.guild.members.me
+                    .permissionsIn(args.log_channel)
+                    .has(PermissionsBitField.Flags.ManageWebhooks)
+            ) return await interaction.reply({
                 content: channelLanguage.get('botWebhooks'),
                 ephemeral: true,
             });
+            await interaction.deferReply();
             const hook = await args.log_channel.createWebhook({
                 avatar: interaction.client.user.avatarURL(),
                 reason: channelLanguage.get('newHookReason', [channelLanguage.get(`${args[1]}ActionName`)]),
@@ -354,14 +559,15 @@ module.exports = {
             }
             await guildDoc.save();
             interaction.client.guildData.get(interaction.guild.id).actionlogs = guildDoc.actionlogs;
-            await interaction.reply(channelLanguage.get('newLogSuccess', [args.log_channel]));
+            await interaction.editReply(channelLanguage.get('newLogSuccess', [args.log_channel]));
         }
         else{
             const hook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).defaultLogsHookID, interaction.client.guildData.get(interaction.guild.id).defaultLogsHookToken).catch(() => null);
-            if(!hook) return interaction.reply({
+            if(!hook) return await interaction.reply({
                 content: channelLanguage.get('noDefaultLog'),
                 ephemeral: true,
             });
+            await interaction.deferReply();
             const oldHook = await interaction.client.fetchWebhook(interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookID, interaction.client.guildData.get(interaction.guild.id).actionlogs.id(args.action)?.hookToken).catch(() => null);
             if(oldHook && interaction.guild.members.me.permissionsIn(interaction.guild.channels.cache.get(oldHook.channelId)).has(PermissionsBitField.Flags.ManageWebhooks)) await oldHook.delete(channelLanguage.get('oldHookReason', [channelLanguage.get(`action${args.action}`)]));
             const guildDoc = await guild.findById(interaction.guild.id);
@@ -374,7 +580,7 @@ module.exports = {
             }
             await guildDoc.save();
             interaction.client.guildData.get(interaction.guild.id).actionlogs = guildDoc.actionlogs;
-            await interaction.reply(channelLanguage.get('newDefaultLogSuccess'));
+            await interaction.editReply(channelLanguage.get('newDefaultLogSuccess'));
         }
     },
     actionsremoveSlash: async (interaction, args) => {
@@ -568,7 +774,7 @@ module.exports = {
         }
         const channel = require('../../schemas/channel.js');
         const channels = await channel.find({
-            _id: {$in: interaction.client.channels.cache.map(e => e.id)},
+            _id: {$in: [...interaction.guild.channels.cache.keys()]},
             guild: interaction.guild.id,
             ignoreActions: {$ne: []},
         });
@@ -592,7 +798,11 @@ module.exports = {
                 name: 'channel',
                 description: 'The channel to be set as the default log channel',
                 required: true,
-                channelTypes: [ChannelType.GuildText],
+                channelTypes: [
+                    ChannelType.GuildText,
+                    ChannelType.GuildAnnouncement,
+                    ChannelType.GuildVoice,
+                ],
             }],
         },
         {
@@ -617,7 +827,11 @@ module.exports = {
                             name: 'log_channel',
                             description: 'The channel to log the selected action (if not specified uses the default channel)',
                             required: false,
-                            channelTypes: [ChannelType.GuildText],
+                            channelTypes: [
+                                ChannelType.GuildText,
+                                ChannelType.GuildAnnouncement,
+                                ChannelType.GuildVoice,
+                            ],
                         },
                     ],
                 },
@@ -652,10 +866,7 @@ module.exports = {
                             required: true,
                             channelTypes: [
                                 ChannelType.GuildText,
-                                ChannelType.GuildNews,
-                                ChannelType.GuildNewsThread,
-                                ChannelType.GuildPublicThread,
-                                ChannelType.GuildPrivateThread,
+                                ChannelType.GuildAnnouncement,
                                 ChannelType.GuildVoice,
                             ],
                         },
@@ -680,10 +891,7 @@ module.exports = {
                             required: true,
                             channelTypes: [
                                 ChannelType.GuildText,
-                                ChannelType.GuildNews,
-                                ChannelType.GuildNewsThread,
-                                ChannelType.GuildPublicThread,
-                                ChannelType.GuildPrivateThread,
+                                ChannelType.GuildAnnouncement,
                                 ChannelType.GuildVoice,
                             ],
                         },
@@ -707,10 +915,7 @@ module.exports = {
                         required: true,
                         channelTypes: [
                             ChannelType.GuildText,
-                            ChannelType.GuildNews,
-                            ChannelType.GuildNewsThread,
-                            ChannelType.GuildPublicThread,
-                            ChannelType.GuildPrivateThread,
+                            ChannelType.GuildAnnouncement,
                             ChannelType.GuildVoice,
                         ],
                     }],

@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {
     EmbedBuilder,
     PermissionsBitField,
@@ -14,7 +29,7 @@ module.exports = {
     aliases: ['mb'],
     usage: lang => [lang.get('massbanUsage')],
     example: ['@LordHawk#0001 @Kamikat#7358 annoying raiders'],
-    cooldown: 10,
+    cooldown: 60,
     categoryID: 3,
     args: true,
     perm: PermissionsBitField.Flags.Administrator,
@@ -53,7 +68,7 @@ module.exports = {
             };
             let realban = await message.guild.members.ban(user.id, {
                 reason: channelLanguage.get('banReason', [message.author.tag, reason]),
-                deleteMessageDays: message.client.guildData.get(message.guild.id).pruneBan,
+                deleteMessageSeconds: message.client.guildData.get(message.guild.id).pruneBan * 24 * 60 * 60,
             }).catch(() => null);
             if(!realban){
                 invusers++;
@@ -95,7 +110,22 @@ module.exports = {
         const guild = require('../../schemas/guild.js');
         await guild.findByIdAndUpdate(message.guild.id, {$set: {counterLogs: message.client.guildData.get(message.guild.id).counterLogs}});
         await log.insertMany(caseLogs);
-        await message.reply(channelLanguage.get('massbanSuccess', [bans, invargs, invusers, banneds]));
+        await message.reply(
+            channelLanguage.get(
+                'massbanSuccess',
+                [
+                    bans,
+                    invargs,
+                    invusers,
+                    banneds,
+                    (
+                        message.client.guildData.get(message.guild.id).premiumUntil
+                        ||
+                        message.client.guildData.get(message.guild.id).partner
+                    ),
+                ],
+            ),
+        );
     },
     executeSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
@@ -141,7 +171,7 @@ module.exports = {
         const discordChannel = interaction.guild.channels.cache.get(interaction.client.guildData.get(interaction.guild.id).modlogs.ban);
         const reply = await lastInteraction.deferReply({fetchReply: true});
         const log = require('../../schemas/log.js');
-        for(const id of [...(new Set(ids))].slice(0, (interaction.client.guildData.get(interaction.guild.id).premiumUntil ?? interaction.client.guildData.get(interaction.guild.id).partner) ? 1000 : 300)){
+        for(const id of [...(new Set(ids))].slice(0, (interaction.client.guildData.get(interaction.guild.id).premiumUntil || interaction.client.guildData.get(interaction.guild.id).partner) ? 1000 : 300)){
             const user = await interaction.client.users.fetch(id).catch(() => null);
             if(!user){
                 invargs++;
@@ -159,7 +189,7 @@ module.exports = {
             };
             const realban = await interaction.guild.members.ban(user.id, {
                 reason: channelLanguage.get('banReason', [interaction.user.tag, reason]),
-                deleteMessageDays: interaction.client.guildData.get(interaction.guild.id).pruneBan,
+                deleteMessageSeconds: interaction.client.guildData.get(interaction.guild.id).pruneBan * 24 * 60 * 60,
             }).catch(() => null);
             if(!realban){
                 invusers++;
@@ -199,7 +229,7 @@ module.exports = {
         const guild = require('../../schemas/guild.js');
         await guild.findByIdAndUpdate(interaction.guild.id, {$set: {counterLogs: interaction.client.guildData.get(interaction.guild.id).counterLogs}});
         await log.insertMany(caseLogs);
-        await lastInteraction.editReply(channelLanguage.get('massbanSuccess', [bans, invargs, invusers, banneds, interaction.client.guildData.get(interaction.guild.id).premiumUntil ?? interaction.client.guildData.get(interaction.guild.id).partner]));
+        await lastInteraction.editReply(channelLanguage.get('massbanSuccess', [bans, invargs, invusers, banneds, interaction.client.guildData.get(interaction.guild.id).premiumUntil || interaction.client.guildData.get(interaction.guild.id).partner]));
     },
     slashOptions: [
         {

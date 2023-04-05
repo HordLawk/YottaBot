@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {
     EmbedBuilder,
     PermissionsBitField,
@@ -6,6 +21,34 @@ const {
     ComponentType,
 } = require('discord.js');
 const configs = require('../configs.js');
+const { handleComponentError } = require('../utils.js');
+
+const rankPage = (docs, page, pageSize, userId, guild) => `\`\`\`ansi\n${docs.map((doc, i) => {
+    let posColour = '\u001b[';
+    let resetColour = '\u001b[0';
+    let tagColour = '';
+    let tagResetColour = '';
+    if(doc.userID === userId){
+        posColour += '1;40;';
+        resetColour += ';1;40';
+        tagColour = '\u001b[37m';
+        tagResetColour = '\u001b[0;1;40m';
+    }
+    else{
+        posColour += '0;'
+    }
+    return (
+        `${posColour}35m#` +
+        ((page * pageSize) + i + 1).toString().padEnd((pageSize * (page + 1)).toString().length, ' ') +
+        `${resetColour}m - ${tagColour}` +
+        guild.members.cache.get(doc.userID).user.tag.padEnd(
+            Math.max(...docs.map(d => guild.members.cache.get(d.userID).user.tag.length)),
+            ' ',
+        ) +
+        `${tagResetColour} | \u001b[36m` +
+        `${Math.floor(doc.xp).toString().padStart(Math.floor(docs[0].xp).toString().length, ' ')}xp`
+    );
+}).join('\n')}\`\`\``;
 
 module.exports = {
     active: true,
@@ -39,6 +82,10 @@ module.exports = {
                 }
                 const members = await message.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)});
                 parcialMemberDocs = parcialMemberDocs.filter(e => members.has(e.userID));
+                if(!parcialMemberDocs.length){
+                    message.client.guildData.get(message.guild.id).processing = false;
+                    return await message.reply(channelLanguage.get('noRankedMembers'));
+                }
                 if(verbose){
                     console.log('interception database and discord members:');
                     console.log(`length: ${parcialMemberDocs.length}`);
@@ -82,7 +129,7 @@ module.exports = {
                         iconURL: message.guild.iconURL({dynamic: true}),
                     })
                     .setTimestamp()
-                    .setDescription(memberDocsSliced.map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}\`#${i + 1}${i < 9 ? ' ' : ''} - ${message.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => message.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - message.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
+                    .setDescription(rankPage(memberDocsSliced, page, pageSize, message.author.id, message.guild));
                 if(memberDoc){
                     const queryFilter = {
                         guild: message.guild.id,
@@ -140,11 +187,11 @@ module.exports = {
                         break;
                     }
                     memberDocsSliced = memberDocs.slice(0, pageSize);
-                    embed.setDescription(memberDocsSliced.map((e, i) => `${(e.userID === message.author.id) ? '__' : ''}\`#${page * pageSize + (i + 1)}${Array((pageSize * (page + 1)).toString().length - (page * pageSize + (i + 1)).toString().length).fill(' ').join('')} - ${message.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => message.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - message.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === message.author.id) ? '__' : ''}`).join('\n'));
+                    embed.setDescription(rankPage(memberDocsSliced, page, pageSize, message.author.id, message.guild));
                     buttonPrevious.disabled = !page;
                     buttonNext.disabled = (memberDocs.length <= pageSize);
                     await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({embeds: [embed], components});
-                })(buttonInteraction).catch(err => message.client.handlers.button(err, buttonInteraction)));
+                })(buttonInteraction).catch(async err => await handleComponentError(err, buttonInteraction)));
                 collector.on('end', async () => {
                     if(!reply.editable) return;
                     buttonNext.disabled = buttonPrevious.disabled = true;
@@ -250,11 +297,15 @@ module.exports = {
     },
     rankSlash: async interaction => {
         const {channelLanguage} = interaction;
-        if(!interaction.client.guildData.get(interaction.guild.id).gainExp && !interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown) return interaction.reply({
+        if(
+            !interaction.client.guildData.get(interaction.guild.id).gainExp
+            &&
+            !interaction.client.guildData.get(interaction.guild.id).voiceXpCooldown
+        ) return await interaction.reply({
             content: channelLanguage.get('xpDisabled'),
             ephemeral: true,
         });
-        if(interaction.client.guildData.get(interaction.guild.id).processing) return interaction.reply({
+        if(interaction.client.guildData.get(interaction.guild.id).processing) return await interaction.reply({
             content: channelLanguage.get('processing'),
             ephemeral: true,
         });
@@ -269,6 +320,10 @@ module.exports = {
         }, 'userID xp').sort({xp: -1}).limit(cachePageSize);
         const members = await interaction.guild.members.fetch({user: parcialMemberDocs.map(e => e.userID)});
         parcialMemberDocs = parcialMemberDocs.filter(e => members.has(e.userID));
+        if(!parcialMemberDocs.length){
+            interaction.client.guildData.get(interaction.guild.id).processing = false;
+            return await interaction.editReply(channelLanguage.get('noRankedMembers'));
+        }
         let page = 0;
         const pageSize = 20;
         const memberDocsSize = await member.countDocuments({
@@ -299,7 +354,7 @@ module.exports = {
                 iconURL: interaction.guild.iconURL({dynamic: true}),
             })
             .setTimestamp()
-            .setDescription(memberDocsSliced.map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}\`#${i + 1}${i < 9 ? ' ' : ''} - ${interaction.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => interaction.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - interaction.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
+            .setDescription(rankPage(memberDocsSliced, page, pageSize, interaction.user.id, interaction.guild));
         if(memberDoc){
             const queryFilter = {
                 guild: interaction.guild.id,
@@ -361,11 +416,11 @@ module.exports = {
                 break;
             }
             memberDocsSliced = memberDocs.slice(0, pageSize);
-            embed.setDescription(memberDocsSliced.map((e, i) => `${(e.userID === interaction.user.id) ? '__' : ''}\`#${page * pageSize + (i + 1)}${Array((pageSize * (page + 1)).toString().length - (page * pageSize + (i + 1)).toString().length).fill(' ').join('')} - ${interaction.guild.members.cache.get(e.userID).user.tag}${Array(memberDocsSliced.map(el => interaction.guild.members.cache.get(el.userID).user.username.length).sort((a, b) => b - a)[0] - interaction.guild.members.cache.get(e.userID).user.username.length).fill(' ').join('')} | ${Array(Math.floor(memberDocsSliced[0].xp).toString().length - Math.floor(e.xp).toString().length).fill(' ').join('')}${Math.floor(e.xp)}xp\`${(e.userID === interaction.user.id) ? '__' : ''}`).join('\n'));
+            embed.setDescription(rankPage(memberDocsSliced, page, pageSize, interaction.user.id, interaction.guild));
             buttonPrevious.disabled = !page;
             buttonNext.disabled = (memberDocs.length <= pageSize);
             await buttonInteraction[buttonInteraction.deferred ? 'editReply' : 'update']({embeds: [embed], components});
-        })(buttonInteraction).catch(err => interaction.client.handlers.button(err, buttonInteraction)));
+        })(buttonInteraction).catch(async err => await handleComponentError(err, buttonInteraction)));
         collector.on('end', async () => {
             if(!reply.editable) return;
             buttonNext.disabled = buttonPrevious.disabled = true;

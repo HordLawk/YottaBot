@@ -1,4 +1,20 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {PermissionsBitField, ApplicationCommandOptionType, ButtonStyle, ComponentType} = require('discord.js');
+const { slashCommandUsages, handleComponentError } = require('../utils.js');
 
 const buildButtons = (channelLanguage, author) => {
     const buttonConfirm = {
@@ -46,7 +62,7 @@ module.exports = {
     usage: lang => ['server', lang.get('delcasesUsage0'), lang.get('delcasesUsage1')], 
     example: ['user @LordHawk#0001', 'case 123'],
     cooldown: 5,
-    categoryID: 1,
+    categoryID: 2,
     args: true,
     perm: PermissionsBitField.Flags.Administrator,
     guildOnly: true,
@@ -77,12 +93,19 @@ module.exports = {
                         }
                         break;
                     }
-                })(i).catch(err => message.client.handlers.button(err, i)));
+                })(i).catch(async err => await handleComponentError(err, i)));
                 collector.on('end', collectorEnd(reply));
             }
             break;
             case 'user': {
-                if(!args[1]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!args[1]){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'user')},
+                        ),
+                    );
+                }
                 const id = args[1].match(/^(?:<@)?!?(\d{17,19})>?$/)?.[1];
                 if(!id) return message.reply(channelLanguage.get('invUser'));
                 const user = await message.client.users.fetch(id).catch(() => null);
@@ -104,13 +127,20 @@ module.exports = {
                         }
                         break;
                     }
-                })(i).catch(err => message.client.handlers.button(err, i)));
+                })(i).catch(async err => await handleComponentError(err, i)));
                 collector.on('end', collectorEnd(reply));
             }
             break;
             case 'case': {
                 const id = parseInt(args[1]);
-                if(isNaN(id) || !isFinite(id) || (id < 0)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(isNaN(id) || !isFinite(id) || (id < 0)){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'case')},
+                        ),
+                    );
+                }
                 const caseDoc = await log.findOneAndDelete({
                     id: id,
                     guild: message.guild.id,
@@ -119,7 +149,11 @@ module.exports = {
                 message.reply(channelLanguage.get('caseDeletedSuccess', [caseDoc.id]));
             }
             break;
-            default: return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+            default: {
+                await message.reply(
+                    channelLanguage.get('invArgsSlash', {usages: slashCommandUsages(this.name, message.client)}),
+                );
+            }
         }
     },
     serverSlash: async interaction => {
@@ -144,7 +178,7 @@ module.exports = {
                 }
                 break;
             }
-        })(i).catch(err => interaction.client.handlers.button(err, i)));
+        })(i).catch(async err => await handleComponentError(err, i)));
         collector.on('end', slashCollectorEnd(buttonConfirm, buttonCancel, components, channelLanguage, interaction, reply));
     },
     userSlash: async (interaction, args) => {
@@ -172,13 +206,13 @@ module.exports = {
                 }
                 break;
             }
-        })(i).catch(err => interaction.client.handlers.button(err, i)));
+        })(i).catch(async err => await handleComponentError(err, i)));
         collector.on('end', slashCollectorEnd(buttonConfirm, buttonCancel, components, channelLanguage, interaction, reply));
     },
     caseSlash: async function(interaction, args){
         const {channelLanguage} = interaction;
         if(isNaN(args.id) || !isFinite(args.id) || (args.id < 0)) return interaction.reply({
-            content: channelLanguage.get('invArgs', [interaction.client.guildData.get(interaction.guild.id).prefix, this.name, this.usage(channelLanguage)]),
+            content: channelLanguage.get('caseNotFound', [args.id]),
             ephemeral: true,
         });
         const log = require('../../schemas/log.js');

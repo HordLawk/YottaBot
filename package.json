@@ -1,6 +1,6 @@
 {
   "name": "yottabot",
-  "version": "2.46.5",
+  "version": "2.46.75",
   "description": "A levelling and moderation focused Discord bot",
   "main": "index.js",
   "engines": {
@@ -9,14 +9,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "node --trace-deprecation --inspect -r dotenv/config index.js dotenv_config_path=../.env"
+    "dev": "node --trace-warnings --trace-deprecation --inspect -r dotenv/config index.js dotenv_config_path=../.env",
+    "prod": "pm2 start index.js --name yottabot --attach --node-args=\"--inspect -r dotenv/config\" -- dotenv_config_path=.env"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/HordLawk/YottaBot.git"
   },
   "author": "LordHawk#0001",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/HordLawk/YottaBot/issues"
   },
@@ -24,7 +25,8 @@
   "dependencies": {
     "aes-js": "^3.1.2",
     "axios": "^0.21.2",
-    "discord.js": "^14.6.0",
+    "diff": "^5.1.0",
+    "discord.js": "^14.8.0",
     "express": "^4.17.1",
     "js-sha256": "^0.9.0",
     "mongoose": "^5.12.3",

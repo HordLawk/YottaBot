@@ -1,8 +1,23 @@
-const role = require('../../schemas/role.js');
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
 const {PermissionsBitField, EmbedBuilder, TextInputStyle, ButtonStyle, ComponentType, InteractionType} = require('discord.js');
 const locale = require('../../locale');
+const { handleComponentError } = require('../utils.js');
 
 module.exports = {
     type: InteractionType.MessageComponent,
@@ -10,47 +25,33 @@ module.exports = {
         const banid = interaction.customId.match(/^banjoined(\d{17,19})$/)?.[1];
         if(banid){
             const channelLanguage = locale.get(interaction.client.guildData.get(interaction.guild.id).language);
-            const allowed = await (
-                (process.env.NODE_ENV === 'production')
-                ? interaction.client.application
-                : interaction.client.guilds.cache.get(process.env.DEV_GUILD)
-            ).commands.cache.find(e => (e.name === 'ban')).permissions.has({
-                guild: interaction.guild,
-                permissionId: interaction.user.id,
-            });
-            if(!allowed) return await interaction.reply({
+            if(!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) return await interaction.reply({
                 content: channelLanguage.get('forbidden'),
                 ephemeral: true,
+            });
+            const reply = await interaction.deferReply({
+                ephemeral: true,
+                fetchReply: true,
             });
             const user = await interaction.client.users.fetch(banid).catch(() => null);
             if(!user) throw new Error('User not found');
             const member = await interaction.guild.members.fetch(user.id).catch(() => null);
             if(member){
-                if(!member.bannable) return await interaction.reply({
-                    content: channelLanguage.get('cantBan'),
-                    ephemeral: true,
-                });
-                if(interaction.member.roles.highest.comparePositionTo(member.roles.highest) <= 0) return await interaction.reply({
-                    content: channelLanguage.get('youCantBan'),
-                    ephemeral: true,
-                });
+                if(!member.bannable) return await interaction.editReply(channelLanguage.get('cantBan'));
+                if(interaction.member.roles.highest.comparePositionTo(member.roles.highest) <= 0){
+                    return await interaction.editReply(channelLanguage.get('youCantBan'));
+                }
                 await member.send(channelLanguage.get('dmBanned', [interaction.guild.name])).catch(() => null);
             }
             else{
                 const ban = await interaction.guild.bans.fetch(user.id).catch(() => null);
-                if(ban) return await interaction.reply({
-                    content: channelLanguage.get('alreadyBanned'),
-                    ephemeral: true,
-                });
+                if(ban) return await interaction.editReply(channelLanguage.get('alreadyBanned'));
             }
             const newban = await interaction.guild.members.ban(user.id, {
                 reason: channelLanguage.get('banReason', [interaction.user.tag]),
-                deleteMessageDays: interaction.client.guildData.get(interaction.guild.id).pruneBan,
+                deleteMessageSeconds: interaction.client.guildData.get(interaction.guild.id).pruneBan * 24 * 60 * 60,
             }).catch(() => null);
-            if(!newban) return await interaction.reply({
-                content: channelLanguage.get('cantBan'),
-                ephemeral: true,
-            });
+            if(!newban) return await interaction.editReply(channelLanguage.get('cantBan'));
             const guildDoc = await guild.findByIdAndUpdate(interaction.guild.id, {$inc: {counterLogs: 1}});
             interaction.client.guildData.get(interaction.guild.id).counterLogs = guildDoc.counterLogs + 1;
             const current = new log({
@@ -63,11 +64,7 @@ module.exports = {
                 actionMessage: interaction.message.url,
             });
             await current.save();
-            const reply = await interaction.reply({
-                content: channelLanguage.get('memberBanSuccess', [current.id]),
-                ephemeral: true,
-                fetchReply: true,
-            });
+            await interaction.editReply(channelLanguage.get('memberBanSuccess', [current.id]));
             const discordChannel = interaction.guild.channels.cache.get(interaction.client.guildData.get(interaction.guild.id).modlogs.ban);
             let banLogMsg;
             let banLogEmbed;
@@ -154,7 +151,7 @@ module.exports = {
                 const msgUnban = await discordChannel.send({embeds: [embedUnban]});
                 currentUnban.logMessage = msgUnban.id;
                 await currentUnban.save();
-            })(i).catch(err => interaction.client.handlers.button(err, i)))
+            })(i).catch(async err => await handleComponentError(err, i)))
             collectorUndo.on('end', async () => {
                 if(!reply.editable) return;
                 buttonUndo.disabled = true;
@@ -197,7 +194,7 @@ module.exports = {
                     ephemeral: true,
                 });
                 if(!banLogMsg?.editable) return;
-                const reasonIndex = banLogEmbed.fields.findIndex(e => (e.name === channelLanguage.get('banEmbedReasonTitle')));
+                const reasonIndex = banLogEmbed.data.fields.findIndex(e => (e.name === channelLanguage.get('banEmbedReasonTitle')));
                 const reasonField = {
                     name: channelLanguage.get('banEmbedReasonTitle'),
                     value: current.reason
@@ -209,7 +206,7 @@ module.exports = {
                     banLogEmbed.spliceFields(reasonIndex, 1, reasonField);
                 }
                 await banLogMsg.edit({embeds: [banLogEmbed]});
-            })().catch(err => interaction.client.handlers.button(err, i)));
+            })().catch(async err => await handleComponentError(err, i)));
             collectorEdit.on('end', async () => {
                 if(!reply.editable) return;
                 buttonEdit.disabled = true;

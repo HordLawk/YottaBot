@@ -1,3 +1,18 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const {
     PermissionsBitField,
     EmbedBuilder,
@@ -5,6 +20,7 @@ const {
     ButtonStyle,
     ComponentType,
 } = require('discord.js');
+const { handleComponentError } = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -71,7 +87,7 @@ module.exports = {
                 }
                 break;
             }
-        })(i).catch(err => interaction.client.handlers.button(err, i)));
+        })(i).catch(async err => await handleComponentError(err, i)));
         collector.on('end', async collected => {
             if(!reply.editable) return;
             buttonCancel.disabled = buttonConfirm.disabled = true;
@@ -86,7 +102,7 @@ module.exports = {
         const editionsAmount = await editionModel.countDocuments({guild: interaction.guild.id});
         const premiumLike = (
             interaction.client.guildData.get(interaction.guild.id).premiumUntil
-            ??
+            ||
             interaction.client.guildData.get(interaction.guild.id).partner
         );
         const embed = new EmbedBuilder()

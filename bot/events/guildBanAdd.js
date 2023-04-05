@@ -1,7 +1,22 @@
+// Copyright (C) 2022  HordLawk
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const guild = require('../../schemas/guild.js');
 const log = require('../../schemas/log.js');
 const member = require('../../schemas/member.js');
-const {EmbedBuilder, PermissionsBitField, Collection, GuildAuditLogs, AuditLogEvent} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, AuditLogEvent} = require('discord.js');
 const locale = require('../../locale');
 
 module.exports = {
@@ -36,22 +51,29 @@ module.exports = {
         });
         if(!audits.entries.first() || audits.entries.first().executor.bot) return;
         if(ban.client.guildData.get(ban.guild.id).antiMassBan){
-            if(ban.client.guildData.get(ban.guild.id).bantimes){
-                if(ban.client.guildData.get(ban.guild.id).bantimes.has(audits.entries.first().executor.id)){
-                    ban.client.guildData.get(ban.guild.id).bantimes.get(audits.entries.first().executor.id).push(audits.entries.first().createdTimestamp);
+            const bantimes = ban.client.bantimes.get(ban.guild.id);
+            const entry = audits.entries.first();
+            if(bantimes){
+                const bantime = bantimes.get(entry.executor.id);
+                if(bantime){
+                    bantime.push(entry.createdTimestamp);
                     const notNow = Date.now() - 10000;
-                    if((ban.client.guildData.get(ban.guild.id).bantimes.get(audits.entries.first().executor.id).filter(e => (e > notNow)).length > ban.client.guildData.get(ban.guild.id).antiMassBan) && ban.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageRoles)){
+                    if(
+                        (bantime.filter(e => (e > notNow)).length > ban.client.guildData.get(ban.guild.id).antiMassBan)
+                        &&
+                        ban.guild.members.me.permissions.has(PermissionsBitField.Flags.ManageRoles)
+                    ){
                         const executorMember = await ban.guild.members.fetch(audits.entries.first().executor.id);
                         const banRoles = executorMember.roles.cache.filter(e => e.permissions.has(PermissionsBitField.Flags.BanMembers));
                         if(banRoles.every(e => (e.comparePositionTo(ban.guild.members.me.roles.highest) < 0))) await executorMember.roles.remove(banRoles);
                     }
                 }
                 else{
-                    ban.client.guildData.get(ban.guild.id).bantimes.set(audits.entries.first().executor.id, [audits.entries.first().createdTimestamp]);
+                    bantimes.set(entry.executor.id, [entry.createdTimestamp]);
                 }
             }
             else{
-                ban.client.guildData.get(ban.guild.id).bantimes = new Collection([[audits.entries.first().executor.id, [audits.entries.first().createdTimestamp]]]);
+                ban.client.bantimes.set(ban.guild.id, new Map([[entry.executor.id, [entry.createdTimestamp]]]));
             }
         }
         const reason = ban.reason?.slice(0, 500);

@@ -47,7 +47,8 @@ module.exports = {
         },
         {
             type: ApplicationCommandOptionType.SubcommandGroup,
-            name: 'role',
+            name: 'roles',
+            nameLocalizations: getStringLocales('msgxp_rolesLocalisedName'),
             description: (
                 'Sets the xp of roles that can be earned through sending messages in text channels or removed these ' + 
                 'roles'
@@ -56,24 +57,24 @@ module.exports = {
                 {
                     type: ApplicationCommandOptionType.Subcommand,
                     name: 'set',
-                    nameLocalizations: getStringLocales('msgxp_role_setLocalisedName'),
+                    nameLocalizations: getStringLocales('msgxp_roles_setLocalisedName'),
                     description: 'Sets an amount of xp that can be achieve to earn an specified role',
-                    descriptionLocalizations: getStringLocales('msgxp_role_setLocalisedDesc'),
+                    descriptionLocalizations: getStringLocales('msgxp_roles_setLocalisedDesc'),
                     options: [
                         {
                             type: ApplicationCommandOptionType.Role,
                             name: 'role',
-                            nameLocalizations: getStringLocales('msgxp_role_setOptionroleLocalisedName'),
+                            nameLocalizations: getStringLocales('msgxp_roles_setOptionroleLocalisedName'),
                             description: 'The role that can be achieved by earning xp',
-                            descriptionLocalizations: getStringLocales('msgxp_role_setOptionroleLocalisedDesc'),
+                            descriptionLocalizations: getStringLocales('msgxp_roles_setOptionroleLocalisedDesc'),
                             required: true,
                         },
                         {
                             type: ApplicationCommandOptionType.Integer,
                             name: 'xp',
-                            nameLocalizations: getStringLocales('msgxp_role_setOptionxpLocalisedName'),
+                            nameLocalizations: getStringLocales('msgxp_roles_setOptionxpLocalisedName'),
                             description: 'The amount of xp needed to achieve the role',
-                            descriptionLocalizations: getStringLocales('msgxp_role_setOptionxpLocalisedDesc'),
+                            descriptionLocalizations: getStringLocales('msgxp_roles_setOptionxpLocalisedDesc'),
                             minValue: 1,
                             required: true,
                         },
@@ -82,17 +83,9 @@ module.exports = {
                 {
                     type: ApplicationCommandOptionType.Subcommand,
                     name: 'remove',
-                    nameLocalizations: getStringLocales('msgxp_role_removeLocalisedName'),
-                    description: 'Removes a role from being achieveable',
-                    descriptionLocalizations: getStringLocales('msgxp_role_removeLocalisedDesc'),
-                    options: [{
-                        type: ApplicationCommandOptionType.Role,
-                        name: 'role',
-                        nameLocalizations: getStringLocales('msgxp_role_removeLocalisedName'),
-                        description: 'The role to remove',
-                        descriptionLocalizations: getStringLocales('msgxp_role_removeLocalisedDesc'),
-                        required: true,
-                    }],
+                    nameLocalizations: getStringLocales('msgxp_roles_removeLocalisedName'),
+                    description: 'Removes roles from being achieveable',
+                    descriptionLocalizations: getStringLocales('msgxp_roles_removeLocalisedDesc'),
                 },
             ],
         },
@@ -129,19 +122,11 @@ module.exports = {
                     ],
                 },
                 {
-                    type: ApplicationCommandOptionType.User,
-                    name: 'user',
-                    nameLocalizations: getStringLocales('msgxp_xpOptionuserLocalisedName'),
-                    description: 'The user to manage xp',
-                    descriptionLocalizations: getStringLocales('msgxp_xpOptionuserLocalisedDesc'),
-                    required: true,
-                },
-                {
                     type: ApplicationCommandOptionType.Integer,
-                    name: 'xp',
-                    nameLocalizations: getStringLocales('msgxp_xpOptionxpLocalisedName'),
-                    description: 'The amount of xp',
-                    descriptionLocalizations: getStringLocales('msgxp_xpOptionLocalisedDesc'),
+                    name: 'value',
+                    nameLocalizations: getStringLocales('msgxp_xpOptionvalueLocalisedName'),
+                    description: 'The amount of xp to operate',
+                    descriptionLocalizations: getStringLocales('msgxp_xpOptionvalueLocalisedDesc'),
                     required: true,
                     minValue: 0,
                 },
@@ -150,69 +135,141 @@ module.exports = {
         {
             type: ApplicationCommandOptionType.SubcommandGroup,
             name: 'ignore',
+            nameLocalizations: getStringLocales('msgxp_ignoreLocalisedName'),
             description: 'Choose roles that won\'t be given xp or channels where users won\'t earn xp',
             options: [
                 {
                     type: ApplicationCommandOptionType.Subcommand,
-                    name: 'role',
-                    nameLocalizations: getStringLocales('msgxp_ignore_roleLocalisedName'),
+                    name: 'roles',
+                    nameLocalizations: getStringLocales('msgxp_ignore_rolesLocalisedName'),
                     description: 'Manage roles which its members won\'t be given xp',
-                    descriptionLocalizations: getStringLocales('msgxp_ignore_roleLocalisedDesc'),
-                    options: [
-                        {
-                            type: ApplicationCommandOptionType.Boolean,
-                            name: 'add',
-                            nameLocalizations: getStringLocales('msgxp_ignore_roleOptionaddLocalisedName'),
-                            description: 'True to ignore this role or False to remove from the list of ignored roles',
-                            descriptionLocalizations: getStringLocales('msgxp_ignore_roleOptionaddLocalisedDesc'),
-                            required: true,
-                        },
-                        {
-                            type: ApplicationCommandOptionType.Role,
-                            name: 'role',
-                            nameLocalizations: getStringLocales('msgxp_ignore_roleOptionroleLocalisedName'),
-                            description: 'The role to add or remove from the list of ignored roles',
-                            descriptionLocalizations: getStringLocales('msgxp_ignore_roleOptionroleLocalisedDesc'),
-                            required: true,
-                        },
-                    ],
+                    descriptionLocalizations: getStringLocales('msgxp_ignore_rolesLocalisedDesc'),
+                    options: [{
+                        type: ApplicationCommandOptionType.Boolean,
+                        name: 'add',
+                        nameLocalizations: getStringLocales('msgxp_ignore_rolesOptionaddLocalisedName'),
+                        description: 'True to ignore these roles or False to remove from the list of ignored roles',
+                        descriptionLocalizations: getStringLocales('msgxp_ignore_rolesOptionaddLocalisedDesc'),
+                        required: true,
+                    }],
                 },
                 {
                     type: ApplicationCommandOptionType.Subcommand,
-                    name: 'channel',
-                    nameLocalizations: getStringLocales('msgxp_ignore_channelLocalisedName'),
+                    name: 'channels',
+                    nameLocalizations: getStringLocales('msgxp_ignore_channelsLocalisedName'),
                     description: 'Manage channel where members can\'t earn xp',
-                    descriptionLocalizations: getStringLocales('msgxp_ignore_channelLocalisedDesc'),
-                    options: [
-                        {
-                            type: ApplicationCommandOptionType.Boolean,
-                            name: 'add',
-                            nameLocalizations: getStringLocales('msgxp_ignore_channelOptionaddLocalisedName'),
-                            description: (
-                                'True to ignore this channel or False to remove from the list of ignored channels'
-                            ),
-                            descriptionLocalizations: getStringLocales('msgxp_ignore_channelOptionaddLocalisedDesc'),
-                            required: true,
-                        },
-                        {
-                            type: ApplicationCommandOptionType.Channel,
-                            name: 'channel',
-                            nameLocalizations: getStringLocales('msgxp_ignore_channelOptionchannelLocalisedName'),
-                            description: 'The channel to add or remove from the list of ignored channels',
-                            descriptionLocalizations: getStringLocales(
-                                'msgxp_ignore_channelOptionchannelLocalisedDesc',
-                            ),
-                            required: true,
-                        },
-                    ],
+                    descriptionLocalizations: getStringLocales('msgxp_ignore_channelsLocalisedDesc'),
+                    options: [{
+                        type: ApplicationCommandOptionType.Boolean,
+                        name: 'add',
+                        nameLocalizations: getStringLocales('msgxp_ignore_channelsOptionaddLocalisedName'),
+                        description: (
+                            'True to ignore these channels or False to remove from the list of ignored channels'
+                        ),
+                        descriptionLocalizations: getStringLocales('msgxp_ignore_channelsOptionaddLocalisedDesc'),
+                        required: true,
+                    }],
                 },
             ],
         },
-        {},
-        {},
-        {},
-        {},
-        {},
+        {
+            type: ApplicationCommandOptionType.Subcommand,
+            name: 'notifications',
+            nameLocalizations: getStringLocales('msgxp_notificationsLocalisedName'),
+            description: 'Choose if and where level up notifications should be sent',
+            descriptionLocalizations: getStringLocales('msgxp_notificationsLocalisedDesc'),
+            options: [{
+                type: ApplicationCommandOptionType.String,
+                name: 'mode',
+                nameLocalizations: getStringLocales('msgxp_notificationsOptionmodeLocalisedName'),
+                description: 'How the channel where level up notifications will be sent should be decided',
+                descriptionLocalizations: getStringLocales('msgxp_notificationsOptionmodeLocalisedDesc'),
+                required: true,
+                choices: [
+                    {
+                        name: 'Do not send notifications',
+                        nameLocalizations: getStringLocales('msgxp_notificationsOptionmodeChoiceNONELocalisedName'),
+                        value: 'NONE',
+                    },
+                    {
+                        name: 'The channel where the levelling up occurred',
+                        nameLocalizations: getStringLocales('msgxp_notificationsOptionmodeChoiceDEFAULTLocalisedName'),
+                        value: 'DEFAULT',
+                    },
+                    {
+                        name: 'DM the member who levelled up',
+                        nameLocalizations: getStringLocales('msgxp_notificationsOptionmodeChoiceDMLocalisedName'),
+                        value: 'DM',
+                    },
+                    {
+                        name: 'Choose a specific channel',
+                        nameLocalizations: getStringLocales('msgxp_notificationsOptionmodeChoiceCHANNELLocalisedName'),
+                        value: 'CHANNEL',
+                    },
+                ],
+            }],
+        },
+        {
+            type: ApplicationCommandOptionType.Subcommand,
+            name: 'recommendlevels',
+            nameLocalizations: getStringLocales('msgxp_recommendlevelsLocalisedName'),
+            description: 'Get recommendations for how much xp to set for each level based on your preferences',
+            descriptionLocalizations: getStringLocales('msgxp_recommendlevelsLocalisedDesc'),
+            options: [
+                {
+                    type: ApplicationCommandOptionType.Integer,
+                    name: 'number_of_levels',
+                    nameLocalizations: getStringLocales('msgxp_recommendlevelsOptionnumber_of_levelsLocalisedName'),
+                    description: 'How many level roles you would like to have in total',
+                    descriptionLocalizations: getStringLocales(
+                        'msgxp_recommendlevelsOptionnumber_of_levelsLocalisedDesc',
+                    ),
+                    required: true,
+                    minValue: 2,
+                },
+                {
+                    type: ApplicationCommandOptionType.Integer,
+                    name: 'highest_level_xp',
+                    nameLocalizations: getStringLocales('msgxp_recommendlevelsOptionhighest_level_xpLocalisedName'),
+                    description: 'The approximate amount of xp you would like the highest level role to require',
+                    descriptionLocalizations: getStringLocales(
+                        'msgxp_recommendlevelsOptionhighest_level_xpLocalisedDesc',
+                    ),
+                    required: true,
+                    minValue: 13,
+                },
+            ],
+        },
+        {
+            type: ApplicationCommandOptionType.Subcommand,
+            name: 'multipliers',
+            nameLocalizations: getStringLocales('msgxp_multipliersLocalisedName'),
+            description: 'Manage xp multipliers for specific roles which you would like to earn more xp',
+            descriptionLocalizations: getStringLocales('msgxp_multipliersLocalisedDesc'),
+            options: [{
+                type: ApplicationCommandOptionType.Number,
+                name: 'multiplier_value',
+                nameLocalizations: getStringLocales('msgxp_multipliersOptionmultiplier_valueLocalisedName'),
+                description: 'By how much to multiply the amount of xp earned by chosen roles',
+                descriptionLocalizations: getStringLocales('msgxp_multipliersOptionmultiplier_valueLocalisedDesc'),
+                required: true,
+                minValue: 1,
+            }],
+        },
+        {
+            type: ApplicationCommandOptionType.Subcommand,
+            name: 'info',
+            nameLocalizations: getStringLocales('msgxp_infoLocalisedName'),
+            description: 'Shows detailed info on the xp system configuration for this server',
+            descriptionLocalizations: getStringLocales('msgxp_infoLocalisedDesc'),
+        },
+        {
+            type: ApplicationCommandOptionType.Subcommand,
+            name: 'resetrank',
+            nameLocalizations: getStringLocales('msgxp_resetrankLocalisedName'),
+            description: 'Resets the xp for all users to 0',
+            descriptionLocalizations: getStringLocales('msgxp_resetrankLocalisedDesc'),
+        },
     ],
     execute: async function(message, args){
         const {channelLanguage} = message;
@@ -225,14 +282,14 @@ module.exports = {
                 if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {gainExp: (args[1] === 'on')}});
                 message.client.guildData.get(message.guild.id).gainExp = (args[1] === 'on');
-                message.reply(channelLanguage.get('xpEnable', [args[1]]));
+                await message.reply(channelLanguage.get('xpEnable', {enabled: (args[1] === 'on')}));
             }
             break;
             case 'stack': {
                 if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {dontStack: (args[1] === 'off')}});
                 message.client.guildData.get(message.guild.id).dontStack = (args[1] === 'off');
-                message.reply(channelLanguage.get('xpStack', [args[1]]));
+                await message.reply(channelLanguage.get('xpStack', {enabled: (args[1] === 'on')}));
             }
             break;
             case 'roles': {
@@ -545,5 +602,23 @@ module.exports = {
             break;
             default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
         }
+    },
+    enableSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
+        const guild = require('../../schemas/guild.js');
+        await guild.findByIdAndUpdate(
+            interaction.guild.id,
+            {$set: {gainExp: (interaction.client.guildData.get(interaction.guild.id).gainExp = args.enabled)}},
+        );
+        await interaction.reply(channelLanguage.get('xpEnable', {enabled: args.enabled}));
+    },
+    stackrolesSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
+        const guild = require('../../schemas/guild.js');
+        await guild.findByIdAndUpdate(
+            interaction.guild.id,
+            {$set: {dontStack: (interaction.client.guildData.get(interaction.guild.id).dontStack = !args.enable)}},
+        );
+        await interaction.reply(channelLanguage.get('xpStack', {enabled: args.enable}));
     },
 };

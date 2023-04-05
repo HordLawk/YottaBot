@@ -91,8 +91,8 @@ module.exports = {
             case 'msgxpUsage9': return 'reset';
             case 'msgxpUsage10': return 'recommend (role amount) (max xp)';
             case 'msgxpUsage11': return 'multiplier (role) (value)';
-            case 'xpEnable': return `Server xp system successfully ${(vars[0] === 'on') ? 'enabled': 'disabled'}`
-            case 'xpStack': return `Role stacking successfully ${(vars[0] === 'on') ? 'enabled': 'disabled'}`
+            case 'xpEnable': return `Server xp system successfully ${vars.enabled ? 'enabled': 'disabled'}`
+            case 'xpStack': return `Role stacking successfully ${vars.enabled ? 'enabled': 'disabled'}`
             case 'manageRole': return 'I need permissions to manage this role';
             case 'sameXp': return 'There is another role being rewarded at this amount of xp';
             case 'maxXpRoles': return 'The maximum amount of xp roles for non premium servers is 10, but you can add more with premium! To get premium [join Patreon](<https://www.patreon.com/YottaBot>)';

@@ -92,8 +92,8 @@ module.exports = {
             case 'msgxpUsage9': return 'reset';
             case 'msgxpUsage10': return 'recommend (quantia de cargos) (xp máximo)';
             case 'msgxpUsage11': return 'multiplier (cargo) (valor)';
-            case 'xpEnable': return `Sistema de xp do servidor ${(vars[0] === 'on') ? 'ativado': 'desativado'}`
-            case 'xpStack': return `Acumulo de cargos de xp ${(vars[0] === 'on') ? 'ativado': 'desativao'}`
+            case 'xpEnable': return `Sistema de xp do servidor ${vars.enabled ? 'ativado': 'desativado'}`
+            case 'xpStack': return `Acumulo de cargos de xp ${vars.enabled ? 'ativado': 'desativao'}`
             case 'manageRole': return 'Eu preciso de permissão para gerenciar esse cargo';
             case 'sameXp': return 'Já existe outro cargo definido para essa quantidade de xp';
             case 'maxXpRoles': return 'O número maximo de cargos de xp para servidores não premium é 10, mas você pode adicionar mais com premium! Para adquirir premium [se junte ao Patreon](<https://www.patreon.com/YottaBot>)';
@@ -812,6 +812,95 @@ module.exports = {
                 `Código: [\`${vars[0]}\`](https://discord.gg/${vars[0]})\n` +
                 `Criado por: ${vars[1]} \`${vars[1].tag}\``
             );
+            case 'msgxp_enableLocalisedName': return 'ativar';
+            case 'msgxp_enableLocalisedDesc': return 'Se o ganho de xp em canais de texto deve ser ativado';
+            case 'msgxp_enableOptionenabledLocalisedName': return 'ativado';
+            case 'msgxp_enableOptionenabledLocalisedDesc': return (
+                'True para ativar ou False para desativar o ganho de xp em canais de texto'
+            );
+            case 'msgxp_stackrolesLocalisedName': return 'acumularcargos';
+            case 'msgxp_stackrolesLocalisedDesc': return 'Acumular novos cargos de xp em vez de remover os anteriores';
+            case 'msgxp_stackrolesOptionenableLocalisedName': return 'ativar';
+            case 'msgxp_stackrolesOptionenableLocalisedDesc': return (
+                'True para acumular novos cargos de xp e False para substituir os anteriores de xp mais baixo'
+            );
+            case 'msgxp_rolesLocalisedName': return 'cargos';
+            case 'msgxp_roles_setLocalisedName': return 'definir';
+            case 'msgxp_roles_setLocalisedDesc': return (
+                'Define a quantidade de xp que deve ser alcançada para conquistar um cargo específico'
+            );
+            case 'msgxp_roles_setOptionroleLocalisedName': return 'cargo';
+            case 'msgxp_roles_setOptionroleLocalisedDesc': return (
+                'O cargo que pode ser conquistado ao se alcançar certa quantia de xp'
+            );
+            case 'msgxp_roles_setOptionxpLocalisedName': return 'xp';
+            case 'msgxp_roles_setOptionxpLocalisedDesc': return 'A quantidade de xp necessária para conquistar o cargo';
+            case 'msgxp_roles_removeLocalisedName': return 'remover';
+            case 'msgxp_roles_removeLocalisedDesc': return 'Remove cargos de serem conquistáveis';
+            case 'msgxp_xpLocalisedName': return 'xp';
+            case 'msgxp_xpLocalisedDesc': return 'Gerencia o xp de um ou mais usuários';
+            case 'msgxp_xpOptionactionLocalisedName': return 'acao';
+            case 'msgxp_xpOptionactionLocalisedDesc': return 'O que você deseja fazer com o xp do(s) usuário(s)';
+            case 'msgxp_xpOptionactionChoiceADDLocalisedName': return 'Adicionar';
+            case 'msgxp_xpOptionactionChoiceREMOVELocalisedName': return 'Remover';
+            case 'msgxp_xpOptionactionChoiceSETLocalisedName': return 'Definir';
+            case 'msgxp_xpOptionvalueLocalisedName': return 'valor';
+            case 'msgxp_xpOptionvalueLocalisedDesc': return 'A quantidade de xp para operar';
+            case 'msgxp_ignoreLocalisedName': return 'ignorar';
+            case 'msgxp_ignore_rolesLocalisedName': return 'cargos';
+            case 'msgxp_ignore_rolesLocalisedDesc': return 'Gerencia cargos os quais seus membros não receberão xp';
+            case 'msgxp_ignore_rolesOptionaddLocalisedName': return 'adicionar';
+            case 'msgxp_ignore_rolesOptionaddLocalisedDesc': return (
+                'True para adicionar ou False para remover os cargos da lista negra de ganho de xp'
+            );
+            case 'msgxp_ignore_channelsLocalisedName': return 'canais';
+            case 'msgxp_ignore_channelsLocalisedDesc': return 'Gerencia canais onde membros não receberão xp';
+            case 'msgxp_ignore_channelsOptionaddLocalisedName': return 'adicionar';
+            case 'msgxp_ignore_channelsOptionaddLocalisedDesc': return (
+                'True para adicionar ou False para remover os canais da lista negra de ganho de xp'
+            );
+            case 'msgxp_notificationsLocalisedName': return 'notificacoes';
+            case 'msgxp_notificationsLocalisedDesc': return (
+                'Escolha se e onde as notificações de subida de nível devem ser enviadas'
+            );
+            case 'msgxp_notificationsOptionmodeLocalisedName': return 'modo';
+            case 'msgxp_notificationsOptionmodeLocalisedName': return (
+                'Como o canal em que as notificações de subida de nível serão enviadas deve ser escolhido'
+            );
+            case 'msgxp_notificationsOptionmodeChoiceNONELocalisedName': return 'Não enviar notificações';
+            case 'msgxp_notificationsOptionmodeChoiceDEFAULTLocalisedName': return (
+                'Mesmo canal em que a subida de nível aconteceu'
+            );
+            case 'msgxp_notificationsOptionmodeChoiceDMLocalisedName': return (
+                'Enviar uma MD para o membro que subiu de nível'
+            );
+            case 'msgxp_notificationsOptionmodeChoiceCHANNELLocalisedName': return 'Escolha um canal específico';
+            case 'msgxp_recommendlevelsLocalisedName': return 'recomendarniveis';
+            case 'msgxp_recommendlevelsLocalisedDesc': return (
+                'Receba recomendações de quanto xp definir para cada nível baseado nas suas preferências'
+            );
+            case 'msgxp_recommendlevelsOptionnumber_of_levelsLocalisedName': return 'numero_de_niveis';
+            case 'msgxp_recommendlevelsOptionnumber_of_levelsLocalisedDesc': return (
+                'Quantos cargos de nível você gostaria de ter no total'
+            );
+            case 'msgxp_recommendlevelsOptionhighest_level_xpLocalisedName': return 'xp_do_nivel_mais_alto';
+            case 'msgxp_recommendlevelsOptionhighest_level_xpLocalisedDesc': return (
+                'A quantidade aproximada de xp que você gostaria que o último cargo de nível requira'
+            );
+            case 'msgxp_multipliersLocalisedName': return 'multiplicadores';
+            case 'msgxp_multipliersLocalisedDesc': return (
+                'Gerencia multiplicadores de xp para cargos específicos que você gostaria que recebessem mais xp'
+            );
+            case 'msgxp_multipliersOptionmultiplier_valueLocalisedName': return 'valor_multiplicador';
+            case 'msgxp_multipliersOptionmultiplier_valueLocalisedDesc': return (
+                'Por quanto multiplicar o valor de xp recebido pelos cargos que serão selecionados'
+            );
+            case 'msgxp_infoLocalisedName': return 'info';
+            case 'msgxp_infoLocalisedDesc': return (
+                'Mostra informações detalhadas sobre as configurações do sistema de xp desse servidor'
+            );
+            case 'msgxp_resetrankLocalisedName': return 'resetarrank';
+            case 'msgxp_resetrankLocalisedDesc': return 'Redefine o xp de todos os usuários para 0';
         }
     },
 };

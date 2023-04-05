@@ -1,4 +1,4 @@
-// Copyright (C) 2022  HordLawk
+// Copyright (C) 2023  HordLawk
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -64,10 +64,7 @@ module.exports = {
             type: ApplicationCommandOptionType.SubcommandGroup,
             name: 'roles',
             nameLocalizations: getStringLocales('msgxp_rolesLocalisedName'),
-            description: (
-                'Sets the xp of roles that can be earned through sending messages in text channels or removed these ' + 
-                'roles'
-            ),
+            description: 'Manages the roles that can be achieved by earning xp talking in text or voice channels',
             options: [
                 {
                     type: ApplicationCommandOptionType.Subcommand,
@@ -318,7 +315,9 @@ module.exports = {
                         let discordRole = message.guild.roles.cache.get(args[2].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
                         if(!discordRole || (discordRole.id === message.guild.id)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
                         if(!discordRole.editable || discordRole.managed) return message.reply(channelLanguage.get('manageRole'));
-                        if(discordRole.position >= message.member.roles.highest.position) message.reply(channelLanguage.get('memberManageRole'));
+                        if(discordRole.position >= message.member.roles.highest.position){
+                            return await message.reply(channelLanguage.get('memberManageRole'));
+                        }
                         let roleDocs = await role.find({
                             guild: message.guild.id,
                             roleID: {$in: message.guild.roles.cache.map(e => e.id)},
@@ -620,8 +619,8 @@ module.exports = {
     },
     enableSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        const guild = require('../../schemas/guild.js');
-        await guild.findByIdAndUpdate(
+        const guildModel = require('../../schemas/guild.js');
+        await guildModel.findByIdAndUpdate(
             interaction.guild.id,
             {$set: {gainExp: (interaction.client.guildData.get(interaction.guild.id).gainExp = args.enabled)}},
         );
@@ -629,11 +628,71 @@ module.exports = {
     },
     stackrolesSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        const guild = require('../../schemas/guild.js');
-        await guild.findByIdAndUpdate(
+        const guildModel = require('../../schemas/guild.js');
+        await guildModel.findByIdAndUpdate(
             interaction.guild.id,
             {$set: {dontStack: (interaction.client.guildData.get(interaction.guild.id).dontStack = !args.enable)}},
         );
         await interaction.reply(channelLanguage.get('xpStack', {enabled: args.enable}));
+    },
+    rolessetSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
+        if(args.role.id === interaction.guild.id) return await interaction.reply({
+            content: channelLanguage.get('everyoneLevelRoleError'),
+            ephemeral: true,
+        });
+        if(!args.role.editable || args.role.managed) return await interaction.reply({
+            content: channelLanguage.get('manageRole'),
+            ephemeral: true,
+        });
+        if(args.role.position >= interaction.member.roles.highest.position) return await interaction.reply({
+            content: channelLanguage.get('memberManageRole'),
+            ephemeral: true,
+        });
+        const roleModel = require('../../schemas/role.js');
+        const roleDocs = await roleModel.find({
+            guild: interaction.guild.id,
+            roleID: {$in: [...interaction.guild.roles.cache.keys()]},
+            xp: {$ne: null},
+        });
+        if(roleDocs.some(e => (e.xp === args.xp))) return await interaction.reply({
+            content: channelLanguage.get('sameXp'),
+            ephemeral: true,
+        });
+        const oldRole = roleDocs.find(e => (e.roleID === args,role.id));
+        if(oldRole){
+            oldRole.xp = args.xp;
+            await oldRole.save();
+        }
+        else{
+            const guildData = interaction.client.guildData.get(interaction.guild.id);
+            if((roleDocs.length >= 10) && !guildData.premiumUntil && !guildData.partner){
+                return await interaction.reply({
+                    content: channelLanguage.get('maxXpRoles'),
+                    ephemeral: true,
+                });
+            }
+            const newRole = new role({
+                guild: interaction.guild.id,
+                roleID: args.role.id,
+                xp: args.xp,
+            });
+            await newRole.save();
+        }
+        await interaction.reply(channelLanguage.get('setXpRole', [args.role.name, args.xp]));
+    },
+    rolesremoveSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
+        await interaction.reply({
+            content: channelLanguage.get('removeXpRolesMenu'),
+            components: [{
+                type: ComponentType.ActionRow,
+                components: [{
+                    type: ComponentType.RoleSelect,
+                    customId: 'wf:rmlv:0',
+                    maxValues: 25,
+                }],
+            }],
+        });
     },
 };

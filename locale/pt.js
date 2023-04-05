@@ -1,4 +1,4 @@
-// Copyright (C) 2022  HordLawk
+// Copyright (C) 2023  HordLawk
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -936,6 +936,13 @@ module.exports = {
                 'Vá conversar um tempo e seja o primeiro a ganhar um pouco!'
             );
             case 'noBannedUsernames': return 'Não há usernames banidos nesse servidor';
+            case 'everyoneLevelRoleError': return 'Você não pode definir @everyone como um cargo conquistável!';
+            case 'removeXpRoles': return (
+                `**${vars.matchedCount}** cargos de xp foram removidos\nesteja ciente que esses cargos não serão` +
+                ' automaticamente removidos dos membros, se isso for necessário, é recomendado que os cargos sejam' +
+                ' removidos do servidor para que nenhum membro continue com eles'
+            );
+            case 'removeXpRolesMenu': return 'Selecione os cargos que você deseja remover';
         }
     },
 };

@@ -1,4 +1,4 @@
-// Copyright (C) 2022  HordLawk
+// Copyright (C) 2023  HordLawk
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -710,6 +710,13 @@ module.exports = {
                 'Go talk for a bit and be the first to earn some!'
             );
             case 'noBannedUsernames': return 'There are no banned usernames in this server';
+            case 'everyoneLevelRoleError': return 'You can\'t set @everyone as an achievable role!';
+            case 'removeXpRoles': return (
+                `**${vars.matchedCount}** xp roles were removed\nbe aware that these roles won't be automatically removed` +
+                ' from members, if you want this, it\'s recommended that you delete the roles from the server so no' +
+                ' member can have it'
+            );
+            case 'removeXpRolesMenu': return 'Select the roles you wish to remove';
         }
     },
 };

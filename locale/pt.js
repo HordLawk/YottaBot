@@ -954,6 +954,17 @@ module.exports = {
             case 'xpIgnoreRolesRemove': return (
                 `**${vars.modifiedCount}** cargos foram **removidos** da lista de cargos ignorados`
             );
+            case 'xpIgnoreChannelsMenu': return (
+                `Selecione os canais que você deseja **${(vars.action === 'ADD') ? 'adicionar' : 'remover'}** da` +
+                ' lista de canais ignorados'
+            );
+            case 'xpIgnoreChannelsAdd': return (
+                `**${vars.modifiedCount}** canais foram **adicionados** à lista de canais ignorados`
+            );
+            case 'xpIgnoreChannelsRemove': return (
+                `**${vars.modifiedCount}** canais foram **removidos** da lista de canais ignorados`
+            );
+            case 'badInteractionAuthor': return 'Apenas o usuário que iniciou essa interação pode fazer isso!';
         }
     },
 };

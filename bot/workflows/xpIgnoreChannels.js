@@ -16,39 +16,40 @@
 const locale = require('../../locale');
 
 module.exports = {
-    code: 'xpblrole',
+    code: 'xpblchan',
     steps: [async (interaction, args) => {
         const channelLanguage = locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en');
-        const roleModel = require('../../schemas/role.js');
+        const channelModel = require('../../schemas/channel.js');
         if(args[0] === 'ADD'){
-            const roleDocs = await roleModel.find({
+            const channelDocs = await channelModel.find({
+                _id: {$in: interaction.values},
                 guild: interaction.guild.id,
-                roleID: {$in: interaction.values},
             });
-            const newRoles = interaction.values
-                .filter(roleId => !roleDocs.some(roleDoc => (roleDoc.roleID === roleId)))
-                .map(roleId => ({
+            const newChannels = interaction.values
+                .filter(channelId => !channelDocs.some(channelDoc => (channelDoc._id === channelId)))
+                .map(channelId => ({
+                    _id: channelId,
                     guild: interaction.guild.id,
-                    roleID: roleId,
                     ignoreXp: true,
                 }));
-            await roleModel.insertMany(newRoles);
-            const res = await roleModel.updateMany({
+            await channelModel.insertMany(newChannels);
+            const res = await channelModel.updateMany({
+                _id: {$in: channelDocs.map(channelDoc => channelDoc._id)},
                 guild: interaction.guild.id,
-                roleID: {$in: roleDocs.map(roleDoc => roleDoc.roleID)},
+                ignoreXp: {$ne: true},
             }, {$set: {ignoreXp: true}});
             return await interaction.update({
-                content: channelLanguage.get('xpIgnoreRolesAdd', {modifiedCount: (newRoles.length + res.nModified)}),
+                content: channelLanguage.get('xpIgnoreChannelsAdd', {modifiedCount: (newChannels.length + res.nModified)}),
                 components: [],
             });
         }
-        const res = await roleModel.updateMany({
+        const res = await channelModel.updateMany({
+            _id: {$in: interaction.values},
             guild: interaction.guild.id,
-            roleID: {$in: interaction.values},
             ignoreXp: true,
         }, {$set: {ignoreXp: false}});
         await interaction.update({
-            content: channelLanguage.get('xpIgnoreRolesRemove', {modifiedCount: res.nModified}),
+            content: channelLanguage.get('xpIgnoreChannelsRemove', {modifiedCount: res.nModified}),
             components: [],
         });
     }],

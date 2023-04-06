@@ -728,6 +728,17 @@ module.exports = {
             case 'xpIgnoreRolesRemove': return (
                 `**${vars.modifiedCount}** roles were **removed** from the list of ignored roles`
             );
+            case 'xpIgnoreChannelsMenu': return (
+                `Select the channels you wish to **${(vars.action === 'ADD') ? 'add to' : 'remove from'}** the list` +
+                ' of ignored channels'
+            );
+            case 'xpIgnoreChannelsAdd': return (
+                `**${vars.modifiedCount}** channels were **added** to the list of ignored channels`
+            );
+            case 'xpIgnoreChannelsRemove': return (
+                `**${vars.modifiedCount}** channels were **removed** from the list of ignored channels`
+            );
+            case 'badInteractionAuthor': return 'Only the one who started this interaction can do this!';
         }
     },
 };

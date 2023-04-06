@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-const {EmbedBuilder, PermissionsBitField, ButtonStyle, ComponentType, ApplicationCommandOptionType} = require('discord.js');
+const {EmbedBuilder, PermissionsBitField, ButtonStyle, ComponentType, ApplicationCommandOptionType, ChannelType} = require('discord.js');
 const configs = require('../configs.js');
 const {handleComponentError, getStringLocales} = require('../utils.js');
 
@@ -711,7 +711,7 @@ module.exports = {
                 type: ComponentType.ActionRow,
                 components: [{
                     type: ComponentType.RoleSelect,
-                    customId: 'wf:rmlv:0',
+                    customId: `wf:${interaction.user.id}:rmlv:0`,
                     maxValues: 25,
                 }],
             }],
@@ -725,7 +725,7 @@ module.exports = {
                 type: ComponentType.ActionRow,
                 components: [{
                     type: ComponentType.UserSelect,
-                    customId: `wf:manxp:0:${args.action}:${args.value}`,
+                    customId: `wf:${interaction.user.id}:manxp:0:${args.action}:${args.value}`,
                     maxValues: 25,
                 }],
             }],
@@ -739,8 +739,31 @@ module.exports = {
                 type: ComponentType.ActionRow,
                 components: [{
                     type: ComponentType.RoleSelect,
-                    customId: `wf:xpbl:0:${args.action}`,
+                    customId: `wf:${interaction.user.id}:xpblrole:0:${args.action}`,
                     maxValues: 25,
+                }],
+            }],
+        });
+    },
+    ignorechannelsSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
+        await interaction.reply({
+            content: channelLanguage.get('xpIgnoreChannelsMenu', {action: args.action}),
+            components: [{
+                type: ComponentType.ActionRow,
+                components: [{
+                    type: ComponentType.ChannelSelect,
+                    customId: `wf:${interaction.user.id}:xpblchan:0:${args.action}`,
+                    maxValues: 25,
+                    channelTypes: [
+                        ChannelType.AnnouncementThread,
+                        ChannelType.GuildAnnouncement,
+                        ChannelType.GuildStageVoice,
+                        ChannelType.GuildText,
+                        ChannelType.GuildVoice,
+                        ChannelType.PrivateThread,
+                        ChannelType.PublicThread,
+                    ],
                 }],
             }],
         });

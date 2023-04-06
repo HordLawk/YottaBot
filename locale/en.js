@@ -712,12 +712,22 @@ module.exports = {
             case 'noBannedUsernames': return 'There are no banned usernames in this server';
             case 'everyoneLevelRoleError': return 'You can\'t set @everyone as an achievable role!';
             case 'removeXpRoles': return (
-                `**${vars.matchedCount}** xp roles were removed\nbe aware that these roles won't be automatically removed` +
-                ' from members, if you want this, it\'s recommended that you delete the roles from the server so no' +
-                ' member can have it'
+                `**${vars.matchedCount}** xp roles were removed\nbe aware that these roles won't be automatically` +
+                ' removed from members, if you want this, it\'s recommended that you delete the roles from the server' +
+                ' so no member can have it'
             );
             case 'removeXpRolesMenu': return 'Select the roles you wish to remove';
             case 'manageXpUsersMenu': return 'Select the users you wish to apply these changes to their xp';
+            case 'xpIgnoreRolesMenu': return (
+                `Select the roles you wish to **${(vars.action === 'ADD') ? 'add to' : 'remove from'}** the list of` +
+                ' ignored roles'
+            );
+            case 'xpIgnoreRolesAdd': return (
+                `**${vars.modifiedCount}** roles were **added** to the list of ignored roles`
+            );
+            case 'xpIgnoreRolesRemove': return (
+                `**${vars.modifiedCount}** roles were **removed** from the list of ignored roles`
+            );
         }
     },
 };

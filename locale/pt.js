@@ -873,15 +873,15 @@ module.exports = {
             case 'msgxp_ignoreLocalisedName': return 'ignorar';
             case 'msgxp_ignore_rolesLocalisedName': return 'cargos';
             case 'msgxp_ignore_rolesLocalisedDesc': return 'Gerencia cargos os quais seus membros não receberão xp';
-            case 'msgxp_ignore_rolesOptionaddLocalisedName': return 'adicionar';
-            case 'msgxp_ignore_rolesOptionaddLocalisedDesc': return (
-                'True para adicionar ou False para remover os cargos da lista negra de ganho de xp'
+            case 'msgxp_ignore_rolesOptionactionLocalisedName': return 'acao';
+            case 'msgxp_ignore_rolesOptionactionLocalisedDesc': return (
+                'Se deve adicionar ou remover os cargos da lista negra de ganho de xp'
             );
             case 'msgxp_ignore_channelsLocalisedName': return 'canais';
             case 'msgxp_ignore_channelsLocalisedDesc': return 'Gerencia canais onde membros não receberão xp';
-            case 'msgxp_ignore_channelsOptionaddLocalisedName': return 'adicionar';
-            case 'msgxp_ignore_channelsOptionaddLocalisedDesc': return (
-                'True para adicionar ou False para remover os canais da lista negra de ganho de xp'
+            case 'msgxp_ignore_channelsOptionactionLocalisedName': return 'acao';
+            case 'msgxp_ignore_channelsOptionactionLocalisedDesc': return (
+                'Se deve adicionar ou remover os canais da lista negra de ganho de xp'
             );
             case 'msgxp_notificationsLocalisedName': return 'notificacoes';
             case 'msgxp_notificationsLocalisedDesc': return (
@@ -944,6 +944,16 @@ module.exports = {
             );
             case 'removeXpRolesMenu': return 'Selecione os cargos que você deseja remover';
             case 'manageXpUsersMenu': return 'Selecione os usuários que você deseja aplicar essas alterações ao xp';
+            case 'xpIgnoreRolesMenu': return (
+                `Selecione os cargos que você deseja **${(vars.action === 'ADD') ? 'adicionar' : 'remover'}** da` +
+                ' lista de cargos ignorados'
+            );
+            case 'xpIgnoreRolesAdd': return (
+                `**${vars.modifiedCount}** cargos foram **adicionados** à lista de cargos ignorados`
+            );
+            case 'xpIgnoreRolesRemove': return (
+                `**${vars.modifiedCount}** cargos foram **removidos** da lista de cargos ignorados`
+            );
         }
     },
 };

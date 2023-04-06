@@ -157,12 +157,24 @@ module.exports = {
                     description: 'Manage roles which its members won\'t be given xp',
                     descriptionLocalizations: getStringLocales('msgxp_ignore_rolesLocalisedDesc'),
                     options: [{
-                        type: ApplicationCommandOptionType.Boolean,
-                        name: 'add',
-                        nameLocalizations: getStringLocales('msgxp_ignore_rolesOptionaddLocalisedName'),
-                        description: 'True to ignore these roles or False to remove from the list of ignored roles',
-                        descriptionLocalizations: getStringLocales('msgxp_ignore_rolesOptionaddLocalisedDesc'),
+                        type: ApplicationCommandOptionType.String,
+                        name: 'action',
+                        nameLocalizations: getStringLocales('msgxp_ignore_rolesOptionactionLocalisedName'),
+                        description: 'Whether to add or to remove from the list of ignored roles',
+                        descriptionLocalizations: getStringLocales('msgxp_ignore_rolesOptionactionLocalisedDesc'),
                         required: true,
+                        choices: [
+                            {
+                                name: 'Add',
+                                nameLocalizations: getStringLocales('msgxp_xpOptionactionChoiceADDLocalisedName'),
+                                value: 'ADD',
+                            },
+                            {
+                                name: 'Remove',
+                                nameLocalizations: getStringLocales('msgxp_xpOptionactionChoiceREMOVELocalisedName'),
+                                value: 'REMOVE',
+                            },
+                        ],
                     }],
                 },
                 {
@@ -172,14 +184,24 @@ module.exports = {
                     description: 'Manage channel where members can\'t earn xp',
                     descriptionLocalizations: getStringLocales('msgxp_ignore_channelsLocalisedDesc'),
                     options: [{
-                        type: ApplicationCommandOptionType.Boolean,
-                        name: 'add',
-                        nameLocalizations: getStringLocales('msgxp_ignore_channelsOptionaddLocalisedName'),
-                        description: (
-                            'True to ignore these channels or False to remove from the list of ignored channels'
-                        ),
-                        descriptionLocalizations: getStringLocales('msgxp_ignore_channelsOptionaddLocalisedDesc'),
+                        type: ApplicationCommandOptionType.String,
+                        name: 'action',
+                        nameLocalizations: getStringLocales('msgxp_ignore_channelsOptionactionLocalisedName'),
+                        description: 'Whether to add or to remove from the list of ignored channels',
+                        descriptionLocalizations: getStringLocales('msgxp_ignore_channelsOptionactionLocalisedDesc'),
                         required: true,
+                        choices: [
+                            {
+                                name: 'Add',
+                                nameLocalizations: getStringLocales('msgxp_xpOptionactionChoiceADDLocalisedName'),
+                                value: 'ADD',
+                            },
+                            {
+                                name: 'Remove',
+                                nameLocalizations: getStringLocales('msgxp_xpOptionactionChoiceREMOVELocalisedName'),
+                                value: 'REMOVE',
+                            },
+                        ],
                     }],
                 },
             ],
@@ -704,6 +726,20 @@ module.exports = {
                 components: [{
                     type: ComponentType.UserSelect,
                     customId: `wf:manxp:0:${args.action}:${args.value}`,
+                    maxValues: 25,
+                }],
+            }],
+        });
+    },
+    ignorerolesSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
+        await interaction.reply({
+            content: channelLanguage.get('xpIgnoreRolesMenu', {action: args.action}),
+            components: [{
+                type: ComponentType.ActionRow,
+                components: [{
+                    type: ComponentType.RoleSelect,
+                    customId: `wf:xpbl:0:${args.action}`,
                     maxValues: 25,
                 }],
             }],

@@ -681,7 +681,7 @@ module.exports = {
         }
         await interaction.reply(channelLanguage.get('setXpRole', [args.role.name, args.xp]));
     },
-    rolesremoveSlash: async (interaction, args) => {
+    rolesremoveSlash: async interaction => {
         const {channelLanguage} = interaction;
         await interaction.reply({
             content: channelLanguage.get('removeXpRolesMenu'),
@@ -690,6 +690,20 @@ module.exports = {
                 components: [{
                     type: ComponentType.RoleSelect,
                     customId: 'wf:rmlv:0',
+                    maxValues: 25,
+                }],
+            }],
+        });
+    },
+    xpSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
+        await interaction.reply({
+            content: channelLanguage.get('manageXpUsersMenu'),
+            components: [{
+                type: ComponentType.ActionRow,
+                components: [{
+                    type: ComponentType.UserSelect,
+                    customId: `wf:manxp:0:${args.action}:${args.value}`,
                     maxValues: 25,
                 }],
             }],

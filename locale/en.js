@@ -717,6 +717,7 @@ module.exports = {
                 ' member can have it'
             );
             case 'removeXpRolesMenu': return 'Select the roles you wish to remove';
+            case 'manageXpUsersMenu': return 'Select the users you wish to apply these changes to their xp';
         }
     },
 };

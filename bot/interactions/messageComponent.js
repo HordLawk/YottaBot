@@ -23,8 +23,8 @@ const workflows = require('../workflows');
 module.exports = {
     type: InteractionType.MessageComponent,
     execute: async interaction => {
-        const wfAdress = interaction.customId.split(':');
-        if(wfAdress[0] === 'wf') return await workflows.get(wfAdress[1]).steps[wfAdress[2]](interaction);
+        const wfArgs = interaction.customId.split(':');
+        if(wfArgs[0] === 'wf') return await workflows.get(wfArgs[1]).steps[wfArgs[2]](interaction, wfArgs.slice(3));
         const banid = interaction.customId.match(/^banjoined(\d{17,19})$/)?.[1];
         if(banid){
             const channelLanguage = locale.get(interaction.client.guildData.get(interaction.guild.id).language);

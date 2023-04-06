@@ -943,6 +943,7 @@ module.exports = {
                 ' removidos do servidor para que nenhum membro continue com eles'
             );
             case 'removeXpRolesMenu': return 'Selecione os cargos que você deseja remover';
+            case 'manageXpUsersMenu': return 'Selecione os usuários que você deseja aplicar essas alterações ao xp';
         }
     },
 };

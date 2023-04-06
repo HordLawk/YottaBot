@@ -17,10 +17,10 @@ const locale = require('../../locale');
 
 module.exports = {
     code: 'xpblrole',
-    steps: [async (interaction, args) => {
+    steps: [async (interaction, action) => {
         const channelLanguage = locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en');
         const roleModel = require('../../schemas/role.js');
-        if(args[0] === 'ADD'){
+        if(action === 'ADD'){
             const roleDocs = await roleModel.find({
                 guild: interaction.guild.id,
                 roleID: {$in: interaction.values},

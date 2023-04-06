@@ -23,13 +23,14 @@ const workflows = require('../workflows');
 module.exports = {
     type: InteractionType.MessageComponent,
     execute: async interaction => {
+        const userLocale = locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en');
         const wfArgs = interaction.customId.split(':');
         if(wfArgs[0] === 'wf'){
             if(interaction.user.id !== wfArgs[1]) return await interaction.reply({
-                content: locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en').get('badInteractionAuthor'),
+                content: userLocale.get('badInteractionAuthor'),
                 ephemeral: true,
             });
-            return await workflows.get(wfArgs[2]).steps[wfArgs[3]](interaction, wfArgs.slice(4));
+            return await workflows.get(wfArgs[2]).steps[wfArgs[3]](interaction, ...wfArgs.slice(4));
         }
         const banid = interaction.customId.match(/^banjoined(\d{17,19})$/)?.[1];
         if(banid){

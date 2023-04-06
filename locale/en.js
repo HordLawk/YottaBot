@@ -127,7 +127,7 @@ module.exports = {
             case 'setUserXp': return 'Xp values defined';
             case 'xpIgnoreRole': return `The role **${vars[0]}** ${(vars[1] === 'add') ? 'will' : 'won\'t'} be ignored from earning xp`;
             case 'xpIgnoreChannel': return `Users ${(vars[0] === 'add') ? 'won\'t' : 'will'} be able to earn xp in ${vars[1]}`;
-            case 'notifyDefault': return `New role notifications will be sent ${(vars[0] === 'dm') ? 'on DMs' : 'in the channel where the achievement happened'}`;
+            case 'notifyDefault': return `New role notifications will be sent ${(vars.mode === 'DM') ? 'on DMs' : 'in the channel where the achievement happened'}`;
             case 'notifyNone': return 'No new role notifications will be sent';
             case 'notifyChannel': return `New role notifications will be sent in ${vars[0]}`;
             case 'notifyDefaultView': return '\`Same channel\`';
@@ -739,6 +739,9 @@ module.exports = {
                 `**${vars.modifiedCount}** channels were **removed** from the list of ignored channels`
             );
             case 'badInteractionAuthor': return 'Only the one who started this interaction can do this!';
+            case 'levelUpNotificationChannelMenu': return (
+                'Select the channel you want level up notifications to be sent to'
+            );
         }
     },
 };

@@ -128,7 +128,7 @@ module.exports = {
             case 'setUserXp': return 'Novas quantias de xp definidas';
             case 'xpIgnoreRole': return `O cargo **${vars[0]}** ${(vars[1] === 'add') ? 'não vai' : 'vai'} receber xp`;
             case 'xpIgnoreChannel': return `Usuários ${(vars[0] === 'add') ? 'não vão' : 'vão'} receber xp em ${vars[1]}`;
-            case 'notifyDefault': return `Notificações de novos cargos de xp serão enviadas ${(vars[0] === 'dm') ? 'nas MDs' : 'no canal onde o cargo foi alcançado'}`;
+            case 'notifyDefault': return `Notificações de novos cargos de xp serão enviadas ${(vars.mode === 'DM') ? 'nas MDs' : 'no canal onde o cargo foi alcançado'}`;
             case 'notifyNone': return 'Nenhuma notificação de novos cargos de xp será enviada';
             case 'notifyChannel': return `Notificações de novos cargos serão enviadas em ${vars[0]}`;
             case 'notifyDefaultView': return '\`Mesmo canal\`';
@@ -965,6 +965,9 @@ module.exports = {
                 `**${vars.modifiedCount}** canais foram **removidos** da lista de canais ignorados`
             );
             case 'badInteractionAuthor': return 'Apenas o usuário que iniciou essa interação pode fazer isso!';
+            case 'levelUpNotificationChannelMenu': return (
+                'Selecione o canal em que você deseja que as notificações de conquista de nível sejam enviadas'
+            );
         }
     },
 };

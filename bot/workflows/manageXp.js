@@ -17,7 +17,7 @@ const locale = require('../../locale');
 
 module.exports = {
     code: 'manxp',
-    steps: [async (interaction, args) => {
+    steps: [async (interaction, action, valueString) => {
         const channelLanguage = locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en');
         const memberModel = require('../../schemas/member.js');
         let memberDocs = await memberModel.find({
@@ -33,8 +33,8 @@ module.exports = {
         await memberModel.insertMany(newMembers);
         memberDocs = memberDocs.concat(newMembers);
         let query;
-        const value = parseInt(args[1], 10);
-        switch(args[0]){
+        const value = parseInt(valueString, 10);
+        switch(action){
             case 'ADD': query = {$inc: {xp: value}};
             break;
             case 'REMOVE': query = {$inc: {xp: -value}};
@@ -46,7 +46,7 @@ module.exports = {
             guild: interaction.guild.id,
             userID: {$in: memberDocs.map(memberDoc => memberDoc.userID)},
         }, query);
-        if(args[0] === 'REMOVE') await memberModel.updateMany({
+        if(action === 'REMOVE') await memberModel.updateMany({
             guild: interaction.guild.id,
             xp: {$lt: 0},
         }, {$set: {xp: 0}});

@@ -474,7 +474,7 @@ module.exports = {
                     case 'default': {
                         await guild.findByIdAndUpdate(message.guild.id, {$set: {xpChannel: args[1]}});
                         message.client.guildData.get(message.guild.id).xpChannel = args[1];
-                        message.reply(channelLanguage.get('notifyDefault', [args[1]]));
+                        message.reply(channelLanguage.get('notifyDefault', {mode: args[1].toUpperCase()}));
                     }
                     break;
                     case 'none': {
@@ -767,5 +767,47 @@ module.exports = {
                 }],
             }],
         });
+    },
+    notificationsSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
+        switch(args.mode){
+            case 'DM':
+            case 'DEFAULT': {
+                const guildData = interaction.client.guildData.get(interaction.guild.id);
+                guildData.xpChannel = args.mode.toLowerCase();
+                await guildData.save();
+                await interaction.reply(channelLanguage.get('notifyDefault', {mode: args.mode}));
+            }
+            break;
+            case 'NONE': {
+                const guildData = interaction.client.guildData.get(interaction.guild.id);
+                guildData.xpChannel = null;
+                await guildData.save();
+                await interaction.reply(channelLanguage.get('notifyNone'));
+            }
+            break;
+            case 'CHANNEL': {
+                await interaction.reply({
+                    content: channelLanguage.get('levelUpNotificationChannelMenu'),
+                    components: [{
+                        type: ComponentType.ActionRow,
+                        components: [{
+                            type: ComponentType.ChannelSelect,
+                            customId: `wf:${interaction.user.id}:lvnotif:0`,
+                            channelTypes: [
+                                ChannelType.AnnouncementThread,
+                                ChannelType.GuildAnnouncement,
+                                ChannelType.GuildStageVoice,
+                                ChannelType.GuildText,
+                                ChannelType.GuildVoice,
+                                ChannelType.PrivateThread,
+                                ChannelType.PublicThread,
+                            ],
+                        }],
+                    }],
+                });
+            }
+            break;
+        }
     },
 };

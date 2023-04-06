@@ -112,7 +112,7 @@ module.exports = {
                                 .slice(0, guildData.dontStack ? 1 : undefined),
                         ),
                 );
-                if((guildData.xpChannel === 'none') || (doc.xp >= (lowerRoles[0].xp + multiplier))) return;
+                if(!guildData.xpChannel || (doc.xp >= (lowerRoles[0].xp + multiplier))) return;
                 switch(guildData.xpChannel){
                     case 'default': {
                         if(

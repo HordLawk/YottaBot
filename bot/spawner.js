@@ -385,11 +385,9 @@ client.once('ready', async () => {
                                 .slice(0, client.guildData.get(voiceGuild._id).dontStack ? 1 : undefined),
                         ),
                 );
-                if(
-                    (client.guildData.get(voiceGuild._id).xpChannel === 'none')
-                    ||
-                    (doc.xp >= (lowerRoles[0].xp + multiplier))
-                ) continue;
+                if(!client.guildData.get(voiceGuild._id).xpChannel || (doc.xp >= (lowerRoles[0].xp + multiplier))){
+                    continue;
+                }
                 let guildLanguage = locale.get(client.guildData.get(voiceGuild._id).language);
                 switch(client.guildData.get(voiceGuild._id).xpChannel){
                     case 'default': {

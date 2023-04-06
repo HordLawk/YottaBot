@@ -80,7 +80,7 @@ const guildSchema = new Schema({
     xpChannel: {
         type: String,
         default: 'default',
-        match: /^(?:\d{17,19}|default|dm|none)$/,
+        match: /^(?:\d{17,19}|default|dm)$/,
     },
     alpha: Boolean,
     premiumUntil: Date,

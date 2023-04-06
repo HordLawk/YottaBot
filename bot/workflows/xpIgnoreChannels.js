@@ -17,10 +17,10 @@ const locale = require('../../locale');
 
 module.exports = {
     code: 'xpblchan',
-    steps: [async (interaction, args) => {
+    steps: [async (interaction, action) => {
         const channelLanguage = locale.get((interaction.locale === 'pt-BR') ? 'pt' : 'en');
         const channelModel = require('../../schemas/channel.js');
-        if(args[0] === 'ADD'){
+        if(action === 'ADD'){
             const channelDocs = await channelModel.find({
                 _id: {$in: interaction.values},
                 guild: interaction.guild.id,

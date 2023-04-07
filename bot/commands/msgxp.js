@@ -838,7 +838,7 @@ module.exports = {
             content: channelLanguage.get('sameXp'),
             ephemeral: true,
         });
-        const oldRole = roleDocs.find(e => (e.roleID === args,role.id));
+        const oldRole = roleDocs.find(e => (e.roleID === args.role.id));
         if(oldRole){
             oldRole.xp = args.xp;
             await oldRole.save();

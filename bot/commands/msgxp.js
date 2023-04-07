@@ -15,7 +15,7 @@
 
 const {EmbedBuilder, PermissionsBitField, ButtonStyle, ComponentType, ApplicationCommandOptionType, ChannelType} = require('discord.js');
 const configs = require('../configs.js');
-const {handleComponentError, getStringLocales} = require('../utils.js');
+const {handleComponentError, getStringLocales, slashCommandUsages} = require('../utils.js');
 
 module.exports = {
     active: true,
@@ -313,29 +313,72 @@ module.exports = {
         const guild = require('../../schemas/guild.js');
         switch(args[0]){
             case 'enable': {
-                if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!['on', 'off'].includes(args[1])){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'enable')},
+                        ),
+                    );
+                }
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {gainExp: (args[1] === 'on')}});
                 message.client.guildData.get(message.guild.id).gainExp = (args[1] === 'on');
                 await message.reply(channelLanguage.get('xpEnable', {enabled: (args[1] === 'on')}));
             }
             break;
             case 'stack': {
-                if(!['on', 'off'].includes(args[1])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!['on', 'off'].includes(args[1])){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'stackroles')},
+                        ),
+                    );
+                }
                 await guild.findByIdAndUpdate(message.guild.id, {$set: {dontStack: (args[1] === 'off')}});
                 message.client.guildData.get(message.guild.id).dontStack = (args[1] === 'off');
                 await message.reply(channelLanguage.get('xpStack', {enabled: (args[1] === 'on')}));
             }
             break;
             case 'roles': {
-                if(!args[2]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!args[2]){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'roles')},
+                        ),
+                    );
+                }
                 switch(args[1]){
                     case 'set': {
                         const match = message.content.toLowerCase().match(/^(?:\S+\s+){3}(.+)\s+(\d+)$/);
-                        if(!match) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                        if(isNaN(parseInt(match[2], 10)) || !isFinite(parseInt(match[2], 10)) || (parseInt(match[2], 10) < 1)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                        if(!match){
+                            return await message.reply(
+                                channelLanguage.get(
+                                    'invArgsSlash',
+                                    {usages: slashCommandUsages(this.name, message.client, 'roles', 'set')},
+                                ),
+                            );
+                        }
+                        const xp = parseInt(match[2], 10);
+                        if(isNaN(xp) || !isFinite(xp) || (xp < 1)){
+                            return await message.reply(
+                                channelLanguage.get(
+                                    'invArgsSlash',
+                                    {usages: slashCommandUsages(this.name, message.client, 'roles', 'set')},
+                                ),
+                            );
+                        }
                         const roleName = match[1];
                         let discordRole = message.guild.roles.cache.get(args[2].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
-                        if(!discordRole || (discordRole.id === message.guild.id)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                        if(!discordRole || (discordRole.id === message.guild.id)){
+                            return await message.reply(
+                                channelLanguage.get(
+                                    'invArgsSlash',
+                                    {usages: slashCommandUsages(this.name, message.client, 'roles', 'set')},
+                                ),
+                            );
+                        }
                         if(!discordRole.editable || discordRole.managed) return message.reply(channelLanguage.get('manageRole'));
                         if(discordRole.position >= message.member.roles.highest.position){
                             return await message.reply(channelLanguage.get('memberManageRole'));
@@ -374,7 +417,14 @@ module.exports = {
                         else{
                             let roleName = message.content.toLowerCase().replace(/^(?:\S+\s+){3}/, '');
                             let discordRole = message.guild.roles.cache.get(args[2].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
-                            if(!discordRole || (discordRole.id === message.guild.id)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                            if(!discordRole || (discordRole.id === message.guild.id)){
+                                return await message.reply(
+                                    channelLanguage.get(
+                                        'invArgsSlash',
+                                        {usages: slashCommandUsages(this.name, message.client, 'roles', 'remove')},
+                                    ),
+                                );
+                            }
                             await role.findOneAndUpdate({
                                 guild: message.guild.id,
                                 roleID: discordRole.id,
@@ -384,14 +434,36 @@ module.exports = {
                         }
                     }
                     break;
-                    default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                    default: {
+                        await message.reply(
+                            channelLanguage.get(
+                                'invArgsSlash',
+                                {usages: slashCommandUsages(this.name, message.client, 'roles')},
+                            ),
+                        );
+                    }
                 }
             }
             break;
             case 'user': {
-                if(!['add', 'remove', 'set'].includes(args[1]) || isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[2], 10) < 0)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                const value = parseInt(args[2], 10);
+                if(!['add', 'remove', 'set'].includes(args[1]) || isNaN(value) || !isFinite(value) || (value < 0)){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'xp')},
+                        ),
+                    );
+                }
                 let mentions = args.slice(3, 13).join(' ').match(/\b\d{17,19}\b/g);
-                if(!mentions) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!mentions){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'xp')},
+                        ),
+                    );
+                }
                 let memberDocs = await member.find({
                     guild: message.guild.id,
                     userID: {$in: mentions},
@@ -439,11 +511,25 @@ module.exports = {
             }
             break;
             case 'ignore': {
-                if(!args[3] || !['role', 'channel'].includes(args[1]) || !['add', 'remove'].includes(args[2])) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!args[3] || !['role', 'channel'].includes(args[1]) || !['add', 'remove'].includes(args[2])){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'ignore')},
+                        ),
+                    );
+                }
                 if(args[1] === 'role'){
                     let roleName = message.content.toLowerCase().replace(/^(?:\S+\s+){4}/, '');
                     let discordRole = message.guild.roles.cache.get(args[3].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
-                    if(!discordRole || (discordRole.id === message.guild.id)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                    if(!discordRole || (discordRole.id === message.guild.id)){
+                        return await message.reply(
+                            channelLanguage.get(
+                                'invArgsSlash',
+                                {usages: slashCommandUsages(this.name, message.client, 'ignore', 'roles')},
+                            ),
+                        );
+                    }
                     await role.findOneAndUpdate({
                         guild: message.guild.id,
                         roleID: discordRole.id,
@@ -455,7 +541,14 @@ module.exports = {
                 }
                 else{
                     let discordChannel = message.guild.channels.cache.get((args[3].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[3]);
-                    if(!discordChannel || !discordChannel.isTextBased()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                    if(!discordChannel || !discordChannel.isTextBased()){
+                        return await message.reply(
+                            channelLanguage.get(
+                                'invArgsSlash',
+                                {usages: slashCommandUsages(this.name, message.client, 'ignore', 'channels')},
+                            ),
+                        );
+                    }
                     await channel.findOneAndUpdate({
                         _id: discordChannel.id,
                         guild: message.guild.id,
@@ -468,7 +561,14 @@ module.exports = {
             }
             break;
             case 'notify': {
-                if(!args[1]) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!args[1]){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'notifications')},
+                        ),
+                    );
+                }
                 switch(args[1]){
                     case 'dm':
                     case 'default': {
@@ -485,7 +585,14 @@ module.exports = {
                     break;
                     default: {
                         let discordChannel = message.guild.channels.cache.get((args[1].match(/<#(\d{17,19})>/) || [])[1]) || message.guild.channels.cache.get(args[1]);
-                        if(!discordChannel || !discordChannel.isTextBased()) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                        if(!discordChannel || !discordChannel.isTextBased()){
+                            return await message.reply(
+                                channelLanguage.get(
+                                    'invArgsSlash',
+                                    {usages: slashCommandUsages(this.name, message.client, 'notifications')},
+                                ),
+                            );
+                        }
                         if(!message.guild.members.me.permissionsIn(discordChannel).has(PermissionsBitField.Flags.SendMessages) || !discordChannel.viewable) return message.reply(channelLanguage.get('sendMessages'));
                         await guild.findByIdAndUpdate(message.guild.id, {$set: {xpChannel: discordChannel.id}});
                         message.client.guildData.get(message.guild.id).xpChannel = discordChannel.id;
@@ -495,7 +602,28 @@ module.exports = {
             }
             break;
             case 'recommend': {
-                if(isNaN(parseInt(args[1], 10)) || isNaN(parseInt(args[2], 10)) || !isFinite(parseInt(args[1], 10)) || !isFinite(parseInt(args[2], 10)) || (parseInt(args[1], 10) < 0) || (parseInt(args[2], 10) < 0)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                const numberOfLevels = parseInt(args[1], 10);
+                const highestLevelXp = parseInt(args[2], 10);
+                if(
+                    isNaN(numberOfLevels)
+                    ||
+                    isNaN(highestLevelXp)
+                    ||
+                    !isFinite(numberOfLevels)
+                    ||
+                    !isFinite(highestLevelXp)
+                    ||
+                    (numberOfLevels < 0)
+                    ||
+                    (highestLevelXp < 0)
+                ){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'recommendlevels')},
+                        ),
+                    );
+                }
                 if(parseInt(args[1], 10) < 2) return message.reply(channelLanguage.get('recommendMinLevels'));
                 if(parseInt(args[2], 10) < 13) return message.reply(channelLanguage.get('recommendMinXp'));
                 let levels = [];
@@ -521,11 +649,33 @@ module.exports = {
             break;
             case 'multiplier': {
                 const match = message.content.toLowerCase().match(/^(?:\S+\s+){2}(.+)\s+(\d+(?:\.\d+)?)$/);
-                if(!match) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
-                if(isNaN(parseFloat(match[2], 10)) || !isFinite(parseFloat(match[2], 10)) || (parseFloat(match[2], 10) < 1)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!match){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'multipliers')},
+                        ),
+                    );
+                }
+                const multiplierValue = parseFloat(match[2], 10);
+                if(isNaN(multiplierValue) || !isFinite(multiplierValue) || (multiplierValue < 1)){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'multipliers')},
+                        ),
+                    );
+                }
                 const roleName = match[1];
                 const discordRole = message.guild.roles.cache.get(args[1].match(/^(?:<@&)?(\d{17,19})>?$/)?.[1]) ?? message.guild.roles.cache.find(e => (e.name.toLowerCase() === roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().startsWith(roleName)) ?? message.guild.roles.cache.find(e => e.name.toLowerCase().includes(roleName));
-                if(!discordRole || (discordRole.id === message.guild.id)) return message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+                if(!discordRole || (discordRole.id === message.guild.id)){
+                    return await message.reply(
+                        channelLanguage.get(
+                            'invArgsSlash',
+                            {usages: slashCommandUsages(this.name, message.client, 'multipliers')},
+                        ),
+                    );
+                }
                 const roleDoc = await role.findOneAndUpdate({
                     guild: message.guild.id,
                     roleID: discordRole.id,
@@ -636,7 +786,14 @@ module.exports = {
                 });
             }
             break;
-            default: message.reply(channelLanguage.get('invArgs', [message.client.guildData.get(message.guild.id).prefix, this.name, this.usage(channelLanguage)]));
+            default: {
+                await message.reply(
+                    channelLanguage.get(
+                        'invArgsSlash',
+                        {usages: slashCommandUsages(this.name, message.client)},
+                    ),
+                );
+            }
         }
     },
     enableSlash: async (interaction, args) => {
@@ -942,5 +1099,21 @@ module.exports = {
         }
         replyData.embeds = [embed];
         await interaction.reply(replyData);
+    },
+    resetrankSlash: async interaction => {
+        const {channelLanguage} = interaction;
+        await interaction.reply({
+            content: channelLanguage.get('resetXpConfirm'),
+            components: [{
+                type: ComponentType.ActionRow,
+                components: [{
+                    type: ComponentType.Button,
+                    label: channelLanguage.get('confirm'),
+                    style: ButtonStyle.Success,
+                    emoji: '✅',
+                    customId: `wf:${interaction.user.id}:resetxp:0`,
+                }],
+            }],
+        });
     },
 };

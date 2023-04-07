@@ -968,6 +968,11 @@ module.exports = {
             case 'levelUpNotificationChannelMenu': return (
                 'Selecione o canal em que você deseja que as notificações de conquista de nível sejam enviadas'
             );
+            case 'multipliedRolesSuccess': return (
+                `Os multiplicadores de xp de **${vars.modifiedCount}** cargos foram definidos para` +
+                ` \`${vars.multiplierValue}\` com sucesso`
+            );
+            case 'multipliedRolesMenu': return 'Selecione os cargos que você deseja aplicar o multiplicador de xp';
         }
     },
 };

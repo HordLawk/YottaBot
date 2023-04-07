@@ -810,4 +810,137 @@ module.exports = {
             break;
         }
     },
+    recommendlevelsSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
+        const levels = [];
+        for(let i = 0; (levels[levels.length - 1] ?? 0) < (args.highest_level_xp * 20); i++){
+            levels.push((levels[levels.length - 1] ?? 0) + (5 * (i ** 2)) + (50 * i) + 100);
+        }
+        if(
+            (levels[levels.length - 1] - (args.highest_level_xp * 20))
+            >
+            ((args.highest_level_xp * 20) - levels[levels.length - 2])
+        ) levels.pop();
+        if(args.number_of_levels > levels.length){
+            return await interaction.reply(
+                channelLanguage.get('recommendXpNotEnough', [args.highest_level_xp, args.number_of_levels]),
+            );
+        }
+        const realLevels = [];
+        // Throughout the entirety of this project, the next lines are the only part of it I don't quite undestand what's really happening, thus, they are utterly unoptimized and will continue to be so, as I truly hope I don't need to touch this piece of code ever again.
+        const cei = Math.ceil(levels.length / args.number_of_levels);
+        const flr = Math.floor(levels.length / args.number_of_levels);
+        const dec = (levels.length / args.number_of_levels) - flr;
+        const multCei = args.number_of_levels * dec;
+        const multFlr = args.number_of_levels * (1 - dec);
+        const ceis = Array(Math.round(multCei)).fill(cei);
+        const flrs = Array(Math.round(multFlr)).fill(flr).concat(ceis);
+        let index = 0;
+        for(let i = 0; i < args.number_of_levels; i++){
+            index += flrs[i];
+            realLevels.push(levels[Math.round(index - 1)]);
+        }
+        await interaction.reply(channelLanguage.get('recommendSuccess', [realLevels]));
+    },
+    multipliersSlash: async (interaction, args) => {
+        const {channelLanguage} = interaction;
+        await interaction.reply({
+            content: channelLanguage.get('multipliedRolesMenu'),
+            components: [{
+                type: ComponentType.ActionRow,
+                components: [{
+                    type: ComponentType.RoleSelect,
+                    customId: `wf:${interaction.user.id}:xpmultrole:0:${args.multiplier_value.toFixed(1)}`,
+                    maxValues: 25,
+                }],
+            }],
+        });
+    },
+    infoSlash: async interaction => {
+        const {channelLanguage} = interaction;
+        let notifs;
+        const guildData = interaction.client.guildData.get(interaction.guild.id)
+        switch(guildData.xpChannel){
+            case null: notifs = channelLanguage.get('notifyNoneView');
+            break;
+            case 'default': notifs = channelLanguage.get('notifyDefaultView');
+            break;
+            case 'dm': notifs = channelLanguage.get('notifyDMView');
+            break;
+            default: {
+                notifs = (
+                    interaction.guild.channels.cache.get(guildData.xpChannel)
+                    ||
+                    channelLanguage.get('notifyNoneView')
+                );
+            }
+        }
+        const embed = new EmbedBuilder()
+            .setColor(0x2f3136)
+            .setAuthor({
+                name: channelLanguage.get('xpViewEmbedAuthor'),
+                iconURL: interaction.guild.iconURL({dynamic: true}),
+            })
+            .setDescription(channelLanguage.get('xpViewEmbedDesc', [guildData.gainExp, guildData.dontStack, notifs]))
+            .setTimestamp();
+        const roleModel = require('../../schemas/role.js');
+        const roleDocs = await roleModel.find({
+            guild: interaction.guild.id,
+            roleID: {$in: [...interaction.guild.roles.cache.keys()]},
+        }).sort({xp: -1});
+        const replyData = {};
+        const xpRoleDocs = roleDocs.filter(roleDoc => roleDoc.xp);
+        if(xpRoleDocs.length){
+            if(
+                (xpRoleDocs.length > configs.xpRolesLimit)
+                &&
+                !guildData.premiumUntil
+                &&
+                !guildData.partner
+            ) replyData.content = channelLanguage.get('disabledPremiumXpRolesNoHL');
+            const highestXpString = xpRoleDocs[0].xp.toString();
+            embed.addField(channelLanguage.get('xpViewRoles'), xpRoleDocs.map((xpRoleDoc, i) => {
+                const roleStr = (
+                    `\`${xpRoleDoc.xp.toString().padStart(highestXpString.length)}\` **-** <@&${xpRoleDoc.roleID}>`
+                );
+                return (
+                    (((xpRoleDocs.length - i) > configs.xpRolesLimit) && !guildData.premiumUntil && !guildData.partner)
+                    ? `~~${roleStr}~~`
+                    : roleStr
+                );
+            }).join('\n'));
+        }
+        const xpMultipliedRoleDocs = roleDocs.filter(roleDoc => (roleDoc.xpMultiplier && (roleDoc.xpMultiplier > 1)));
+        if(xpMultipliedRoleDocs.length){
+            embed.addField(
+                channelLanguage.get('xpViewMultipliedRoles'),
+                xpMultipliedRoleDocs
+                    .map(xpMultipliedRoleDoc => {
+                        return `<@&${xpMultipliedRoleDoc.roleID}> **-** \`${xpMultipliedRoleDoc.xpMultiplier}x\``;
+                    })
+                    .join('\n'),
+            );
+        }
+        const xpIgnoredRoleDocs = roleDocs.filter(e => e.ignoreXp);
+        if(xpIgnoredRoleDocs.length){
+            embed.addField(
+                channelLanguage.get('xpViewIgnoredRoles'),
+                xpIgnoredRoleDocs.map(xpIgnoredRoleDoc => `<@&${xpIgnoredRoleDoc.roleID}>`).join(' '),
+            );
+        }
+        const channelModel = require('../../schemas/channel.js');
+        const channelDocs = await channelModel.find({
+            _id: {$in: [...interaction.guild.channels.cache.filter(channel => channel.isTextBased()).keys()]},
+            guild: interaction.guild.id,
+            ignoreXp: true,
+        });
+        if(channelDocs.length){
+            embed.addField(
+                channelLanguage.get('xpViewIgnoredChannels'),
+                channelDocs.map(channelDoc => `<#${channelDoc._id}>`).join(' '),
+            );
+        }
+        replyData.embeds = [embed];
+        await interaction.reply(replyData);
+    },
 };

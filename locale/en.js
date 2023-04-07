@@ -742,6 +742,11 @@ module.exports = {
             case 'levelUpNotificationChannelMenu': return (
                 'Select the channel you want level up notifications to be sent to'
             );
+            case 'multipliedRolesSuccess': return (
+                `The xp multipliers for **${vars.modifiedCount}** roles were successfully set to` +
+                ` \`${vars.multiplierValue}\``
+            );
+            case 'multipliedRolesMenu': return 'Select the roles you wish to set the multiplier value to';
         }
     },
 };

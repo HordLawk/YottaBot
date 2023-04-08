@@ -1,4 +1,4 @@
-// Copyright (C) 2022  HordLawk
+// Copyright (C) 2023  HordLawk
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -139,7 +139,7 @@ module.exports = {
                     return await i.update({embeds: [embed], components});
                 }
                 const categoryEmbed = new EmbedBuilder()
-                    .setColor(0x2f3136)
+                    .setColor(0x2b2d31)
                     .setAuthor({
                         name: channelLanguage.get(`EmbedHelpCategory${i.values[0]}Author`),
                         iconURL:  message.client.user.avatarURL()
@@ -177,7 +177,7 @@ module.exports = {
             collectorCommand.on('collect', i => (async () => {
                 const cmd = commands.get(i.values[0]);
                 const commandEmbed = new EmbedBuilder()
-                    .setColor(0x2f3136)
+                    .setColor(0x2b2d31)
                     .setAuthor({
                         name: channelLanguage.get('helpCommandEmbedTitle', [cmd.name]),
                         iconURL: message.client.user.avatarURL({}),
@@ -396,7 +396,7 @@ module.exports = {
                     return await i.update({embeds: [embed], components});
                 }
                 const categoryEmbed = new EmbedBuilder()
-                    .setColor(0x2f3136)
+                    .setColor(0x2b2d31)
                     .setAuthor({
                         name: channelLanguage.get(`EmbedHelpCategory${i.values[0]}Author`),
                         iconURL:  interaction.client.user.avatarURL()
@@ -434,7 +434,7 @@ module.exports = {
             collectorCommand.on('collect', i => (async () => {
                 const cmd = commands.get(i.values[0]);
                 const commandEmbed = new EmbedBuilder()
-                    .setColor(0x2f3136)
+                    .setColor(0x2b2d31)
                     .setAuthor({
                         name: channelLanguage.get('helpCommandEmbedTitle', [cmd.name]),
                         iconURL: interaction.client.user.avatarURL({}),

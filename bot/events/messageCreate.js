@@ -1,4 +1,4 @@
-// Copyright (C) 2022  HordLawk
+// Copyright (C) 2023  HordLawk
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -284,7 +284,7 @@ module.exports = {
                 return;
             }
             const embed = new EmbedBuilder()
-                .setColor(0x2f3136)
+                .setColor(0x2b2d31)
                 .setDescription(channelLanguage.get(`premiumAd${Math.floor(Math.random() * 3)}`, [command.name]));
             await message.channel.send({embeds: [embed]});
         }).catch(async error => {

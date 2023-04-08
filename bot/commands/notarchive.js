@@ -1,4 +1,4 @@
-// Copyright (C) 2022  HordLawk
+// Copyright (C) 2023  HordLawk
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -122,7 +122,7 @@ module.exports = {
         const replyData = {}
         if(threads.length >= autoUnarchiveLimits) replyData.content = channelLanguage.get('disabledExtraNotArchiveds');
         const embed = new EmbedBuilder()
-            .setColor(0x2f3136)
+            .setColor(0x2b2d31)
             .setAuthor({
                 name: channelLanguage.get('notarchiveEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true}),

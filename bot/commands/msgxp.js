@@ -1033,7 +1033,7 @@ module.exports = {
             }
         }
         const embed = new EmbedBuilder()
-            .setColor(0x2f3136)
+            .setColor(0x2b2d31)
             .setAuthor({
                 name: channelLanguage.get('xpViewEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true}),

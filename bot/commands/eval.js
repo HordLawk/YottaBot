@@ -1,4 +1,4 @@
-// Copyright (C) 2022  HordLawk
+// Copyright (C) 2023  HordLawk
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ module.exports = {
     usage: () => ['(code)'],
     execute: async message => {
         const embed = new EmbedBuilder()
-            .setColor(0x2f3136)
+            .setColor(0x2b2d31)
             .setAuthor({
                 name: 'eval',
                 iconURL: message.client.user.avatarURL(),
@@ -69,7 +69,7 @@ module.exports = {
         });
         const code = i.fields.getTextInputValue('code');
         const embed = new EmbedBuilder()
-            .setColor(0x2f3136)
+            .setColor(0x2b2d31)
             .setAuthor({
                 name: 'eval',
                 iconURL: interaction.client.user.avatarURL(),

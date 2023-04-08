@@ -1,4 +1,4 @@
-// Copyright (C) 2022  HordLawk
+// Copyright (C) 2023  HordLawk
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle(channelLanguage.get('userInfoTitle'))
-            .setColor(0x2f3136)
+            .setColor(0x2b2d31)
             .addField("ID", '\`\`\`' + user.id + '\`\`\`')
             .addField(channelLanguage.get('userInfoUsername'), '\`\`\`' + user.tag + '\`\`\`')
         
@@ -90,7 +90,7 @@ module.exports = {
         const member = args.target ? args.target.member : interaction.member;
         const embed = new EmbedBuilder()
             .setTitle(channelLanguage.get('userInfoTitle'))
-            .setColor(0x2f3136)
+            .setColor(0x2b2d31)
             .addField("ID", '\`\`\`' + user.id + '\`\`\`')
             .addField(channelLanguage.get('userInfoUsername'), '\`\`\`' + user.tag + '\`\`\`');
         

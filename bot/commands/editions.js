@@ -1,4 +1,4 @@
-// Copyright (C) 2022  HordLawk
+// Copyright (C) 2023  HordLawk
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ module.exports = {
             interaction.client.guildData.get(interaction.guild.id).partner
         );
         const embed = new EmbedBuilder()
-            .setColor(0x2f3136)
+            .setColor(0x2b2d31)
             .setAuthor({
                 name: channelLanguage.get('editionsinfoEmbedAuthor'),
                 iconURL: interaction.guild.iconURL({dynamic: true}),

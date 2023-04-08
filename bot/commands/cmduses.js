@@ -1,4 +1,4 @@
-// Copyright (C) 2022  HordLawk
+// Copyright (C) 2023  HordLawk
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ module.exports = {
                 name: 'Commands usage stats',
                 iconURL: interaction.client.user.avatarURL(),
             })
-            .setColor(0x2f3136)
+            .setColor(0x2b2d31)
             .setDescription(commandUses.map(e => `${e._id}: \`${e.count}\``).join('\n'));
         await interaction.reply({embeds: [embed]});
     },
@@ -70,7 +70,7 @@ module.exports = {
                 name: args.user.tag,
                 iconURL: args.user.avatarURL(),
             })
-            .setColor(0x2f3136)
+            .setColor(0x2b2d31)
             .setDescription(commandUses.map(e => `${e._id}: \`${e.count}\``).join('\n'));
         await interaction.reply({embeds: [embed]});
     },
@@ -104,7 +104,7 @@ module.exports = {
         }, {context: {guildId: args.guild}})).find(e => e);
         const embed = new EmbedBuilder()
             .setAuthor(authorData)
-            .setColor(0x2f3136)
+            .setColor(0x2b2d31)
             .setDescription(commandUses.map(e => `${e._id}: \`${e.count}\``).join('\n'));
         await interaction.reply({embeds: [embed]});
     },

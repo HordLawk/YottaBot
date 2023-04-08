@@ -44,9 +44,9 @@ You may selfhost (AKA run your own instance of) this bot under the following cir
 - [ ] command to make messages in a chosen channel be autopublished
 - [x] invite tracking system
 - [ ] have an actual website
-- [x] usernames local blacklist
-- [ ] finish adapting to slash commands
+- [x] finish adapting to slash commands
 - [ ] giveaway system
 - [ ] ticket system with private threads
 - [ ] role for active members system
 - [ ] command to import xp from other bots
+- [ ] command to manage useful automod regexes

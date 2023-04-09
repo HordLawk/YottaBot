@@ -851,7 +851,7 @@ module.exports = {
                     ephemeral: true,
                 });
             }
-            const newRole = new role({
+            const newRole = new roleModel({
                 guild: interaction.guild.id,
                 roleID: args.role.id,
                 xp: args.xp,

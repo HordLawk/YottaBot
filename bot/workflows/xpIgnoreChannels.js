@@ -39,7 +39,7 @@ module.exports = {
                 ignoreXp: {$ne: true},
             }, {$set: {ignoreXp: true}});
             return await interaction.update({
-                content: channelLanguage.get('xpIgnoreChannelsAdd', {modifiedCount: (newChannels.length + res.nModified)}),
+                content: channelLanguage.get('xpIgnoreChannelsAdd', {modifiedCount: (newChannels.length + res.modifiedCount)}),
                 components: [],
             });
         }
@@ -49,7 +49,7 @@ module.exports = {
             ignoreXp: true,
         }, {$set: {ignoreXp: false}});
         await interaction.update({
-            content: channelLanguage.get('xpIgnoreChannelsRemove', {modifiedCount: res.nModified}),
+            content: channelLanguage.get('xpIgnoreChannelsRemove', {modifiedCount: res.modifiedCount}),
             components: [],
         });
     }],

@@ -38,7 +38,7 @@ module.exports = {
                 roleID: {$in: roleDocs.map(roleDoc => roleDoc.roleID)},
             }, {$set: {ignoreXp: true}});
             return await interaction.update({
-                content: channelLanguage.get('xpIgnoreRolesAdd', {modifiedCount: (newRoles.length + res.nModified)}),
+                content: channelLanguage.get('xpIgnoreRolesAdd', {modifiedCount: (newRoles.length + res.modifiedCount)}),
                 components: [],
             });
         }
@@ -48,7 +48,7 @@ module.exports = {
             ignoreXp: true,
         }, {$set: {ignoreXp: false}});
         await interaction.update({
-            content: channelLanguage.get('xpIgnoreRolesRemove', {modifiedCount: res.nModified}),
+            content: channelLanguage.get('xpIgnoreRolesRemove', {modifiedCount: res.modifiedCount}),
             components: [],
         });
     }],

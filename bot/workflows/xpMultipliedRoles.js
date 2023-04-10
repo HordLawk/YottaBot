@@ -40,7 +40,7 @@ module.exports = {
         await interaction.reply(
             channelLanguage.get(
                 'multipliedRolesSuccess',
-                {modifiedCount: (newRoles.length + res.nModified), multiplierValue},
+                {modifiedCount: (newRoles.length + res.modifiedCount), multiplierValue},
             ),
         );
     }],

@@ -1,12 +1,7 @@
 const mongoose = require("mongoose");
 const app = mongoose.connection;
 
-const connect = () => mongoose.connect(`${process.env.MONGOURL}?retryWrites=true&w=majority`, {
-    useNewUrlParser: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-});
+const connect = () => mongoose.connect(`${process.env.MONGOURL}?retryWrites=true&w=majority`);
 
 app.on("error", () => mongoose.disconnect());
 

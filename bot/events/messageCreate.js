@@ -82,8 +82,7 @@ module.exports = {
                 new: true,
                 upsert: true,
                 setDefaultsOnInsert: true,
-            }, (err, doc) => (async (err, doc) => {
-                if(err) throw err;
+            }).then(async doc => await (async () => {
                 if(message.client.xpcds.has(message.guild.id)){
                     message.client.xpcds.get(message.guild.id).set(message.author.id, Date.now());
                 }
@@ -158,7 +157,7 @@ module.exports = {
                         }
                     }
                 }
-            })(err, doc).catch(async err => await handleEventError(err, this, [message], message.client)));
+            })().catch(async err => await handleEventError(err, this, [message], message.client)));
         }
         if(
             message.guild

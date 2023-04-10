@@ -26,7 +26,7 @@ module.exports = {
             xp: {$ne: null},
         }, {$set: {xp: null}});
         await interaction.update({
-            content: channelLanguage.get('removeXpRoles', {matchedCount: res.n}),
+            content: channelLanguage.get('removeXpRoles', {matchedCount: res.matchedCount}),
             components: [],
         });
     }],

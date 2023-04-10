@@ -269,10 +269,11 @@ module.exports = {
             guild: interaction.guild.id,
             userID: args.user.id,
         });
-        if(!user) return interaction.reply({
+        if(!user) return await interaction.reply({
             content: channelLanguage.get('noXp'),
             ephemeral: true,
         });
+        await interaction.deferReply();
         const role = require('../../schemas/role.js');
         const roleDocs = await role.find({
             guild: interaction.guild.id,
@@ -293,7 +294,7 @@ module.exports = {
             })
             .setTimestamp()
             .setDescription(channelLanguage.get('xpEmbedDescription', [current, next, Math.floor(user.xp)]));
-        await interaction.reply({embeds: [embed]});
+        await interaction.editReply({embeds: [embed]});
     },
     rankSlash: async interaction => {
         const {channelLanguage} = interaction;

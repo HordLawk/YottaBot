@@ -24,7 +24,7 @@
   "homepage": "https://github.com/HordLawk/YottaBot#readme",
   "dependencies": {
     "aes-js": "^3.1.2",
-    "axios": "^0.21.2",
+    "axios": "^1.9.0",
     "diff": "^5.1.0",
     "discord.js": "^14.8.0",
     "express": "^4.17.1",

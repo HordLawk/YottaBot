@@ -1,6 +1,6 @@
 {
   "name": "yottabot",
-  "version": "2.47.6",
+  "version": "2.47.8",
   "description": "A levelling and moderation focused Discord bot",
   "main": "index.js",
   "engines": {
@@ -9,8 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev": "node --trace-warnings --trace-deprecation --inspect -r dotenv/config index.js dotenv_config_path=../.env",
-    "prod": "pm2 start index.js --name yottabot --attach --node-args=\"--inspect -r dotenv/config\" -- dotenv_config_path=.env"
+    "dev": "node --trace-warnings --trace-deprecation --inspect --env-file=../.env index.js",
+    "prod": "pm2 start index.js --name yottabot --cron-restart=\"0 0 1 * *\" --node-args=\"--env-file=../.env\""
   },
   "repository": {
     "type": "git",

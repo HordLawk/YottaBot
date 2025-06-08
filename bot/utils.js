@@ -78,20 +78,20 @@ const slashCommandUsages = (name, client, subcmdname, subsubcmdname) => {
 }
 
 const badges = {
-    Staff: '<:staff:967043602012315658>',
-    Partner: '<:partner:967043547561852978>',
-    Hypesquad: '<:hs:967048946612572160>',
-    BugHunterLevel1: '<:bughunter:967043119407329311>',
-    HypeSquadOnlineHouse1: '<:bravery:967043119780610058>',
-    HypeSquadOnlineHouse2: '<:brilliance:967043119780597860>',
-    HypeSquadOnlineHouse3: '<:balance:967043119809974272>',
-    PremiumEarlySupporter: '<:earlysupporter:967043119717699665>',
-    BugHunterLevel2: '<:bughunter2:967043119759642694>',
-    VerifiedDeveloper: '<:botdev:967043120984391752>',
-    CertifiedModerator: '<:modcertified:1048102520590974988>',
-    VerifiedBot: '<:verifiedbot:967049829568090143>',
-    BotHTTPInteractions: '<:bot:967062591190995004>',
-    ActiveDeveloper: '<:activedev:1048103388556050483>',
+    Staff: '<:staff:1378934016182325270>',
+    Partner: '<:partner:1378934046339497984>',
+    Hypesquad: '<:hs:1378934060247941190>',
+    BugHunterLevel1: '<:bughunter:1378934272601358396>',
+    HypeSquadOnlineHouse1: '<:bravery:1378935196048691240>',
+    HypeSquadOnlineHouse2: '<:brilliance:1378935208392261742>',
+    HypeSquadOnlineHouse3: '<:balance:1378935206932910160>',
+    PremiumEarlySupporter: '<:earlysupporter:1378935205691134063>',
+    BugHunterLevel2: '<:bughunter2:1378935204089036840>',
+    VerifiedDeveloper: '<:botdev:1378935202268577833>',
+    CertifiedModerator: '<:modcertified:1378935200784060517>',
+    VerifiedBot: '<:verifiedbot:1378935199244615792>',
+    BotHTTPInteractions: '<:bot:1378935197512368178>',
+    ActiveDeveloper: '<:activedev:1378935705530798100>',
 };
 
 const userBadgesString = user => {
@@ -104,7 +104,7 @@ const userBadgesString = user => {
     );
     const userBadges = validFlagsArray.map(e => badges[e]);
     if(!user.flags.any(UserFlags.VerifiedBot + UserFlags.BotHTTPInteractions) && user.bot){
-        userBadges.push('<:bot:967062591190995004>');
+        userBadges.push('<:bot:1378935197512368178>');
     }
     return userBadges.join(' ').trim();
 }

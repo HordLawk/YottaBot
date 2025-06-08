@@ -23,17 +23,17 @@ const fetchHook = async (voiceState, logType) => {
     const actionlog = guildData.actionlogs.id(logType);
     return await voiceState.client.fetchWebhook(
         actionlog.hookID || guildData.defaultLogsHookID, actionlog.hookToken || guildData.defaultLogsHookToken
-    );
+    ).catch(() => null);
 }
 
 const voiceEmojis = voiceState => {
-    let muteEmoji = '<:unmuted:1024669326055317504>';
+    let muteEmoji = '<:unmuted:1378936111090499626>';
     if(voiceState.mute){
-        muteEmoji = voiceState.serverMute ? '<:servermuted:1024669235919728660>' : '<:muted:1024669323178016869>';
+        muteEmoji = voiceState.serverMute ? '<:servermuted:1378936499432718346>' : '<:muted:1378936194741698581>';
     }
-    let deafEmoji = '<:undeaf:1024669324704755742>';
+    let deafEmoji = '<:undeaf:1378936110129877083>';
     if(voiceState.deaf){
-        deafEmoji = voiceState.serverDeaf ? '<:serverdeaf:1024669234569162782>' : '<:deaf:1024669262889091212>';
+        deafEmoji = voiceState.serverDeaf ? '<:serverdeaf:1378936497935487066>' : '<:deaf:1378936500602802186>';
     }
     return `${muteEmoji} ${deafEmoji}`;
 }

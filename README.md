@@ -1,9 +1,9 @@
 # YottaBot
-**[Invite me to your server](https://discord.com/oauth2/authorize?client_id=371902120561082368&permissions=2147483647&scope=bot+applications.commands)**
+**[Invite me to your server](https://discord.com/api/oauth2/authorize?client_id=1379187063504502825&scope=bot+applications.commands&permissions=1647119433215)**
 
-**[Join the support server](https://discord.gg/eNcsvsy)**
+**[Join the support server](https://discord.gg/4EwBbWr3nq)**
 
-[![DevServer](https://discordapp.com/api/guilds/476244157245947904/widget.png?style=shield)](https://discord.gg/eNcsvsy)
+[![DevServer](https://discordapp.com/api/guilds/1106994102286958823/widget.png?style=shield)](https://discord.gg/4EwBbWr3nq)
 
 ## Get started
 Like any other bot, the `help` command will list all the other commands and using `help (command)` will show you the correct usage for a specified command, note that all non slash commands have to be prefixed with your server's prefix ~~(duh)~~ and the default prefix is `y!`

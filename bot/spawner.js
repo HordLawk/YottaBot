@@ -20,6 +20,7 @@ const events = require('./events');
 const { AutoPoster } = require('topgg-autoposter');
 const axios = require('axios');
 const locale = require('../locale');
+const commands = require('./commands');
 const path = require('path');
 
 Discord.EmbedBuilder.prototype.addField = function(name, value, inline = false){
@@ -68,14 +69,31 @@ client.inviteUses = new Map();
 client.bantimes = new Map();
 eval(process.env.UNDOCUMENTED);
 client.once('ready', async () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+    const url = client.generateInvite({
+        scopes: ['bot', 'applications.commands'],
+        permissions: configs.permissions,
+    });
+    console.log(
+        `Logged in as ${client.user.tag}!\n` +
+        `Invite URL: ${url}`
+    );
     const guildModel = require('../schemas/guild.js');
     const guildDocs = await guildModel.find({_id: {$in: [...client.guilds.cache.keys()]}});
     client.guildData = guildDocs.reduce((acc, e) => acc.set(e._id, e), new Discord.Collection());
     await client.application.fetch();
-    await (
-        (process.env.NODE_ENV === 'production') ? client.application : client.guilds.cache.get(process.env.DEV_GUILD)
+    const devGuild = client.guilds.cache.get(process.env.DEV_GUILD);
+    const slashCommands = await (
+        (process.env.NODE_ENV === 'production') ? client.application : devGuild
     ).commands.fetch();
+    const deployCommand = commands.get('deploy');
+    if(!slashCommands.some(e => (e.name === deployCommand.name))){
+        await devGuild.commands.create({
+            type: Discord.ApplicationCommandType.ChatInput,
+            name: deployCommand.name,
+            description: deployCommand.name,
+            options: deployCommand.slashOptions,
+        });
+    }
     events.forEach(e => {
         client.on(
             e.name,

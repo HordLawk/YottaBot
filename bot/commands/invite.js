@@ -27,7 +27,7 @@ module.exports = {
     },
     executeSlash: async interaction => {
         const {channelLanguage} = interaction;
-        const url = await interaction.client.generateInvite({
+        const url = interaction.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
             permissions: configs.permissions,
         });

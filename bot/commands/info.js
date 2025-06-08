@@ -17,7 +17,7 @@ module.exports = {
                 .permissionsIn(message.channel)
                 .has(PermissionsBitField.Flags.EmbedLinks)
         ) return message.reply(channelLanguage.get('botEmbed'));
-        const invite = await message.client.generateInvite({
+        const invite = message.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
             permissions: configs.permissions,
         });
@@ -87,7 +87,7 @@ module.exports = {
     },
     executeSlash: async interaction => {
         const {channelLanguage} = interaction;
-        const invite = await interaction.client.generateInvite({
+        const invite = interaction.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
             permissions: configs.permissions,
         });

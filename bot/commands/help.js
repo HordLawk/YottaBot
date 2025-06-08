@@ -44,7 +44,7 @@ module.exports = {
             : message.client.guilds.cache.get(process.env.DEV_GUILD)
         ).commands.cache;
         if(!args.length){
-            let perms = await message.client.generateInvite({
+            let perms = message.client.generateInvite({
                 scopes: ['bot', 'applications.commands'],
                 permissions: configs.permissions,
             });
@@ -301,7 +301,7 @@ module.exports = {
             : interaction.client.guilds.cache.get(process.env.DEV_GUILD)
         ).commands.cache;
         if(!args.command){
-            let perms = await interaction.client.generateInvite({
+            let perms = interaction.client.generateInvite({
                 scopes: ['bot', 'applications.commands'],
                 permissions: configs.permissions,
             });

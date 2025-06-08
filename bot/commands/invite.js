@@ -16,7 +16,7 @@ module.exports = {
                 .permissionsIn(message.channel)
                 .has(PermissionsBitField.Flags.EmbedLinks)
         ) return message.reply(channelLanguage.get('botEmbed'));
-        const url = await message.client.generateInvite({
+        const url = message.client.generateInvite({
             scopes: ['bot', 'applications.commands'],
             permissions: configs.permissions,
         });

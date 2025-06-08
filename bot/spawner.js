@@ -17,7 +17,6 @@ const Discord = require('discord.js')
 const { handleEventError } = require('./utils.js');
 const configs = require('./configs.js');
 const events = require('./events');
-const { AutoPoster } = require('topgg-autoposter');
 const axios = require('axios');
 const locale = require('../locale');
 const commands = require('./commands');
@@ -112,26 +111,6 @@ client.once('ready', async () => {
             ping: client.ws.ping,
         }});
         await client.guilds.cache.get(configs.supportID).members.fetch().catch(console.error);
-        AutoPoster(process.env.TOPGG_TOKEN, client);
-        const guildCount = (await client.shard.fetchClientValues('guilds.cache.size')).reduce((acc, e) => acc + e, 0);
-        axios({
-            method: 'POST',
-            url: `https://discord.bots.gg/api/v1/bots/${client.user.id}/stats`,
-            headers: {
-                authorization: process.env.DISCORDBOTS_TOKEN,
-                'content-type': 'application/json',
-            },
-            data: {guildCount},
-        });
-        axios({
-            method: 'POST',
-            url: `https://botsfordiscord.com/api/bot/${client.user.id}`,
-            headers: {
-                authorization: process.env.BOTSFORDISCORD_TOKEN,
-                'content-type': 'application/json',
-            },
-            data: {server_count: guildCount},
-        });
     }
     const channelModel = require('../schemas/channel.js');
     // await channel.deleteMany({

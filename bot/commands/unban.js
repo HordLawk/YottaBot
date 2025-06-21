@@ -157,7 +157,7 @@ module.exports = {
     },
     executeSlash: async (interaction, args) => {
         const {channelLanguage} = interaction;
-        const ban = await interaction.guild.bans.fetch(args.target).catch(() => null);
+        const ban = await interaction.guild.bans.fetch(args.target_id).catch(() => null);
         if(!ban) return await interaction.reply({
             content: channelLanguage.get('invBanned'),
             ephemeral: true,
@@ -198,7 +198,7 @@ module.exports = {
             id: guildDoc.counterLogs,
             guild: interaction.guild.id,
             type: 'ban',
-            target: args.target,
+            target: args.target_id,
             executor: interaction.user.id,
             timeStamp: Date.now(),
             reason,
@@ -313,7 +313,7 @@ module.exports = {
         autocomplete: true,
     }],
     commandAutocomplete: {
-        target: (interaction, value) => interaction.respond(interaction.guild.bans.cache.filter(e => e.user.tag.toLowerCase().startsWith(value.toLowerCase())).first(25).map(e => ({
+        target_id: (interaction, value) => interaction.respond(interaction.guild.bans.cache.filter(e => e.user.tag.toLowerCase().startsWith(value.toLowerCase())).first(25).map(e => ({
             name: e.user.tag,
             value: e.user.id,
         }))),

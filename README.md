@@ -1,5 +1,5 @@
 # YottaBot
-**[Invite me to your server](https://discord.com/api/oauth2/authorize?client_id=1379187063504502825&scope=bot+applications.commands&permissions=1647119433215)**
+**[Invite me to your server](https://discord.com/api/oauth2/authorize?client_id=1106989091586846841&scope=bot+applications.commands&permissions=8584434885852671)**
 
 **[Join the support server](https://discord.gg/4EwBbWr3nq)**
 
